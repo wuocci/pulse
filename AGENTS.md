@@ -19,6 +19,10 @@ Never make more than **10 changed files** (created, edited, deleted or renamed) 
 
 When a tool owns a file format (pnpm, drizzle-kit, capacitor, …), run its CLI instead of writing the file by hand.
 
+## Keep the HTTP layer portable
+
+The API runs on Node on Hetzner (ADR 0004), but the Hono HTTP layer must stay movable to Cloudflare Workers. Route handlers use only standard `Request`/`Response`, `fetch` and Web APIs. Node-only code (`fs`, `net`, MQTT, pg-boss, `process`) lives behind interfaces outside the HTTP layer and is injected at startup.
+
 ## Migrations
 
 Append-only once committed: never delete, recreate, or edit a committed migration — add a new one. If a rewrite would be much cleaner (committed but never deployed), ask first.
