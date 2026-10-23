@@ -6,3 +6,6 @@ dist/
 data/samples/
 *.log
 .DS_Store
+
+# Local planning notes
+docs/PLAN.md
