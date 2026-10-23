@@ -15,7 +15,7 @@ Starting with the Helsinki capital region.
 
 ## Development
 
-Requires Node 22.12+ and pnpm 10.
+Requires Node 24+ and pnpm 10.
 
 ```bash
 pnpm install

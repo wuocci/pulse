@@ -1,0 +1,42 @@
+# Local development. Production deployment is issue #11.
+services:
+  db:
+    # TimescaleDB HA image ships PostGIS as well.
+    image: timescale/timescaledb-ha:pg17
+    environment:
+      POSTGRES_USER: pulse
+      POSTGRES_PASSWORD: pulse
+      POSTGRES_DB: pulse
+    ports:
+      - "5432:5432"
+    volumes:
+      - db-data:/home/postgres/pgdata
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "pulse"]
+      interval: 5s
+      retries: 10
+
+  api:
+    image: node:24-slim
+    working_dir: /repo
+    command: sh -c "corepack enable && pnpm install --frozen-lockfile && pnpm --filter @pulse/api dev"
+    environment:
+      DATABASE_URL: postgres://pulse:pulse@db:5432/pulse
+      COREPACK_ENABLE_DOWNLOAD_PROMPT: "0"
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/repo
+      # Keep the container's Linux node_modules separate from the host's.
+      - api-node-modules:/repo/node_modules
+      - api-app-node-modules:/repo/apps/api/node_modules
+      - api-schema-node-modules:/repo/packages/schema/node_modules
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  db-data:
+  api-node-modules:
+  api-app-node-modules:
+  api-schema-node-modules:
