@@ -1,0 +1,3 @@
+# The Pulse app is a web-first React app wrapped with Capacitor
+
+The client is a React (Vite) app with MapLibre GL JS for maps. It runs in any browser for development and as a web version, and Capacitor wraps it for iOS and Android, adding native push and location. We picked this over React Native (Expo), which has a more native feel and easier widgets, because we want to iterate in the browser and experiment with several UIs against the same API. Electron is out because a commute app lives on the phone. A PWA alone is out because iOS web push is unreliable for our use. Home-screen and lock-screen widgets will need native code whichever wrapper we use.

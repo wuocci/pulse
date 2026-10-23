@@ -1,0 +1,3 @@
+# The API holds Watches but no user identities
+
+The Pulse API serves several clients: the Pulse app first, then B2B clients such as property managers and lobby screens. Clients own their users. The API stores only Watches (a geometry, a time window and a webhook URL) and judges Impact against them. Push policy (sensitivity, quiet hours, caps, per-user "not relevant" filters) lives in each client; for the Pulse app that is the app module (ADR 0010). We picked this over an app-specific backend inside the API so that B2B clients get the same feature set. It also keeps GDPR exposure small, because Watches hold locations but never who they belong to. Watches expire unless renewed.
