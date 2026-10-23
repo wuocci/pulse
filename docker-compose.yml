@@ -19,10 +19,10 @@ services:
   api:
     image: node:24-slim
     working_dir: /repo
-    command: sh -c "corepack enable && pnpm install --frozen-lockfile && pnpm --filter @pulse/api dev"
+    # pnpm 12 switches itself to the exact version in package.json "packageManager".
+    command: sh -c "npm install -g pnpm@12 && pnpm install --frozen-lockfile && pnpm --filter @pulse/api dev"
     environment:
       DATABASE_URL: postgres://pulse:pulse@db:5432/pulse
-      COREPACK_ENABLE_DOWNLOAD_PROMPT: "0"
     ports:
       - "3000:3000"
     volumes:
