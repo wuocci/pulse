@@ -1,3 +1,7 @@
 # The Classifier runs once per Event at ingest, never per client
 
 The original concept had Jev judge relevance and impact for every (event, user) pair. That cost grows with Events × users × regions. Instead, the Classifier (Jev, behind an interface) only structures each Event once, when it is ingested. Impact for a Watch is computed in plain code from geometry, time window, lines and Severity. If the Classifier is unavailable, the Event is published at once with vague Precision and zero confidence, then reclassified in place, so data never waits on the Classifier.
+
+## Amendment 2026-10-23: choose, don't extract; only where structure is missing
+
+Jev answers typed questions (choice, score, yes/no) about text; it doesn't produce free-form values. Code finds the candidates (dates by regex, lines from the Source's own line list) and the Classifier picks among them, so it can never invent a value. Probes on live data (see `docs/research/jev-probe-2026-10-23.md`) showed it is reliable for this and costs about $0.03 per 1000 items. The Classifier is only used where a Source lacks structure: Helsinki excavation notices, yes; HSL alerts (Digitransit already gives affected lines and stops) and Digitraffic roadworks (already carry severity and restriction types), no. Questions the text can't answer, such as traffic impact of an excavation, are not asked; that comes from structured data or from Impact rules.
