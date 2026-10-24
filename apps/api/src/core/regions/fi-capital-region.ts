@@ -1,5 +1,13 @@
 import type { Region } from "./index.ts";
 
+const permitSystem = {
+  adapter: "land-use-permits",
+  url: "https://kartta.hel.fi/ws/geoserver/avoindata/wfs",
+  publisher: "City of Helsinki",
+  license: "CC BY 4.0",
+  refreshMinutes: 180,
+} as const;
+
 export const fiCapitalRegion: Region = {
   id: "fi-capital-region",
   name: { en: "Helsinki capital region", fi: "Pääkaupunkiseutu", sv: "Huvudstadsregionen" },
@@ -8,15 +16,13 @@ export const fiCapitalRegion: Region = {
   timeZone: "Europe/Helsinki",
   languages: ["fi", "sv", "en"],
   sources: [
+    { ...permitSystem, id: "hel-excavations", layer: "avoindata:Kaivuilmoitus_alue", permitType: "excavation" },
     {
-      id: "hel-excavations",
-      adapter: "land-use-permits",
-      url: "https://kartta.hel.fi/ws/geoserver/avoindata/wfs",
-      layer: "avoindata:Kaivuilmoitus_alue",
-      kind: "works",
-      publisher: "City of Helsinki",
-      license: "CC BY 4.0",
-      refreshMinutes: 180,
+      ...permitSystem,
+      id: "hel-traffic-arrangements",
+      layer: "avoindata:Tilapainen_liikennejarjestely_alue",
+      permitType: "traffic-arrangement",
     },
+    { ...permitSystem, id: "hel-outdoor-events", layer: "avoindata:Tapahtumat_alue", permitType: "outdoor-event" },
   ],
 };

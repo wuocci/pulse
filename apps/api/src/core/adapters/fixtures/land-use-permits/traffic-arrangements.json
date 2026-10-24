@@ -1,0 +1,107 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "id": "Tilapainen_liikennejarjestely_alue.232",
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                24.94553,
+                60.18434603
+              ],
+              [
+                24.945501,
+                60.18435703
+              ],
+              [
+                24.945435,
+                60.18431403
+              ],
+              [
+                24.945465,
+                60.18430303
+              ],
+              [
+                24.94553,
+                60.18434603
+              ]
+            ]
+          ]
+        ]
+      },
+      "geometry_name": "singlegeom",
+      "properties": {
+        "id": 232,
+        "hakemus": "Tilapäinen liikennejärjestely",
+        "hakemuksen_laji": "Muu",
+        "hakemustunnus": "LJ2600067",
+        "liikennejarjestely_alkaa": "2026-05-25",
+        "liikennejarjestely_paattyy": "2026-05-28",
+        "tyon_tarkoitus": "Parklet-terassin rakentaminen.",
+        "osoite": "Castréninkatu 10",
+        "kaupunginosa": "11 KALLIO",
+        "status": "Käynnissä",
+        "hakija": "",
+        "geometrytype": "ST_Polygon",
+        "tyon_suorittaja": "",
+        "liikennejarjestely_alkaa_txt": "25.05.2026",
+        "liikennejarjestely_paattyy_txt": "28.05.2026"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "Tilapainen_liikennejarjestely_alue.234",
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                24.950912,
+                60.17081503
+              ],
+              [
+                24.950925,
+                60.17073803
+              ],
+              [
+                24.953321,
+                60.17080803
+              ],
+              [
+                24.953313,
+                60.17088603
+              ],
+              [
+                24.950912,
+                60.17081503
+              ]
+            ]
+          ]
+        ]
+      },
+      "geometry_name": "singlegeom",
+      "properties": {
+        "id": 234,
+        "hakemus": "Tilapäinen liikennejärjestely",
+        "hakemuksen_laji": "Yleisötilaisuus",
+        "hakemustunnus": "LJ2600093",
+        "liikennejarjestely_alkaa": "2026-12-13",
+        "liikennejarjestely_paattyy": "2026-12-13",
+        "tyon_tarkoitus": "Tilapäiset liikennejärjestelyt; yleisötilaisuus (Lucia-kulkue)",
+        "osoite": "Kirkkokatu",
+        "kaupunginosa": "1 KRUUNUNHAKA",
+        "status": "Tuleva",
+        "hakija": "",
+        "geometrytype": "ST_Polygon",
+        "tyon_suorittaja": "",
+        "liikennejarjestely_alkaa_txt": "13.12.2026",
+        "liikennejarjestely_paattyy_txt": "13.12.2026"
+      }
+    }
+  ]
+}

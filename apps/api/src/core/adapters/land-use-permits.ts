@@ -1,17 +1,19 @@
-import type { Event, Geometry } from "@pulse/schema";
-import type { SourceConfig } from "../regions/index.ts";
+import type { Event, Geometry, Severity } from "@pulse/schema";
+import type { LandUsePermitSource } from "../regions/index.ts";
 
 // Custom Adapter (ADR 0002) for a city permit system's WFS, which publishes no standard format.
-// The same system publishes excavation notices, temporary traffic arrangements and outdoor events,
-// one layer each. Only excavation notices are mapped so far.
+// The system publishes excavation notices, temporary traffic arrangements and outdoor events, one layer each,
+// with shared fields (id, address, district) and per-layer dates and texts.
 // The WFS reprojects to WGS84 itself (srsName), so no projection library is needed.
 
-export interface PermitNotice {
-  hakemustunnus: string;
-  tyo_alkaa: string | null;
-  tyo_paattyy: string | null;
-  tyon_tarkoitus: string | null;
-  osoite: string | null;
+// Fields vary by layer, so they're read by name through `field()`.
+type Field = string | null;
+export type PermitNotice = { hakemustunnus: string } & Record<string, unknown>;
+
+// A text field's value, or null when it's missing, empty or not text.
+function field(notice: PermitNotice, name: string): Field {
+  const value = notice[name];
+  return typeof value === "string" && value.trim() !== "" ? value : null;
 }
 
 export interface PermitCollection {
@@ -19,12 +21,60 @@ export interface PermitCollection {
 }
 
 export interface PermitContext {
-  source: SourceConfig;
+  source: LandUsePermitSource;
   timeZone: string;
   now: Date;
 }
 
-export function permitsUrl(source: SourceConfig): string {
+interface PermitType {
+  kind: Event["kind"];
+  severity: Severity;
+  // The dates the notice occupies the street, as YYYY-MM-DD
+  occupies(p: PermitNotice): { start: Field; end: Field };
+  label(p: PermitNotice): { en: string; fi: string };
+  // Extra title part, e.g. an event's own dates when they differ from the occupied period
+  detail?(p: PermitNotice): { en: string; fi: string } | undefined;
+  text?(p: PermitNotice): Field;
+}
+
+const PERMIT_TYPES: Record<LandUsePermitSource["permitType"], PermitType> = {
+  excavation: {
+    kind: "works",
+    // No structure to base Severity on; overlapping traffic arrangements will set it (with PostGIS, #2).
+    severity: "minor",
+    occupies: (p) => ({ start: field(p, "tyo_alkaa"), end: field(p, "tyo_paattyy") }),
+    label: () => ({ en: "Excavation", fi: "Kaivutyö" }),
+    text: (p) => field(p, "tyon_tarkoitus"),
+  },
+  "traffic-arrangement": {
+    kind: "closure",
+    // A permit to change traffic: lanes, parking or a street taken out of use.
+    severity: "consider",
+    occupies: (p) => ({ start: field(p, "liikennejarjestely_alkaa"), end: field(p, "liikennejarjestely_paattyy") }),
+    label: () => ({ en: "Traffic arrangement", fi: "Liikennejärjestely" }),
+    text: (p) => field(p, "tyon_tarkoitus"),
+  },
+  "outdoor-event": {
+    kind: "public_event",
+    severity: "minor",
+    // Build-up and teardown occupy the area too, so the Event spans them.
+    occupies: (p) => ({
+      start: field(p, "rakentaminen_alkaa") ?? field(p, "tapahtuma_alkaa"),
+      end: field(p, "purkaminen_paattyy") ?? field(p, "tapahtuma_paattyy"),
+    }),
+    // Promotions are all named just "Promootio"; real events keep their own name in every language.
+    label: (p) => {
+      const name = field(p, "nimi");
+      return field(p, "hakemuksen_laji") === "Promootio" || !name ? { en: "Promotion", fi: "Promootio" } : { en: name, fi: name };
+    },
+    detail: (p) =>
+      field(p, "rakentaminen_alkaa") || field(p, "purkaminen_paattyy")
+        ? dateRange(field(p, "tapahtuma_alkaa"), field(p, "tapahtuma_paattyy"))
+        : undefined,
+  },
+};
+
+export function permitsUrl(source: LandUsePermitSource): string {
   const params = new URLSearchParams({
     service: "WFS",
     version: "2.0.0",
@@ -36,31 +86,31 @@ export function permitsUrl(source: SourceConfig): string {
   return `${source.url}?${params}`;
 }
 
-export async function fetchPermits(source: SourceConfig, fetchFn: typeof fetch = fetch): Promise<PermitCollection> {
+export async function fetchPermits(source: LandUsePermitSource, fetchFn: typeof fetch = fetch): Promise<PermitCollection> {
   const res = await fetchFn(permitsUrl(source));
   if (!res.ok) throw new Error(`${source.id}: WFS responded ${res.status}`);
   return (await res.json()) as PermitCollection;
 }
 
 export function toEvents(collection: PermitCollection, { source, timeZone, now }: PermitContext): Event[] {
+  const type = PERMIT_TYPES[source.permitType];
   const events: Event[] = [];
   for (const { geometry, notice } of groupByNotice(collection)) {
-    if (!notice.tyo_alkaa) continue;
-    const start = localTime(notice.tyo_alkaa, "00:00:00", timeZone);
-    const end = notice.tyo_paattyy ? localTime(notice.tyo_paattyy, "23:59:59", timeZone) : undefined;
-    const address = (notice.osoite ?? "").split(",")[0]!.trim();
-    const text = notice.tyon_tarkoitus?.trim();
+    const occupied = type.occupies(notice);
+    if (!occupied.start) continue;
+    const start = localTime(occupied.start, "00:00:00", timeZone);
+    const end = occupied.end ? localTime(occupied.end, "23:59:59", timeZone) : undefined;
+    const text = type.text?.(notice)?.trim();
 
     events.push({
       id: `${source.id}:${notice.hakemustunnus}`,
-      kind: source.kind,
+      kind: type.kind,
       layers: ["area"],
-      title: titles(address, notice.tyo_paattyy),
+      title: titles(type.label(notice), place(notice), type.detail?.(notice) ?? until(occupied.end)),
       ...(text ? { originalText: { fi: text } } : {}),
       where: { geometry, precision: "area" },
       when: { start, ...(end ? { end } : {}) },
-      // No structure to base Severity on; overlapping temporary traffic arrangements will set it.
-      severity: "minor",
+      severity: type.severity,
       status: statusAt(now, start, end),
       sources: [
         {
@@ -98,21 +148,42 @@ function groupByNotice(collection: PermitCollection) {
     .map((g) => ({ notice: g.notice, geometry: { type: "MultiPolygon", coordinates: g.polygons } as Geometry }));
 }
 
+// The first address, or else the district: "2 KLUUVI" → "Kluuvi".
+function place(notice: PermitNotice): string {
+  const address = (field(notice, "osoite") ?? "").split(",")[0]!.trim();
+  if (address) return address;
+  const district = (field(notice, "kaupunginosa") ?? "").replace(/^\d+\s*/, "").trim().toLowerCase();
+  return district.replace(/(^|[\s-])\p{L}/gu, (c) => c.toUpperCase());
+}
+
 // Moves to a shared title module that writes every Region language (Q15 in the plan).
-function titles(address: string, endDate: string | null): Record<string, string> {
-  const en = ["Excavation"];
-  const fi = ["Kaivutyö"];
-  if (address) {
-    en.push(address);
-    fi.push(address);
-  }
-  if (endDate) {
-    const [year, month, day] = endDate.slice(0, 10).split("-").map(Number) as [number, number, number];
-    const date = new Date(Date.UTC(year, month - 1, day));
-    en.push(`until ${date.toLocaleDateString("en-GB", { day: "numeric", month: "short", timeZone: "UTC" })}`);
-    fi.push(`${day}.${month}. asti`);
-  }
-  return { en: en.join(" · "), fi: fi.join(" · ") };
+function titles(
+  label: { en: string; fi: string },
+  place: string,
+  detail: { en: string; fi: string } | undefined,
+): Record<string, string> {
+  const join = (lang: "en" | "fi") => [label[lang], place, detail?.[lang]].filter(Boolean).join(" · ");
+  return { en: join("en"), fi: join("fi") };
+}
+
+function until(endDate: Field): { en: string; fi: string } | undefined {
+  if (!endDate) return undefined;
+  const { day, month, short } = dateParts(endDate);
+  return { en: `until ${day} ${short}`, fi: `${day}.${month}. asti` };
+}
+
+function dateRange(startDate: Field, endDate: Field): { en: string; fi: string } | undefined {
+  if (!startDate) return undefined;
+  const s = dateParts(startDate);
+  if (!endDate || endDate === startDate) return { en: `${s.day} ${s.short}`, fi: `${s.day}.${s.month}.` };
+  const e = dateParts(endDate);
+  return { en: `${s.day} ${s.short} – ${e.day} ${e.short}`, fi: `${s.day}.${s.month}.–${e.day}.${e.month}.` };
+}
+
+function dateParts(date: string) {
+  const [year, month, day] = date.slice(0, 10).split("-").map(Number) as [number, number, number];
+  const short = new Date(Date.UTC(year, month - 1, day)).toLocaleDateString("en-GB", { month: "short", timeZone: "UTC" });
+  return { day, month, short };
 }
 
 function statusAt(now: Date, start: string, end: string | undefined): Event["status"] {
