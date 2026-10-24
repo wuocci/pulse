@@ -201,6 +201,15 @@ importers:
         specifier: ^4.23.15
         version: 4.23.15
 
+  apps/cli:
+    dependencies:
+      '@hono/zod-openapi':
+        specifier: ^1.6.3
+        version: 1.6.3(hono@4.13.13)(zod@4.6.7)
+      '@pulse/schema':
+        specifier: workspace:*
+        version: link:../../packages/schema
+
   packages/schema:
     dependencies:
       '@hono/zod-openapi':

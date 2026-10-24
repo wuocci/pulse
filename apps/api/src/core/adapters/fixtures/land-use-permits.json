@@ -1,0 +1,213 @@
+{
+ "type": "FeatureCollection",
+ "features": [
+  {
+   "type": "Feature",
+   "id": "Kaivuilmoitus_alue.3102",
+   "geometry": {
+    "type": "MultiPolygon",
+    "coordinates": [
+     [
+      [
+       [
+        25.02267846,
+        60.25089584
+       ],
+       [
+        25.0227574,
+        60.25081393
+       ],
+       [
+        25.02291883,
+        60.25085429
+       ],
+       [
+        25.02279247,
+        60.25092667
+       ],
+       [
+        25.02267846,
+        60.25089584
+       ]
+      ]
+     ]
+    ]
+   },
+   "geometry_name": "singlegeom",
+   "properties": {
+    "id": 3102,
+    "hakemus": "Kaivuilmoitus",
+    "hakemustunnus": "KP2602791-2",
+    "tyo_alkaa": "2026-10-29",
+    "tyo_paattyy": "2026-11-13",
+    "toiminnallinen_kunto": null,
+    "tyon_tarkoitus": "Sadevesiviemärin korjaus\nMUUTOS 22.10.2026: voimassaolon muutos 05.10.2026 - 23.10.2026 -> 29.10.2026 - 13.11.2026.",
+    "osoite": "Vilppulantie 26",
+    "kaupunginosa": "38 MALMI",
+    "status": "Tuleva",
+    "hakija": "",
+    "tyon_suorittaja": "",
+    "geometrytype": "ST_Polygon",
+    "tyo_alkaa_txt": "29.10.2026",
+    "tyo_paattyy_txt": "13.11.2026",
+    "toiminnallinen_kunto_txt": null
+   }
+  },
+  {
+   "type": "Feature",
+   "id": "Kaivuilmoitus_alue.3429",
+   "geometry": {
+    "type": "MultiPolygon",
+    "coordinates": [
+     [
+      [
+       [
+        24.97601592,
+        60.26631192
+       ],
+       [
+        24.97588866,
+        60.26631279
+       ],
+       [
+        24.97587972,
+        60.2662834
+       ],
+       [
+        24.97601057,
+        60.26628253
+       ],
+       [
+        24.97601592,
+        60.26631192
+       ]
+      ]
+     ]
+    ]
+   },
+   "geometry_name": "singlegeom",
+   "properties": {
+    "id": 3429,
+    "hakemus": "Kaivuilmoitus",
+    "hakemustunnus": "KP2603015",
+    "tyo_alkaa": "2026-11-04",
+    "tyo_paattyy": "2026-11-04",
+    "toiminnallinen_kunto": null,
+    "tyon_tarkoitus": "Varataan tilaa kaivutyölle; rumpuputki",
+    "osoite": "Veropellontie 10 itä puoli",
+    "kaupunginosa": "40 SUUTARILA",
+    "status": "Tuleva",
+    "hakija": "",
+    "tyon_suorittaja": "",
+    "geometrytype": "ST_Polygon",
+    "tyo_alkaa_txt": "04.11.2026",
+    "tyo_paattyy_txt": "04.11.2026",
+    "toiminnallinen_kunto_txt": null
+   }
+  },
+  {
+   "type": "Feature",
+   "id": "Kaivuilmoitus_alue.3353",
+   "geometry": {
+    "type": "MultiPolygon",
+    "coordinates": [
+     [
+      [
+       [
+        24.92372334,
+        60.18297775
+       ],
+       [
+        24.92375204,
+        60.18298703
+       ],
+       [
+        24.9237103,
+        60.18301617
+       ],
+       [
+        24.92367991,
+        60.18300746
+       ],
+       [
+        24.92372334,
+        60.18297775
+       ]
+      ]
+     ]
+    ]
+   },
+   "geometry_name": "singlegeom",
+   "properties": {
+    "id": 3353,
+    "hakemus": "Kaivuilmoitus",
+    "hakemustunnus": "KP2602966",
+    "tyo_alkaa": "2026-10-23",
+    "tyo_paattyy": "2026-11-05",
+    "toiminnallinen_kunto": null,
+    "tyon_tarkoitus": "Tonttiliitosten uusinta",
+    "osoite": "Sibeliuksenkatu 3",
+    "kaupunginosa": "14 TAKA-TÖÖLÖ",
+    "status": "Käynnissä",
+    "hakija": "",
+    "tyon_suorittaja": "",
+    "geometrytype": "ST_Polygon",
+    "tyo_alkaa_txt": "23.10.2026",
+    "tyo_paattyy_txt": "05.11.2026",
+    "toiminnallinen_kunto_txt": null
+   }
+  },
+  {
+   "type": "Feature",
+   "id": "Kaivuilmoitus_alue.3413",
+   "geometry": {
+    "type": "MultiPolygon",
+    "coordinates": [
+     [
+      [
+       [
+        24.927656,
+        60.16264403
+       ],
+       [
+        24.92774,
+        60.16258203
+       ],
+       [
+        24.927589,
+        60.16252703
+       ],
+       [
+        24.9275,
+        60.16258903
+       ],
+       [
+        24.927656,
+        60.16264403
+       ]
+      ]
+     ]
+    ]
+   },
+   "geometry_name": "singlegeom",
+   "properties": {
+    "id": 3413,
+    "hakemus": "Kaivuilmoitus",
+    "hakemustunnus": "KP2603005",
+    "tyo_alkaa": "2026-10-23",
+    "tyo_paattyy": "2026-10-30",
+    "toiminnallinen_kunto": null,
+    "tyon_tarkoitus": "Varataan tilaa kaivutyölle: kiinteistöliittymät vesi, viemäri, hulevesi",
+    "osoite": "Lönnrotinkatu 41-39",
+    "kaupunginosa": "4 KAMPPI",
+    "status": "Käynnissä",
+    "hakija": "",
+    "tyon_suorittaja": "",
+    "geometrytype": "ST_Polygon",
+    "tyo_alkaa_txt": "23.10.2026",
+    "tyo_paattyy_txt": "30.10.2026",
+    "toiminnallinen_kunto_txt": null
+   }
+  }
+ ]
+}

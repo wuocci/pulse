@@ -1,0 +1,13 @@
+{
+  "name": "@pulse/cli",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "pulse": "node --env-file-if-exists=../../.env.development --env-file-if-exists=../../.env.local src/index.ts"
+  },
+  "dependencies": {
+    "@hono/zod-openapi": "^1.6.3",
+    "@pulse/schema": "workspace:*"
+  }
+}

@@ -88,5 +88,5 @@ A scheduled webhook to a Routine's Watch shortly before departure (45 minutes by
 _Avoid_: Digest, morning check
 
 **Classifier**:
-The step that turns a Source's free text into structured Event fields (where, when, lines, stops, Severity). It runs once per Event, never once per client.
-_Avoid_: Jev (Jev is the current implementation, not the concept)
+The step that decides typed questions about a Source's free text, such as the kind of work, Severity, or which of the candidate dates or lines found in the text applies. It only chooses among options; values themselves come from the Source or from code. It runs once per Event, and only for Sources whose items lack that structure.
+_Avoid_: Jev (Jev is the current implementation, not the concept), extractor
