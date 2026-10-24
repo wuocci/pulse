@@ -8,3 +8,6 @@ export type * from "./event/types.ts";
 
 export * from "./health/schema.ts";
 export type * from "./health/types.ts";
+
+export * from "./region/schema.ts";
+export type * from "./region/types.ts";

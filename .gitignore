@@ -6,6 +6,7 @@ data/samples/
 
 # Local planning notes
 docs/PLAN.md
+docs/scenarios.md
 
 # Env files: .env.development and .env.production are committed; secrets go in *.local
 .env
