@@ -1,0 +1,241 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "id": "Tapahtumat_alue.3",
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                24.951244,
+                60.16987403
+              ],
+              [
+                24.951304,
+                60.16912203
+              ],
+              [
+                24.953269,
+                60.16916003
+              ],
+              [
+                24.953265,
+                60.16933103
+              ],
+              [
+                24.953384,
+                60.16933503
+              ],
+              [
+                24.953345,
+                60.16975103
+              ],
+              [
+                24.953235,
+                60.16974903
+              ],
+              [
+                24.953216,
+                60.16991803
+              ],
+              [
+                24.951244,
+                60.16987403
+              ]
+            ]
+          ]
+        ]
+      },
+      "geometry_name": "singlegeom",
+      "properties": {
+        "id": 3,
+        "hakemus": "Tapahtuma",
+        "hakemuksen_laji": "Ulkoilmatapahtuma",
+        "hakemustunnus": "TP2500373",
+        "nimi": "Tuomaan markkinat 2026",
+        "rakentaminen_alkaa": "2026-11-09",
+        "tapahtuma_alkaa": "2026-11-27",
+        "tapahtuma_paattyy": "2026-12-22",
+        "purkaminen_paattyy": "2026-12-30",
+        "tapahtuman_luonne": "Avoin",
+        "tapahtuman_www_sivu": "tuomaanmarkkinat.fi",
+        "osoite": "Senaatintori, Hallituskatu, Aleksanterinkadun torin puoleinen ajokaista, Snellmaninkadun torin puoleinen pysäköintialue",
+        "kaupunginosa": "1 KRUUNUNHAKA",
+        "status": "Tuleva",
+        "hakija": "",
+        "geometrytype": "ST_Polygon",
+        "rakentaminen_alkaa_txt": "09.11.2026",
+        "tapahtuma_alkaa_txt": "27.11.2026",
+        "tapahtuma_paattyy_txt": "22.12.2026",
+        "purkaminen_paattyy_txt": "30.12.2026"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "Tapahtumat_alue.4",
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                24.95359,
+                60.16968703
+              ],
+              [
+                24.953584,
+                60.16978003
+              ],
+              [
+                24.953673,
+                60.16978103
+              ],
+              [
+                24.953679,
+                60.16968803
+              ],
+              [
+                24.95359,
+                60.16968703
+              ]
+            ]
+          ]
+        ]
+      },
+      "geometry_name": "singlegeom",
+      "properties": {
+        "id": 4,
+        "hakemus": "Tapahtuma",
+        "hakemuksen_laji": "Ulkoilmatapahtuma",
+        "hakemustunnus": "TP2500373",
+        "nimi": "Tuomaan markkinat 2026",
+        "rakentaminen_alkaa": "2026-11-09",
+        "tapahtuma_alkaa": "2026-11-27",
+        "tapahtuma_paattyy": "2026-12-22",
+        "purkaminen_paattyy": "2026-12-30",
+        "tapahtuman_luonne": "Avoin",
+        "tapahtuman_www_sivu": "tuomaanmarkkinat.fi",
+        "osoite": "Senaatintori, Hallituskatu, Aleksanterinkadun torin puoleinen ajokaista, Snellmaninkadun torin puoleinen pysäköintialue",
+        "kaupunginosa": "1 KRUUNUNHAKA",
+        "status": "Tuleva",
+        "hakija": "",
+        "geometrytype": "ST_Polygon",
+        "rakentaminen_alkaa_txt": "09.11.2026",
+        "tapahtuma_alkaa_txt": "27.11.2026",
+        "tapahtuma_paattyy_txt": "22.12.2026",
+        "purkaminen_paattyy_txt": "30.12.2026"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "Tapahtumat_alue.48",
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                24.940806,
+                60.16869703
+              ],
+              [
+                24.940715,
+                60.16875803
+              ],
+              [
+                24.940802,
+                60.16879003
+              ],
+              [
+                24.940893,
+                60.16872903
+              ],
+              [
+                24.940806,
+                60.16869703
+              ]
+            ]
+          ]
+        ]
+      },
+      "geometry_name": "singlegeom",
+      "properties": {
+        "id": 48,
+        "hakemus": "Tapahtuma",
+        "hakemuksen_laji": "Promootio",
+        "hakemustunnus": "TP2600853",
+        "nimi": "Promootio",
+        "rakentaminen_alkaa": null,
+        "tapahtuma_alkaa": "2026-11-12",
+        "tapahtuma_paattyy": "2026-11-15",
+        "purkaminen_paattyy": null,
+        "tapahtuman_luonne": "-",
+        "tapahtuman_www_sivu": null,
+        "osoite": null,
+        "kaupunginosa": "2 KLUUVI",
+        "status": "Tuleva",
+        "hakija": "",
+        "geometrytype": "ST_Polygon",
+        "rakentaminen_alkaa_txt": null,
+        "tapahtuma_alkaa_txt": "12.11.2026",
+        "tapahtuma_paattyy_txt": "15.11.2026",
+        "purkaminen_paattyy_txt": null
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "Tapahtumat_alue.85",
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                24.960844,
+                60.18807803
+              ],
+              [
+                24.960684,
+                60.18790803
+              ],
+              [
+                24.961087,
+                60.18792703
+              ],
+              [
+                24.960844,
+                60.18807803
+              ]
+            ]
+          ]
+        ]
+      },
+      "geometry_name": "singlegeom",
+      "properties": {
+        "id": 85,
+        "hakemus": "Tapahtuma",
+        "hakemuksen_laji": "Ulkoilmatapahtuma",
+        "hakemustunnus": "TP2601020",
+        "nimi": "Kurvin talkoot",
+        "rakentaminen_alkaa": null,
+        "tapahtuma_alkaa": "2026-11-15",
+        "tapahtuma_paattyy": "2026-11-15",
+        "purkaminen_paattyy": null,
+        "tapahtuman_luonne": "Avoin",
+        "tapahtuman_www_sivu": null,
+        "osoite": "Vaasanpuistikko",
+        "kaupunginosa": "12 ALPPIHARJU",
+        "status": "Tuleva",
+        "hakija": "",
+        "geometrytype": "ST_Polygon",
+        "rakentaminen_alkaa_txt": null,
+        "tapahtuma_alkaa_txt": "15.11.2026",
+        "tapahtuma_paattyy_txt": "15.11.2026",
+        "purkaminen_paattyy_txt": null
+      }
+    }
+  ]
+}

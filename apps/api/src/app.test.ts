@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { createApp } from "./app.ts";
 import { InMemoryEventStore } from "./core/events/store.ts";
-import fixture from "./core/adapters/fixtures/land-use-permits.json" with { type: "json" };
+import fixture from "./core/adapters/fixtures/land-use-permits/excavations.json" with { type: "json" };
 import { type PermitCollection, toEvents } from "./core/adapters/land-use-permits.ts";
 import { fiCapitalRegion } from "./core/regions/fi-capital-region.ts";
 import { regions } from "./core/regions/index.ts";

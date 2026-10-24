@@ -1,4 +1,4 @@
-import type { EventKind, Region as PublicRegion } from "@pulse/schema";
+import type { Region as PublicRegion } from "@pulse/schema";
 import { fiCapitalRegion } from "./fi-capital-region.ts";
 
 // A Region exists only as configuration (CONTEXT.md). Place names belong here, never in code or file names.
@@ -9,15 +9,21 @@ export interface Region extends PublicRegion {
 }
 
 // One entry per feed a Source publishes. `adapter` picks the code that reads its format (ADR 0002).
-export interface SourceConfig {
+export type SourceConfig = LandUsePermitSource;
+
+interface BaseSource {
   id: string;
-  adapter: "land-use-permits";
   url: string;
-  layer: string;
-  kind: EventKind;
   publisher: string;
   license: string;
   refreshMinutes: number;
+}
+
+export interface LandUsePermitSource extends BaseSource {
+  adapter: "land-use-permits";
+  layer: string;
+  // Each layer of the permit system has its own fields.
+  permitType: "excavation" | "traffic-arrangement" | "outdoor-event";
 }
 
 export const regions: Region[] = [fiCapitalRegion];
