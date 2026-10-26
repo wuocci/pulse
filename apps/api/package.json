@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "tsx watch --env-file-if-exists=../../.env.development --env-file-if-exists=../../.env.local src/server.ts",
     "start": "tsx --env-file-if-exists=../../.env.production --env-file-if-exists=../../.env.production.local src/server.ts",
-    "db:generate": "drizzle-kit generate --dialect postgresql --schema ./src/core/conditions/store.ts --out ./drizzle"
+    "db:generate": "drizzle-kit generate --dialect postgresql --schema ./src/core/conditions/store.ts --out ./drizzle",
+    "ingest": "tsx --env-file-if-exists=../../.env.development --env-file-if-exists=../../.env.local src/ingest.ts",
+    "ingest:prod": "tsx --env-file-if-exists=../../.env.production --env-file-if-exists=../../.env.production.local src/ingest.ts"
   },
   "dependencies": {
     "@hono/node-server": "^2.1.5",
