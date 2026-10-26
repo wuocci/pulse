@@ -1,14 +1,11 @@
 import { serve } from "@hono/node-server";
-import pg from "pg";
 import { createApp } from "./app.ts";
+import { createPool } from "./config.ts";
 import { InMemoryEventStore } from "./core/events/store.ts";
 import { startIngest } from "./core/ingest/scheduler.ts";
 import { regions } from "./core/regions/index.ts";
 
-const pool = new pg.Pool({
-  connectionString: process.env.DATABASE_URL ?? "postgres://pulse:pulse@localhost:5432/pulse",
-  connectionTimeoutMillis: 2000,
-});
+const pool = createPool();
 
 const events = new InMemoryEventStore();
 const stopIngest = startIngest(regions, events);
