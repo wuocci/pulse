@@ -42,6 +42,10 @@ describe("excavation notices → Events", () => {
     expect(event.sources[0]).toMatchObject({ name: source.publisher, id: "KP2602791-2", license: source.license });
   });
 
+  it("marks digs as noise and a blocked street", () => {
+    for (const event of events) expect(event.noticeable).toEqual(["noise", "blocked"]);
+  });
+
   it("falls back to the district, then to nothing, when the notice has no address", () => {
     const [first] = collection.features;
     const title = (properties: object) =>
@@ -101,6 +105,10 @@ describe("temporary traffic arrangements → Events", () => {
     }
   });
 
+  it("marks arrangements as a blocked street", () => {
+    for (const event of events) expect(event.noticeable).toEqual(["blocked"]);
+  });
+
   it("maps the arrangement's dates, title and purpose", () => {
     expect(byId.LJ2600093).toMatchObject({
       id: "hel-traffic-arrangements:LJ2600093",
@@ -130,6 +138,10 @@ describe("outdoor events → Events", () => {
       expect(EventSchema.safeParse(event).success).toBe(true);
       expect(event.kind).toBe("public_event");
     }
+  });
+
+  it("marks outdoor events as crowd and noise", () => {
+    for (const event of events) expect(event.noticeable).toEqual(["crowd", "noise"]);
   });
 
   it("spans build-up to teardown, with the event's own dates in the title", () => {

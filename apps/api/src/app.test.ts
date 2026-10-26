@@ -1,3 +1,4 @@
+import type { DailyHours, Event, EventKind, Noticeable } from "@pulse/schema";
 import { describe, expect, it } from "vitest";
 import { createApp } from "./app.ts";
 import { InMemoryEventStore } from "./core/events/store.ts";
@@ -48,6 +49,19 @@ describe("GET /v0/openapi.json", () => {
     expect(doc.components.schemas.Event?.required).toEqual(
       expect.arrayContaining(["id", "kind", "where", "when", "severity", "sources"]),
     );
+  });
+
+  it("documents Noticeable, daily hours and the Right now query", async () => {
+    const res = await createApp({ db: reachable, events: emptyStore, regions }).request("/v0/openapi.json");
+    const doc = (await res.json()) as {
+      paths: { "/events": { get: { parameters: { name: string }[] } } };
+      components: { schemas: Record<string, { required?: string[] }> };
+    };
+
+    expect(doc.components.schemas).toHaveProperty("Noticeable");
+    expect(doc.components.schemas).toHaveProperty("DailyHours");
+    expect(doc.components.schemas.Event?.required).toContain("noticeable");
+    expect(doc.paths["/events"].get.parameters.map((p) => p.name)).toEqual(expect.arrayContaining(["layer", "noticeable"]));
   });
 });
 
@@ -105,6 +119,130 @@ describe("GET /v0/events", async () => {
   it("rejects a malformed near parameter", async () => {
     const res = await app.request("/v0/events?near=Töölö");
     expect(res.status).toBe(400);
+  });
+});
+
+describe("GET /v0/events?layer=now", () => {
+  // A made-up spot in Helsinki; seeded Events sit due north of it.
+  const here = { lat: 60.17, lon: 24.95 };
+  const metresPerDegreeLat = 111_195;
+  // 2026-11-03 is a Tuesday and 2026-11-08 a Sunday, both in winter time (+02:00).
+  const tuesday = (time: string) => `2026-11-03T${time}:00+02:00`;
+
+  const seed = (
+    id: string,
+    kind: EventKind,
+    metresNorth: number,
+    { noticeable = [], dailyHours }: { noticeable?: Noticeable[]; dailyHours?: DailyHours } = {},
+  ): Event => ({
+    id,
+    kind,
+    layers: ["area"],
+    title: { en: id },
+    where: {
+      geometry: { type: "Point", coordinates: [here.lon, here.lat + metresNorth / metresPerDegreeLat] },
+      precision: "area",
+    },
+    when: { start: "2026-10-01T00:00:00+03:00", end: "2026-12-31T23:59:59+02:00", ...(dailyHours ? { dailyHours } : {}) },
+    severity: "minor",
+    noticeable,
+    status: "active",
+    sources: [{ name: "Test Source", id, updatedAt: "2026-10-01T00:00:00+03:00", license: "CC BY 4.0" }],
+    confidence: 0,
+    updatedAt: "2026-10-01T00:00:00+03:00",
+  });
+
+  const request = async (events: Event[], now: string, query = "") => {
+    const store = new InMemoryEventStore();
+    await store.replaceSource("test", events);
+    const app = createApp({ db: reachable, events: store, regions, clock: () => new Date(now) });
+    return app.request(`/v0/events?near=${here.lat},${here.lon}&layer=now${query}`);
+  };
+  const ids = async (events: Event[], now: string, query = "") => {
+    const res = await request(events, now, query);
+    const body = (await res.json()) as { events: { id: string }[] };
+    return body.events.map((e) => e.id);
+  };
+
+  const dig = seed("dig", "works", 100, { noticeable: ["noise", "blocked"] });
+
+  it("returns a dig during working hours on a weekday only", async () => {
+    expect(await ids([dig], tuesday("10:00"))).toEqual(["dig"]);
+    expect(await ids([dig], tuesday("02:00"))).toEqual([]);
+    expect(await ids([dig], "2026-11-08T10:00:00+02:00")).toEqual([]);
+  });
+
+  it("reads daily hours in the Region's local time, including summer time", async () => {
+    // 04:30 UTC is 07:30 in Helsinki on Friday 23 Oct (+03:00), but 06:30 on Tuesday 3 Nov (+02:00).
+    expect(await ids([dig], "2026-10-23T04:30:00Z")).toEqual(["dig"]);
+    expect(await ids([dig], "2026-11-03T04:30:00Z")).toEqual([]);
+  });
+
+  it("leaves out Events whose time window doesn't contain now", async () => {
+    expect(await ids([dig], "2027-01-05T10:00:00+02:00")).toEqual([]);
+  });
+
+  it("lets a Source's own daily hours win over the kind's default", async () => {
+    const laneClosure = seed("own-hours", "works", 100, { dailyHours: { from: "09:00", to: "15:00" } });
+
+    expect(await ids([laneClosure], tuesday("08:00"))).toEqual([]);
+    expect(await ids([laneClosure], tuesday("16:00"))).toEqual([]);
+    expect(await ids([laneClosure], "2026-11-08T10:00:00+02:00")).toEqual(["own-hours"]);
+  });
+
+  it("follows daily hours past midnight", async () => {
+    const nightWorks = seed("night", "works", 100, { dailyHours: { from: "22:00", to: "05:00", days: ["mon"] } });
+
+    expect(await ids([nightWorks], tuesday("02:00"))).toEqual(["night"]);
+    expect(await ids([nightWorks], tuesday("23:00"))).toEqual([]);
+  });
+
+  it("counts a kind without default hours all day", async () => {
+    expect(await ids([seed("closure", "closure", 100, { noticeable: ["blocked"] })], tuesday("02:00"))).toEqual(["closure"]);
+  });
+
+  it("ranks noticeable Events first, then by distance", async () => {
+    const concert = seed("concert", "public_event", 400, { noticeable: ["crowd", "noise"] });
+    const quietDig = seed("quiet-dig", "works", 50);
+    const loudDig = seed("loud-dig", "works", 50, { noticeable: ["noise"] });
+
+    expect(await ids([quietDig, concert], tuesday("12:00"))).toEqual(["concert", "quiet-dig"]);
+    expect(await ids([concert, loudDig], tuesday("12:00"))).toEqual(["loud-dig", "concert"]);
+  });
+
+  it("searches within 500 m by default", async () => {
+    const near = seed("near", "closure", 450);
+    const far = seed("far", "closure", 700);
+
+    expect(await ids([near, far], tuesday("12:00"))).toEqual(["near"]);
+  });
+
+  it("takes an explicit radius up to 2 km and rejects a larger one", async () => {
+    const app = createApp({ db: reachable, events: emptyStore, regions });
+    const status = async (query: string) => (await app.request(`/v0/events?near=${here.lat},${here.lon},${query}`)).status;
+
+    expect(await status("2000&layer=now")).toBe(200);
+    expect(await status("2001&layer=now")).toBe(400);
+    // Without the lens there is no cap.
+    expect(await status("5000")).toBe(200);
+  });
+
+  it("requires a location", async () => {
+    const app = createApp({ db: reachable, events: emptyStore, regions });
+
+    expect((await app.request("/v0/events?layer=now")).status).toBe(400);
+  });
+
+  it("filters by what is noticeable, any match", async () => {
+    const events = [
+      dig,
+      seed("concert", "public_event", 400, { noticeable: ["crowd", "noise"] }),
+      seed("closure", "closure", 200, { noticeable: ["blocked"] }),
+    ];
+
+    expect(await ids(events, tuesday("12:00"), "&noticeable=noise")).toEqual(["dig", "concert"]);
+    expect(await ids(events, tuesday("12:00"), "&noticeable=crowd,blocked")).toEqual(["dig", "closure", "concert"]);
+    expect((await request(events, tuesday("12:00"), "&noticeable=smell")).status).toBe(400);
   });
 });
 

@@ -1,4 +1,4 @@
-import type { Event, EventKind, EventStatus, Geometry } from "@pulse/schema";
+import type { Event, EventKind, EventStatus, Geometry, Noticeable } from "@pulse/schema";
 
 export interface EventQuery {
   near?: { lat: number; lon: number; radiusM: number };
@@ -6,6 +6,10 @@ export interface EventQuery {
   to?: Date;
   kind?: EventKind;
   statuses?: EventStatus[];
+  // Any match
+  noticeable?: Noticeable[];
+  // Nearest first; needs `near`. Otherwise the order is unspecified.
+  orderBy?: "distance";
 }
 
 export interface EventStore {
@@ -22,15 +26,21 @@ export class InMemoryEventStore implements EventStore {
     this.bySource.set(sourceId, events);
   }
 
-  async query({ near, from, to, kind, statuses }: EventQuery) {
-    return [...this.bySource.values()].flat().filter((event) => {
-      if (kind && event.kind !== kind) return false;
-      if (statuses && !statuses.includes(event.status)) return false;
-      if (to && new Date(event.when.start) > to) return false;
-      if (from && event.when.end && new Date(event.when.end) < from) return false;
-      if (near && distanceToBoundsM(near, event.where.geometry) > near.radiusM) return false;
-      return true;
-    });
+  async query({ near, from, to, kind, statuses, noticeable, orderBy }: EventQuery) {
+    const matches = [...this.bySource.values()]
+      .flat()
+      .filter((event) => {
+        if (kind && event.kind !== kind) return false;
+        if (statuses && !statuses.includes(event.status)) return false;
+        if (noticeable && !event.noticeable.some((n) => noticeable.includes(n))) return false;
+        if (to && new Date(event.when.start) > to) return false;
+        if (from && event.when.end && new Date(event.when.end) < from) return false;
+        return true;
+      })
+      .map((event) => ({ event, distanceM: near ? distanceToBoundsM(near, event.where.geometry) : 0 }))
+      .filter(({ distanceM }) => !near || distanceM <= near.radiusM);
+    if (orderBy === "distance") matches.sort((a, b) => a.distanceM - b.distanceM);
+    return matches.map(({ event }) => event);
   }
 }
 

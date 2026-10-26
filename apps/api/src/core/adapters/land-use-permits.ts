@@ -1,4 +1,4 @@
-import type { Event, Geometry, Severity } from "@pulse/schema";
+import type { Event, Geometry, Noticeable, Severity } from "@pulse/schema";
 import type { LandUsePermitSource } from "../regions/index.ts";
 
 // Custom Adapter (ADR 0002) for a city permit system's WFS, which publishes no standard format.
@@ -29,6 +29,8 @@ export interface PermitContext {
 interface PermitType {
   kind: Event["kind"];
   severity: Severity;
+  // What a person nearby would sense, by rule on the layer; no Classifier needed.
+  noticeable: Noticeable[];
   // The dates the notice occupies the street, as YYYY-MM-DD
   occupies(p: PermitNotice): { start: Field; end: Field };
   label(p: PermitNotice): { en: string; fi: string };
@@ -42,6 +44,7 @@ const PERMIT_TYPES: Record<LandUsePermitSource["permitType"], PermitType> = {
     kind: "works",
     // No structure to base Severity on; overlapping traffic arrangements will set it (with PostGIS, #2).
     severity: "minor",
+    noticeable: ["noise", "blocked"],
     occupies: (p) => ({ start: field(p, "tyo_alkaa"), end: field(p, "tyo_paattyy") }),
     label: () => ({ en: "Excavation", fi: "Kaivutyö" }),
     text: (p) => field(p, "tyon_tarkoitus"),
@@ -50,6 +53,7 @@ const PERMIT_TYPES: Record<LandUsePermitSource["permitType"], PermitType> = {
     kind: "closure",
     // A permit to change traffic: lanes, parking or a street taken out of use.
     severity: "consider",
+    noticeable: ["blocked"],
     occupies: (p) => ({ start: field(p, "liikennejarjestely_alkaa"), end: field(p, "liikennejarjestely_paattyy") }),
     label: () => ({ en: "Traffic arrangement", fi: "Liikennejärjestely" }),
     text: (p) => field(p, "tyon_tarkoitus"),
@@ -57,6 +61,7 @@ const PERMIT_TYPES: Record<LandUsePermitSource["permitType"], PermitType> = {
   "outdoor-event": {
     kind: "public_event",
     severity: "minor",
+    noticeable: ["crowd", "noise"],
     // Build-up and teardown occupy the area too, so the Event spans them.
     occupies: (p) => ({
       start: field(p, "rakentaminen_alkaa") ?? field(p, "tapahtuma_alkaa"),
@@ -111,6 +116,7 @@ export function toEvents(collection: PermitCollection, { source, timeZone, now }
       where: { geometry, precision: "area" },
       when: { start, ...(end ? { end } : {}) },
       severity: type.severity,
+      noticeable: [...type.noticeable],
       status: statusAt(now, start, end),
       sources: [
         {

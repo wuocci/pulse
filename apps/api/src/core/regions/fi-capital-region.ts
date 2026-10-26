@@ -15,6 +15,10 @@ export const fiCapitalRegion: Region = {
   bbox: [24.4, 60.0, 25.3, 60.45],
   timeZone: "Europe/Helsinki",
   languages: ["fi", "sv", "en"],
+  defaultDailyHours: {
+    works: { from: "07:00", to: "18:00", days: ["mon", "tue", "wed", "thu", "fri"] },
+    public_event: { from: "10:00", to: "22:00" },
+  },
   sources: [
     { ...permitSystem, id: "hel-excavations", layer: "avoindata:Kaivuilmoitus_alue", permitType: "excavation" },
     {

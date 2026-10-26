@@ -9,13 +9,15 @@ export interface AppDeps {
   db: Database;
   events: EventStore;
   regions: Region[];
+  // "Now" for the Right now Layer; the real time when absent.
+  clock?: () => Date;
 }
 
 // Portable HTTP layer (AGENTS.md): Web APIs only. Node-specific code is injected through deps.
 export function createApp(deps: AppDeps) {
   const v0 = new OpenAPIHono();
   v0.route("/", healthRoutes(deps.db));
-  v0.route("/", eventRoutes(deps.events));
+  v0.route("/", eventRoutes(deps.events, deps.regions, deps.clock ?? (() => new Date())));
   v0.route("/", regionRoutes(deps.regions));
 
   v0.doc31("/openapi.json", {
