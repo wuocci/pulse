@@ -6,6 +6,8 @@ import { fiCapitalRegion } from "./fi-capital-region.ts";
 // What /v0/regions shows, plus the Sources, which stay internal.
 export interface Region extends PublicRegion {
   sources: SourceConfig[];
+  // Realtime streams recorded as Conditions rather than Events.
+  conditionSources?: ConditionSourceConfig[];
 }
 
 // One entry per feed a Source publishes. `adapter` picks the code that reads its format (ADR 0002).
@@ -25,5 +27,18 @@ export interface LandUsePermitSource extends BaseSource {
   // Each layer of the permit system has its own fields.
   permitType: "excavation" | "traffic-arrangement" | "outdoor-event";
 }
+
+// A realtime stream of transit vehicle positions in HSL's HFP format over MQTT, recorded as 5-minute delay Conditions.
+export interface HfpSource {
+  id: string;
+  adapter: "hfp";
+  url: string;
+  // MQTT topic filter to subscribe to
+  topic: string;
+  publisher: string;
+  license: string;
+}
+
+export type ConditionSourceConfig = HfpSource;
 
 export const regions: Region[] = [fiCapitalRegion];

@@ -1,0 +1,20 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1793006581118,
+      "tag": "0000_transit_line_conditions",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1793006584639,
+      "tag": "0001_transit_line_conditions_hypertable",
+      "breakpoints": true
+    }
+  ]
+}

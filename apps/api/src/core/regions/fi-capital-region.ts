@@ -25,4 +25,15 @@ export const fiCapitalRegion: Region = {
     },
     { ...permitSystem, id: "hel-outdoor-events", layer: "avoindata:Tapahtumat_alue", permitType: "outdoor-event" },
   ],
+  conditionSources: [
+    {
+      id: "hsl-hfp",
+      adapter: "hfp",
+      url: "mqtts://mqtt.hsl.fi:8883",
+      // Vehicle positions of ongoing journeys, every mode
+      topic: "/hfp/v2/journey/ongoing/vp/#",
+      publisher: "HSL",
+      license: "CC BY 4.0",
+    },
+  ],
 };
