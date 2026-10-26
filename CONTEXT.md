@@ -53,6 +53,10 @@ _Avoid_: Spike, incident
 **Severity**:
 How disruptive an Event is in general, independent of any particular person: info, minor, consider or major.
 
+**Mainly affected**:
+Who an Event mostly gets in the way of: drivers, cyclists, pedestrians, transit, parking, everyone, nobody or unknown. Like Severity it is general, not per person; ranking compares it with a person's travel mode.
+_Avoid_: Audience, affected modes (it is one choice, not a set)
+
 **Precision**:
 How exactly an Event's location is known: exact, segment, area or vague.
 
