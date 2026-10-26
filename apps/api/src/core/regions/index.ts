@@ -1,4 +1,4 @@
-import type { Region as PublicRegion } from "@pulse/schema";
+import type { DailyHours, EventKind, Region as PublicRegion } from "@pulse/schema";
 import { fiCapitalRegion } from "./fi-capital-region.ts";
 
 // A Region exists only as configuration (CONTEXT.md). Place names belong here, never in code or file names.
@@ -6,6 +6,8 @@ import { fiCapitalRegion } from "./fi-capital-region.ts";
 // What /v0/regions shows, plus the Sources, which stay internal.
 export interface Region extends PublicRegion {
   sources: SourceConfig[];
+  // Local working hours per Event kind, for the Right now Layer when a Source gives none. Kinds left out count all day.
+  defaultDailyHours: Partial<Record<EventKind, DailyHours>>;
 }
 
 // One entry per feed a Source publishes. `adapter` picks the code that reads its format (ADR 0002).
