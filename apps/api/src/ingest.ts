@@ -1,4 +1,4 @@
-import pg from "pg";
+import { conditionRetentionDays, createPool } from "./config.ts";
 import { hfpStream } from "./core/adapters/hfp.ts";
 import { startConditionIngest } from "./core/conditions/recorder.ts";
 import { PgConditionStore } from "./core/conditions/store.ts";
@@ -8,13 +8,10 @@ import { regions } from "./core/regions/index.ts";
 // The ingest process (ADR 0010): long-running Source readers, separate from the HTTP server.
 // Permit polling (startIngest) moves here once Events live in Postgres; until then the API process runs it.
 
-const pool = new pg.Pool({
-  connectionString: process.env.DATABASE_URL ?? "postgres://pulse:pulse@localhost:5432/pulse",
-  connectionTimeoutMillis: 5_000,
-});
-
+// Config errors fail fast here; only an unreachable database is retried below.
 // Raw 5-minute Conditions are kept this long; Baselines are computed from them.
-const retentionDays = Number(process.env.CONDITION_RETENTION_DAYS ?? 90);
+const retentionDays = conditionRetentionDays();
+const pool = createPool();
 const conditions = new PgConditionStore(pool);
 
 let stop = () => {};

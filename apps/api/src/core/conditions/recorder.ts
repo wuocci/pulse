@@ -4,6 +4,7 @@ import type { ConditionSourceConfig, Region } from "../regions/index.ts";
 // and only the 5-minute rows are stored, never individual vehicle messages (ADR 0008).
 
 export const BUCKET_MS = 5 * 60_000;
+const FUTURE_TOLERANCE_MS = 60_000;
 
 // One vehicle's delay at one moment. Positive means late.
 export interface DelaySample {
@@ -49,6 +50,8 @@ interface Running {
 export class DelayAggregator {
   // bucket start (ms) → "line|direction" → vehicle → running sum of its delays
   private buckets = new Map<number, Map<string, Map<string, Running>>>();
+  // Buckets that hit maxVehicles: incomplete, so they are never written.
+  private overflowed = new Set<number>();
   private acceptFrom = Number.POSITIVE_INFINITY;
   private vehicles = 0;
   private readonly graceMs: number;
@@ -56,6 +59,7 @@ export class DelayAggregator {
 
   // graceMs: how long a bucket stays open after it ends, for late messages.
   // maxVehicles: cap on vehicle entries across open buckets, so memory stays flat whatever the stream does.
+  // A bucket that hits it is dropped (a gap), never written as an undercount.
   constructor({ graceMs = 30_000, maxVehicles = 20_000 }: { graceMs?: number; maxVehicles?: number } = {}) {
     this.graceMs = graceMs;
     this.maxVehicles = maxVehicles;
@@ -70,15 +74,19 @@ export class DelayAggregator {
   // would be partial. Call on every connect and disconnect, so an outage shows up as missing rows.
   restart(now: Date) {
     this.buckets.clear();
+    this.overflowed.clear();
     this.vehicles = 0;
     this.acceptFrom = Math.ceil(now.getTime() / BUCKET_MS) * BUCKET_MS;
   }
 
-  // Returns false when the sample was dropped.
-  add({ line, direction, vehicle, delayS, at }: DelaySample): boolean {
+  // Returns false when the sample was dropped: before the bucket being collected, for a bucket that is
+  // already due, or timestamped in the future beyond FUTURE_TOLERANCE_MS (a skewed vehicle clock).
+  add({ line, direction, vehicle, delayS, at }: DelaySample, now: Date): boolean {
     const time = at.getTime();
     if (!(time >= this.acceptFrom) || !Number.isFinite(delayS)) return false;
+    if (time > now.getTime() + FUTURE_TOLERANCE_MS) return false;
     const start = Math.floor(time / BUCKET_MS) * BUCKET_MS;
+    if (start + BUCKET_MS + this.graceMs <= now.getTime()) return false;
 
     let lines = this.buckets.get(start);
     if (!lines) this.buckets.set(start, (lines = new Map()));
@@ -87,7 +95,13 @@ export class DelayAggregator {
     if (!byVehicle) lines.set(key, (byVehicle = new Map()));
     let running = byVehicle.get(vehicle);
     if (!running) {
-      if (this.vehicles >= this.maxVehicles) return false;
+      if (this.vehicles >= this.maxVehicles) {
+        if (!this.overflowed.has(start)) {
+          this.overflowed.add(start);
+          console.warn(`Over ${this.maxVehicles} vehicles in the bucket at ${new Date(start).toISOString()}: skipping it`);
+        }
+        return false;
+      }
       byVehicle.set(vehicle, (running = { sum: 0, count: 0 }));
       this.vehicles++;
     }
@@ -101,7 +115,10 @@ export class DelayAggregator {
     const rows: LineDelay[] = [];
     for (const [start, lines] of [...this.buckets].sort(([a], [b]) => a - b)) {
       if (start + BUCKET_MS + graceMs > now.getTime()) continue;
+      const complete = !this.overflowed.delete(start);
       for (const [key, byVehicle] of lines) {
+        this.vehicles -= byVehicle.size;
+        if (!complete) continue;
         const [line = "", direction] = key.split("|");
         const delays = [...byVehicle.values()].map((r) => r.sum / r.count).sort((a, b) => a - b);
         const avg = delays.reduce((sum, d) => sum + d, 0) / delays.length;
@@ -115,7 +132,6 @@ export class DelayAggregator {
           p90DelayS: round(p90),
           vehicleCount: delays.length,
         });
-        this.vehicles -= byVehicle.size;
       }
       this.buckets.delete(start);
       this.acceptFrom = Math.max(this.acceptFrom, start + BUCKET_MS);
@@ -167,7 +183,7 @@ export function startDelayRecorder({
 
   aggregator.restart(now());
   const stopStream = stream.start({
-    sample: (sample) => void aggregator.add(sample),
+    sample: (sample) => void aggregator.add(sample, now()),
     connected: () => aggregator.restart(now()),
     disconnected: () => {
       // Buckets that already ended are complete; the one in progress is not.

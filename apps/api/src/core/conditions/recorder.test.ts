@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import vehiclePositions from "../adapters/fixtures/hfp/vehicle-positions.json" with { type: "json" };
 import { parseHfp } from "../adapters/hfp.ts";
 import { type DelaySample, DelayAggregator, type DelayListener, type DelayStream, type LineDelay, startDelayRecorder } from "./recorder.ts";
@@ -16,9 +16,9 @@ describe("DelayAggregator", () => {
   it("averages each vehicle first, then takes avg and p90 over vehicles per line and direction", () => {
     const aggregator = new DelayAggregator();
     aggregator.restart(at("09:00:00"));
-    for (const delayS of [10, 20, 30]) aggregator.add(sample("09:01:00", "v1", delayS)); // v1 averages 20
-    for (let v = 2; v <= 10; v++) aggregator.add(sample("09:02:00", `v${v}`, v * 10)); // 20..100
-    aggregator.add(sample("09:03:00", "v1", 0, "1004", 2));
+    for (const delayS of [10, 20, 30]) aggregator.add(sample("09:01:00", "v1", delayS), at("09:01:00")); // v1 averages 20
+    for (let v = 2; v <= 10; v++) aggregator.add(sample("09:02:00", `v${v}`, v * 10), at("09:02:00")); // 20..100
+    aggregator.add(sample("09:03:00", "v1", 0, "1004", 2), at("09:03:00"));
 
     const rows = aggregator.flush(at("09:06:00"));
 
@@ -31,13 +31,13 @@ describe("DelayAggregator", () => {
   it("holds a bucket open until its grace period has passed, then emits it once", () => {
     const aggregator = new DelayAggregator({ graceMs: 30_000 });
     aggregator.restart(at("09:00:00"));
-    aggregator.add(sample("09:04:59", "v1", 60));
+    aggregator.add(sample("09:04:59", "v1", 60), at("09:04:59"));
 
     expect(aggregator.flush(at("09:05:10"))).toEqual([]);
-    aggregator.add(sample("09:04:59", "v2", 120)); // late but within grace
+    aggregator.add(sample("09:04:59", "v2", 120), at("09:04:59")); // late but within grace
     expect(aggregator.flush(at("09:05:30"))).toMatchObject([{ vehicleCount: 2, avgDelayS: 90 }]);
 
-    expect(aggregator.add(sample("09:04:59", "v3", 0))).toBe(false); // bucket already written
+    expect(aggregator.add(sample("09:04:59", "v3", 0), at("09:04:59"))).toBe(false); // bucket already written
     expect(aggregator.flush(at("09:20:00"))).toEqual([]);
   });
 
@@ -45,16 +45,16 @@ describe("DelayAggregator", () => {
     const aggregator = new DelayAggregator();
     aggregator.restart(at("09:02:00"));
 
-    expect(aggregator.add(sample("09:03:00", "v1", 60))).toBe(false);
-    expect(aggregator.add(sample("09:05:00", "v1", 60))).toBe(true);
+    expect(aggregator.add(sample("09:03:00", "v1", 60), at("09:03:00"))).toBe(false);
+    expect(aggregator.add(sample("09:05:00", "v1", 60), at("09:05:00"))).toBe(true);
     expect(aggregator.flush(at("09:11:00")).map((r) => r.bucket)).toEqual([at("09:05:00")]);
   });
 
   it("emits no row, not a zero, for a bucket without vehicles", () => {
     const aggregator = new DelayAggregator();
     aggregator.restart(at("09:00:00"));
-    aggregator.add(sample("09:01:00", "v1", 60));
-    aggregator.add(sample("09:11:00", "v1", 60));
+    aggregator.add(sample("09:01:00", "v1", 60), at("09:01:00"));
+    aggregator.add(sample("09:11:00", "v1", 60), at("09:11:00"));
 
     expect(aggregator.flush(at("09:20:00")).map((r) => r.bucket)).toEqual([at("09:00:00"), at("09:10:00")]);
   });
@@ -63,13 +63,44 @@ describe("DelayAggregator", () => {
     const aggregator = new DelayAggregator({ maxVehicles: 2 });
     aggregator.restart(at("09:00:00"));
 
-    expect(aggregator.add(sample("09:01:00", "v1", 0))).toBe(true);
-    expect(aggregator.add(sample("09:01:00", "v2", 0))).toBe(true);
-    expect(aggregator.add(sample("09:01:00", "v3", 0))).toBe(false);
-    expect(aggregator.add(sample("09:01:30", "v1", 10))).toBe(true); // known vehicle still counts
+    expect(aggregator.add(sample("09:01:00", "v1", 0), at("09:01:00"))).toBe(true);
+    expect(aggregator.add(sample("09:01:00", "v2", 0), at("09:01:00"))).toBe(true);
+    expect(aggregator.add(sample("09:01:00", "v3", 0), at("09:01:00"))).toBe(false);
+    expect(aggregator.add(sample("09:01:30", "v1", 10), at("09:01:30"))).toBe(true); // known vehicle still counts
     expect(aggregator.size).toBe(2);
 
     aggregator.flush(at("09:06:00"));
+    expect(aggregator.size).toBe(0);
+  });
+
+  it("skips a bucket that hit the cap, warning once, so it becomes a gap rather than an undercount", () => {
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    const aggregator = new DelayAggregator({ maxVehicles: 2 });
+    aggregator.restart(at("09:00:00"));
+    for (const v of ["v1", "v2", "v3", "v4"]) aggregator.add(sample("09:01:00", v, 0), at("09:01:00"));
+
+    expect(aggregator.flush(at("09:06:00"))).toEqual([]);
+    expect(warn).toHaveBeenCalledOnce();
+
+    aggregator.add(sample("09:06:00", "v1", 0), at("09:06:00"));
+    expect(aggregator.flush(at("09:11:00")).map((r) => r.bucket)).toEqual([at("09:05:00")]);
+    warn.mockRestore();
+  });
+
+  it("drops samples timestamped in the future beyond a minute, so a skewed clock can't open buckets", () => {
+    const aggregator = new DelayAggregator();
+    aggregator.restart(at("09:00:00"));
+
+    expect(aggregator.add(sample("09:03:00", "v1", 0), at("09:01:00"))).toBe(false);
+    expect(aggregator.size).toBe(0);
+    expect(aggregator.add(sample("09:01:50", "v2", 0), at("09:01:00"))).toBe(true);
+  });
+
+  it("drops samples for a bucket that is already due, even before it was flushed", () => {
+    const aggregator = new DelayAggregator({ graceMs: 30_000 });
+    aggregator.restart(at("09:00:00"));
+
+    expect(aggregator.add(sample("09:01:00", "v1", 0), at("09:05:31"))).toBe(false);
     expect(aggregator.size).toBe(0);
   });
 });
@@ -102,7 +133,7 @@ describe("HFP vehicle positions → 5-minute Conditions", () => {
     aggregator.restart(at("09:20:00"));
     const samples = vehiclePositions.map((payload) => parseHfp(payload));
     expect(samples.filter((s) => s === null)).toHaveLength(8);
-    for (const s of samples) if (s) aggregator.add(s);
+    for (const s of samples) if (s) aggregator.add(s, s.at);
 
     const row = (bucket: string, line: string, direction: number, avgDelayS: number, p90DelayS: number, vehicleCount: number) => ({
       bucket: at(bucket),
@@ -170,6 +201,7 @@ describe("startDelayRecorder", () => {
     setNow("09:13:00");
     listener.connected(); // 09:10 bucket is incomplete too: recording resumes at 09:15
     listener.sample(sample("09:13:00", "v1", 60));
+    setNow("09:16:00");
     listener.sample(sample("09:16:00", "v1", 60));
     setNow("09:21:00");
     await recorder.flush();

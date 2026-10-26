@@ -18,10 +18,14 @@ interface BaseSource {
   url: string;
   publisher: string;
   license: string;
+}
+
+// A Source fetched on an interval.
+interface PolledSource extends BaseSource {
   refreshMinutes: number;
 }
 
-export interface LandUsePermitSource extends BaseSource {
+export interface LandUsePermitSource extends PolledSource {
   adapter: "land-use-permits";
   layer: string;
   // Each layer of the permit system has its own fields.
@@ -29,14 +33,10 @@ export interface LandUsePermitSource extends BaseSource {
 }
 
 // A realtime stream of transit vehicle positions in HSL's HFP format over MQTT, recorded as 5-minute delay Conditions.
-export interface HfpSource {
-  id: string;
+export interface HfpSource extends BaseSource {
   adapter: "hfp";
-  url: string;
   // MQTT topic filter to subscribe to
   topic: string;
-  publisher: string;
-  license: string;
 }
 
 export type ConditionSourceConfig = HfpSource;

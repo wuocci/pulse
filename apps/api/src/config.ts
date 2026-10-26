@@ -1,0 +1,26 @@
+import pg from "pg";
+
+// Process config shared by the server and ingest entrypoints. Node-only: never imported by the HTTP layer.
+
+type Env = Record<string, string | undefined>;
+
+// The Postgres pool. Errors on idle clients (e.g. the database restarting) are logged, not thrown:
+// without a listener they would crash the process. The pool replaces broken clients on the next query.
+export function createPool(env: Env = process.env): pg.Pool {
+  const pool = new pg.Pool({
+    connectionString: env.DATABASE_URL ?? "postgres://pulse:pulse@localhost:5432/pulse",
+    connectionTimeoutMillis: 2_000,
+  });
+  pool.on("error", (error) => console.error("Postgres client error:", error.message));
+  return pool;
+}
+
+// How long raw 5-minute Conditions are kept. Throws on anything but a positive whole number of days.
+export function conditionRetentionDays(env: Env = process.env): number {
+  const value = env.CONDITION_RETENTION_DAYS;
+  if (value === undefined) return 90;
+  if (!/^[1-9]\d*$/.test(value)) {
+    throw new Error(`CONDITION_RETENTION_DAYS must be a positive whole number of days, got ${JSON.stringify(value)}`);
+  }
+  return Number(value);
+}
