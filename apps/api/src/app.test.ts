@@ -63,6 +63,22 @@ describe("GET /v0/openapi.json", () => {
     expect(doc.components.schemas.Event?.required).toContain("noticeable");
     expect(doc.paths["/events"].get.parameters.map((p) => p.name)).toEqual(expect.arrayContaining(["layer", "noticeable"]));
   });
+
+  it("documents the Classifier's fields: kind of work, Mainly affected and the end date conflict", async () => {
+    const res = await createApp({ db: reachable, events: emptyStore, regions }).request("/v0/openapi.json");
+    const doc = (await res.json()) as {
+      components: { schemas: Record<string, { required?: string[]; properties?: Record<string, unknown> }> };
+    };
+    const event = doc.components.schemas.Event!;
+
+    expect(doc.components.schemas).toHaveProperty("WorkType");
+    expect(doc.components.schemas).toHaveProperty("MainlyAffected");
+    expect(doc.components.schemas).toHaveProperty("EndConflict");
+    expect(event.properties).toHaveProperty("workType");
+    expect(event.required).toContain("mainlyAffected");
+    expect(event.required).not.toContain("workType");
+    expect(JSON.stringify(event.properties?.when)).toContain("endConflict");
+  });
 });
 
 describe("GET /v0/events", async () => {
@@ -145,6 +161,7 @@ describe("GET /v0/events?layer=now", () => {
     },
     when: { start: "2026-10-01T00:00:00+03:00", end: "2026-12-31T23:59:59+02:00", ...(dailyHours ? { dailyHours } : {}) },
     severity: "minor",
+    mainlyAffected: "unknown",
     noticeable,
     status: "active",
     sources: [{ name: "Test Source", id, updatedAt: "2026-10-01T00:00:00+03:00", license: "CC BY 4.0" }],

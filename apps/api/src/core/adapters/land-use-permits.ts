@@ -1,4 +1,5 @@
 import type { Event, Geometry, Noticeable, Severity } from "@pulse/schema";
+import type { ClassifierState } from "../classifier/classifier.ts";
 import type { LandUsePermitSource } from "../regions/index.ts";
 
 // Custom Adapter (ADR 0002) for a city permit system's WFS, which publishes no standard format.
@@ -37,6 +38,14 @@ interface PermitType {
   // Extra title part, e.g. an event's own dates when they differ from the occupied period
   detail?(p: PermitNotice): { en: string; fi: string } | undefined;
   text?(p: PermitNotice): Field;
+  // What else the Classifier reads about a notice, beyond the Event. Internal: never on the Event or in the API.
+  facts(p: PermitNotice): Record<string, Field | number | undefined>;
+}
+
+// An Event with the facts its notice gives the Classifier.
+export interface PermitItem {
+  event: Event;
+  facts: ClassifierState;
 }
 
 const PERMIT_TYPES: Record<LandUsePermitSource["permitType"], PermitType> = {
@@ -48,6 +57,7 @@ const PERMIT_TYPES: Record<LandUsePermitSource["permitType"], PermitType> = {
     occupies: (p) => ({ start: field(p, "tyo_alkaa"), end: field(p, "tyo_paattyy") }),
     label: () => ({ en: "Excavation", fi: "Kaivutyö" }),
     text: (p) => field(p, "tyon_tarkoitus"),
+    facts: (p) => ({ address: field(p, "osoite") }),
   },
   "traffic-arrangement": {
     kind: "closure",
@@ -57,6 +67,7 @@ const PERMIT_TYPES: Record<LandUsePermitSource["permitType"], PermitType> = {
     occupies: (p) => ({ start: field(p, "liikennejarjestely_alkaa"), end: field(p, "liikennejarjestely_paattyy") }),
     label: () => ({ en: "Traffic arrangement", fi: "Liikennejärjestely" }),
     text: (p) => field(p, "tyon_tarkoitus"),
+    facts: (p) => ({ category: field(p, "hakemuksen_laji"), address: field(p, "osoite") }),
   },
   "outdoor-event": {
     kind: "public_event",
@@ -76,6 +87,20 @@ const PERMIT_TYPES: Record<LandUsePermitSource["permitType"], PermitType> = {
       field(p, "rakentaminen_alkaa") || field(p, "purkaminen_paattyy")
         ? dateRange(field(p, "tapahtuma_alkaa"), field(p, "tapahtuma_paattyy"))
         : undefined,
+    facts: (p) => {
+      const [buildUp, start, end, teardown] = ["rakentaminen_alkaa", "tapahtuma_alkaa", "tapahtuma_paattyy", "purkaminen_paattyy"].map(
+        (name) => field(p, name),
+      );
+      return {
+        category: field(p, "hakemuksen_laji"),
+        address: field(p, "osoite"),
+        // Whether entry is open to all ("Avoin") or not.
+        entry: field(p, "tapahtuman_luonne"),
+        buildUpDays: buildUp && start ? daysBetween(buildUp, start) : undefined,
+        eventDays: start && end ? daysBetween(start, end) + 1 : undefined,
+        teardownDays: end && teardown ? daysBetween(end, teardown) : undefined,
+      };
+    },
   },
 };
 
@@ -97,9 +122,13 @@ export async function fetchPermits(source: LandUsePermitSource, fetchFn: typeof 
   return (await res.json()) as PermitCollection;
 }
 
-export function toEvents(collection: PermitCollection, { source, timeZone, now }: PermitContext): Event[] {
+export function toEvents(collection: PermitCollection, context: PermitContext): Event[] {
+  return toPermitItems(collection, context).map((item) => item.event);
+}
+
+export function toPermitItems(collection: PermitCollection, { source, timeZone, now }: PermitContext): PermitItem[] {
   const type = PERMIT_TYPES[source.permitType];
-  const events: Event[] = [];
+  const items: PermitItem[] = [];
   for (const { geometry, notice } of groupByNotice(collection)) {
     const occupied = type.occupies(notice);
     if (!occupied.start) continue;
@@ -107,7 +136,7 @@ export function toEvents(collection: PermitCollection, { source, timeZone, now }
     const end = occupied.end ? localTime(occupied.end, "23:59:59", timeZone) : undefined;
     const text = type.text?.(notice)?.trim();
 
-    events.push({
+    const event: Event = {
       id: `${source.id}:${notice.hakemustunnus}`,
       kind: type.kind,
       layers: ["area"],
@@ -116,6 +145,7 @@ export function toEvents(collection: PermitCollection, { source, timeZone, now }
       where: { geometry, precision: "area" },
       when: { start, ...(end ? { end } : {}) },
       severity: type.severity,
+      mainlyAffected: "unknown",
       noticeable: [...type.noticeable],
       status: statusAt(now, start, end),
       sources: [
@@ -128,9 +158,19 @@ export function toEvents(collection: PermitCollection, { source, timeZone, now }
       ],
       confidence: 0,
       updatedAt: now.toISOString(),
-    });
+    };
+    const facts = Object.fromEntries(
+      Object.entries(type.facts(notice)).filter((entry): entry is [string, string | number] => entry[1] != null),
+    );
+    items.push({ event, facts });
   }
-  return events;
+  return items;
+}
+
+// Whole days from one YYYY-MM-DD date to another.
+function daysBetween(from: string, to: string): number {
+  const day = (date: string) => Date.parse(`${date.slice(0, 10)}T00:00:00Z`);
+  return Math.round((day(to) - day(from)) / 86_400_000);
 }
 
 // The WFS returns one feature per area, and one notice can cover many areas (up to 128 seen).
