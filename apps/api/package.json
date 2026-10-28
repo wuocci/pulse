@@ -4,20 +4,23 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "db:generate": "drizzle-kit generate --dialect postgresql --schema ./src/core/classifier/cache.ts --out ./drizzle",
     "dev": "tsx watch --env-file-if-exists=../../.env.development --env-file-if-exists=../../.env.local src/server.ts",
     "eval:classifier": "tsx --env-file-if-exists=../../.env.development --env-file-if-exists=../../.env.local src/core/classifier/eval.ts",
-    "start":"tsx --env-file-if-exists=../../.env.production --env-file-if-exists=../../.env.production.local src/server.ts"
+    "start": "tsx --env-file-if-exists=../../.env.production --env-file-if-exists=../../.env.production.local src/server.ts"
   },
   "dependencies": {
     "@hono/node-server": "^2.1.5",
     "@hono/zod-openapi": "^1.6.3",
     "@pulse/schema": "workspace:*",
     "@typesafe-ai/sdk": "^0.7.0",
+    "drizzle-orm": "^0.45.4",
     "hono": "^4.13.13",
     "pg": "^8.23.1"
   },
   "devDependencies": {
     "@types/pg": "^8.23.1",
+    "drizzle-kit": "^0.31.11",
     "tsx": "^4.23.15"
   }
 }

@@ -4,8 +4,15 @@ import { createPool } from "./config.ts";
 import { InMemoryEventStore } from "./core/events/store.ts";
 import { startIngest } from "./core/ingest/scheduler.ts";
 import { regions } from "./core/regions/index.ts";
+import { runMigrations } from "./db.ts";
 
 const pool = createPool();
+
+// Migrations run before anything uses the database. An unreachable database doesn't stop the API:
+// it still serves Events, and /health reports the database as down.
+await runMigrations(pool).catch((error: unknown) =>
+  console.error("Database migrations failed:", error instanceof Error ? error.message : error),
+);
 
 const events = new InMemoryEventStore();
 const stopIngest = startIngest(regions, events);
