@@ -1,0 +1,372 @@
+{
+  "_howToLabel": [
+    "One entry per notice in permits.json. Fill in the null fields; do not edit id, layer, text, candidateDates or tyoPaattyy.",
+    "severity (outdoor events, traffic arrangements): info | minor | consider | major",
+    "mainlyAffected (all layers): drivers | cyclists | pedestrians | transit | parking | everyone | nobody | unknown",
+    "mainlyAffected may be a list when several groups are equally affected; Jev's single answer counts as correct if it is any of them.",
+    "workType (digs): water_sewer | district_heating | electricity_telecom | paving | street_construction | building_site | other",
+    "endDate (digs): one of candidateDates, or \"not_stated\". tyoPaattyy is the city's field value, shown for reference only.",
+    "candidateDates are the dates the Classifier offers Jev (from candidateDates() in questions.ts): d.m.yyyy, 'd.m. yyyy' and ISO dates; a date without a year takes the year of the next full date.",
+    "Leave null when you think the Classifier shouldn't be confident (below 0.7); only filled answers are checked."
+  ],
+  "notices": [
+    {
+      "id": "TP2600879",
+      "layer": "outdoor-event",
+      "text": "Helsingin joulunavaus 2026 | category: Ulkoilmatapahtuma | address: Kansalaistori, Makasiinipuisto, Kolmensepänaukio, Keskuskatu ja kulkue: Kansalaistori (Baana)-Töölönlahdenkatu-Mannerheimintie–Pohjoisesplanadi–Unioninkatu–Aleksanterinkatu–Mannerheimintie–Salomonkatu–Narinkkatori | event days: 1 | entry: Avoin (open/free)",
+      "severity": "major",
+      "mainlyAffected": "everyone"
+    },
+    {
+      "id": "TP2600811",
+      "layer": "outdoor-event",
+      "text": "Lucia-neidon kruunajaiset | category: Ulkoilmatapahtuma | address: Senaatintori ja kulkue: Hallituskatu, Unionikatu 34 ja sen puoleinen torin laita, Lucia-kulkue: Hallituskatu - Unioninkatu - Aleksanterinkatu - Mannerheimintie - Pohjoisesplanadi - Unioninkatu - Senaatintori | event days: 1 | entry: Avoin (open/free)",
+      "severity": "consider",
+      "mainlyAffected": "transit"
+    },
+    {
+      "id": "TP2500373",
+      "layer": "outdoor-event",
+      "text": "Tuomaan markkinat 2026 | category: Ulkoilmatapahtuma | address: Senaatintori, Hallituskatu, Aleksanterinkadun torin puoleinen ajokaista, Snellmaninkadun torin puoleinen pysäköintialue | event days: 26 | build-up days: 18 | teardown days: 8 | entry: Avoin (open/free)",
+      "severity": "consider",
+      "mainlyAffected": [
+        "pedestrians",
+        "transit",
+        "cyclists",
+        "parking"
+      ]
+    },
+    {
+      "id": "TP2601063",
+      "layer": "outdoor-event",
+      "text": "Miestenpäivä juoksutapahtuma | category: Ulkoilmatapahtuma | address: Lähtö- ja maalialue Töölönlahdenpuistossa/Karamzininrannassa, juoksureitti Töölönlahden ympäri | event days: 1 | entry: Avoin (open/free)",
+      "severity": "minor",
+      "mainlyAffected": [
+        "pedestrians",
+        "cyclists"
+      ]
+    },
+    {
+      "id": "TP2600203",
+      "layer": "outdoor-event",
+      "text": "YK:n kansainvälisen naisiin kohdistuvan väkivallan vastaisen päivän hiljainen kynttiläkulkue | category: Ulkoilmatapahtuma | address: Teatteriesplanadi, Runeberginesplanadi, Kappeliesplanadi | event days: 1 | entry: Avoin (open/free)",
+      "severity": "minor",
+      "mainlyAffected": [
+        "pedestrians",
+        "cyclists"
+      ]
+    },
+    {
+      "id": "TP2601071",
+      "layer": "outdoor-event",
+      "text": "Hengellinen tapahtuma | category: Ulkoilmatapahtuma | address: Myllyaukio (tori tai aukio) | event days: 151 | entry: Avoin (open/free)",
+      "severity": "info",
+      "mainlyAffected": null
+    },
+    {
+      "id": "TP2600921",
+      "layer": "outdoor-event",
+      "text": "Songkran Festival 2027 | category: Ulkoilmatapahtuma | address: (no address) | event days: 2 | build-up days: 1 | entry: Avoin (open/free)",
+      "severity": "consider",
+      "mainlyAffected": "everyone"
+    },
+    {
+      "id": "TP2600853",
+      "layer": "outdoor-event",
+      "text": "Promootio | category: Promootio | address: (no address) | event days: 4",
+      "severity": null,
+      "mainlyAffected": null
+    },
+    {
+      "id": "TP2600996",
+      "layer": "outdoor-event",
+      "text": "Yksityistilaisuus | category: Ulkoilmatapahtuma | address: Katajanokanlaituri 7 | event days: 4 | build-up days: 1 | teardown days: 1 | entry: Suljettu (closed)",
+      "severity": "info",
+      "mainlyAffected": "nobody"
+    },
+    {
+      "id": "TP2300454",
+      "layer": "outdoor-event",
+      "text": "Jukola 2027 | category: Ulkoilmatapahtuma | address: Kauhala, Laitamaa Haapapuro | event days: 2 | build-up days: 12 | teardown days: 10 | entry: Avoin (open/free)",
+      "severity": "consider",
+      "mainlyAffected": "drivers"
+    },
+    {
+      "id": "TP2600887",
+      "layer": "outdoor-event",
+      "text": "Perinteinen Joulupatakeräys | category: Ulkoilmatapahtuma | address: Aleksanterinkatu 52 edusta | event days: 10 | entry: Avoin (open/free)",
+      "severity": "info",
+      "mainlyAffected": "pedestrians"
+    },
+    {
+      "id": "LJ2600097-2",
+      "layer": "traffic-arrangement",
+      "text": "Flow Festival 2026 liikennejärjestelyt. / LISÄYS 28.7.2026: liikennejärjestelysuunnitelma päivitetty. | category: Yleisötilaisuus | address: Hanasaari, Suvilahdenpuisto, Kaasutehtaankenttä, Sörnäisten rantatie, Parrulaituri, Koksikatu | duration days: 26",
+      "severity": "major",
+      "mainlyAffected": "everyone"
+    },
+    {
+      "id": "LJ2600148",
+      "layer": "traffic-arrangement",
+      "text": "Helsinki Halloween Run -tapahtuman liikennejärjestelyt. | category: Yleisötilaisuus | address: Sompasaarenlaituri, Merihaansilta, Hakaniemenranta, Sörnäisten rantatie, Junatie, Kaasutehtaankatu, Vilhonvuorenkatu, Hanasaari, Hanasaarenlaituri, Koksikatu, Kalasatamanpuisto | duration days: 1",
+      "severity": "consider",
+      "mainlyAffected": [
+        "drivers",
+        "pedestrians",
+        "cyclists"
+      ]
+    },
+    {
+      "id": "LJ2600093",
+      "layer": "traffic-arrangement",
+      "text": "Tilapäiset liikennejärjestelyt; yleisötilaisuus (Lucia-kulkue) | category: Yleisötilaisuus | address: Kirkkokatu | duration days: 1",
+      "severity": "minor",
+      "mainlyAffected": "drivers"
+    },
+    {
+      "id": "LJ2200014",
+      "layer": "traffic-arrangement",
+      "text": "Päätöksensaaja varaa pysäköintitilaa terassin rakentamiselle. | category: Muu | address: Vaasankatu 12 | duration days: 1675",
+      "severity": "minor",
+      "mainlyAffected": "parking"
+    },
+    {
+      "id": "LJ2400138",
+      "layer": "traffic-arrangement",
+      "text": "Väliaikainen aluepysäköintikielto, väliaikainen pysäköintialue | category: Muu | address: Kyläsaarenkatu, Hermanninranta | duration days: 1463",
+      "severity": "minor",
+      "mainlyAffected": "parking"
+    },
+    {
+      "id": "LJ2600150",
+      "layer": "traffic-arrangement",
+      "text": "Tuomaan Markkinat –tapahtuman liikennejärjestelyt. | category: Yleisötilaisuus | address: Hallituskatu 7, Aleksanterinkatu 20-28 vastapäätä, Unioninkatu 34 vastapäätä, Snellmaninkatu 9-11 vastapäätä | duration days: 52",
+      "severity": "minor",
+      "mainlyAffected": "parking"
+    },
+    {
+      "id": "LJ2600028",
+      "layer": "traffic-arrangement",
+      "text": "Vantaan Ratikka -hankkeeseen liittyvä kiertotiejärjestely. | category: Muu | address: Länsimäentie välillä Aarteenetsijäntie - Vantaan kaupungin raja | duration days: 1159",
+      "severity": "consider",
+      "mainlyAffected": [
+        "drivers",
+        "cyclists"
+      ]
+    },
+    {
+      "id": "LJ2400057-2",
+      "layer": "traffic-arrangement",
+      "text": "Tilapäinen jalankulun ja pyöräilyn väylä ja suojatiet . / LISÄYS 21.5.2026: lisäaikaa 2.5.2026 - 18.5.2028. Työstä vastaavan yhteyshenkilön lisäys. | category: Muu | address: Kalasatamankatu 25-31 , Vanha talvitie | duration days: 1481",
+      "severity": "minor",
+      "mainlyAffected": [
+        "pedestrians",
+        "cyclists"
+      ]
+    },
+    {
+      "id": "LJ2600106-2",
+      "layer": "traffic-arrangement",
+      "text": "Työnaikainen opastus raitiovaunupysäkkien siirron vuoksi. / LISÄYS 28.8.2026: lisäopasteet Leonkatu, Kalasatamankatu | category: Muu | address: Hermannin rantatie 1-11 ja vastapäätä, Leonkatu 8, Kalasatamankatu 3, 4, 7, 8 | duration days: 151",
+      "severity": "consider",
+      "mainlyAffected": "transit"
+    },
+    {
+      "id": "LJ2500128",
+      "layer": "traffic-arrangement",
+      "text": "Tilapäinen liikennejärjestely. | category: Muu | address: Meijeritie 5 | duration days: 396",
+      "severity": "consider",
+      "mainlyAffected": [
+        "drivers",
+        "cyclists"
+      ]
+    },
+    {
+      "id": "LJ2600038-2",
+      "layer": "traffic-arrangement",
+      "text": "Tilapäisen linja-autopäätepysäkin tilapäiset liikennejärjestelyt liittyen Junatien metrosillan hankkeeseen. / LISÄYS 9.6.2026: lisäaikaa 1.6.2026 - 31.8.2028 | category: Muu | address: Leonkatu 3-5, Kaasutehtaankatu 2 | duration days: 865",
+      "severity": "consider",
+      "mainlyAffected": "transit"
+    },
+    {
+      "id": "KP2601081-2",
+      "layer": "excavation",
+      "text": "Töölön pysäköintiratkaisut. / MUUTOS 12.10.2026: voimassaolon muutos 20.07.2026 - 14.05.2027 -> 01.03.2027 - 29.08.2027. | address: Töölönkatu, Töölöntullinkatu, Messeniuksenkatu, Päivärinnankatu ja Stenbäckinkatu | duration days: 213",
+      "candidateDates": [
+        "2026-10-12",
+        "2026-07-20",
+        "2027-05-14",
+        "2027-03-01",
+        "2027-08-29"
+      ],
+      "tyoPaattyy": "2027-09-29",
+      "workType": "street_construction",
+      "endDate": "2027-08-29",
+      "mainlyAffected": "parking"
+    },
+    {
+      "id": "KP2601881-3",
+      "layer": "excavation",
+      "text": "Työstä vastaava varaa tilaa kaivutyölle; kadunrakennustyöt. / MUUTOS 11.8.2026: aloituspäivä 27.7.2026 –> 5.8.2026. / LISÄYS 30.9.2026: lisäaika 1.10.–30.11.2026. | address: Harbonkatu 2-12 | duration days: 66",
+      "candidateDates": [
+        "2026-08-11",
+        "2026-07-27",
+        "2026-08-05",
+        "2026-09-30",
+        "2026-10-01",
+        "2026-11-30"
+      ],
+      "tyoPaattyy": "2026-10-09",
+      "workType": "street_construction",
+      "endDate": "2026-11-30",
+      "mainlyAffected": [
+        "drivers",
+        "cyclists"
+      ]
+    },
+    {
+      "id": "KP2601442-2",
+      "layer": "excavation",
+      "text": "Vesi- ja viemäriliitokset. / LISÄYS 25.9.2026: lisäaika 12.9.–9.10.2026. | address: Riihenkulma 2 | duration days: 145",
+      "candidateDates": [
+        "2026-09-25",
+        "2026-09-12",
+        "2026-10-09"
+      ],
+      "tyoPaattyy": "2026-10-30",
+      "workType": "water_sewer",
+      "endDate": "2026-10-09",
+      "mainlyAffected": "drivers"
+    },
+    {
+      "id": "KP2602519-4",
+      "layer": "excavation",
+      "text": "Tietoliikenne: kaapeli. / MUUTOS 29.9.2026: aloituspäivä 8.9.2026 –> 27.9.2026. / LISÄYS 13.10.2026: lisäaika 16.–26.10.2026. | address: Satamasaarentie 1-2 | duration days: 58",
+      "candidateDates": [
+        "2026-09-29",
+        "2026-09-08",
+        "2026-09-27",
+        "2026-10-13",
+        "2026-10-26"
+      ],
+      "tyoPaattyy": "2026-11-23",
+      "workType": "electricity_telecom",
+      "endDate": "2026-10-26",
+      "mainlyAffected": "drivers"
+    },
+    {
+      "id": "KP2602273",
+      "layer": "excavation",
+      "text": "Kaukolämpölinjan korjaus. / 26.10.2026 Maarakennusliike Pusku Oy ei ole pyynnöstä huolimatta toimittanut liikennejärjestelysuunnitelma. Työ kuitenkin tehty. Odottaa asvaltointia. | address: Jännetie 3 | duration days: 26",
+      "candidateDates": [
+        "2026-10-26"
+      ],
+      "tyoPaattyy": "2026-09-11",
+      "workType": "district_heating",
+      "endDate": "not_stated",
+      "mainlyAffected": "drivers"
+    },
+    {
+      "id": "KP2402551-3",
+      "layer": "excavation",
+      "text": "Päätöksensaaja varaa tilaa ulkoportaiden rakentamiselle. / LISÄYS 4.11.2024: Lisäaikaa 31.12.2024 saakka. / LISÄYS 26.2.2025: Lisäaikaa 31.7.2025 saakka. | address: Kappelinpiha 2 | duration days: 301",
+      "candidateDates": [
+        "2024-11-04",
+        "2024-12-31",
+        "2025-02-26",
+        "2025-07-31"
+      ],
+      "tyoPaattyy": "2025-07-31",
+      "workType": "building_site",
+      "endDate": "2025-07-31",
+      "mainlyAffected": "pedestrians"
+    },
+    {
+      "id": "KP2601020-2",
+      "layer": "excavation",
+      "text": "Työstä vastaava varaa tilaa kaivutyölle; hv- ja jv-viemäriliitokset. / MUUTOS 10.9.2026: Lisäaikaa työn korjauksille 14.5.2027 asti. | address: Messitytönkatu 2 (kiinteistön länsipuolella) | duration days: 376",
+      "candidateDates": [
+        "2026-09-10",
+        "2027-05-14"
+      ],
+      "tyoPaattyy": "2027-05-14",
+      "workType": "water_sewer",
+      "endDate": "2027-05-14",
+      "mainlyAffected": "drivers"
+    },
+    {
+      "id": "KP2602791-2",
+      "layer": "excavation",
+      "text": "Sadevesiviemärin korjaus / MUUTOS 22.10.2026: voimassaolon muutos 05.10.2026 - 23.10.2026 -> 29.10.2026 - 13.11.2026. | address: Vilppulantie 26 | duration days: 16",
+      "candidateDates": [
+        "2026-10-22",
+        "2026-10-05",
+        "2026-10-23",
+        "2026-10-29",
+        "2026-11-13"
+      ],
+      "tyoPaattyy": "2026-11-13",
+      "workType": "water_sewer",
+      "endDate": "2026-11-13",
+      "mainlyAffected": "drivers"
+    },
+    {
+      "id": "KP2602400-3",
+      "layer": "excavation",
+      "text": "Uudelleen päällystys. / MUUTOS 4.9.2026: aloituspäivä 7.9.2026 –> 28.9.2026. / MUUTOS 25.9.2026: aloituspäivä 28.9.2026 –> 5.10.2026. | address: Kirvestie ja Kalkkivuorentie | duration days: 57",
+      "candidateDates": [
+        "2026-09-04",
+        "2026-09-07",
+        "2026-09-28",
+        "2026-09-25",
+        "2026-10-05"
+      ],
+      "tyoPaattyy": "2026-11-30",
+      "workType": "paving",
+      "endDate": "not_stated",
+      "mainlyAffected": "drivers"
+    },
+    {
+      "id": "KP2603026",
+      "layer": "excavation",
+      "text": "Vesijohtotyö. | address: Kirkonkyläntie 17 | duration days: 12",
+      "candidateDates": [],
+      "tyoPaattyy": "2026-11-13",
+      "workType": "water_sewer",
+      "endDate": "not_stated",
+      "mainlyAffected": null
+    },
+    {
+      "id": "KP2602979",
+      "layer": "excavation",
+      "text": "Kaukolämmön tulppaus. | address: Pulttitie 15 | duration days: 15",
+      "candidateDates": [],
+      "tyoPaattyy": "2026-11-16",
+      "workType": "district_heating",
+      "endDate": "not_stated",
+      "mainlyAffected": null
+    },
+    {
+      "id": "KP2602904",
+      "layer": "excavation",
+      "text": "Uudelleenpäällystys. | address: Linnanrakentajantie 4 | duration days: 25",
+      "candidateDates": [],
+      "tyoPaattyy": "2026-10-31",
+      "workType": "paving",
+      "endDate": "not_stated",
+      "mainlyAffected": "drivers"
+    },
+    {
+      "id": "KP2601407-2",
+      "layer": "excavation",
+      "text": "Työstä vastaava varaa tilaa kaivutyölle; uudisrakentamistyö. Maanrakennus- ja perustusvaihe vko 24–34/2026, runkotyövaihe vko 36 – vko 53 / 2026, sisä- ja julkisivutyövaihe vko 1–30 / 2027, työmaan valmistuminen vko 30–40 / 2027. / LISÄYS 26.6.2026: päivitetty liikennejärjestelysuunnitelma. | address: Larin Kyöstin tie 8 | duration days: 488",
+      "candidateDates": [
+        "2026-06-26"
+      ],
+      "tyoPaattyy": "2027-10-08",
+      "workType": "building_site",
+      "endDate": "not_stated",
+      "mainlyAffected": "pedestrians"
+    }
+  ]
+}
