@@ -45,13 +45,16 @@ export interface ApplyOptions {
   threshold: number;
   // The Region's time zone, for an end date taken from the text.
   timeZone: string;
+  // Month-days (MM-DD) the Source's own rules put in the end date field rather than the work's end,
+  // so a different date in the text is no conflict.
+  ruleEndDays?: string[];
 }
 
 // Applies the Classifier's answers to an Event as its Adapter made it, i.e. still carrying the defaults.
 // An answer counts only when it is one of its question's choices and its confidence reaches the threshold;
 // otherwise the default stays. The Event's confidence is the lowest among the answers that counted or,
 // if none did, the highest raw confidence (below the threshold, so it never pushes). No answers: 0.
-export function applyAnswers(event: Event, questions: Questions, answers: Answers, { threshold, timeZone }: ApplyOptions): Event {
+export function applyAnswers(event: Event, questions: Questions, answers: Answers, { threshold, timeZone, ruleEndDays = [] }: ApplyOptions): Event {
   const valid = QUESTION_IDS.flatMap((id) => {
     const answer = answers[id];
     const question = questions[id];
@@ -72,7 +75,7 @@ export function applyAnswers(event: Event, questions: Questions, answers: Answer
       const field = event.when.end?.slice(0, 10);
       if (choice === NOT_STATED) continue;
       if (!field) next.when.end = localTime(choice, "23:59:59", timeZone);
-      else if (choice !== field) next.when.endConflict = { field, text: choice };
+      else if (choice !== field && !ruleEndDays.includes(field.slice(5))) next.when.endConflict = { field, text: choice };
     }
   }
 

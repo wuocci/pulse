@@ -203,6 +203,24 @@ describe("the dig's current end date", () => {
     expect(event.when).toEqual({ start: dig.event.when.start, end: "2026-10-23T23:59:59+03:00" });
   });
 
+  it("flags nothing when the city's end date is one its rules set, not the work's own", async () => {
+    // Helsinki dates winter digs to 14 May, when the permanent paving can be laid.
+    const winterDig = { ...dig.event, when: { ...dig.event.when, end: "2027-05-14T23:59:59+03:00" } };
+    const subject = subjectFor({ ...dig, event: winterDig }, "excavation")!;
+    const answers = { endDate: sure("2026-11-13") };
+
+    const flagged = applyAnswers(winterDig, subject.questions, answers, { threshold: DEFAULT_THRESHOLD, timeZone });
+    const ruled = applyAnswers(winterDig, subject.questions, answers, {
+      threshold: DEFAULT_THRESHOLD,
+      timeZone,
+      ruleEndDays: ["05-14"],
+    });
+
+    expect(flagged.when.endConflict).toEqual({ field: "2027-05-14", text: "2026-11-13" });
+    expect(ruled.when).toEqual(winterDig.when);
+    expect(ruled.confidence).toBe(0.9);
+  });
+
   it("flags nothing for an unsure end date", async () => {
     const event = await classify(dig, "excavation", fakeClassifier({ endDate: sure("2026-10-23", 0.5) }));
 

@@ -159,6 +159,19 @@ describe("Classification", () => {
     expect(events.find((e) => e.id === DIG)).toMatchObject({ when: { end: "2026-11-13T23:59:59+02:00" }, status: "resolved" });
   });
 
+  it("takes the Source's rule end days into account", async () => {
+    const { refresh, cache, classifier } = setup();
+    const items = itemsAt(now).map((item) =>
+      item.event.id === DIG ? { ...item, event: { ...item.event, when: { ...item.event.when, end: "2027-05-14T23:59:59+03:00" } } } : item,
+    );
+    const dig = items.find((i) => i.event.id === DIG)!;
+    await cache.put(cacheKey(subjectFor(dig, "excavation")!.state, classifier.model), answers);
+
+    const { events } = await refresh(items);
+
+    expect(events.find((e) => e.id === DIG)!.when).not.toHaveProperty("endConflict");
+  });
+
   it("asks at most `concurrency` texts at a time", async () => {
     const classifier = fakeClassifier();
     const { refresh } = setup(classifier, 2);

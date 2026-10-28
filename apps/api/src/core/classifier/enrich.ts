@@ -3,7 +3,7 @@ import { type PermitItem, statusAt } from "../adapters/land-use-permits.ts";
 import type { EventStore } from "../events/store.ts";
 import type { LandUsePermitSource } from "../regions/index.ts";
 import { type AnswerCache, type CacheKey, cacheKey } from "./cache.ts";
-import { type Answers, applyAnswers, type Classifier, type ClassifierState, type Questions } from "./classifier.ts";
+import { type Answers, type ApplyOptions, applyAnswers, type Classifier, type ClassifierState, type Questions } from "./classifier.ts";
 import { QUESTION_VERSION, subjectFor } from "./questions.ts";
 
 // The Classifier step of a refresh (ADR 0003): data never waits on the Classifier.
@@ -50,6 +50,7 @@ export class Classification {
     { timeZone, now }: { timeZone: string; now: Date },
   ): Promise<{ events: Event[]; classifyRest: () => Promise<void> }> {
     const { classifier, cache, threshold } = this.deps;
+    const apply: ApplyOptions = { threshold, timeZone, ruleEndDays: source.ruleEndDays };
     const subjects = items.map((item) => {
       const subject = subjectFor(item, source.permitType);
       return subject && { ...subject, key: cacheKey(subject.state, classifier.model) };
@@ -62,16 +63,16 @@ export class Classification {
       const subject = subjects[i];
       if (!subject) return event;
       const answers = cached.get(subject.key.stateHash);
-      if (answers) return classified(event, subject.questions, answers, { threshold, timeZone, now });
+      if (answers) return classified(event, subject.questions, answers, apply, now);
       pending.push({ event, ...subject });
       return event;
     });
-    return { events, classifyRest: () => this.classifyAll(source.id, pending, timeZone) };
+    return { events, classifyRest: () => this.classifyAll(source.id, pending, apply) };
   }
 
   // Never rejects: it runs in the background, and failures only mean the next refresh tries again.
-  private async classifyAll(sourceId: string, pending: Pending[], timeZone: string): Promise<void> {
-    const results = await Promise.allSettled(pending.map((job) => this.classifyOne(sourceId, job, timeZone)));
+  private async classifyAll(sourceId: string, pending: Pending[], apply: ApplyOptions): Promise<void> {
+    const results = await Promise.allSettled(pending.map((job) => this.classifyOne(sourceId, job, apply)));
     const failures = results.flatMap((r) => (r.status === "rejected" ? [r.reason] : []));
     if (failures.length) {
       const first = failures[0] instanceof Error ? failures[0].message : String(failures[0]);
@@ -79,7 +80,7 @@ export class Classification {
     }
   }
 
-  private async classifyOne(sourceId: string, job: Pending, timeZone: string): Promise<void> {
+  private async classifyOne(sourceId: string, job: Pending, apply: ApplyOptions): Promise<void> {
     const { stateHash } = job.key;
     let asking = this.inFlight.get(stateHash);
     if (!asking) {
@@ -90,7 +91,7 @@ export class Classification {
     const answers = await asking;
 
     const now = this.clock();
-    const next = classified(job.event, job.questions, answers, { threshold: this.deps.threshold, timeZone, now });
+    const next = classified(job.event, job.questions, answers, apply, now);
     await this.deps.store.replaceEvent(sourceId, job.event, { ...next, updatedAt: now.toISOString() });
   }
 
@@ -120,8 +121,9 @@ function classified(
   event: Event,
   questions: Questions,
   answers: Answers,
-  { threshold, timeZone, now }: { threshold: number; timeZone: string; now: Date },
+  apply: ApplyOptions,
+  now: Date,
 ): Event {
-  const next = applyAnswers(event, questions, answers, { threshold, timeZone });
+  const next = applyAnswers(event, questions, answers, apply);
   return next.when.end === event.when.end ? next : { ...next, status: statusAt(now, next.when.start, next.when.end) };
 }
