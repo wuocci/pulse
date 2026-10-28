@@ -9,7 +9,7 @@ import { type ChoiceQuestion, type ClassifierState, NOT_STATED, type Questions }
 
 // Part of the cache key. Bump it whenever a question, its choices or the state sent changes,
 // which deliberately invalidates every cached answer.
-export const QUESTION_VERSION = 1;
+export const QUESTION_VERSION = 2;
 
 type PermitType = LandUsePermitSource["permitType"];
 
@@ -19,26 +19,33 @@ export interface Subject {
   questions: Questions;
 }
 
+// Jev rated one step too high against the answer key, so the choices are anchored to street space, not fame.
 const severity: ChoiceQuestion = {
-  prompt: "How disruptive is this in general, for anyone moving around the area?",
+  prompt:
+    "How much does this disrupt people moving around the area? Judge by the street space it takes and how many people " +
+    "it moves, not by how well known it is. Most permits are minor.",
   choices: {
-    info: "Barely noticeable; good to know at most",
-    minor: "A small local nuisance, such as a reserved parking spot or a narrowed sidewalk",
-    consider: "Worth planning around, such as a closed lane, a detour or crowds",
-    major: "A large disruption, such as closed streets, big crowds or diverted transit",
+    info: "No real effect on moving around: a stand, a stall, a collection point, a closed private event",
+    minor:
+      "One spot or a short stretch: a few parking spaces, a narrowed sidewalk, a walk or run on park paths, " +
+      "or one street closed for a few hours",
+    consider:
+      "Worth planning around: lanes or streets closed for days, several streets closed at once, a detour, moved stops, " +
+      "or crowds filling the streets nearby",
+    major: "Rare: streets closed or transit diverted across a district, or crowds of tens of thousands",
   } satisfies Record<Severity, string>,
 };
 
 const mainlyAffected: ChoiceQuestion = {
-  prompt: "Who does this mainly get in the way of?",
+  prompt: "Which one group loses the most because of this? Pick everyone only when no single group stands out.",
   // "unknown" is the fallback when no answer counts, never a choice.
   choices: {
-    drivers: "People driving: closed lanes, detours, slower traffic",
+    drivers: "People driving: closed or narrowed lanes, detours, slower traffic. Most street works in the roadway",
     cyclists: "People cycling: closed bike lanes or paths",
-    pedestrians: "People walking: closed sidewalks, crowds on foot",
+    pedestrians: "People walking: closed sidewalks or paths, crowds on foot",
     transit: "Public transport: moved stops, diverted routes",
     parking: "People parking: reserved or banned parking spaces",
-    everyone: "Everyone moving around the area",
+    everyone: "Several groups equally: streets closed to all traffic and crowds at once",
     nobody: "Hardly anyone: the work stays off the street",
   } satisfies Record<Exclude<MainlyAffected, "unknown">, string>,
 };
