@@ -34,7 +34,9 @@ export interface Classifier {
 }
 
 // Answers below this confidence don't count. The server's config may override it.
-export const DEFAULT_THRESHOLD = 0.7;
+// 0.6 after grading against the answer key (pnpm --filter @pulse/api eval:classifier): over three runs it accepted
+// about 46 of 75 graded answers with 91–93% right, against about 36 with 94% at 0.7.
+export const DEFAULT_THRESHOLD = 0.6;
 
 // The answer to the end date question when the text gives no end date.
 export const NOT_STATED = "not_stated";

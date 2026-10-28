@@ -7,7 +7,7 @@
     "workType (digs): water_sewer | district_heating | electricity_telecom | paving | street_construction | building_site | other",
     "endDate (digs): one of candidateDates, or \"not_stated\". tyoPaattyy is the city's field value, shown for reference only.",
     "candidateDates are the dates the Classifier offers Jev (from candidateDates() in questions.ts): d.m.yyyy, 'd.m. yyyy' and ISO dates; a date without a year takes the year of the next full date.",
-    "Leave null when you think the Classifier shouldn't be confident (below 0.7); only filled answers are checked."
+    "Leave null when you think the Classifier shouldn't be confident (below the threshold); only filled answers are checked."
   ],
   "notices": [
     {

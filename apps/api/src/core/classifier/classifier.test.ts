@@ -91,14 +91,14 @@ describe("the confidence threshold", () => {
     const event = await classify(
       arrangement,
       "traffic-arrangement",
-      fakeClassifier({ severity: sure("major", 0.39), mainlyAffected: sure("parking", 0.69) }),
+      fakeClassifier({ severity: sure("major", 0.39), mainlyAffected: sure("parking", 0.59) }),
     );
 
     expect(event).toMatchObject({ severity: "consider", mainlyAffected: "unknown" });
   });
 
   it("counts an answer exactly at the threshold", async () => {
-    const event = await classify(arrangement, "traffic-arrangement", fakeClassifier({ severity: sure("major", 0.7) }));
+    const event = await classify(arrangement, "traffic-arrangement", fakeClassifier({ severity: sure("major", 0.6) }));
 
     expect(event.severity).toBe("major");
   });
@@ -156,10 +156,10 @@ describe("the Event's confidence", () => {
     const event = await classify(
       arrangement,
       "traffic-arrangement",
-      fakeClassifier({ severity: sure("major", 0.39), mainlyAffected: sure("parking", 0.62) }),
+      fakeClassifier({ severity: sure("major", 0.39), mainlyAffected: sure("parking", 0.52) }),
     );
 
-    expect(event.confidence).toBe(0.62);
+    expect(event.confidence).toBe(0.52);
     expect(event.confidence).toBeLessThan(DEFAULT_THRESHOLD);
   });
 
@@ -204,7 +204,7 @@ describe("the dig's current end date", () => {
   });
 
   it("flags nothing for an unsure end date", async () => {
-    const event = await classify(dig, "excavation", fakeClassifier({ endDate: sure("2026-10-23", 0.6) }));
+    const event = await classify(dig, "excavation", fakeClassifier({ endDate: sure("2026-10-23", 0.5) }));
 
     expect(event.when).not.toHaveProperty("endConflict");
   });

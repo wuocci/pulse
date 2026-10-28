@@ -13,8 +13,8 @@ describe("classifierConfig", () => {
     ).toEqual({ apiKey: "k", model: "jev-1.13.0", threshold: 0.8 });
   });
 
-  it("defaults to jev-latest and a 0.7 threshold", () => {
-    expect(classifierConfig({ TYPESAFE_API_KEY: "k" })).toEqual({ apiKey: "k", model: "jev-latest", threshold: 0.7 });
+  it("defaults to jev-latest and a 0.6 threshold", () => {
+    expect(classifierConfig({ TYPESAFE_API_KEY: "k" })).toEqual({ apiKey: "k", model: "jev-latest", threshold: 0.6 });
   });
 
   it("fails fast on a threshold outside (0, 1]", () => {
