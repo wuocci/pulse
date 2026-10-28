@@ -15,6 +15,9 @@ export interface EventQuery {
 export interface EventStore {
   // Replaces every Event from one Source (by its config id) with a fresh set.
   replaceSource(sourceId: string, events: Event[]): Promise<void>;
+  // Replaces one stored Event with a newer version of itself, e.g. once the Classifier has answered.
+  // Does nothing if a refresh replaced `previous` since (its updatedAt no longer matches); returns whether it replaced.
+  replaceEvent(sourceId: string, previous: Event, next: Event): Promise<boolean>;
   query(query: EventQuery): Promise<Event[]>;
 }
 
@@ -24,6 +27,14 @@ export class InMemoryEventStore implements EventStore {
 
   async replaceSource(sourceId: string, events: Event[]) {
     this.bySource.set(sourceId, events);
+  }
+
+  async replaceEvent(sourceId: string, previous: Event, next: Event) {
+    const events = this.bySource.get(sourceId) ?? [];
+    const i = events.findIndex((e) => e.id === previous.id && e.updatedAt === previous.updatedAt);
+    if (i === -1) return false;
+    this.bySource.set(sourceId, events.with(i, next));
+    return true;
   }
 
   async query({ near, from, to, kind, statuses, noticeable, orderBy }: EventQuery) {

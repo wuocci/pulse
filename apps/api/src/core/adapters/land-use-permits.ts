@@ -232,7 +232,7 @@ function dateParts(date: string) {
   return { day, month, short };
 }
 
-function statusAt(now: Date, start: string, end: string | undefined): Event["status"] {
+export function statusAt(now: Date, start: string, end: string | undefined): Event["status"] {
   if (now < new Date(start)) return "upcoming";
   if (end && now > new Date(end)) return "resolved";
   return "active";
