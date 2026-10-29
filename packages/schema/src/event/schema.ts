@@ -11,6 +11,27 @@ export const LayerSchema = z.enum(["trips", "area", "now"]).openapi("Layer");
 
 export const SeveritySchema = z.enum(["info", "minor", "consider", "major"]).openapi("Severity");
 
+// Who an Event mostly gets in the way of (CONTEXT.md). One choice; "unknown" until the Classifier is sure.
+export const MainlyAffectedSchema = z
+  .enum(["drivers", "cyclists", "pedestrians", "transit", "parking", "everyone", "nobody", "unknown"])
+  .openapi("MainlyAffected");
+
+export const WorkTypeSchema = z
+  .enum(["water_sewer", "district_heating", "electricity_telecom", "paving", "street_construction", "building_site", "other"])
+  .openapi("WorkType");
+
+// Calendar date, YYYY-MM-DD.
+const DateSchema = z.iso.date();
+
+export const EndConflictSchema = z
+  .object({
+    field: DateSchema.openapi({ description: "The Source's structured end date, which `when.end` keeps" }),
+    text: DateSchema.openapi({ description: "The end date the Source's own text gives" }),
+  })
+  .openapi("EndConflict", {
+    description: "The Source's text and its structured end date disagree. Either may be the stale one.",
+  });
+
 export const PrecisionSchema = z
   .enum(["exact", "segment", "area", "vague"])
   .openapi("Precision");
@@ -82,8 +103,11 @@ export const EventSchema = z
       dailyHours: DailyHoursSchema.optional().openapi({
         description: "The Source's own daily hours. When absent, the Right now Layer uses defaults for the kind.",
       }),
+      endConflict: EndConflictSchema.optional(),
     }),
     severity: SeveritySchema,
+    mainlyAffected: MainlyAffectedSchema,
+    workType: WorkTypeSchema.optional().openapi({ description: "Kind of work, for works Events" }),
     noticeable: z.array(NoticeableSchema).openapi({ description: "May be empty: nothing to sense on site" }),
     deviation: DeviationSchema.optional(),
     status: EventStatusSchema,

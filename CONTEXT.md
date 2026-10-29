@@ -53,11 +53,19 @@ _Avoid_: Spike, incident
 **Severity**:
 How disruptive an Event is in general, independent of any particular person: info, minor, consider or major.
 
+**Mainly affected**:
+Who an Event mostly gets in the way of: drivers, cyclists, pedestrians, transit, parking, everyone, nobody or unknown. Like Severity it is general, not per person; ranking compares it with a person's travel mode.
+_Avoid_: Audience, affected modes (it is one choice, not a set)
+
 **Precision**:
 How exactly an Event's location is known: exact, segment, area or vague.
 
+**Noticeable**:
+What a person standing near an Event would sense on site: noise, crowd, sirens, blocked, aircraft or outage. A set, possibly empty, set by rules on the Event's kind and Source. Like Severity it is general, not per person; a concert can be minor for traffic and very noticeable.
+_Avoid_: Visible, perceptible, impact
+
 **Layer**:
-One of the three questions Pulse answers: My trips, My area or Right now.
+One of the three questions Pulse answers: My trips, My area or Right now. Right now is what a stationary person can see, hear or run into here and at this moment: the same Events as My area, near the current location, only those going on now, Noticeable ones first.
 
 ### What clients ask about
 

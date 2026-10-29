@@ -26,6 +26,8 @@ export interface LandUsePermitSource extends BaseSource {
   layer: string;
   // Each layer of the permit system has its own fields.
   permitType: "excavation" | "traffic-arrangement" | "outdoor-event";
+  // Month-days (MM-DD) the system's rules put in an end date field instead of the work's own end.
+  ruleEndDays?: string[];
 }
 
 export const regions: Region[] = [fiCapitalRegion];

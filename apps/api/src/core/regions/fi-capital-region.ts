@@ -20,7 +20,14 @@ export const fiCapitalRegion: Region = {
     public_event: { from: "10:00", to: "22:00" },
   },
   sources: [
-    { ...permitSystem, id: "hel-excavations", layer: "avoindata:Kaivuilmoitus_alue", permitType: "excavation" },
+    {
+      ...permitSystem,
+      id: "hel-excavations",
+      layer: "avoindata:Kaivuilmoitus_alue",
+      permitType: "excavation",
+      // Digs over the winter are dated to 14 May, when the permanent paving can be laid; the text has the work's own end.
+      ruleEndDays: ["05-14"],
+    },
     {
       ...permitSystem,
       id: "hel-traffic-arrangements",

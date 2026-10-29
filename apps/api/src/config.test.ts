@@ -1,5 +1,28 @@
 import { describe, expect, it, vi } from "vitest";
-import { createPool } from "./config.ts";
+import { classifierConfig, createPool } from "./config.ts";
+
+describe("classifierConfig", () => {
+  it("is off without an API key, so Events publish unclassified", () => {
+    expect(classifierConfig({})).toBeNull();
+    expect(classifierConfig({ TYPESAFE_API_KEY: "  " })).toBeNull();
+  });
+
+  it("reads the key, the pinned model and the threshold", () => {
+    expect(
+      classifierConfig({ TYPESAFE_API_KEY: "k", TYPESAFE_DEFAULT_MODEL: "jev-1.13.0", CLASSIFIER_THRESHOLD: "0.8" }),
+    ).toEqual({ apiKey: "k", model: "jev-1.13.0", threshold: 0.8 });
+  });
+
+  it("defaults to jev-latest and a 0.6 threshold", () => {
+    expect(classifierConfig({ TYPESAFE_API_KEY: "k" })).toEqual({ apiKey: "k", model: "jev-latest", threshold: 0.6 });
+  });
+
+  it("fails fast on a threshold outside (0, 1]", () => {
+    for (const value of ["0", "1.5", "seven"]) {
+      expect(() => classifierConfig({ TYPESAFE_API_KEY: "k", CLASSIFIER_THRESHOLD: value })).toThrow(/CLASSIFIER_THRESHOLD/);
+    }
+  });
+});
 
 describe("createPool", () => {
   it("logs idle-client errors instead of crashing, so the pool can reconnect", async () => {
