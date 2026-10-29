@@ -6,6 +6,7 @@ import { useRegions } from "./api.ts";
 import { PointMap } from "./map/PointMap.tsx";
 import { type LatLon, LocationError, usePlatform } from "./platform.tsx";
 import { formatAt, usePoint } from "./point.ts";
+import { Sheet } from "./Sheet.tsx";
 
 // The one screen: a full-screen map around the point, and the controls for choosing it.
 export function Home() {
@@ -88,6 +89,9 @@ export function Home() {
           </p>
         )}
       </div>
+      <Sheet title={t("sheetTitle")} description={t("sheetDescription")}>
+        <p className="text-sm text-muted-foreground">{t("sheetComingSoon")}</p>
+      </Sheet>
     </main>
   );
 }

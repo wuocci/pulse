@@ -12,6 +12,11 @@ export const en = {
   locationDenied: "Location is off. Allow it for this site, or long-press the map to choose a place.",
   locationUnavailable: "Couldn't find your location. Try again, or long-press the map to choose a place.",
   regionsFailed: "Can't reach Pulse right now.",
+  sheetTitle: "Around this point",
+  sheetDescription: "What's going on here, now and in the next two weeks.",
+  sheetComingSoon: "My area and Right now will be listed here.",
+  expand: "Expand",
+  collapse: "Collapse",
 } as const;
 
 void i18n.use(initReactI18next).init({

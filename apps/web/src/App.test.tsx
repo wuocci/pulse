@@ -181,3 +181,24 @@ describe("Follow me", () => {
     expect(watching.active).toBe(false);
   });
 });
+
+describe("the bottom sheet", () => {
+  it("is always there, titled, over the map", async () => {
+    renderApp("/");
+
+    expect(await screen.findByRole("heading", { name: "Around this point" })).toBeInTheDocument();
+  });
+
+  it("can be expanded and collapsed without dragging, for keyboards and screen readers", async () => {
+    renderApp("/");
+    const toggle = await screen.findByRole("button", { name: "Expand" });
+    expect(toggle).toHaveAttribute("aria-expanded", "false");
+
+    await userEvent.click(toggle);
+    expect(toggle).toHaveAttribute("aria-expanded", "true");
+    expect(toggle).toHaveAccessibleName("Collapse");
+
+    await userEvent.click(toggle);
+    expect(toggle).toHaveAttribute("aria-expanded", "false");
+  });
+});
