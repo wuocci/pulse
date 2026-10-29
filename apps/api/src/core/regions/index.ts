@@ -11,7 +11,7 @@ export interface Region extends PublicRegion {
 }
 
 // One entry per feed a Source publishes. `adapter` picks the code that reads its format (ADR 0002).
-export type SourceConfig = LandUsePermitSource;
+export type SourceConfig = LandUsePermitSource | GtfsRtSource;
 
 interface BaseSource {
   id: string;
@@ -19,6 +19,8 @@ interface BaseSource {
   publisher: string;
   license: string;
   refreshMinutes: number;
+  // For feeds that drop what's over: a vanished Event stays this long as resolved. Without it, it just goes.
+  keepVanishedHours?: number;
 }
 
 export interface LandUsePermitSource extends BaseSource {
@@ -28,6 +30,17 @@ export interface LandUsePermitSource extends BaseSource {
   permitType: "excavation" | "traffic-arrangement" | "outdoor-event";
   // Month-days (MM-DD) the system's rules put in an end date field instead of the work's own end.
   ruleEndDays?: string[];
+}
+
+export const isPermitSource = (source: SourceConfig): source is LandUsePermitSource => source.adapter === "land-use-permits";
+
+// A GTFS-RT service alerts feed.
+export interface GtfsRtSource extends BaseSource {
+  adapter: "gtfs-rt";
+  // Prefixes the feed's own stop and route ids into the ids its stop directory knows ("HSL" + "1234" → "HSL:1234").
+  feedId: string;
+  // Where stop locations and route names come from: the feed only gives ids.
+  directory: { kind: "digitransit"; url: string };
 }
 
 export const regions: Region[] = [fiCapitalRegion];

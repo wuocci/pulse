@@ -6,6 +6,7 @@ import {
   EventSchema,
   EventStatusSchema,
   type EventStatus,
+  type Layer,
   LayerSchema,
   NoticeableSchema,
   type Weekday,
@@ -19,6 +20,9 @@ const DEFAULT_STATUSES: EventStatus[] = ["active", "upcoming"];
 // Right now is about what a person standing here can notice, so it looks close by.
 const NOW_DEFAULT_RADIUS_M = 500;
 const NOW_MAX_RADIUS_M = 2000;
+// An Event shows in Right now if it is felt in the area, or put on the lens directly (e.g. a closed stop);
+// one for trips alone, like a timetable change, doesn't.
+const NOW_LAYERS: Layer[] = ["area", "now"];
 
 // A comma-separated query value whose items must all parse with `item`.
 function commaList<T extends z.ZodType>(item: T, message: string) {
@@ -50,7 +54,8 @@ const QuerySchema = z
       .openapi({ example: "active,resolved", description: `Comma-separated; default ${DEFAULT_STATUSES.join(",")}` }),
     layer: LayerSchema.extract(["now"]).optional().openapi({
       description: [
-        "now: the Right now lens. Needs `near`; returns only Events going on at this moment (time window and daily hours),",
+        "now: the Right now lens. Needs `near`; returns only Events on the area or now Layer going on at this moment",
+        "(time window and daily hours),",
         "noticeable ones first, then nearest first. Ignores `from` and `to`.",
       ].join(" "),
     }),
@@ -94,6 +99,7 @@ export function eventRoutes(store: EventStore, regions: Region[], clock: () => D
       const nearest = await store.query({
         ...filters,
         near: { lat, lon, radiusM: radius ?? NOW_DEFAULT_RADIUS_M },
+        layers: NOW_LAYERS,
         from: at,
         to: at,
         orderBy: "distance",

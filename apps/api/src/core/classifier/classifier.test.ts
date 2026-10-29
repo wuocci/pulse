@@ -5,7 +5,7 @@ import outdoorEvents from "../adapters/fixtures/land-use-permits/outdoor-events.
 import trafficArrangements from "../adapters/fixtures/land-use-permits/traffic-arrangements.json" with { type: "json" };
 import { type PermitCollection, type PermitItem, toPermitItems } from "../adapters/land-use-permits.ts";
 import { fiCapitalRegion } from "../regions/fi-capital-region.ts";
-import type { LandUsePermitSource } from "../regions/index.ts";
+import { isPermitSource, type LandUsePermitSource } from "../regions/index.ts";
 import { type Answers, applyAnswers, type Classifier, DEFAULT_THRESHOLD, NOT_STATED } from "./classifier.ts";
 import { subjectFor } from "./questions.ts";
 
@@ -20,7 +20,7 @@ const fixtures: Record<PermitType, unknown> = {
 const { timeZone } = fiCapitalRegion;
 const eventOf = (permitType: PermitType, id: string): PermitItem =>
   toPermitItems(fixtures[permitType] as PermitCollection, {
-    source: fiCapitalRegion.sources.find((s) => s.permitType === permitType)!,
+    source: fiCapitalRegion.sources.filter(isPermitSource).find((s) => s.permitType === permitType)!,
     timeZone,
     now,
   }).find((i) => i.event.sources[0]!.id === id)!;

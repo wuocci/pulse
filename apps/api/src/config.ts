@@ -24,6 +24,12 @@ export function classifierConfig(env: Env = process.env): ClassifierConfig | nul
   return { apiKey, model: env.TYPESAFE_DEFAULT_MODEL?.trim() || "jev-latest", threshold };
 }
 
+// The key for Digitransit, where GTFS-RT Sources look up their stops and routes. Without it, alerts are placed
+// vaguely in the Region.
+export function digitransitApiKey(env: Env = process.env): string | null {
+  return env.DIGITRANSIT_API_KEY?.trim() || null;
+}
+
 // The Postgres pool. Errors on idle clients (e.g. the database restarting) are logged, not thrown:
 // without a listener they would crash the process. The pool replaces broken clients on the next query.
 export function createPool(env: Env = process.env): pg.Pool {
