@@ -1,7 +1,7 @@
 import { EventSchema } from "@pulse/schema";
 import { describe, expect, it } from "vitest";
 import { fiCapitalRegion } from "../regions/fi-capital-region.ts";
-import type { LandUsePermitSource } from "../regions/index.ts";
+import { isPermitSource, type LandUsePermitSource } from "../regions/index.ts";
 import excavations from "./fixtures/land-use-permits/excavations.json" with { type: "json" };
 import outdoorEvents from "./fixtures/land-use-permits/outdoor-events.json" with { type: "json" };
 import trafficArrangements from "./fixtures/land-use-permits/traffic-arrangements.json" with { type: "json" };
@@ -10,7 +10,7 @@ import { localTime, type PermitCollection, permitsUrl, toEvents } from "./land-u
 // Recorded from the permit system's WFS: excavations on 2026-10-23, the other layers on 2026-10-24.
 const now = new Date("2026-10-24T12:00:00+03:00");
 const contextFor = (permitType: LandUsePermitSource["permitType"]) => ({
-  source: fiCapitalRegion.sources.find((s) => s.permitType === permitType)!,
+  source: fiCapitalRegion.sources.filter(isPermitSource).find((s) => s.permitType === permitType)!,
   timeZone: fiCapitalRegion.timeZone,
   now,
 });

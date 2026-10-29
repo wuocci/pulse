@@ -11,6 +11,7 @@ const PositionSchema = z.array(z.number()).min(2).max(3);
 export const GeometrySchema = z
   .discriminatedUnion("type", [
     z.object({ type: z.literal("Point"), coordinates: PositionSchema }),
+    z.object({ type: z.literal("MultiPoint"), coordinates: z.array(PositionSchema) }),
     z.object({ type: z.literal("LineString"), coordinates: z.array(PositionSchema) }),
     z.object({
       type: z.literal("MultiLineString"),

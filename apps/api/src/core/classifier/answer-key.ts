@@ -1,6 +1,6 @@
 import { type PermitCollection, toPermitItems } from "../adapters/land-use-permits.ts";
 import { fiCapitalRegion } from "../regions/fi-capital-region.ts";
-import type { LandUsePermitSource } from "../regions/index.ts";
+import { isPermitSource, type LandUsePermitSource } from "../regions/index.ts";
 import { type Answers, type ClassifierState, QUESTION_IDS, type Questions } from "./classifier.ts";
 import answerKey from "./fixtures/answer-key.json" with { type: "json" };
 import permits from "./fixtures/permits.json" with { type: "json" };
@@ -22,7 +22,7 @@ export function answerKeySubjects(): KeyedSubject[] {
   const labelled = new Set(answerKey.notices.map((n) => n.id));
   const now = new Date(`${permits._recorded.at}T12:00:00Z`);
   const layers = permits.layers as Record<string, PermitCollection>;
-  return fiCapitalRegion.sources.flatMap((source) => {
+  return fiCapitalRegion.sources.filter(isPermitSource).flatMap((source) => {
     const collection = layers[source.layer];
     if (!collection) return [];
     return toPermitItems(collection, { source, timeZone: fiCapitalRegion.timeZone, now }).flatMap((item) => {

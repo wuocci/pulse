@@ -1,0 +1,853 @@
+{
+  "_recorded": {
+    "at": "2026-10-29",
+    "url": "https://api.digitransit.fi/routing/v2/hsl/gtfs/v1",
+    "note": "Digitransit's answers for the stop and route ids in hsl-service-alerts.pb; ids it doesn't know are left out"
+  },
+  "stops": [
+    {
+      "gtfsId": "HSL:1020502",
+      "name": "Helsinki",
+      "lat": 60.17272,
+      "lon": 24.939911
+    },
+    {
+      "gtfsId": "HSL:1030701",
+      "name": "Kauppatori",
+      "lat": 60.167248,
+      "lon": 24.955786
+    },
+    {
+      "gtfsId": "HSL:1040276",
+      "name": "Kamppi",
+      "lat": 60.169,
+      "lon": 24.93164
+    },
+    {
+      "gtfsId": "HSL:1040277",
+      "name": "Kamppi",
+      "lat": 60.16898,
+      "lon": 24.93155
+    },
+    {
+      "gtfsId": "HSL:1050107",
+      "name": "Uudenmaankatu",
+      "lat": 60.162447,
+      "lon": 24.935794
+    },
+    {
+      "gtfsId": "HSL:1080702",
+      "name": "Kruunuvuorenranta",
+      "lat": 60.166072,
+      "lon": 25.012165
+    },
+    {
+      "gtfsId": "HSL:1080703",
+      "name": "Meritullintori",
+      "lat": 60.169716,
+      "lon": 24.959896
+    },
+    {
+      "gtfsId": "HSL:1100159",
+      "name": "Tynnyrintekijänkatu",
+      "lat": 60.18875,
+      "lon": 24.96923
+    },
+    {
+      "gtfsId": "HSL:1100401",
+      "name": "Merihaka",
+      "lat": 60.178174,
+      "lon": 24.960014
+    },
+    {
+      "gtfsId": "HSL:1100402",
+      "name": "Merihaka",
+      "lat": 60.178258,
+      "lon": 24.959765
+    },
+    {
+      "gtfsId": "HSL:1111112",
+      "name": "Hakaniemi",
+      "lat": 60.17932,
+      "lon": 24.95073
+    },
+    {
+      "gtfsId": "HSL:1111114",
+      "name": "Hakaniemi",
+      "lat": 60.179228,
+      "lon": 24.949784
+    },
+    {
+      "gtfsId": "HSL:1111116",
+      "name": "Hakaniemi",
+      "lat": 60.178726,
+      "lon": 24.949849
+    },
+    {
+      "gtfsId": "HSL:1111142",
+      "name": "Hakaniemi",
+      "lat": 60.178822,
+      "lon": 24.950779
+    },
+    {
+      "gtfsId": "HSL:1112103",
+      "name": "Kallion virastotalo",
+      "lat": 60.181563,
+      "lon": 24.948399
+    },
+    {
+      "gtfsId": "HSL:1130181",
+      "name": "Hietaniemi",
+      "lat": 60.172749,
+      "lon": 24.910965
+    },
+    {
+      "gtfsId": "HSL:1171152",
+      "name": "Palkkatilanportti",
+      "lat": 60.197046,
+      "lon": 24.92874
+    },
+    {
+      "gtfsId": "HSL:1171405",
+      "name": "Maistraatintori",
+      "lat": 60.19856,
+      "lon": 24.925323
+    },
+    {
+      "gtfsId": "HSL:1174502",
+      "name": "Pasila",
+      "lat": 60.19941,
+      "lon": 24.93212
+    },
+    {
+      "gtfsId": "HSL:1180115",
+      "name": "Töölöntulli",
+      "lat": 60.191384,
+      "lon": 24.912089
+    },
+    {
+      "gtfsId": "HSL:1190401",
+      "name": "Korkeasaari",
+      "lat": 60.17706,
+      "lon": 24.982658
+    },
+    {
+      "gtfsId": "HSL:1190402",
+      "name": "Korkeasaari",
+      "lat": 60.177152,
+      "lon": 24.982234
+    },
+    {
+      "gtfsId": "HSL:1201139",
+      "name": "Länsisatamankatu",
+      "lat": 60.163469,
+      "lon": 24.907599
+    },
+    {
+      "gtfsId": "HSL:1392501",
+      "name": "Tapanila",
+      "lat": 60.262484,
+      "lon": 25.028496
+    },
+    {
+      "gtfsId": "HSL:1392551",
+      "name": "Tapanila",
+      "lat": 60.262443,
+      "lon": 25.028626
+    },
+    {
+      "gtfsId": "HSL:1452109",
+      "name": "Juorumäki",
+      "lat": 60.210937,
+      "lon": 25.102132
+    },
+    {
+      "gtfsId": "HSL:1452111",
+      "name": "Puotilan kartano",
+      "lat": 60.211908,
+      "lon": 25.105476
+    },
+    {
+      "gtfsId": "HSL:1452114",
+      "name": "Puotilan leikkiniitt",
+      "lat": 60.213293,
+      "lon": 25.102399
+    },
+    {
+      "gtfsId": "HSL:1452139",
+      "name": "Puotilantie",
+      "lat": 60.208978,
+      "lon": 25.099787
+    },
+    {
+      "gtfsId": "HSL:1452141",
+      "name": "Klaavuntie",
+      "lat": 60.2102,
+      "lon": 25.09811
+    },
+    {
+      "gtfsId": "HSL:1491302",
+      "name": "Yliskylän keskusta",
+      "lat": 60.179113,
+      "lon": 25.050289
+    },
+    {
+      "gtfsId": "HSL:1491401",
+      "name": "Gunillankallio",
+      "lat": 60.172145,
+      "lon": 25.033255
+    },
+    {
+      "gtfsId": "HSL:1491402",
+      "name": "Gunillankallio",
+      "lat": 60.172107,
+      "lon": 25.032933
+    },
+    {
+      "gtfsId": "HSL:1491403",
+      "name": "Reiherintie",
+      "lat": 60.174579,
+      "lon": 25.039563
+    },
+    {
+      "gtfsId": "HSL:1491404",
+      "name": "Reiherintie",
+      "lat": 60.17469,
+      "lon": 25.039654
+    },
+    {
+      "gtfsId": "HSL:1491405",
+      "name": "Yliskylänkulma",
+      "lat": 60.175509,
+      "lon": 25.048189
+    },
+    {
+      "gtfsId": "HSL:1491406",
+      "name": "Yliskylän keskusta",
+      "lat": 60.179292,
+      "lon": 25.050464
+    },
+    {
+      "gtfsId": "HSL:1491407",
+      "name": "Yliskylänkulma",
+      "lat": 60.17541,
+      "lon": 25.048554
+    },
+    {
+      "gtfsId": "HSL:1494203",
+      "name": "Haakoninlahdenpuisto",
+      "lat": 60.165905,
+      "lon": 25.018475
+    },
+    {
+      "gtfsId": "HSL:1494301",
+      "name": "Haakoninlahdenpuisto",
+      "lat": 60.165871,
+      "lon": 25.018803
+    },
+    {
+      "gtfsId": "HSL:1494302",
+      "name": "Hopealaakso",
+      "lat": 60.168995,
+      "lon": 25.020321
+    },
+    {
+      "gtfsId": "HSL:1494401",
+      "name": "Kruunuvuori",
+      "lat": 60.169116,
+      "lon": 25.015482
+    },
+    {
+      "gtfsId": "HSL:1494402",
+      "name": "Kruunuvuori",
+      "lat": 60.169216,
+      "lon": 25.015252
+    },
+    {
+      "gtfsId": "HSL:1494404",
+      "name": "Koirasaaret",
+      "lat": 60.163629,
+      "lon": 25.015697
+    },
+    {
+      "gtfsId": "HSL:1494405",
+      "name": "Koirasaaret",
+      "lat": 60.16281,
+      "lon": 25.017135
+    },
+    {
+      "gtfsId": "HSL:1494406",
+      "name": "Hopealaakso",
+      "lat": 60.168812,
+      "lon": 25.020643
+    },
+    {
+      "gtfsId": "HSL:1520702",
+      "name": "Suomenlinna, päälait",
+      "lat": 60.149269,
+      "lon": 24.98389
+    },
+    {
+      "gtfsId": "HSL:2132207",
+      "name": "Karanristi",
+      "lat": 60.225735,
+      "lon": 24.757035
+    },
+    {
+      "gtfsId": "HSL:2132208",
+      "name": "Karanristi",
+      "lat": 60.225571,
+      "lon": 24.759994
+    },
+    {
+      "gtfsId": "HSL:2133205",
+      "name": "Lähderannantie",
+      "lat": 60.227773,
+      "lon": 24.759739
+    },
+    {
+      "gtfsId": "HSL:2133224",
+      "name": "Karakallionsola",
+      "lat": 60.226955,
+      "lon": 24.757062
+    },
+    {
+      "gtfsId": "HSL:2133225",
+      "name": "Karakallionsola",
+      "lat": 60.226982,
+      "lon": 24.757304
+    },
+    {
+      "gtfsId": "HSL:2213234",
+      "name": "Karhusaarensolmu",
+      "lat": 60.169929,
+      "lon": 24.822039
+    },
+    {
+      "gtfsId": "HSL:2213236",
+      "name": "Karhusaarensolmu",
+      "lat": 60.169931,
+      "lon": 24.822028
+    },
+    {
+      "gtfsId": "HSL:2511501",
+      "name": "Kauklahti",
+      "lat": 60.189296,
+      "lon": 24.599771
+    },
+    {
+      "gtfsId": "HSL:2611502",
+      "name": "Espoo",
+      "lat": 60.205172,
+      "lon": 24.656384
+    },
+    {
+      "gtfsId": "HSL:2612501",
+      "name": "Tuomarila",
+      "lat": 60.20611,
+      "lon": 24.681368
+    },
+    {
+      "gtfsId": "HSL:2612551",
+      "name": "Tuomarila",
+      "lat": 60.20601,
+      "lon": 24.681579
+    },
+    {
+      "gtfsId": "HSL:4520227",
+      "name": "Manttaalitie",
+      "lat": 60.29665,
+      "lon": 24.97606
+    },
+    {
+      "gtfsId": "HSL:4520259",
+      "name": "Manttaalitie",
+      "lat": 60.29643,
+      "lon": 24.9774
+    },
+    {
+      "gtfsId": "HSL:4680204",
+      "name": "Puutarhatie",
+      "lat": 60.29215,
+      "lon": 25.00494
+    },
+    {
+      "gtfsId": "HSL:4680205",
+      "name": "Niittytie",
+      "lat": 60.29238,
+      "lon": 24.9982
+    },
+    {
+      "gtfsId": "HSL:4680206",
+      "name": "Niittytie",
+      "lat": 60.29266,
+      "lon": 24.99609
+    },
+    {
+      "gtfsId": "HSL:4680215",
+      "name": "Mesikukantie",
+      "lat": 60.294003,
+      "lon": 25.012055
+    },
+    {
+      "gtfsId": "HSL:4680216",
+      "name": "Mesikukantie",
+      "lat": 60.294102,
+      "lon": 25.012049
+    },
+    {
+      "gtfsId": "HSL:4680238",
+      "name": "Juurakkokuja",
+      "lat": 60.29001,
+      "lon": 24.99751
+    },
+    {
+      "gtfsId": "HSL:4680239",
+      "name": "Juurakkokuja",
+      "lat": 60.29059,
+      "lon": 24.99697
+    },
+    {
+      "gtfsId": "HSL:4680245",
+      "name": "Köyhämäki",
+      "lat": 60.29407,
+      "lon": 24.98582
+    },
+    {
+      "gtfsId": "HSL:4680246",
+      "name": "Kukonharja",
+      "lat": 60.29289,
+      "lon": 25.00565
+    },
+    {
+      "gtfsId": "HSL:4680248",
+      "name": "Köyhämäki",
+      "lat": 60.29424,
+      "lon": 24.98574
+    },
+    {
+      "gtfsId": "HSL:4680258",
+      "name": "Apilapuisto",
+      "lat": 60.293707,
+      "lon": 25.005245
+    },
+    {
+      "gtfsId": "HSL:5010504",
+      "name": "Jokela",
+      "lat": 60.5529,
+      "lon": 24.970691
+    },
+    {
+      "gtfsId": "HSL:5010554",
+      "name": "Jokela",
+      "lat": 60.5529,
+      "lon": 24.970691
+    },
+    {
+      "gtfsId": "HSL:6010501",
+      "name": "Kirkkonummi",
+      "lat": 60.11963,
+      "lon": 24.438926
+    },
+    {
+      "gtfsId": "HSL:6010503",
+      "name": "Masala",
+      "lat": 60.158511,
+      "lon": 24.539098
+    },
+    {
+      "gtfsId": "HSL:6010504",
+      "name": "Jorvas",
+      "lat": 60.137065,
+      "lon": 24.510766
+    },
+    {
+      "gtfsId": "HSL:6010505",
+      "name": "Tolsa",
+      "lat": 60.118536,
+      "lon": 24.472725
+    }
+  ],
+  "routes": [
+    {
+      "gtfsId": "HSL:1013",
+      "shortName": "13",
+      "mode": "TRAM"
+    },
+    {
+      "gtfsId": "HSL:1013H",
+      "shortName": "13H",
+      "mode": "TRAM"
+    },
+    {
+      "gtfsId": "HSL:1017",
+      "shortName": "17",
+      "mode": "FERRY"
+    },
+    {
+      "gtfsId": "HSL:1019",
+      "shortName": "19",
+      "mode": "FERRY"
+    },
+    {
+      "gtfsId": "HSL:1022",
+      "shortName": "22",
+      "mode": "BUS"
+    },
+    {
+      "gtfsId": "HSL:1022B",
+      "shortName": "22B",
+      "mode": "BUS"
+    },
+    {
+      "gtfsId": "HSL:1023",
+      "shortName": "23",
+      "mode": "BUS"
+    },
+    {
+      "gtfsId": "HSL:1024",
+      "shortName": "24",
+      "mode": "BUS"
+    },
+    {
+      "gtfsId": "HSL:1024S",
+      "shortName": "24S",
+      "mode": "BUS"
+    },
+    {
+      "gtfsId": "HSL:1024X",
+      "shortName": "24X",
+      "mode": "BUS"
+    },
+    {
+      "gtfsId": "HSL:1059",
+      "shortName": "59",
+      "mode": "BUS"
+    },
+    {
+      "gtfsId": "HSL:1061",
+      "shortName": "61",
+      "mode": "BUS"
+    },
+    {
+      "gtfsId": "HSL:1061N",
+      "shortName": "61N",
+      "mode": "BUS"
+    },
+    {
+      "gtfsId": "HSL:1064",
+      "shortName": "64",
+      "mode": "BUS"
+    },
+    {
+      "gtfsId": "HSL:1065",
+      "shortName": "65",
+      "mode": "BUS"
+    },
+    {
+      "gtfsId": "HSL:1066",
+      "shortName": "66",
+      "mode": "BUS"
+    },
+    {
+      "gtfsId": "HSL:1066K",
+      "shortName": "66K",
+      "mode": "BUS"
+    },
+    {
+      "gtfsId": "HSL:1067",
+      "shortName": "67",
+      "mode": "BUS"
+    },
+    {
+      "gtfsId": "HSL:1071",
+      "shortName": "71",
+      "mode": "BUS"
+    },
+    {
+      "gtfsId": "HSL:1073N",
+      "shortName": "73N",
+      "mode": "BUS"
+    },
+    {
+      "gtfsId": "HSL:1074N",
+      "shortName": "74N",
+      "mode": "BUS"
+    },
+    {
+      "gtfsId": "HSL:1075",
+      "shortName": "75",
+      "mode": "BUS"
+    },
+    {
+      "gtfsId": "HSL:1077",
+      "shortName": "77",
+      "mode": "BUS"
+    },
+    {
+      "gtfsId": "HSL:1077N",
+      "shortName": "77N",
+      "mode": "BUS"
+    },
+    {
+      "gtfsId": "HSL:1078",
+      "shortName": "78",
+      "mode": "BUS"
+    },
+    {
+      "gtfsId": "HSL:1078N",
+      "shortName": "78N",
+      "mode": "BUS"
+    },
+    {
+      "gtfsId": "HSL:1079N",
+      "shortName": "79N",
+      "mode": "BUS"
+    },
+    {
+      "gtfsId": "HSL:1500",
+      "shortName": "500",
+      "mode": "BUS"
+    },
+    {
+      "gtfsId": "HSL:1805",
+      "shortName": "805",
+      "mode": "BUS"
+    },
+    {
+      "gtfsId": "HSL:2502",
+      "shortName": "502",
+      "mode": "BUS"
+    },
+    {
+      "gtfsId": "HSL:2510",
+      "shortName": "510",
+      "mode": "BUS"
+    },
+    {
+      "gtfsId": "HSL:3001R",
+      "shortName": "R",
+      "mode": "RAIL"
+    },
+    {
+      "gtfsId": "HSL:3001T",
+      "shortName": "T",
+      "mode": "RAIL"
+    },
+    {
+      "gtfsId": "HSL:3002E",
+      "shortName": "E",
+      "mode": "RAIL"
+    },
+    {
+      "gtfsId": "HSL:3002L",
+      "shortName": "L",
+      "mode": "RAIL"
+    },
+    {
+      "gtfsId": "HSL:4570",
+      "shortName": "570",
+      "mode": "BUS"
+    },
+    {
+      "gtfsId": "HSL:4570N",
+      "shortName": "570N",
+      "mode": "BUS"
+    },
+    {
+      "gtfsId": "HSL:4571",
+      "shortName": "571",
+      "mode": "BUS"
+    },
+    {
+      "gtfsId": "HSL:4600",
+      "shortName": "600",
+      "mode": "BUS"
+    },
+    {
+      "gtfsId": "HSL:4611",
+      "shortName": "611",
+      "mode": "BUS"
+    },
+    {
+      "gtfsId": "HSL:4623",
+      "shortName": "623",
+      "mode": "BUS"
+    },
+    {
+      "gtfsId": "HSL:4633",
+      "shortName": "633",
+      "mode": "BUS"
+    },
+    {
+      "gtfsId": "HSL:4711",
+      "shortName": "711",
+      "mode": "BUS"
+    },
+    {
+      "gtfsId": "HSL:4711K",
+      "shortName": "711K",
+      "mode": "BUS"
+    },
+    {
+      "gtfsId": "HSL:4717",
+      "shortName": "717",
+      "mode": "BUS"
+    },
+    {
+      "gtfsId": "HSL:4717K",
+      "shortName": "717K",
+      "mode": "BUS"
+    },
+    {
+      "gtfsId": "HSL:4717N",
+      "shortName": "717N",
+      "mode": "BUS"
+    },
+    {
+      "gtfsId": "HSL:4718",
+      "shortName": "718",
+      "mode": "BUS"
+    },
+    {
+      "gtfsId": "HSL:4718A",
+      "shortName": "718A",
+      "mode": "BUS"
+    },
+    {
+      "gtfsId": "HSL:4721",
+      "shortName": "721",
+      "mode": "BUS"
+    },
+    {
+      "gtfsId": "HSL:4721N",
+      "shortName": "721N",
+      "mode": "BUS"
+    },
+    {
+      "gtfsId": "HSL:4731",
+      "shortName": "731",
+      "mode": "BUS"
+    },
+    {
+      "gtfsId": "HSL:4731N",
+      "shortName": "731N",
+      "mode": "BUS"
+    },
+    {
+      "gtfsId": "HSL:4739",
+      "shortName": "739",
+      "mode": "BUS"
+    },
+    {
+      "gtfsId": "HSL:6911",
+      "shortName": "911",
+      "mode": "BUS"
+    },
+    {
+      "gtfsId": "HSL:6911X",
+      "shortName": "911X",
+      "mode": "BUS"
+    },
+    {
+      "gtfsId": "HSL:9633N",
+      "shortName": "633N",
+      "mode": "BUS"
+    },
+    {
+      "gtfsId": "HSL:9643N",
+      "shortName": "643N",
+      "mode": "BUS"
+    },
+    {
+      "gtfsId": "HSL:9665N",
+      "shortName": "665N",
+      "mode": "BUS"
+    },
+    {
+      "gtfsId": "HSL:9785",
+      "shortName": "785",
+      "mode": "BUS"
+    },
+    {
+      "gtfsId": "HSL:9785K",
+      "shortName": "785K",
+      "mode": "BUS"
+    },
+    {
+      "gtfsId": "HSL:9787",
+      "shortName": "787",
+      "mode": "BUS"
+    },
+    {
+      "gtfsId": "HSL:9787A",
+      "shortName": "787A",
+      "mode": "BUS"
+    },
+    {
+      "gtfsId": "HSL:9787B",
+      "shortName": "787B",
+      "mode": "BUS"
+    },
+    {
+      "gtfsId": "HSL:9787K",
+      "shortName": "787K",
+      "mode": "BUS"
+    },
+    {
+      "gtfsId": "HSL:9788",
+      "shortName": "788",
+      "mode": "BUS"
+    },
+    {
+      "gtfsId": "HSL:9788B",
+      "shortName": "788B",
+      "mode": "BUS"
+    },
+    {
+      "gtfsId": "HSL:9788K",
+      "shortName": "788K",
+      "mode": "BUS"
+    },
+    {
+      "gtfsId": "HSL:9841",
+      "shortName": "841",
+      "mode": "BUS"
+    },
+    {
+      "gtfsId": "HSL:9841B",
+      "shortName": "841B",
+      "mode": "BUS"
+    },
+    {
+      "gtfsId": "HSL:9841N",
+      "shortName": "841N",
+      "mode": "BUS"
+    },
+    {
+      "gtfsId": "HSL:9842",
+      "shortName": "842",
+      "mode": "BUS"
+    },
+    {
+      "gtfsId": "HSL:9844",
+      "shortName": "844",
+      "mode": "BUS"
+    },
+    {
+      "gtfsId": "HSL:9969X",
+      "shortName": "969X",
+      "mode": "BUS"
+    },
+    {
+      "gtfsId": "HSL:9994",
+      "shortName": "994",
+      "mode": "BUS"
+    },
+    {
+      "gtfsId": "HSL:9994K",
+      "shortName": "994K",
+      "mode": "BUS"
+    }
+  ]
+}

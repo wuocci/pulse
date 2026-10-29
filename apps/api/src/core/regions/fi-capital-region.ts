@@ -35,5 +35,15 @@ export const fiCapitalRegion: Region = {
       permitType: "traffic-arrangement",
     },
     { ...permitSystem, id: "hel-outdoor-events", layer: "avoindata:Tapahtumat_alue", permitType: "outdoor-event" },
+    {
+      adapter: "gtfs-rt",
+      id: "hsl-service-alerts",
+      url: "https://realtime.hsl.fi/realtime/service-alerts/v2/hsl",
+      publisher: "HSL",
+      license: "CC BY 4.0",
+      refreshMinutes: 2,
+      feedId: "HSL",
+      directory: { kind: "digitransit", url: "https://api.digitransit.fi/routing/v2/hsl/gtfs/v1" },
+    },
   ],
 };

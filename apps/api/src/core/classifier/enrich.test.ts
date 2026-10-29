@@ -4,13 +4,14 @@ import excavations from "../adapters/fixtures/land-use-permits/excavations.json"
 import { type PermitCollection, type PermitItem, toPermitItems } from "../adapters/land-use-permits.ts";
 import { InMemoryEventStore } from "../events/store.ts";
 import { fiCapitalRegion } from "../regions/fi-capital-region.ts";
+import { isPermitSource } from "../regions/index.ts";
 import type { AnswerCache, CacheKey } from "./cache.ts";
 import { cacheKey } from "./cache.ts";
 import type { Answers, Classifier, ClassifierState, Questions } from "./classifier.ts";
 import { Classification } from "./enrich.ts";
 import { subjectFor } from "./questions.ts";
 
-const source = fiCapitalRegion.sources.find((s) => s.permitType === "excavation")!;
+const source = fiCapitalRegion.sources.filter(isPermitSource).find((s) => s.permitType === "excavation")!;
 const { timeZone } = fiCapitalRegion;
 const now = new Date("2026-10-24T12:00:00+03:00");
 const later = new Date("2026-10-24T12:10:00+03:00");

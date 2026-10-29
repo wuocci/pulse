@@ -5,7 +5,7 @@ import { InMemoryEventStore } from "./core/events/store.ts";
 import fixture from "./core/adapters/fixtures/land-use-permits/excavations.json" with { type: "json" };
 import { type PermitCollection, toEvents } from "./core/adapters/land-use-permits.ts";
 import { fiCapitalRegion } from "./core/regions/fi-capital-region.ts";
-import { regions } from "./core/regions/index.ts";
+import { isPermitSource, regions } from "./core/regions/index.ts";
 
 const reachable = { ping: async () => true };
 const unreachable = {
@@ -82,7 +82,7 @@ describe("GET /v0/openapi.json", () => {
 });
 
 describe("GET /v0/events", async () => {
-  const source = fiCapitalRegion.sources[0]!;
+  const source = fiCapitalRegion.sources.filter(isPermitSource)[0]!;
   const store = new InMemoryEventStore();
   await store.replaceSource(
     source.id,

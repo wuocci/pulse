@@ -4,14 +4,14 @@ import outdoorEvents from "../adapters/fixtures/land-use-permits/outdoor-events.
 import trafficArrangements from "../adapters/fixtures/land-use-permits/traffic-arrangements.json" with { type: "json" };
 import { type PermitCollection, toPermitItems } from "../adapters/land-use-permits.ts";
 import { fiCapitalRegion } from "../regions/fi-capital-region.ts";
-import type { LandUsePermitSource } from "../regions/index.ts";
+import { isPermitSource, type LandUsePermitSource } from "../regions/index.ts";
 import { NOT_STATED } from "./classifier.ts";
 import { candidateDates, subjectFor } from "./questions.ts";
 
 const now = new Date("2026-10-24T12:00:00+03:00");
 const itemsOf = (collection: unknown, permitType: LandUsePermitSource["permitType"]) =>
   toPermitItems(collection as PermitCollection, {
-    source: fiCapitalRegion.sources.find((s) => s.permitType === permitType)!,
+    source: fiCapitalRegion.sources.filter(isPermitSource).find((s) => s.permitType === permitType)!,
     timeZone: fiCapitalRegion.timeZone,
     now,
   });
