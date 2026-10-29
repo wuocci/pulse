@@ -1,0 +1,771 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Pulse API",
+    "version": "0.0.0"
+  },
+  "servers": [
+    {
+      "url": "/v0"
+    }
+  ],
+  "components": {
+    "schemas": {
+      "Health": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "ok",
+              "degraded"
+            ]
+          },
+          "database": {
+            "type": "string",
+            "enum": [
+              "ok",
+              "unreachable"
+            ]
+          }
+        },
+        "required": [
+          "status",
+          "database"
+        ]
+      },
+      "Event": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "evt_01JB2Z8Q4M"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/EventKind"
+          },
+          "layers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Layer"
+            }
+          },
+          "title": {
+            "$ref": "#/components/schemas/LocalizedText"
+          },
+          "originalText": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/LocalizedText"
+              },
+              {
+                "description": "The Source's own text, unchanged"
+              }
+            ]
+          },
+          "where": {
+            "type": "object",
+            "properties": {
+              "geometry": {
+                "$ref": "#/components/schemas/Geometry"
+              },
+              "precision": {
+                "$ref": "#/components/schemas/Precision"
+              },
+              "lines": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "stops": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "required": [
+              "geometry",
+              "precision"
+            ]
+          },
+          "when": {
+            "type": "object",
+            "properties": {
+              "start": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "end": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "dailyHours": {
+                "$ref": "#/components/schemas/DailyHours"
+              },
+              "endConflict": {
+                "$ref": "#/components/schemas/EndConflict"
+              }
+            },
+            "required": [
+              "start"
+            ]
+          },
+          "severity": {
+            "$ref": "#/components/schemas/Severity"
+          },
+          "mainlyAffected": {
+            "$ref": "#/components/schemas/MainlyAffected"
+          },
+          "workType": {
+            "$ref": "#/components/schemas/WorkType"
+          },
+          "noticeable": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Noticeable"
+            },
+            "description": "May be empty: nothing to sense on site"
+          },
+          "deviation": {
+            "$ref": "#/components/schemas/Deviation"
+          },
+          "status": {
+            "$ref": "#/components/schemas/EventStatus"
+          },
+          "clusterId": {
+            "type": "string",
+            "description": "Set when this Event shares a real-world cause with Events from other Sources"
+          },
+          "sources": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/EventSource"
+            },
+            "minItems": 1
+          },
+          "confidence": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "description": "Confidence in the structured fields; 0 means not yet classified"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "kind",
+          "layers",
+          "title",
+          "where",
+          "when",
+          "severity",
+          "mainlyAffected",
+          "noticeable",
+          "status",
+          "sources",
+          "confidence",
+          "updatedAt"
+        ]
+      },
+      "EventKind": {
+        "type": "string",
+        "enum": [
+          "disruption",
+          "works",
+          "closure",
+          "weather",
+          "public_event",
+          "anomaly"
+        ]
+      },
+      "Layer": {
+        "type": "string",
+        "enum": [
+          "trips",
+          "area",
+          "now"
+        ]
+      },
+      "LocalizedText": {
+        "type": "object",
+        "additionalProperties": {
+          "type": "string"
+        },
+        "example": {
+          "en": "Excavation · Hämeentie 12 · until 14 Nov"
+        }
+      },
+      "Geometry": {
+        "oneOf": [
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "Point"
+                ]
+              },
+              "coordinates": {
+                "type": "array",
+                "items": {
+                  "type": "number"
+                },
+                "minItems": 2,
+                "maxItems": 3
+              }
+            },
+            "required": [
+              "type",
+              "coordinates"
+            ]
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "MultiPoint"
+                ]
+              },
+              "coordinates": {
+                "type": "array",
+                "items": {
+                  "type": "array",
+                  "items": {
+                    "type": "number"
+                  },
+                  "minItems": 2,
+                  "maxItems": 3
+                }
+              }
+            },
+            "required": [
+              "type",
+              "coordinates"
+            ]
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "LineString"
+                ]
+              },
+              "coordinates": {
+                "type": "array",
+                "items": {
+                  "type": "array",
+                  "items": {
+                    "type": "number"
+                  },
+                  "minItems": 2,
+                  "maxItems": 3
+                }
+              }
+            },
+            "required": [
+              "type",
+              "coordinates"
+            ]
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "MultiLineString"
+                ]
+              },
+              "coordinates": {
+                "type": "array",
+                "items": {
+                  "type": "array",
+                  "items": {
+                    "type": "array",
+                    "items": {
+                      "type": "number"
+                    },
+                    "minItems": 2,
+                    "maxItems": 3
+                  }
+                }
+              }
+            },
+            "required": [
+              "type",
+              "coordinates"
+            ]
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "Polygon"
+                ]
+              },
+              "coordinates": {
+                "type": "array",
+                "items": {
+                  "type": "array",
+                  "items": {
+                    "type": "array",
+                    "items": {
+                      "type": "number"
+                    },
+                    "minItems": 2,
+                    "maxItems": 3
+                  }
+                }
+              }
+            },
+            "required": [
+              "type",
+              "coordinates"
+            ]
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "MultiPolygon"
+                ]
+              },
+              "coordinates": {
+                "type": "array",
+                "items": {
+                  "type": "array",
+                  "items": {
+                    "type": "array",
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "type": "number"
+                      },
+                      "minItems": 2,
+                      "maxItems": 3
+                    }
+                  }
+                }
+              }
+            },
+            "required": [
+              "type",
+              "coordinates"
+            ]
+          }
+        ]
+      },
+      "Precision": {
+        "type": "string",
+        "enum": [
+          "exact",
+          "segment",
+          "area",
+          "vague"
+        ]
+      },
+      "DailyHours": {
+        "type": "object",
+        "properties": {
+          "from": {
+            "type": "string",
+            "pattern": "^(([01]\\d|2[0-3]):[0-5]\\d|24:00)$",
+            "example": "09:00"
+          },
+          "to": {
+            "type": "string",
+            "pattern": "^(([01]\\d|2[0-3]):[0-5]\\d|24:00)$",
+            "example": "15:00",
+            "description": "Exclusive. Earlier than `from` means past midnight."
+          },
+          "days": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Weekday"
+            },
+            "minItems": 1,
+            "description": "Days the hours start on; every day when absent"
+          }
+        },
+        "required": [
+          "from",
+          "to"
+        ],
+        "description": "The Source's own daily hours. When absent, the Right now Layer uses defaults for the kind."
+      },
+      "Weekday": {
+        "type": "string",
+        "enum": [
+          "mon",
+          "tue",
+          "wed",
+          "thu",
+          "fri",
+          "sat",
+          "sun"
+        ]
+      },
+      "EndConflict": {
+        "type": "object",
+        "properties": {
+          "field": {
+            "type": "string",
+            "format": "date",
+            "description": "The Source's structured end date, which `when.end` keeps"
+          },
+          "text": {
+            "type": "string",
+            "format": "date",
+            "description": "The end date the Source's own text gives"
+          }
+        },
+        "required": [
+          "field",
+          "text"
+        ],
+        "description": "The Source's text and its structured end date disagree. Either may be the stale one."
+      },
+      "Severity": {
+        "type": "string",
+        "enum": [
+          "info",
+          "minor",
+          "consider",
+          "major"
+        ]
+      },
+      "MainlyAffected": {
+        "type": "string",
+        "enum": [
+          "drivers",
+          "cyclists",
+          "pedestrians",
+          "transit",
+          "parking",
+          "everyone",
+          "nobody",
+          "unknown"
+        ]
+      },
+      "WorkType": {
+        "type": "string",
+        "enum": [
+          "water_sewer",
+          "district_heating",
+          "electricity_telecom",
+          "paving",
+          "street_construction",
+          "building_site",
+          "other"
+        ],
+        "description": "Kind of work, for works Events"
+      },
+      "Noticeable": {
+        "type": "string",
+        "enum": [
+          "noise",
+          "crowd",
+          "sirens",
+          "blocked",
+          "aircraft",
+          "outage"
+        ]
+      },
+      "Deviation": {
+        "type": "object",
+        "properties": {
+          "metric": {
+            "type": "string",
+            "enum": [
+              "speed",
+              "delay",
+              "travel_time"
+            ]
+          },
+          "normal": {
+            "type": "number"
+          },
+          "now": {
+            "type": "number"
+          },
+          "unit": {
+            "type": "string",
+            "example": "s"
+          }
+        },
+        "required": [
+          "metric",
+          "normal",
+          "now",
+          "unit"
+        ]
+      },
+      "EventStatus": {
+        "type": "string",
+        "enum": [
+          "upcoming",
+          "active",
+          "resolved"
+        ]
+      },
+      "EventSource": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "City of Helsinki"
+          },
+          "id": {
+            "type": "string",
+            "description": "The item's id at the Source"
+          },
+          "url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "license": {
+            "type": "string",
+            "example": "CC BY 4.0"
+          },
+          "attribution": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "id",
+          "updatedAt",
+          "license"
+        ]
+      },
+      "Region": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "fi-capital-region"
+          },
+          "name": {
+            "$ref": "#/components/schemas/LocalizedText"
+          },
+          "bbox": {
+            "type": "array",
+            "prefixItems": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              }
+            ],
+            "description": "[minLon, minLat, maxLon, maxLat] in WGS84",
+            "example": [
+              24.4,
+              60,
+              25.3,
+              60.45
+            ]
+          },
+          "timeZone": {
+            "type": "string",
+            "description": "IANA time zone",
+            "example": "Europe/Helsinki"
+          },
+          "languages": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1,
+            "description": "BCP 47 tags, the main language first",
+            "example": [
+              "fi",
+              "sv",
+              "en"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "bbox",
+          "timeZone",
+          "languages"
+        ]
+      }
+    },
+    "parameters": {}
+  },
+  "paths": {
+    "/health": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "Service status. `degraded` means the API runs but the database is unreachable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Health"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/events": {
+      "get": {
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^-?\\d+(\\.\\d+)?,-?\\d+(\\.\\d+)?(,\\d+)?$",
+              "example": "60.1699,24.9384,1000",
+              "description": "lat,lon[,radius in metres, default 1000; with layer=now 500, at most 2000]"
+            },
+            "required": false,
+            "description": "lat,lon[,radius in metres, default 1000; with layer=now 500, at most 2000]",
+            "name": "near",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "required": false,
+            "name": "from",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "required": false,
+            "name": "to",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "$ref": "#/components/schemas/EventKind"
+            },
+            "required": false,
+            "name": "kind",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "example": "active,resolved",
+              "description": "Comma-separated; default active,upcoming"
+            },
+            "required": false,
+            "description": "Comma-separated; default active,upcoming",
+            "name": "status",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "enum": [
+                "now"
+              ],
+              "description": "now: the Right now lens. Needs `near`; returns only Events on the area or now Layer going on at this moment (time window and daily hours), noticeable ones first, then nearest first. Ignores `from` and `to`."
+            },
+            "required": false,
+            "description": "now: the Right now lens. Needs `near`; returns only Events on the area or now Layer going on at this moment (time window and daily hours), noticeable ones first, then nearest first. Ignores `from` and `to`.",
+            "name": "layer",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "example": "noise,crowd",
+              "description": "Comma-separated; Events with any of them"
+            },
+            "required": false,
+            "description": "Comma-separated; Events with any of them",
+            "name": "noticeable",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Events matching the query",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "events": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Event"
+                      }
+                    }
+                  },
+                  "required": [
+                    "events"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/regions": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "Regions Pulse covers. Clients use them to bound address search and pick languages.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "regions": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Region"
+                      }
+                    }
+                  },
+                  "required": [
+                    "regions"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "webhooks": {}
+}

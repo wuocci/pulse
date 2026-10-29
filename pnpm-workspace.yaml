@@ -5,3 +5,6 @@ packages:
 # esbuild ships its binary as a platform package; its postinstall only re-checks it.
 allowBuilds:
   esbuild: false
+  # protobufjs (via gtfs-realtime-bindings): its postinstall only checks versions; the runtime needs no build.
+  protobufjs: false
+
