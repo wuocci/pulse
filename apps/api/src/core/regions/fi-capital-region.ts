@@ -42,6 +42,7 @@ export const fiCapitalRegion: Region = {
       publisher: "HSL",
       license: "CC BY 4.0",
       refreshMinutes: 2,
+      keepVanishedHours: 24,
       feedId: "HSL",
       directory: { kind: "digitransit", url: "https://api.digitransit.fi/routing/v2/hsl/gtfs/v1" },
     },

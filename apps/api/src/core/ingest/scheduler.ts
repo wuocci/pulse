@@ -4,6 +4,7 @@ import { fetchPermits, toPermitItems } from "../adapters/land-use-permits.ts";
 import type { Classification } from "../classifier/enrich.ts";
 import type { EventStore } from "../events/store.ts";
 import type { GtfsRtSource, Region, SourceConfig } from "../regions/index.ts";
+import { keepVanished } from "./vanished.ts";
 
 export interface IngestOptions {
   fetchFn?: typeof fetch;
@@ -28,11 +29,15 @@ export function startIngest(regions: Region[], store: EventStore, options: Inges
 
 export async function refreshSource(source: SourceConfig, region: Region, store: EventStore, options: IngestOptions = {}) {
   try {
-    const { events, classifyRest } = await read(source, region, options, new Date());
+    const now = new Date();
+    const fresh = await read(source, region, options, now);
+    const events = source.keepVanishedHours
+      ? keepVanished(await store.sourceEvents(source.id), fresh.events, { now, keepForHours: source.keepVanishedHours })
+      : fresh.events;
     await store.replaceSource(source.id, events);
     console.log(`${region.id}/${source.id}: ${events.length} Events`);
     // In the background: the next refresh doesn't wait for it.
-    void classifyRest?.();
+    void fresh.classifyRest?.();
   } catch (error) {
     console.error(`${region.id}/${source.id}: refresh failed:`, error);
   }

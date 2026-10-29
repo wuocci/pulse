@@ -19,6 +19,8 @@ interface BaseSource {
   publisher: string;
   license: string;
   refreshMinutes: number;
+  // For feeds that drop what's over: a vanished Event stays this long as resolved. Without it, it just goes.
+  keepVanishedHours?: number;
 }
 
 export interface LandUsePermitSource extends BaseSource {
