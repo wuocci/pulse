@@ -1,4 +1,4 @@
-import type { Event, EventKind, EventStatus, Geometry, Noticeable } from "@pulse/schema";
+import type { Event, EventKind, EventStatus, Geometry, Layer, Noticeable } from "@pulse/schema";
 
 export interface EventQuery {
   near?: { lat: number; lon: number; radiusM: number };
@@ -8,6 +8,8 @@ export interface EventQuery {
   statuses?: EventStatus[];
   // Any match
   noticeable?: Noticeable[];
+  // Any match
+  layers?: Layer[];
   // Nearest first; needs `near`. Otherwise the order is unspecified.
   orderBy?: "distance";
 }
@@ -37,13 +39,14 @@ export class InMemoryEventStore implements EventStore {
     return true;
   }
 
-  async query({ near, from, to, kind, statuses, noticeable, orderBy }: EventQuery) {
+  async query({ near, from, to, kind, statuses, noticeable, layers, orderBy }: EventQuery) {
     const matches = [...this.bySource.values()]
       .flat()
       .filter((event) => {
         if (kind && event.kind !== kind) return false;
         if (statuses && !statuses.includes(event.status)) return false;
         if (noticeable && !event.noticeable.some((n) => noticeable.includes(n))) return false;
+        if (layers && !event.layers.some((l) => layers.includes(l))) return false;
         if (to && new Date(event.when.start) > to) return false;
         if (from && event.when.end && new Date(event.when.end) < from) return false;
         return true;

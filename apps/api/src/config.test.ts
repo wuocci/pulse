@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { classifierConfig, createPool } from "./config.ts";
+import { classifierConfig, createPool, digitransitApiKey } from "./config.ts";
 
 describe("classifierConfig", () => {
   it("is off without an API key, so Events publish unclassified", () => {
@@ -21,6 +21,14 @@ describe("classifierConfig", () => {
     for (const value of ["0", "1.5", "seven"]) {
       expect(() => classifierConfig({ TYPESAFE_API_KEY: "k", CLASSIFIER_THRESHOLD: value })).toThrow(/CLASSIFIER_THRESHOLD/);
     }
+  });
+});
+
+describe("digitransitApiKey", () => {
+  it("reads the key, or null without one: then transit alerts are placed vaguely in the Region", () => {
+    expect(digitransitApiKey({ DIGITRANSIT_API_KEY: " k " })).toBe("k");
+    expect(digitransitApiKey({})).toBeNull();
+    expect(digitransitApiKey({ DIGITRANSIT_API_KEY: "" })).toBeNull();
   });
 });
 

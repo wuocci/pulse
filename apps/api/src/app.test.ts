@@ -1,4 +1,4 @@
-import type { DailyHours, Event, EventKind, Noticeable } from "@pulse/schema";
+import type { DailyHours, Event, EventKind, Layer, Noticeable } from "@pulse/schema";
 import { describe, expect, it } from "vitest";
 import { createApp } from "./app.ts";
 import { InMemoryEventStore } from "./core/events/store.ts";
@@ -149,11 +149,15 @@ describe("GET /v0/events?layer=now", () => {
     id: string,
     kind: EventKind,
     metresNorth: number,
-    { noticeable = [], dailyHours }: { noticeable?: Noticeable[]; dailyHours?: DailyHours } = {},
+    {
+      noticeable = [],
+      dailyHours,
+      layers = ["area"],
+    }: { noticeable?: Noticeable[]; dailyHours?: DailyHours; layers?: Layer[] } = {},
   ): Event => ({
     id,
     kind,
-    layers: ["area"],
+    layers,
     title: { en: id },
     where: {
       geometry: { type: "Point", coordinates: [here.lon, here.lat + metresNorth / metresPerDegreeLat] },
@@ -260,6 +264,16 @@ describe("GET /v0/events?layer=now", () => {
     expect(await ids(events, tuesday("12:00"), "&noticeable=noise")).toEqual(["dig", "concert"]);
     expect(await ids(events, tuesday("12:00"), "&noticeable=crowd,blocked")).toEqual(["dig", "closure", "concert"]);
     expect((await request(events, tuesday("12:00"), "&noticeable=smell")).status).toBe(400);
+  });
+
+  it("takes only Events on the area or Right now Layer, leaving out ones for trips alone", async () => {
+    const events = [
+      seed("stop-closed", "disruption", 100, { noticeable: ["outage"], layers: ["trips", "now"] }),
+      seed("timetable-change", "disruption", 50, { layers: ["trips"] }),
+      seed("closure", "closure", 200),
+    ];
+
+    expect(await ids(events, tuesday("12:00"))).toEqual(["stop-closed", "closure"]);
   });
 });
 

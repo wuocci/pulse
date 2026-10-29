@@ -1,12 +1,14 @@
 import { serve } from "@hono/node-server";
 import { createApp } from "./app.ts";
-import { classifierConfig, createPool } from "./config.ts";
+import { classifierConfig, createPool, digitransitApiKey } from "./config.ts";
+import { digitransitDirectory } from "./core/adapters/digitransit.ts";
+import type { StopDirectory } from "./core/adapters/gtfs-rt.ts";
 import { PgAnswerCache } from "./core/classifier/cache.ts";
 import { Classification } from "./core/classifier/enrich.ts";
 import { createJevClassifier } from "./core/classifier/jev.ts";
 import { InMemoryEventStore } from "./core/events/store.ts";
 import { startIngest } from "./core/ingest/scheduler.ts";
-import { regions } from "./core/regions/index.ts";
+import { type GtfsRtSource, regions } from "./core/regions/index.ts";
 import { runMigrations } from "./db.ts";
 
 const pool = createPool();
@@ -38,7 +40,22 @@ if (!classifier) console.log("Classifier off: TYPESAFE_API_KEY not set");
 else if (!classification) console.log("Classifier off: no database for its cache");
 else console.log(`Classifier on: ${classifier.model}, threshold ${classifier.threshold}`);
 
-const stopIngest = startIngest(regions, events, { classification });
+// One directory per GTFS-RT Source, kept across refreshes so its cache lasts.
+const digitransitKey = digitransitApiKey();
+const directories = new Map<string, StopDirectory>();
+const stopDirectory = digitransitKey
+  ? (source: GtfsRtSource) => {
+      let directory = directories.get(source.id);
+      if (!directory) {
+        directory = digitransitDirectory({ url: source.directory.url, apiKey: digitransitKey });
+        directories.set(source.id, directory);
+      }
+      return directory;
+    }
+  : undefined;
+if (!digitransitKey) console.log("Stop directory off: DIGITRANSIT_API_KEY not set");
+
+const stopIngest = startIngest(regions, events, { classification, ...(stopDirectory ? { stopDirectory } : {}) });
 
 const app = createApp({
   db: {
