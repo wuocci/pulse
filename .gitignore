@@ -14,3 +14,4 @@ docs/scenarios.md
 
 # Local experiments, not committed
 spikes/
+apps/api/.vitest
