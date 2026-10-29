@@ -5,7 +5,9 @@ import { initReactI18next } from "react-i18next";
 export const en = {
   appName: "Pulse",
   showing: "Showing {{point}}",
+  map: "Map. Long-press, or right-click, to choose a place.",
   useMyLocation: "Use my location",
+  followMe: "Follow me",
   locating: "Finding you…",
   locationDenied: "Location is off. Allow it for this site, or long-press the map to choose a place.",
   locationUnavailable: "Couldn't find your location. Try again, or long-press the map to choose a place.",

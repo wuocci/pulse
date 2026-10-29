@@ -4,9 +4,22 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
-import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
+import { act } from "react";
+import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 import { App } from "./App.tsx";
+import type { PointMapProps } from "./map/PointMap.tsx";
 import { type DeviceLocation, type LatLon, LocationError, type Platform } from "./platform.tsx";
+
+// The real map draws with WebGL, which jsdom lacks: this one shows what it was given and can be long-pressed.
+vi.mock("./map/PointMap.tsx", () => ({
+  PointMap: ({ point, onLongPress }: PointMapProps) => (
+    <div data-testid="map" data-point={point ? `${point.lat},${point.lon}` : ""}>
+      <button type="button" onClick={() => onLongPress({ lat: 60.2, lon: 24.9 })}>
+        long-press the map
+      </button>
+    </div>
+  ),
+}));
 
 // The API's answer for /v0/regions: one Region, its bbox centre at 60.22500, 24.85000.
 const region: Region = {
@@ -26,13 +39,22 @@ const KAMPPI: LatLon = { lat: 60.169, lon: 24.93164 };
 // A device whose location and storage the test controls.
 function fakePlatform({ stored, location }: { stored?: string; location?: LatLon | "denied" } = {}) {
   const storage = new Map(stored ? [["point", stored]] : []);
+  // The location watch, so a test can send fixes and see whether it is still on.
+  const watching: { active: boolean; onFix?: (p: LatLon) => void; onError?: (e: LocationError) => void } = { active: false };
   const deviceLocation: DeviceLocation = {
     async current() {
       if (!location) throw new Error("no location in this test");
       if (location === "denied") throw new LocationError("denied");
       return location;
     },
-    watch: () => () => {},
+    watch(onFix, onError) {
+      watching.onFix = onFix;
+      watching.onError = onError;
+      watching.active = true;
+      return () => {
+        watching.active = false;
+      };
+    },
   };
   const platform: Platform = {
     location: deviceLocation,
@@ -41,7 +63,7 @@ function fakePlatform({ stored, location }: { stored?: string; location?: LatLon
       set: async (key, value) => void storage.set(key, value),
     },
   };
-  return { platform, storage };
+  return { platform, storage, watching };
 }
 
 function renderApp(url: string, platform = fakePlatform().platform) {
@@ -106,5 +128,56 @@ describe("Use my location", () => {
 
     expect(await screen.findByRole("alert")).toHaveTextContent("Location is off");
     expect(await shownPoint()).toBe("Showing 60.17000, 24.95000");
+  });
+});
+
+describe("the map", () => {
+  it("is centred on the point", async () => {
+    renderApp("/?at=60.17000,24.95000");
+
+    expect(await screen.findByTestId("map")).toHaveAttribute("data-point", "60.17,24.95");
+  });
+
+  it("moves the point where it's long-pressed, into the URL and onto the device", async () => {
+    const { platform, storage } = fakePlatform();
+    const history = renderApp("/", platform);
+
+    await userEvent.click(await screen.findByRole("button", { name: "long-press the map" }));
+
+    expect(await screen.findByText("Showing 60.20000, 24.90000")).toBeInTheDocument();
+    expect(history.location.search).toContain("at=60.20000%2C24.90000");
+    expect(storage.get("point")).toBe("60.20000,24.90000");
+  });
+});
+
+describe("Follow me", () => {
+  it("keeps the point on the device's location while on, and stops watching when off", async () => {
+    const { platform, watching } = fakePlatform();
+    renderApp("/", platform);
+    const toggle = await screen.findByRole("button", { name: "Follow me" });
+
+    await userEvent.click(toggle);
+    expect(toggle).toHaveAttribute("aria-pressed", "true");
+    act(() => watching.onFix?.(KAMPPI));
+    expect(await screen.findByText("Showing 60.16900, 24.93164")).toBeInTheDocument();
+    act(() => watching.onFix?.({ lat: 60.17, lon: 24.94 }));
+    expect(await screen.findByText("Showing 60.17000, 24.94000")).toBeInTheDocument();
+
+    await userEvent.click(toggle);
+    expect(toggle).toHaveAttribute("aria-pressed", "false");
+    expect(watching.active).toBe(false);
+  });
+
+  it("turns itself off and explains when location is refused", async () => {
+    const { platform, watching } = fakePlatform();
+    renderApp("/", platform);
+    const toggle = await screen.findByRole("button", { name: "Follow me" });
+
+    await userEvent.click(toggle);
+    act(() => watching.onError?.(new LocationError("denied")));
+
+    expect(await screen.findByRole("alert")).toHaveTextContent("Location is off");
+    expect(toggle).toHaveAttribute("aria-pressed", "false");
+    expect(watching.active).toBe(false);
   });
 });
