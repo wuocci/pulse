@@ -1,6 +1,6 @@
 import type { Region } from "@pulse/client";
 import { createMemoryHistory } from "@tanstack/react-router";
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
@@ -10,12 +10,16 @@ import { App } from "./App.tsx";
 import type { PointMapProps } from "./map/PointMap.tsx";
 import { type DeviceLocation, type LatLon, LocationError, type Platform } from "./platform.tsx";
 
-// The real map draws with WebGL, which jsdom lacks: this one shows what it was given and can be long-pressed.
+// The real map draws with WebGL, which jsdom lacks: this one shows what it was given, and can be long-pressed
+// and panned.
 vi.mock("./map/PointMap.tsx", () => ({
-  PointMap: ({ point, onLongPress }: PointMapProps) => (
+  PointMap: ({ point, onLongPress, onPan }: PointMapProps) => (
     <div data-testid="map" data-point={point ? `${point.lat},${point.lon}` : ""}>
       <button type="button" onClick={() => onLongPress({ lat: 60.2, lon: 24.9 })}>
         long-press the map
+      </button>
+      <button type="button" onClick={onPan}>
+        pan the map
       </button>
     </div>
   ),
@@ -72,7 +76,10 @@ function renderApp(url: string, platform = fakePlatform().platform) {
   return history;
 }
 
-const shownPoint = async () => (await screen.findByText(/^Showing /)).textContent;
+// Where the map is centred, as "lat,lon".
+const mapPoint = async (expected: string) =>
+  waitFor(() => expect(screen.getByTestId("map")).toHaveAttribute("data-point", expected));
+const locate = (name: RegExp) => screen.findByRole("button", { name });
 
 describe("the app shell", () => {
   it("has a main region named for screen readers", async () => {
@@ -81,112 +88,128 @@ describe("the app shell", () => {
     expect(await screen.findByRole("main")).toBeInTheDocument();
     expect(screen.getByRole("heading", { level: 1, name: "Pulse" })).toBeInTheDocument();
   });
+
+  it("shows no coordinates: the pin on the map says where", async () => {
+    renderApp("/?at=60.17000,24.95000");
+    await mapPoint("60.17,24.95");
+
+    expect(screen.queryByText(/60\.17/)).not.toBeInTheDocument();
+  });
 });
 
 describe("where the app is looking", () => {
   it("starts at the Region's centre when nothing is known", async () => {
     renderApp("/");
 
-    expect(await shownPoint()).toBe("Showing 60.22500, 24.85000");
+    await mapPoint("60.225,24.85");
   });
 
   it("starts at the point remembered on the device", async () => {
     renderApp("/", fakePlatform({ stored: "60.16900,24.93164" }).platform);
 
-    expect(await shownPoint()).toBe("Showing 60.16900, 24.93164");
+    await mapPoint("60.169,24.93164");
   });
 
   it("lets the point in the URL win, so a shared link shows the same place", async () => {
     renderApp("/?at=60.17000,24.95000", fakePlatform({ stored: "60.16900,24.93164" }).platform);
 
-    expect(await shownPoint()).toBe("Showing 60.17000, 24.95000");
+    await mapPoint("60.17,24.95");
   });
 
   it("ignores a malformed point in the URL", async () => {
     renderApp("/?at=Töölö");
 
-    expect(await shownPoint()).toBe("Showing 60.22500, 24.85000");
-  });
-});
-
-describe("Use my location", () => {
-  it("moves the point to the device's location, into the URL and onto the device", async () => {
-    const { platform, storage } = fakePlatform({ location: KAMPPI });
-    const history = renderApp("/", platform);
-
-    await userEvent.click(await screen.findByRole("button", { name: "Use my location" }));
-
-    expect(await screen.findByText("Showing 60.16900, 24.93164")).toBeInTheDocument();
-    expect(history.location.search).toContain("at=60.16900%2C24.93164");
-    expect(storage.get("point")).toBe("60.16900,24.93164");
+    await mapPoint("60.225,24.85");
   });
 
-  it("explains a refused permission and stays where it was", async () => {
-    renderApp("/?at=60.17000,24.95000", fakePlatform({ location: "denied" }).platform);
-
-    await userEvent.click(await screen.findByRole("button", { name: "Use my location" }));
-
-    expect(await screen.findByRole("alert")).toHaveTextContent("Location is off");
-    expect(await shownPoint()).toBe("Showing 60.17000, 24.95000");
-  });
-});
-
-describe("the map", () => {
-  it("is centred on the point", async () => {
-    renderApp("/?at=60.17000,24.95000");
-
-    expect(await screen.findByTestId("map")).toHaveAttribute("data-point", "60.17,24.95");
-  });
-
-  it("moves the point where it's long-pressed, into the URL and onto the device", async () => {
+  it("moves the point where the map is long-pressed, into the URL and onto the device", async () => {
     const { platform, storage } = fakePlatform();
     const history = renderApp("/", platform);
 
     await userEvent.click(await screen.findByRole("button", { name: "long-press the map" }));
 
-    expect(await screen.findByText("Showing 60.20000, 24.90000")).toBeInTheDocument();
+    await mapPoint("60.2,24.9");
     expect(history.location.search).toContain("at=60.20000%2C24.90000");
     expect(storage.get("point")).toBe("60.20000,24.90000");
   });
 });
 
-describe("Follow me", () => {
-  it("keeps the point on the device's location while on, and stops watching when off", async () => {
-    const { platform, watching } = fakePlatform();
-    renderApp("/", platform);
-    const toggle = await screen.findByRole("button", { name: "Follow me" });
+describe("the locate button", () => {
+  it("goes to the device's location on the first tap, into the URL and onto the device", async () => {
+    const { platform, storage, watching } = fakePlatform({ location: KAMPPI });
+    const history = renderApp("/", platform);
 
-    await userEvent.click(toggle);
-    expect(toggle).toHaveAttribute("aria-pressed", "true");
-    act(() => watching.onFix?.(KAMPPI));
-    expect(await screen.findByText("Showing 60.16900, 24.93164")).toBeInTheDocument();
-    act(() => watching.onFix?.({ lat: 60.17, lon: 24.94 }));
-    expect(await screen.findByText("Showing 60.17000, 24.94000")).toBeInTheDocument();
+    await userEvent.click(await locate(/^Go to my location$/));
 
-    await userEvent.click(toggle);
-    expect(toggle).toHaveAttribute("aria-pressed", "false");
+    await mapPoint("60.169,24.93164");
+    expect(history.location.search).toContain("at=60.16900%2C24.93164");
+    expect(storage.get("point")).toBe("60.16900,24.93164");
     expect(watching.active).toBe(false);
   });
 
-  it("turns itself off and explains when location is refused", async () => {
-    const { platform, watching } = fakePlatform();
+  it("follows on the second tap, and stops on the third", async () => {
+    const { platform, watching } = fakePlatform({ location: KAMPPI });
     renderApp("/", platform);
-    const toggle = await screen.findByRole("button", { name: "Follow me" });
 
-    await userEvent.click(toggle);
+    await userEvent.click(await locate(/^Go to my location$/));
+    await userEvent.click(await locate(/^Follow my location$/));
+    const following = await locate(/^Following your location$/);
+    expect(following).toHaveAttribute("aria-pressed", "true");
+    act(() => watching.onFix?.({ lat: 60.17, lon: 24.94 }));
+    await mapPoint("60.17,24.94");
+
+    await userEvent.click(following);
+    expect(watching.active).toBe(false);
+    expect(await locate(/^Go to my location$/)).toHaveAttribute("aria-pressed", "false");
+  });
+
+  it("stops following when the map is panned or a place is chosen by hand", async () => {
+    const { platform, watching } = fakePlatform({ location: KAMPPI });
+    renderApp("/", platform);
+    const follow = async () => {
+      await userEvent.click(await locate(/^Go to my location$/));
+      await userEvent.click(await locate(/^Follow my location$/));
+      expect(watching.active).toBe(true);
+    };
+
+    await follow();
+    await userEvent.click(screen.getByRole("button", { name: "pan the map" }));
+    expect(watching.active).toBe(false);
+
+    await follow();
+    await userEvent.click(screen.getByRole("button", { name: "long-press the map" }));
+    expect(watching.active).toBe(false);
+    await mapPoint("60.2,24.9");
+  });
+
+  it("explains a refused permission and stays where it was", async () => {
+    renderApp("/?at=60.17000,24.95000", fakePlatform({ location: "denied" }).platform);
+
+    await userEvent.click(await locate(/^Go to my location$/));
+
+    expect(await screen.findByRole("alert")).toHaveTextContent("Location is off");
+    await mapPoint("60.17,24.95");
+  });
+
+  it("stops following and explains when location is refused while following", async () => {
+    const { platform, watching } = fakePlatform({ location: KAMPPI });
+    renderApp("/", platform);
+
+    await userEvent.click(await locate(/^Go to my location$/));
+    await userEvent.click(await locate(/^Follow my location$/));
     act(() => watching.onError?.(new LocationError("denied")));
 
     expect(await screen.findByRole("alert")).toHaveTextContent("Location is off");
-    expect(toggle).toHaveAttribute("aria-pressed", "false");
     expect(watching.active).toBe(false);
   });
 });
 
 describe("the bottom sheet", () => {
-  it("is always there, titled, over the map", async () => {
+  it("is always there, titled, with the controls in it", async () => {
     renderApp("/");
+    const sheet = await screen.findByRole("region", { name: "Around this point" });
 
-    expect(await screen.findByRole("heading", { name: "Around this point" })).toBeInTheDocument();
+    expect(sheet).toContainElement(await locate(/^Go to my location$/));
   });
 
   it("can be expanded and collapsed without dragging, for keyboards and screen readers", async () => {

@@ -4,17 +4,16 @@ import { initReactI18next } from "react-i18next";
 // All UI text. English only for now; Finnish is a translation job, not a code change.
 export const en = {
   appName: "Pulse",
-  showing: "Showing {{point}}",
   map: "Map. Long-press, or right-click, to choose a place.",
-  useMyLocation: "Use my location",
-  followMe: "Follow me",
+  goToMyLocation: "Go to my location",
+  followMyLocation: "Follow my location",
+  followingYourLocation: "Following your location",
   locating: "Finding you…",
   locationDenied: "Location is off. Allow it for this site, or long-press the map to choose a place.",
   locationUnavailable: "Couldn't find your location. Try again, or long-press the map to choose a place.",
   regionsFailed: "Can't reach Pulse right now.",
   sheetTitle: "Around this point",
-  sheetDescription: "What's going on here, now and in the next two weeks.",
-  sheetComingSoon: "My area and Right now will be listed here.",
+  sheetHint: "Tap something on the map to see what it is.",
   expand: "Expand",
   collapse: "Collapse",
 } as const;
