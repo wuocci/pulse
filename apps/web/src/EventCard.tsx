@@ -1,18 +1,11 @@
 import type { Event, Schema } from "@pulse/client";
 import {
   Ban,
-  Bike,
-  Bus,
-  Car,
-  Check,
-  CircleHelp,
   CircleOff,
   Clock,
-  Footprints,
   type LucideIcon,
   Plane,
   Siren,
-  SquareParking,
   Users,
   Volume2,
   Wrench,
@@ -22,21 +15,10 @@ import { type ReactNode, useEffect, useId, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { textIn, toneOf, type When, whenOf } from "./events.ts";
-import { KindIcon, TONE_CLASSES } from "./map/EventPin.tsx";
+import { KindIcon, TONE_CLASSES, WHO_ICONS } from "./map/EventPin.tsx";
 
 // The card that pops up from a pin, read top to bottom: WHO it affects (does this concern me?), what and where,
 // when, WHY (the kind of work or Event) and HOW you'd notice it.
-
-const WHO: Record<Schema<"MainlyAffected">, LucideIcon> = {
-  drivers: Car,
-  pedestrians: Footprints,
-  cyclists: Bike,
-  transit: Bus,
-  parking: SquareParking,
-  everyone: Users,
-  nobody: Check,
-  unknown: CircleHelp,
-};
 
 const HOW: Record<Schema<"Noticeable">, LucideIcon> = {
   noise: Volume2,
@@ -60,7 +42,7 @@ export function EventCard({ event, languages, timeZone, onClose }: EventCardProp
   const { t } = useTranslation();
   const titleId = useId();
   const heading = useRef<HTMLHeadingElement>(null);
-  const Who = WHO[event.mainlyAffected];
+  const Who = WHO_ICONS[event.mainlyAffected];
   const known = event.mainlyAffected !== "unknown";
 
   // Focus moves into the card, so a keyboard or screen reader follows it; Escape closes it from anywhere.

@@ -1,10 +1,36 @@
 import type { Schema } from "@pulse/client";
-import { Activity, Ban, Bus, CloudLightning, Construction, type LucideIcon, Ticket } from "lucide-react";
+import {
+  Activity,
+  Ban,
+  Bike,
+  Bus,
+  Car,
+  Check,
+  CircleHelp,
+  CloudLightning,
+  Construction,
+  Footprints,
+  type LucideIcon,
+  SquareParking,
+  Ticket,
+  Users,
+} from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { type Pin, type Tone, textIn, toneOf } from "../events.ts";
 
-// One Event on the map, saying two things and nothing more: what it is (icon) and how much it matters (colour).
-// A real button, so it's reachable without the map.
+// One Event on the map, saying two things and nothing more: who it affects (icon) and how much it matters (colour).
+// Not known yet who: what kind of Event it is. A real button, so it's reachable without the map.
+
+export const WHO_ICONS: Record<Schema<"MainlyAffected">, LucideIcon> = {
+  drivers: Car,
+  pedestrians: Footprints,
+  cyclists: Bike,
+  transit: Bus,
+  parking: SquareParking,
+  everyone: Users,
+  nobody: Check,
+  unknown: CircleHelp,
+};
 
 const ICONS: Record<Schema<"EventKind">, LucideIcon> = {
   works: Construction,
@@ -39,7 +65,11 @@ export function EventPin({ pin: { event }, languages, selected, onSelect }: Even
   const { t } = useTranslation();
   const tone = toneOf(event);
   const resolved = event.status === "resolved";
-  const label = [textIn(event.title, languages), t(TONE_LABEL[tone]), ...(resolved ? [t("ended")] : [])].join(", ");
+  const known = event.mainlyAffected !== "unknown";
+  const Who = WHO_ICONS[event.mainlyAffected];
+  const label = [textIn(event.title, languages), t(`who_${event.mainlyAffected}`), t(TONE_LABEL[tone]), ...(resolved ? [t("ended")] : [])].join(
+    ", ",
+  );
 
   return (
     <button
@@ -59,7 +89,7 @@ export function EventPin({ pin: { event }, languages, selected, onSelect }: Even
         selected ? "z-10 scale-125 ring-4 ring-primary" : "",
       ].join(" ")}
     >
-      <KindIcon kind={event.kind} />
+      {known ? <Who aria-hidden className="size-5" /> : <KindIcon kind={event.kind} />}
     </button>
   );
 }

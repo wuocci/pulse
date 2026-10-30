@@ -246,9 +246,20 @@ describe("Events on the map", () => {
     events = [anEvent("a")];
     renderApp("/?at=60.17000,24.95000");
 
-    expect(await screen.findByRole("button", { name: "Works a, minor" })).toBeInTheDocument();
+    expect(await screen.findByRole("button", { name: "Works a, Drivers, minor" })).toBeInTheDocument();
     expect(eventQueries.at(-1)?.get("layer")).toBe("now");
     expect(eventQueries.at(-1)?.get("near")).toBe("60.17,24.95,1000");
+  });
+
+  it("shows on each pin who it affects, or else what kind of Event it is", async () => {
+    events = [anEvent("a"), anEvent("b", { mainlyAffected: "unknown" })];
+    renderApp("/?at=60.17000,24.95000");
+
+    const drivers = await screen.findByRole("button", { name: "Works a, Drivers, minor" });
+    expect(drivers.querySelector(".lucide-car")).toBeInTheDocument();
+    expect(drivers.querySelector(".lucide-construction")).not.toBeInTheDocument();
+    // Not known yet who: what it is says more than a question mark.
+    expect(screen.getByRole("button", { name: "Works b, Not sure yet who this affects, minor" }).querySelector(".lucide-construction")).toBeInTheDocument();
   });
 
   it("switches to the next 14 days, kept in the URL", async () => {
@@ -269,18 +280,18 @@ describe("Events on the map", () => {
     events = [anEvent("here"), anEvent("everywhere", { where: { geometry: { type: "Point", coordinates: [24.9, 60.2] }, precision: "vague" } })];
     renderApp("/?at=60.17000,24.95000");
 
-    expect(await screen.findByRole("button", { name: "Works here, minor" })).toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: "Works everywhere, minor" })).not.toBeInTheDocument();
+    expect(await screen.findByRole("button", { name: "Works here, Drivers, minor" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Works everywhere, Drivers, minor" })).not.toBeInTheDocument();
   });
 
   it("selects an Event when its pin is tapped, kept in the URL", async () => {
     events = [anEvent("a")];
     const history = renderApp("/?at=60.17000,24.95000");
 
-    await userEvent.click(await screen.findByRole("button", { name: "Works a, minor" }));
+    await userEvent.click(await screen.findByRole("button", { name: "Works a, Drivers, minor" }));
 
     await waitFor(() => expect(history.location.search).toContain("event=a"));
-    expect(screen.getByRole("button", { name: "Works a, minor" })).toHaveAttribute("aria-pressed", "true");
+    expect(screen.getByRole("button", { name: "Works a, Drivers, minor" })).toHaveAttribute("aria-pressed", "true");
   });
 });
 
@@ -328,8 +339,8 @@ describe("the Event card", () => {
     events = [anEvent("a"), anEvent("b")];
     renderApp("/?at=60.17000,24.95000");
 
-    await userEvent.click(await screen.findByRole("button", { name: "Works a, minor" }));
-    await userEvent.click(screen.getByRole("button", { name: "Works b, minor" }));
+    await userEvent.click(await screen.findByRole("button", { name: "Works a, Drivers, minor" }));
+    await userEvent.click(screen.getByRole("button", { name: "Works b, Drivers, minor" }));
 
     expect(await screen.findByRole("article", { name: "Works b" })).toBeInTheDocument();
     expect(screen.queryByRole("article", { name: "Works a" })).not.toBeInTheDocument();
@@ -355,7 +366,7 @@ describe("the Event card", () => {
 
     await userEvent.keyboard("{Escape}");
 
-    await waitFor(() => expect(screen.getByRole("button", { name: "Works a, minor" })).toHaveFocus());
+    await waitFor(() => expect(screen.getByRole("button", { name: "Works a, Drivers, minor" })).toHaveFocus());
   });
 
   it("opens from a link with the Event in it", async () => {
