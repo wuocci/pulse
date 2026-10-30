@@ -12,6 +12,9 @@ import { type Snap, snapAfterDrag } from "./sheet-snap.ts";
 // have one. Measured; this is its height without an inset, which the map leaves uncovered (PointMap.tsx).
 export const PEEK_PX = 144;
 
+// From this width the sheet is a panel docked on the left, always open: no dragging, no Expand.
+export const DOCKED_MEDIA = "(min-width: 64rem)";
+
 export interface SheetProps {
   // Names the sheet for screen readers.
   title: string;
@@ -57,6 +60,7 @@ export function Sheet({ title, top, peek, children }: SheetProps) {
     // Let the button take its own clicks.
     // Controls in the header keep their own taps; only the rest drags.
     if ((e.target as HTMLElement).closest("button, input, [role=option]")) return;
+    if (window.matchMedia?.(DOCKED_MEDIA).matches) return;
     e.currentTarget.setPointerCapture(e.pointerId);
     drag.current = { startY: e.clientY, lastY: e.clientY, lastTime: e.timeStamp, velocity: 0, travel: travel() };
     setDy(0);
@@ -91,18 +95,18 @@ export function Sheet({ title, top, peek, children }: SheetProps) {
     <section
       ref={sheet}
       aria-labelledby={titleId}
-      className={`fixed inset-x-0 bottom-0 z-10 flex h-[90dvh] flex-col rounded-t-xl border-t bg-popover text-popover-foreground shadow-lg ${dy === null ? "motion-safe:transition-transform motion-safe:duration-300" : ""}`}
+      className={`fixed inset-x-0 bottom-0 z-10 flex h-[90dvh] flex-col rounded-t-xl border-t bg-popover text-popover-foreground shadow-lg lg:inset-y-0 lg:right-auto lg:h-dvh lg:w-90 lg:transform-none! lg:rounded-none lg:border-t-0 lg:border-r lg:shadow-none ${dy === null ? "motion-safe:transition-transform motion-safe:duration-300" : ""}`}
       style={{ transform: `translateY(${offset})` }}
     >
       <div
         ref={header}
-        className="shrink-0 cursor-grab touch-none select-none active:cursor-grabbing"
+        className="shrink-0 cursor-grab touch-none select-none active:cursor-grabbing lg:cursor-auto lg:touch-auto"
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={onPointerEnd}
         onPointerCancel={onPointerEnd}
       >
-        <div aria-hidden className="mx-auto mt-3 h-1.5 w-12 rounded-full bg-muted-foreground/30" />
+        <div aria-hidden className="mx-auto mt-3 h-1.5 w-12 rounded-full bg-muted-foreground/30 lg:hidden" />
         <h2 id={titleId} className="sr-only">
           {title}
         </h2>
@@ -112,7 +116,7 @@ export function Sheet({ title, top, peek, children }: SheetProps) {
           <Button
             variant="ghost"
             size="icon"
-            className="size-11 shrink-0"
+            className="size-11 shrink-0 lg:hidden"
             aria-expanded={expanded}
             aria-label={expanded ? t("collapse") : t("expand")}
             onClick={() => setSnap(expanded ? "peek" : "expanded")}

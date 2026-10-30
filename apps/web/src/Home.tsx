@@ -103,44 +103,47 @@ export function Home() {
   return (
     <main className="relative h-dvh w-full overflow-hidden bg-background text-foreground">
       <h1 className="sr-only">{t("appName")}</h1>
-      <PointMap
-        point={point}
-        onLongPress={choosePlace}
-        onPan={() => setLocate("off")}
-        onMapClick={closeCard}
-        pins={pins}
-        {...(selected && selectedPin
-          ? {
-              popup: {
-                pinKey: selectedPin.key,
-                content: <EventCard event={selected} languages={languages} timeZone={timeZone} onClose={closeCard} />,
-              },
-            }
-          : {})}
-        renderPin={(pin) => (
-          <EventPin
-            pin={pin}
-            languages={languages}
-            selected={pin.event.id === selectedId}
-            onSelect={() => select(pin.event.id)}
-          />
-        )}
-      />
-      <div className="pointer-events-none absolute inset-x-0 top-0 flex flex-col items-start gap-2 p-4 pt-[max(1rem,env(safe-area-inset-top))]">
-        <p role="status" className={`flex items-center gap-1.5 rounded-full bg-background/95 px-3 py-1.5 text-sm font-medium shadow ${status ? "" : "invisible"}`}>
-          {status?.clear && <CircleCheck aria-hidden className="size-4 text-emerald-600" />}
-          {status?.text}
-        </p>
-        {regions.isError && (
-          <p role="alert" className="pointer-events-auto rounded-md bg-background px-3 py-2 text-sm shadow">
-            {t("regionsFailed")}
+      {/* The map fills the screen; on wide screens it starts where the docked panel ends. */}
+      <div className="absolute inset-0 lg:left-90">
+        <PointMap
+          point={point}
+          onLongPress={choosePlace}
+          onPan={() => setLocate("off")}
+          onMapClick={closeCard}
+          pins={pins}
+          {...(selected && selectedPin
+            ? {
+                popup: {
+                  pinKey: selectedPin.key,
+                  content: <EventCard event={selected} languages={languages} timeZone={timeZone} onClose={closeCard} />,
+                },
+              }
+            : {})}
+          renderPin={(pin) => (
+            <EventPin
+              pin={pin}
+              languages={languages}
+              selected={pin.event.id === selectedId}
+              onSelect={() => select(pin.event.id)}
+            />
+          )}
+        />
+        <div className="pointer-events-none absolute inset-x-0 top-0 flex flex-col items-start gap-2 p-4 pt-[max(1rem,env(safe-area-inset-top))]">
+          <p role="status" className={`flex items-center gap-1.5 rounded-full bg-background/95 px-3 py-1.5 text-sm font-medium shadow ${status ? "" : "invisible"}`}>
+            {status?.clear && <CircleCheck aria-hidden className="size-4 text-emerald-600" />}
+            {status?.text}
           </p>
-        )}
-        {failure && (
-          <p role="alert" className="pointer-events-auto max-w-sm rounded-md bg-background px-3 py-2 text-sm shadow">
-            {t(failure === "denied" ? "locationDenied" : "locationUnavailable")}
-          </p>
-        )}
+          {regions.isError && (
+            <p role="alert" className="pointer-events-auto rounded-md bg-background px-3 py-2 text-sm shadow">
+              {t("regionsFailed")}
+            </p>
+          )}
+          {failure && (
+            <p role="alert" className="pointer-events-auto max-w-sm rounded-md bg-background px-3 py-2 text-sm shadow">
+              {t(failure === "denied" ? "locationDenied" : "locationUnavailable")}
+            </p>
+          )}
+        </div>
       </div>
       <Sheet
         title={t("sheetTitle")}

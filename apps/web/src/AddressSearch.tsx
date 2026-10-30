@@ -72,7 +72,7 @@ export function AddressSearch({ point, lang, onPick }: AddressSearchProps) {
   return (
     <div className="relative min-w-0 flex-1">
       {showList && (
-        <div className="absolute inset-x-0 bottom-full mb-2 overflow-hidden rounded-xl border bg-popover shadow-xl">
+        <div className="absolute inset-x-0 bottom-full mb-2 lg:top-full lg:bottom-auto lg:mt-2 lg:mb-0 overflow-hidden rounded-xl border bg-popover shadow-xl">
           {results.length > 0 && (
             <ul id={listId} role="listbox" aria-label={t("searchLabel")}>
               {results.map((place, i) => (

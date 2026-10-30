@@ -5,7 +5,7 @@ import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
 import type { Pin } from "../events.ts";
 import type { LatLon } from "../platform.tsx";
-import { PEEK_PX } from "../Sheet.tsx";
+import { DOCKED_MEDIA, PEEK_PX } from "../Sheet.tsx";
 import { longPress } from "./long-press.ts";
 
 // OpenFreeMap: free vector tiles, no key. Positron is muted, so Events drawn on top stand out.
@@ -57,8 +57,12 @@ export function PointMap({ point, onLongPress, onPan, onMapClick, pins, renderPi
   useEffect(() => {
     if (!container.current) return;
     const m = new maplibregl.Map({ container: container.current, style: STYLE, zoom: ZOOM, center: [0, 0], attributionControl: { compact: true } });
-    // The bottom sheet covers the bottom of the map: centre the point in the part that shows.
-    m.setPadding({ top: 0, right: 0, left: 0, bottom: PEEK_PX });
+    // On phones the bottom sheet covers the bottom of the map: centre the point in the part that shows.
+    // Docked on the left, the panel sits beside the map instead.
+    const docked = window.matchMedia(DOCKED_MEDIA);
+    const pad = () => m.setPadding({ top: 0, right: 0, left: 0, bottom: docked.matches ? 0 : PEEK_PX });
+    pad();
+    docked.addEventListener("change", pad);
     const choose = ({ lat, lng }: maplibregl.LngLat) => onLongPressRef.current({ lat, lon: lng });
     const press = longPress({ onLongPress: ({ x, y }) => choose(m.unproject([x, y])) });
 
@@ -86,6 +90,7 @@ export function PointMap({ point, onLongPress, onPan, onMapClick, pins, renderPi
     map.current = m;
     return () => {
       press.cancel();
+      docked.removeEventListener("change", pad);
       m.remove();
       map.current = null;
       marker.current = null;
@@ -162,7 +167,7 @@ export function PointMap({ point, onLongPress, onPan, onMapClick, pins, renderPi
   // The popup's own frame is replaced by the card's (`!`: MapLibre's unlayered CSS beats Tailwind otherwise).
   return (
     <div
-      className="absolute inset-0 [&_.maplibregl-ctrl-bottom-right]:mb-38 [&_.maplibregl-popup-content]:rounded-xl! [&_.maplibregl-popup-content]:p-0! [&_.maplibregl-popup-content]:shadow-xl!"
+      className="absolute inset-0 [&_.maplibregl-ctrl-bottom-right]:mb-38 lg:[&_.maplibregl-ctrl-bottom-right]:mb-0 [&_.maplibregl-popup-content]:rounded-xl! [&_.maplibregl-popup-content]:p-0! [&_.maplibregl-popup-content]:shadow-xl!"
       role="region"
       aria-label={t("map")}
     >
