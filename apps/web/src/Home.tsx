@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { AddressSearch } from "./AddressSearch.tsx";
 import { useEvents, useRegions } from "./api.ts";
 import { EventCard } from "./EventCard.tsx";
+import { EventList } from "./EventList.tsx";
 import { nearestFirst, statusOf, type Time } from "./events.ts";
 import { EventPin } from "./map/EventPin.tsx";
 import { PointMap } from "./map/PointMap.tsx";
@@ -176,7 +177,11 @@ export function Home() {
           </>
         }
       >
-        <p className="text-sm text-muted-foreground">{t("sheetHint")}</p>
+        {/* The list is for the docked panel; on phones the map is the list (they asked for no list in the sheet). */}
+        <div className="hidden lg:block">
+          <EventList pins={pins} selectedId={selectedId} languages={languages} timeZone={timeZone} onSelect={select} />
+        </div>
+        <p className="text-sm text-muted-foreground lg:hidden">{t("sheetHint")}</p>
       </Sheet>
     </main>
   );

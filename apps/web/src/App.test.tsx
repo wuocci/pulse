@@ -421,15 +421,50 @@ describe("the status chip", () => {
   });
 });
 
+describe("the list of Events, in the panel on wide screens", () => {
+  const at = (id: string, lat: number, patch: Partial<Event> = {}) =>
+    anEvent(id, { where: { geometry: { type: "Point", coordinates: [24.95, lat] }, precision: "area" }, ...patch });
+  const list = async () => within(await screen.findByRole("list", { name: "Nearest first" }));
+
+  it("lists every Event nearest first, once, with who, when and how far", async () => {
+    events = [
+      at("far", 60.19),
+      anEvent("stops", { where: { geometry: { type: "MultiPoint", coordinates: [[24.95, 60.18], [24.95, 60.172]] }, precision: "exact" } }),
+      at("near", 60.171, { mainlyAffected: "pedestrians" }),
+    ];
+    renderApp("/?at=60.17000,24.95000");
+    const rows = await (await list()).findAllByRole("button");
+
+    expect(rows.map((r) => r.textContent)).toEqual([
+      expect.stringMatching(/^Works near.*Pedestrians.*110 m$/),
+      expect.stringMatching(/^Works stops.*220 m$/),
+      expect.stringMatching(/^Works far.*2\.2 km$/),
+    ]);
+    expect(within(rows[0]!).getByText(/Pedestrians · /)).toBeInTheDocument();
+  });
+
+  it("opens an Event's card on the map, like its pin, and marks it in the list", async () => {
+    events = [at("a", 60.171), at("b", 60.172)];
+    const history = renderApp("/?at=60.17000,24.95000");
+    const row = await (await list()).findByRole("button", { name: /^Works b/ });
+
+    await userEvent.click(row);
+
+    expect(await within(await screen.findByTestId("popup")).findByRole("article", { name: "Works b" })).toBeInTheDocument();
+    expect(history.location.search).toContain("event=b");
+    expect(row).toHaveAttribute("aria-current", "true");
+    expect((await list()).getByRole("button", { name: /^Works a/ })).not.toHaveAttribute("aria-current");
+  });
+});
+
 describe("the bottom sheet", () => {
-  it("is always there, with the controls and no Events", async () => {
+  it("is always there, with the controls", async () => {
     events = [anEvent("a")];
     renderApp("/?at=60.17000,24.95000");
     const sheet = await screen.findByRole("region", { name: "Map controls" });
 
     expect(sheet).toContainElement(await locate(/^Go to my location$/));
     expect(sheet).toContainElement(screen.getByRole("radio", { name: "Now" }));
-    expect(sheet).not.toHaveTextContent("Works a");
   });
 
   it("can be expanded and collapsed without dragging, for keyboards and screen readers", async () => {

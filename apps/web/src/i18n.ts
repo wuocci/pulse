@@ -12,6 +12,7 @@ export const en = {
   locationDenied: "Location is off. Allow it for this site, or long-press the map to choose a place.",
   locationUnavailable: "Couldn't find your location. Try again, or long-press the map to choose a place.",
   regionsFailed: "Can't reach Pulse right now.",
+  listTitle: "Nearest first",
   sheetHint: "Tap something on the map to see what it is.",
   searchLabel: "Search for an address or place",
   searchPlaceholder: "Search an address or place",

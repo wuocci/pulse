@@ -111,7 +111,7 @@ function Row({ icon, children }: { icon: ReactNode; children: ReactNode }) {
   );
 }
 
-function whenText(when: When, t: ReturnType<typeof useTranslation>["t"]): string {
+export function whenText(when: When, t: ReturnType<typeof useTranslation>["t"]): string {
   const main = t(when.key, when);
   return when.hours ? `${main} · ${t(when.hours.key, when.hours)}` : main;
 }

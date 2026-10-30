@@ -1,4 +1,4 @@
-import type { Schema } from "@pulse/client";
+import type { Event, Schema } from "@pulse/client";
 import {
   Activity,
   Ban,
@@ -54,6 +54,12 @@ export function KindIcon({ kind, className = "size-5" }: { kind: Schema<"EventKi
   return <Icon aria-hidden className={className} />;
 }
 
+// Who it affects or, not known yet, what kind of Event it is. Shared by the pin and the list.
+export function EventIcon({ event, className = "size-5" }: { event: Event; className?: string }) {
+  const Who = WHO_ICONS[event.mainlyAffected];
+  return event.mainlyAffected !== "unknown" ? <Who aria-hidden className={className} /> : <KindIcon kind={event.kind} className={className} />;
+}
+
 export interface EventPinProps {
   pin: Pin;
   languages: readonly string[];
@@ -65,8 +71,6 @@ export function EventPin({ pin: { event }, languages, selected, onSelect }: Even
   const { t } = useTranslation();
   const tone = toneOf(event);
   const resolved = event.status === "resolved";
-  const known = event.mainlyAffected !== "unknown";
-  const Who = WHO_ICONS[event.mainlyAffected];
   const label = [textIn(event.title, languages), t(`who_${event.mainlyAffected}`), t(TONE_LABEL[tone]), ...(resolved ? [t("ended")] : [])].join(
     ", ",
   );
@@ -89,7 +93,7 @@ export function EventPin({ pin: { event }, languages, selected, onSelect }: Even
         selected ? "z-10 scale-125 ring-4 ring-primary" : "",
       ].join(" ")}
     >
-      {known ? <Who aria-hidden className="size-5" /> : <KindIcon kind={event.kind} />}
+      <EventIcon event={event} />
     </button>
   );
 }
