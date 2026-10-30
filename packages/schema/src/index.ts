@@ -11,3 +11,6 @@ export type * from "./health/types.ts";
 
 export * from "./region/schema.ts";
 export type * from "./region/types.ts";
+
+export * from "./geocode/schema.ts";
+export type * from "./geocode/types.ts";

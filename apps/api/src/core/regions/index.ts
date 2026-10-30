@@ -8,6 +8,8 @@ export interface Region extends PublicRegion {
   sources: SourceConfig[];
   // Local working hours per Event kind, for the Right now Layer when a Source gives none. Kinds left out count all day.
   defaultDailyHours: Partial<Record<EventKind, DailyHours>>;
+  // Where address search looks; without it, the Region has none.
+  geocoder?: { kind: "digitransit"; url: string };
 }
 
 // One entry per feed a Source publishes. `adapter` picks the code that reads its format (ADR 0002).
@@ -44,3 +46,10 @@ export interface GtfsRtSource extends BaseSource {
 }
 
 export const regions: Region[] = [fiCapitalRegion];
+
+// The Region whose bounding box holds the point.
+export function regionAt(regions: Region[], lat: number, lon: number): Region | undefined {
+  return regions.find(
+    ({ bbox: [minLon, minLat, maxLon, maxLat] }) => lon >= minLon && lon <= maxLon && lat >= minLat && lat <= maxLat,
+  );
+}

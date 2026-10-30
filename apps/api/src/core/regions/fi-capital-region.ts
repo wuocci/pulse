@@ -15,6 +15,7 @@ export const fiCapitalRegion: Region = {
   bbox: [24.4, 60.0, 25.3, 60.45],
   timeZone: "Europe/Helsinki",
   languages: ["fi", "sv", "en"],
+  geocoder: { kind: "digitransit", url: "https://api.digitransit.fi/geocoding/v1" },
   defaultDailyHours: {
     works: { from: "07:00", to: "18:00", days: ["mon", "tue", "wed", "thu", "fri"] },
     public_event: { from: "10:00", to: "22:00" },
