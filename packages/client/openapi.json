@@ -197,7 +197,7 @@
           "type": "string"
         },
         "example": {
-          "en": "Excavation · Hämeentie 12 · until 14 Nov"
+          "en": "Excavation · Hämeentie 12"
         }
       },
       "Geometry": {

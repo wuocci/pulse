@@ -174,7 +174,7 @@ export interface components {
         Layer: "trips" | "area" | "now";
         /**
          * @example {
-         *       "en": "Excavation · Hämeentie 12 · until 14 Nov"
+         *       "en": "Excavation · Hämeentie 12"
          *     }
          */
         LocalizedText: {

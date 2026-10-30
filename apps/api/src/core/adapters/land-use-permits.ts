@@ -140,7 +140,7 @@ export function toPermitItems(collection: PermitCollection, { source, timeZone, 
       id: `${source.id}:${notice.hakemustunnus}`,
       kind: type.kind,
       layers: ["area"],
-      title: titles(type.label(notice), place(notice), type.detail?.(notice) ?? until(occupied.end)),
+      title: titles(type.label(notice), place(notice), type.detail?.(notice)),
       ...(text ? { originalText: { fi: text } } : {}),
       where: { geometry, precision: "area" },
       when: { start, ...(end ? { end } : {}) },
@@ -210,12 +210,6 @@ function titles(
 ): Record<string, string> {
   const join = (lang: "en" | "fi") => [label[lang], place, detail?.[lang]].filter(Boolean).join(" · ");
   return { en: join("en"), fi: join("fi") };
-}
-
-function until(endDate: Field): { en: string; fi: string } | undefined {
-  if (!endDate) return undefined;
-  const { day, month, short } = dateParts(endDate);
-  return { en: `until ${day} ${short}`, fi: `${day}.${month}. asti` };
 }
 
 function dateRange(startDate: Field, endDate: Field): { en: string; fi: string } | undefined {

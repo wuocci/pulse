@@ -3,7 +3,7 @@ import { z } from "@hono/zod-openapi";
 // Text keyed by BCP 47 language tag, e.g. { "en": "…", "fi": "…" }.
 export const LocalizedTextSchema = z
   .record(z.string(), z.string())
-  .openapi("LocalizedText", { example: { en: "Excavation · Hämeentie 12 · until 14 Nov" } });
+  .openapi("LocalizedText", { example: { en: "Excavation · Hämeentie 12" } });
 
 const PositionSchema = z.array(z.number()).min(2).max(3);
 
