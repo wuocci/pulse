@@ -3,6 +3,7 @@ import { useNavigate, useSearch } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
+import { AddressSearch } from "./AddressSearch.tsx";
 import { useEvents, useRegions } from "./api.ts";
 import { EventCard } from "./EventCard.tsx";
 import { nearestFirst, statusOf, type Time } from "./events.ts";
@@ -143,6 +144,7 @@ export function Home() {
       </div>
       <Sheet
         title={t("sheetTitle")}
+        top={<AddressSearch point={point} lang={languages[0] ?? "en"} onPick={choosePlace} />}
         peek={
           <>
               <fieldset className="flex rounded-lg bg-muted p-1">

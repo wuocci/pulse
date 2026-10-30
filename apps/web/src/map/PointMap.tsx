@@ -162,7 +162,7 @@ export function PointMap({ point, onLongPress, onPan, onMapClick, pins, renderPi
   // The popup's own frame is replaced by the card's (`!`: MapLibre's unlayered CSS beats Tailwind otherwise).
   return (
     <div
-      className="absolute inset-0 [&_.maplibregl-ctrl-bottom-right]:mb-24 [&_.maplibregl-popup-content]:rounded-xl! [&_.maplibregl-popup-content]:p-0! [&_.maplibregl-popup-content]:shadow-xl!"
+      className="absolute inset-0 [&_.maplibregl-ctrl-bottom-right]:mb-38 [&_.maplibregl-popup-content]:rounded-xl! [&_.maplibregl-popup-content]:p-0! [&_.maplibregl-popup-content]:shadow-xl!"
       role="region"
       aria-label={t("map")}
     >

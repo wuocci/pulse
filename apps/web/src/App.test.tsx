@@ -1,4 +1,4 @@
-import type { Event, Region } from "@pulse/client";
+import type { Event, GeocodeResult, Region } from "@pulse/client";
 import { createMemoryHistory } from "@tanstack/react-router";
 import { cleanup, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -43,7 +43,14 @@ const region: Region = {
 // What /v0/events answers, set per test, and the queries it was asked.
 let events: Event[] = [];
 const eventQueries: URLSearchParams[] = [];
+// What /v0/geocode answers, set per test, and the queries it was asked.
+let places: GeocodeResult[] | "off" = [];
+const geocodeQueries: URLSearchParams[] = [];
 const server = setupServer(
+  http.get("*/v0/geocode", ({ request }) => {
+    geocodeQueries.push(new URL(request.url).searchParams);
+    return places === "off" ? HttpResponse.json({ message: "Address search is off" }, { status: 503 }) : HttpResponse.json({ results: places });
+  }),
   http.get("*/v0/regions", () => HttpResponse.json({ regions: [region] })),
   http.get("*/v0/events", ({ request }) => {
     eventQueries.push(new URL(request.url).searchParams);
@@ -55,6 +62,8 @@ afterEach(() => {
   server.resetHandlers();
   events = [];
   eventQueries.length = 0;
+  places = [];
+  geocodeQueries.length = 0;
 });
 afterAll(() => server.close());
 
@@ -434,5 +443,85 @@ describe("the bottom sheet", () => {
 
     await userEvent.click(toggle);
     expect(toggle).toHaveAttribute("aria-expanded", "false");
+  });
+});
+
+describe("address search", () => {
+  const MANSKU: GeocodeResult = { name: "Mannerheimintie 10", label: "Mannerheimintie 10, Helsinki", lat: 60.167679, lon: 24.94127 };
+  const OOPPERA: GeocodeResult = { name: "Kansallisooppera", label: "Kansallisooppera, Helsinki", lat: 60.1826, lon: 24.9266 };
+  const search = () => screen.findByRole("combobox", { name: "Search for an address or place" });
+
+  it("is in the sheet", async () => {
+    renderApp("/?at=60.17000,24.95000");
+
+    expect(await screen.findByRole("region", { name: "Map controls" })).toContainElement(await search());
+  });
+
+  it("suggests places near the point as you type, in your language, and moves the map to the one you pick", async () => {
+    places = [MANSKU, OOPPERA];
+    renderApp("/?at=60.17000,24.95000");
+
+    await userEvent.type(await search(), "manner");
+    const option = await screen.findByRole("option", { name: "Mannerheimintie 10, Helsinki" });
+    expect(screen.getAllByRole("option")).toHaveLength(2);
+    expect(Object.fromEntries(geocodeQueries.at(-1)!)).toEqual({ text: "manner", near: "60.17,24.95", lang: "en" });
+
+    await userEvent.click(option);
+    await mapPoint("60.16768,24.94127");
+    expect(await search()).toHaveValue("Mannerheimintie 10");
+    expect(screen.queryByRole("option")).not.toBeInTheDocument();
+  });
+
+  it("can be used with the keyboard alone", async () => {
+    places = [MANSKU, OOPPERA];
+    renderApp("/?at=60.17000,24.95000");
+    const input = await search();
+
+    await userEvent.type(input, "manner");
+    await screen.findAllByRole("option");
+    await userEvent.keyboard("{ArrowDown}{ArrowDown}");
+    expect(input).toHaveAttribute("aria-activedescendant", screen.getByRole("option", { name: /Kansallisooppera/ }).id);
+    expect(screen.getByRole("option", { name: /Kansallisooppera/ })).toHaveAttribute("aria-selected", "true");
+
+    await userEvent.keyboard("{Enter}");
+    await mapPoint("60.1826,24.9266");
+  });
+
+  it("closes the suggestions on Escape, then clears the text", async () => {
+    places = [MANSKU];
+    renderApp("/?at=60.17000,24.95000");
+    const input = await search();
+
+    await userEvent.type(input, "manner");
+    await screen.findByRole("option");
+    await userEvent.keyboard("{Escape}");
+    expect(screen.queryByRole("option")).not.toBeInTheDocument();
+    expect(input).toHaveValue("manner");
+
+    await userEvent.keyboard("{Escape}");
+    expect(input).toHaveValue("");
+  });
+
+  it("waits for a second letter before searching", async () => {
+    renderApp("/?at=60.17000,24.95000");
+
+    await userEvent.type(await search(), "m");
+    await new Promise((r) => setTimeout(r, 400));
+
+    expect(geocodeQueries).toHaveLength(0);
+  });
+
+  it("says when nothing matches, and when search isn't available", async () => {
+    renderApp("/?at=60.17000,24.95000");
+    const input = await search();
+
+    await userEvent.type(input, "zzzz");
+    // What a screen reader hears; the same words show under the field.
+    const heard = (text: string) => screen.findByText(text, { ignore: "[aria-hidden=true]" });
+    expect(await heard("No places found")).toBeInTheDocument();
+
+    places = "off";
+    await userEvent.type(input, "y");
+    expect(await heard("Address search isn't available")).toBeInTheDocument();
   });
 });

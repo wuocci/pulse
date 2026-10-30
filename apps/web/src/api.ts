@@ -59,3 +59,31 @@ export function useEvents(point: LatLon | undefined, time: Time) {
     placeholderData: keepPreviousData,
   });
 }
+
+// Why a search found nothing: the Region has no address search, or the search failed.
+export class GeocodeError extends Error {
+  readonly reason: "off" | "failed";
+  constructor(reason: "off" | "failed") {
+    super(`Address search ${reason}`);
+    this.reason = reason;
+  }
+}
+
+// Places matching what's typed, near the point. Nothing until there are two letters.
+export function useGeocode(text: string, point: LatLon | undefined, lang: string) {
+  const query = text.trim();
+  return useQuery({
+    queryKey: ["geocode", query, point?.lat, point?.lon, lang],
+    enabled: point !== undefined && query.length >= 2,
+    queryFn: async () => {
+      const { data, response } = await client.GET("/geocode", {
+        params: { query: { text: query, near: `${point!.lat},${point!.lon}`, lang } },
+      });
+      if (!data) throw new GeocodeError(response.status === 503 ? "off" : "failed");
+      return data.results;
+    },
+    placeholderData: keepPreviousData,
+    retry: false,
+    staleTime: 5 * 60_000,
+  });
+}

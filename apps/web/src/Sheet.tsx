@@ -8,13 +8,15 @@ import { type Snap, snapAfterDrag } from "./sheet-snap.ts";
 // A labelled region of the page, not a dialog: the map and its controls stay usable and reachable behind it.
 // The Expand/Collapse button does what dragging does, for keyboards and screen readers.
 
-// The peek is the header: the handle and the controls row, plus the home bar's inset on phones that
+// The peek is the header: the handle, what's on top and the controls row, plus the home bar's inset on phones that
 // have one. Measured; this is its height without an inset, which the map leaves uncovered (PointMap.tsx).
-export const PEEK_PX = 88;
+export const PEEK_PX = 144;
 
 export interface SheetProps {
   // Names the sheet for screen readers.
   title: string;
+  // Above the controls row, always visible, e.g. a search field.
+  top?: ReactNode;
   // The controls in the peek, next to the Expand/Collapse button.
   peek: ReactNode;
   // What expanding the sheet shows.
@@ -29,7 +31,7 @@ interface DragState {
   travel: number;
 }
 
-export function Sheet({ title, peek, children }: SheetProps) {
+export function Sheet({ title, top, peek, children }: SheetProps) {
   const { t } = useTranslation();
   const titleId = useId();
   const sheet = useRef<HTMLElement>(null);
@@ -53,7 +55,8 @@ export function Sheet({ title, peek, children }: SheetProps) {
 
   const onPointerDown = (e: PointerEvent<HTMLDivElement>) => {
     // Let the button take its own clicks.
-    if ((e.target as HTMLElement).closest("button")) return;
+    // Controls in the header keep their own taps; only the rest drags.
+    if ((e.target as HTMLElement).closest("button, input, [role=option]")) return;
     e.currentTarget.setPointerCapture(e.pointerId);
     drag.current = { startY: e.clientY, lastY: e.clientY, lastTime: e.timeStamp, velocity: 0, travel: travel() };
     setDy(0);
@@ -103,6 +106,7 @@ export function Sheet({ title, peek, children }: SheetProps) {
         <h2 id={titleId} className="sr-only">
           {title}
         </h2>
+        {top && <div className="px-4 pt-3">{top}</div>}
         <div className="flex items-center gap-2 px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
           {peek}
           <Button
