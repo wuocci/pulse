@@ -122,6 +122,72 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/geocode": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query: {
+                    /** @description What the reader has typed so far */
+                    text: string;
+                    /** @description lat,lon: picks the Region, and nearer places rank first */
+                    near: string;
+                    /** @description The reader's language; the Region's main language when it doesn't speak it */
+                    lang?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Places in the Region at `near` matching the text, best first. None outside every Region. */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            results: components["schemas"]["GeocodeResult"][];
+                        };
+                    };
+                };
+                /** @description The geocoder failed */
+                502: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            message: string;
+                        };
+                    };
+                };
+                /** @description The Region has no address search */
+                503: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            message: string;
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -301,6 +367,19 @@ export interface components {
              *     ]
              */
             languages: string[];
+        };
+        GeocodeResult: {
+            /** @example Kamppi */
+            name: string;
+            /**
+             * @description The name with enough around it to tell places apart
+             * @example Kamppi, Kampinkuja 1, Helsinki
+             */
+            label: string;
+            /** @example 60.169048 */
+            lat: number;
+            /** @example 24.931662 */
+            lon: number;
         };
     };
     responses: never;

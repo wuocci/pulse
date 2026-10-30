@@ -616,6 +616,34 @@
           "timeZone",
           "languages"
         ]
+      },
+      "GeocodeResult": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Kamppi"
+          },
+          "label": {
+            "type": "string",
+            "description": "The name with enough around it to tell places apart",
+            "example": "Kamppi, Kampinkuja 1, Helsinki"
+          },
+          "lat": {
+            "type": "number",
+            "example": 60.169048
+          },
+          "lon": {
+            "type": "number",
+            "example": 24.931662
+          }
+        },
+        "required": [
+          "name",
+          "label",
+          "lat",
+          "lon"
+        ]
       }
     },
     "parameters": {}
@@ -758,6 +786,107 @@
                   },
                   "required": [
                     "regions"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/geocode": {
+      "get": {
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 2,
+              "maxLength": 100,
+              "example": "kampp",
+              "description": "What the reader has typed so far"
+            },
+            "required": true,
+            "description": "What the reader has typed so far",
+            "name": "text",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^-?\\d+(\\.\\d+)?,-?\\d+(\\.\\d+)?$",
+              "example": "60.1699,24.9384",
+              "description": "lat,lon: picks the Region, and nearer places rank first"
+            },
+            "required": true,
+            "description": "lat,lon: picks the Region, and nearer places rank first",
+            "name": "near",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "example": "fi",
+              "description": "The reader's language; the Region's main language when it doesn't speak it"
+            },
+            "required": false,
+            "description": "The reader's language; the Region's main language when it doesn't speak it",
+            "name": "lang",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Places in the Region at `near` matching the text, best first. None outside every Region.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "results": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/GeocodeResult"
+                      }
+                    }
+                  },
+                  "required": [
+                    "results"
+                  ]
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "The geocoder failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ]
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "The Region has no address search",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "message"
                   ]
                 }
               }
