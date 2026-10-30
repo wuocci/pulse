@@ -1,6 +1,6 @@
-import type { Region } from "@pulse/client";
+import type { Event, Region } from "@pulse/client";
 import { createMemoryHistory } from "@tanstack/react-router";
-import { render, screen, waitFor } from "@testing-library/react";
+import { cleanup, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
@@ -13,8 +13,15 @@ import { type DeviceLocation, type LatLon, LocationError, type Platform } from "
 // The real map draws with WebGL, which jsdom lacks: this one shows what it was given, and can be long-pressed
 // and panned.
 vi.mock("./map/PointMap.tsx", () => ({
-  PointMap: ({ point, onLongPress, onPan }: PointMapProps) => (
+  PointMap: ({ point, onLongPress, onPan, onMapClick, pins, renderPin, popup }: PointMapProps) => (
     <div data-testid="map" data-point={point ? `${point.lat},${point.lon}` : ""}>
+      {pins.map((pin) => (
+        <div key={pin.key}>{renderPin(pin)}</div>
+      ))}
+      {popup && <div data-testid="popup">{popup.content}</div>}
+      <button type="button" onClick={onMapClick}>
+        tap empty map
+      </button>
       <button type="button" onClick={() => onLongPress({ lat: 60.2, lon: 24.9 })}>
         long-press the map
       </button>
@@ -33,9 +40,22 @@ const region: Region = {
   timeZone: "Europe/Helsinki",
   languages: ["fi", "sv", "en"],
 };
-const server = setupServer(http.get("*/v0/regions", () => HttpResponse.json({ regions: [region] })));
+// What /v0/events answers, set per test, and the queries it was asked.
+let events: Event[] = [];
+const eventQueries: URLSearchParams[] = [];
+const server = setupServer(
+  http.get("*/v0/regions", () => HttpResponse.json({ regions: [region] })),
+  http.get("*/v0/events", ({ request }) => {
+    eventQueries.push(new URL(request.url).searchParams);
+    return HttpResponse.json({ events });
+  }),
+);
 beforeAll(() => server.listen({ onUnhandledFrame: "error" }));
-afterEach(() => server.resetHandlers());
+afterEach(() => {
+  server.resetHandlers();
+  events = [];
+  eventQueries.length = 0;
+});
 afterAll(() => server.close());
 
 const KAMPPI: LatLon = { lat: 60.169, lon: 24.93164 };
@@ -204,12 +224,192 @@ describe("the locate button", () => {
   });
 });
 
+const anEvent = (id: string, patch: Partial<Event> = {}): Event => ({
+  id,
+  kind: "works",
+  layers: ["area"],
+  title: { en: `Works ${id}` },
+  where: { geometry: { type: "Point", coordinates: [24.95, 60.171] }, precision: "area" },
+  when: { start: "2026-10-01T00:00:00+03:00" },
+  severity: "minor",
+  mainlyAffected: "drivers",
+  noticeable: [],
+  status: "active",
+  sources: [{ name: "City", id, updatedAt: "2026-10-01T00:00:00+03:00", license: "CC BY 4.0" }],
+  confidence: 0,
+  updatedAt: "2026-10-01T00:00:00+03:00",
+  ...patch,
+});
+
+describe("Events on the map", () => {
+  it("shows what's going on right now near the point, by default", async () => {
+    events = [anEvent("a")];
+    renderApp("/?at=60.17000,24.95000");
+
+    expect(await screen.findByRole("button", { name: "Works a, minor" })).toBeInTheDocument();
+    expect(eventQueries.at(-1)?.get("layer")).toBe("now");
+    expect(eventQueries.at(-1)?.get("near")).toBe("60.17,24.95,1000");
+  });
+
+  it("switches to the next 14 days, kept in the URL", async () => {
+    const history = renderApp("/?at=60.17000,24.95000");
+
+    await userEvent.click(await screen.findByRole("radio", { name: "14 days" }));
+
+    await waitFor(() => expect(eventQueries.at(-1)?.get("layer")).toBeNull());
+    const query = eventQueries.at(-1)!;
+    expect(query.get("near")).toBe("60.17,24.95,1000");
+    expect(query.get("status")).toBe("active,upcoming,resolved");
+    expect(new Date(query.get("to")!).getTime() - new Date(query.get("from")!).getTime()).toBe(14 * 86_400_000);
+    expect(history.location.search).toContain("time=14d");
+    expect(screen.getByRole("radio", { name: "14 days" })).toBeChecked();
+  });
+
+  it("doesn't pin a region-wide notice", async () => {
+    events = [anEvent("here"), anEvent("everywhere", { where: { geometry: { type: "Point", coordinates: [24.9, 60.2] }, precision: "vague" } })];
+    renderApp("/?at=60.17000,24.95000");
+
+    expect(await screen.findByRole("button", { name: "Works here, minor" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Works everywhere, minor" })).not.toBeInTheDocument();
+  });
+
+  it("selects an Event when its pin is tapped, kept in the URL", async () => {
+    events = [anEvent("a")];
+    const history = renderApp("/?at=60.17000,24.95000");
+
+    await userEvent.click(await screen.findByRole("button", { name: "Works a, minor" }));
+
+    await waitFor(() => expect(history.location.search).toContain("event=a"));
+    expect(screen.getByRole("button", { name: "Works a, minor" })).toHaveAttribute("aria-pressed", "true");
+  });
+});
+
+describe("the Event card", () => {
+  const open = async (event: Event) => {
+    events = [event];
+    const history = renderApp("/?at=60.17000,24.95000");
+    await userEvent.click(await screen.findByRole("button", { name: new RegExp(`^${textOf(event)},`) }));
+    return { history, card: await within(await screen.findByTestId("popup")).findByRole("article") };
+  };
+  const textOf = (event: Event) => event.title.en!;
+
+  it("pops up from the pin, saying who it affects first", async () => {
+    const { card } = await open(anEvent("a", { mainlyAffected: "pedestrians", severity: "consider" }));
+
+    expect(card).toHaveAccessibleName("Works a");
+    expect(within(card).getAllByText(/./)[0]).toHaveTextContent("Pedestrians");
+    expect(card).toHaveTextContent("Worth considering");
+  });
+
+  it("says plainly when it isn't known yet who it affects", async () => {
+    const { card } = await open(anEvent("a", { mainlyAffected: "unknown" }));
+
+    expect(card).toHaveTextContent("Not sure yet who this affects");
+  });
+
+  it("says when, why and how", async () => {
+    const { card } = await open(
+      anEvent("a", { when: { start: "2026-10-01T07:00:00+03:00" }, workType: "water_sewer", noticeable: ["noise", "blocked"] }),
+    );
+
+    expect(card).toHaveTextContent("Ongoing");
+    expect(card).toHaveTextContent("Water and sewer works");
+    expect(card).toHaveTextContent("Noisy");
+    expect(card).toHaveTextContent("Blocks the way");
+  });
+
+  it("gives the kind of Event as the why when there's no kind of work", async () => {
+    const { card } = await open(anEvent("a", { kind: "public_event" }));
+
+    expect(card).toHaveTextContent("Public event");
+  });
+
+  it("moves to another pin when that one is tapped", async () => {
+    events = [anEvent("a"), anEvent("b")];
+    renderApp("/?at=60.17000,24.95000");
+
+    await userEvent.click(await screen.findByRole("button", { name: "Works a, minor" }));
+    await userEvent.click(screen.getByRole("button", { name: "Works b, minor" }));
+
+    expect(await screen.findByRole("article", { name: "Works b" })).toBeInTheDocument();
+    expect(screen.queryByRole("article", { name: "Works a" })).not.toBeInTheDocument();
+  });
+
+  it("closes with its close button, Escape, or a tap on empty map, and leaves the URL", async () => {
+    for (const close of [
+      () => userEvent.click(screen.getByRole("button", { name: "Close" })),
+      () => userEvent.keyboard("{Escape}"),
+      () => userEvent.click(screen.getByRole("button", { name: "tap empty map" })),
+    ]) {
+      const { history } = await open(anEvent("a"));
+      await close();
+      expect(screen.queryByRole("article")).not.toBeInTheDocument();
+      expect(history.location.search).not.toContain("event=");
+      cleanup();
+    }
+  });
+
+  it("moves focus into the card, and back to the pin when it closes", async () => {
+    await open(anEvent("a"));
+    await waitFor(() => expect(screen.getByRole("heading", { name: "Works a" })).toHaveFocus());
+
+    await userEvent.keyboard("{Escape}");
+
+    await waitFor(() => expect(screen.getByRole("button", { name: "Works a, minor" })).toHaveFocus());
+  });
+
+  it("opens from a link with the Event in it", async () => {
+    events = [anEvent("a")];
+    renderApp("/?at=60.17000,24.95000&event=a");
+
+    expect(await screen.findByRole("article", { name: "Works a" })).toBeInTheDocument();
+  });
+
+  it("isn't in the bottom sheet", async () => {
+    await open(anEvent("a"));
+
+    expect(screen.getByRole("region", { name: "Map controls" })).not.toContainElement(screen.getByRole("article"));
+  });
+});
+
+describe("the status chip", () => {
+  it("says all clear when nothing is going on", async () => {
+    renderApp("/?at=60.17000,24.95000");
+
+    await waitFor(() => expect(screen.getByRole("status")).toHaveTextContent("All clear right now"));
+  });
+
+  it("counts what's going on, and names the major ones", async () => {
+    events = [anEvent("a"), anEvent("b", { severity: "major" })];
+    renderApp("/?at=60.17000,24.95000");
+
+    await waitFor(() => expect(screen.getByRole("status")).toHaveTextContent("2 things going on near you · 1 major"));
+  });
+
+  it("speaks of the next two weeks on 14 days", async () => {
+    events = [anEvent("a")];
+    renderApp("/?at=60.17000,24.95000&time=14d");
+
+    await waitFor(() => expect(screen.getByRole("status")).toHaveTextContent("1 thing around here in the next 2 weeks"));
+  });
+
+  it("says when Pulse can't be reached", async () => {
+    server.use(http.get("*/v0/events", () => new HttpResponse(null, { status: 503 })));
+    renderApp("/?at=60.17000,24.95000");
+
+    await waitFor(() => expect(screen.getByRole("status")).toHaveTextContent("Can't reach Pulse right now"), { timeout: 3000 });
+  });
+});
+
 describe("the bottom sheet", () => {
-  it("is always there, titled, with the controls in it", async () => {
-    renderApp("/");
-    const sheet = await screen.findByRole("region", { name: "Around this point" });
+  it("is always there, with the controls and no Events", async () => {
+    events = [anEvent("a")];
+    renderApp("/?at=60.17000,24.95000");
+    const sheet = await screen.findByRole("region", { name: "Map controls" });
 
     expect(sheet).toContainElement(await locate(/^Go to my location$/));
+    expect(sheet).toContainElement(screen.getByRole("radio", { name: "Now" }));
+    expect(sheet).not.toHaveTextContent("Works a");
   });
 
   it("can be expanded and collapsed without dragging, for keyboards and screen readers", async () => {

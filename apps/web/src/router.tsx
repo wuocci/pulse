@@ -6,6 +6,10 @@ import { Home } from "./Home.tsx";
 // A malformed value is dropped rather than failing the page.
 const SearchSchema = z.object({
   at: z.string().optional().catch(undefined),
+  // The time switch; Now when absent.
+  time: z.enum(["now", "14d"]).optional().catch(undefined),
+  // The selected Event's id.
+  event: z.string().optional().catch(undefined),
 });
 
 const rootRoute = createRootRoute({ component: Outlet });

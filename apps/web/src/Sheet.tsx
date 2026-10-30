@@ -8,15 +8,15 @@ import { type Snap, snapAfterDrag } from "./sheet-snap.ts";
 // A labelled region of the page, not a dialog: the map and its controls stay usable and reachable behind it.
 // The Expand/Collapse button does what dragging does, for keyboards and screen readers.
 
-// The peek is the header: the handle, the title row and the controls, plus the home bar's inset on phones that
+// The peek is the header: the handle and the controls row, plus the home bar's inset on phones that
 // have one. Measured; this is its height without an inset, which the map leaves uncovered (PointMap.tsx).
-export const PEEK_PX = 144;
+export const PEEK_PX = 88;
 
 export interface SheetProps {
-  // The status line: what the peek tells you at a glance.
+  // Names the sheet for screen readers.
   title: string;
-  // The app's controls, always in the peek.
-  controls: ReactNode;
+  // The controls in the peek, next to the Expand/Collapse button.
+  peek: ReactNode;
   // What expanding the sheet shows.
   children: ReactNode;
 }
@@ -29,7 +29,7 @@ interface DragState {
   travel: number;
 }
 
-export function Sheet({ title, controls, children }: SheetProps) {
+export function Sheet({ title, peek, children }: SheetProps) {
   const { t } = useTranslation();
   const titleId = useId();
   const sheet = useRef<HTMLElement>(null);
@@ -100,10 +100,11 @@ export function Sheet({ title, controls, children }: SheetProps) {
         onPointerCancel={onPointerEnd}
       >
         <div aria-hidden className="mx-auto mt-3 h-1.5 w-12 rounded-full bg-muted-foreground/30" />
-        <div className="flex items-center justify-between gap-2 px-4 pt-2">
-          <h2 id={titleId} className="font-heading text-base font-medium">
-            {title}
-          </h2>
+        <h2 id={titleId} className="sr-only">
+          {title}
+        </h2>
+        <div className="flex items-center gap-2 px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+          {peek}
           <Button
             variant="ghost"
             size="icon"
@@ -115,7 +116,6 @@ export function Sheet({ title, controls, children }: SheetProps) {
             <ChevronUp aria-hidden className={`motion-safe:transition-transform ${expanded ? "rotate-180" : ""}`} />
           </Button>
         </div>
-        <div className="flex items-center gap-2 px-4 pt-1 pb-[max(0.75rem,env(safe-area-inset-bottom))]">{controls}</div>
       </div>
       <div className="flex-1 overflow-y-auto px-4 pt-3 pb-[max(1rem,env(safe-area-inset-bottom))]">{children}</div>
     </section>
