@@ -5,22 +5,29 @@ import { useTranslation } from "react-i18next";
 import { GeocodeError, useGeocode } from "./api.ts";
 import type { LatLon } from "./platform.tsx";
 
-// Finds an address or place and moves the point there. A combobox (ARIA 1.2): focus stays in the field, the arrow
+// Finds an address or place: to move the point there, or as a Trip's From or To. A combobox (ARIA 1.2): focus stays in the field, the arrow
 // keys move through the suggestions, Enter picks one, Escape closes them and then clears the field.
 
 const DEBOUNCE_MS = 250;
 
 export interface AddressSearchProps {
+  // Results near here rank first.
   point: LatLon | undefined;
   lang: string;
-  onPick: (place: LatLon) => void;
+  onPick: (place: GeocodeResult) => void;
+  // Defaults to "Search for an address or place".
+  label?: string;
+  placeholder?: string;
+  // What the field shows to begin with, e.g. a Trip's destination from a shared link.
+  initialText?: string;
+  autoFocus?: boolean;
 }
 
-export function AddressSearch({ point, lang, onPick }: AddressSearchProps) {
+export function AddressSearch({ point, lang, onPick, label, placeholder, initialText = "", autoFocus = false }: AddressSearchProps) {
   const { t } = useTranslation();
   const listId = useId();
-  const [text, setText] = useState("");
-  const [typed, setTyped] = useState("");
+  const [text, setText] = useState(initialText);
+  const [typed, setTyped] = useState(initialText);
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState(-1);
 
@@ -46,7 +53,7 @@ export function AddressSearch({ point, lang, onPick }: AddressSearchProps) {
     setTyped(place.name);
     setOpen(false);
     setActive(-1);
-    onPick({ lat: place.lat, lon: place.lon });
+    onPick(place);
   };
 
   const onKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
@@ -74,7 +81,7 @@ export function AddressSearch({ point, lang, onPick }: AddressSearchProps) {
       {showList && (
         <div className="absolute inset-x-0 bottom-full mb-2 lg:top-full lg:bottom-auto lg:mt-2 lg:mb-0 overflow-hidden rounded-xl border bg-popover shadow-xl">
           {results.length > 0 && (
-            <ul id={listId} role="listbox" aria-label={t("searchLabel")}>
+            <ul id={listId} role="listbox" aria-label={label ?? t("searchLabel")}>
               {results.map((place, i) => (
                 <li
                   key={place.label}
@@ -103,14 +110,15 @@ export function AddressSearch({ point, lang, onPick }: AddressSearchProps) {
       <input
         type="search"
         role="combobox"
-        aria-label={t("searchLabel")}
+        aria-label={label ?? t("searchLabel")}
         aria-expanded={showList && results.length > 0}
         aria-controls={listId}
         aria-autocomplete="list"
         {...(active >= 0 && showList ? { "aria-activedescendant": optionId(active) } : {})}
         autoComplete="off"
         enterKeyHint="search"
-        placeholder={t("searchPlaceholder")}
+        placeholder={placeholder ?? t("searchPlaceholder")}
+        autoFocus={autoFocus}
         value={text}
         onChange={(e) => {
           setText(e.target.value);

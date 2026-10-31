@@ -10,6 +10,9 @@ export type Schema<Name extends keyof components["schemas"]> = components["schem
 export type Event = Schema<"Event">;
 export type Region = Schema<"Region">;
 export type GeocodeResult = Schema<"GeocodeResult">;
+export type Trip = Schema<"Trip">;
+export type TravelMode = Schema<"TravelMode">;
+export type Impact = Schema<"Impact">;
 
 export interface ClientOptions {
   // The API's origin, e.g. "https://pulse.example". Absolute: a wrapped native app isn't served from the API's origin.

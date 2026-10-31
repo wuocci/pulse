@@ -1,4 +1,4 @@
-import type { Event, GeocodeResult, Region } from "@pulse/client";
+import type { Event, GeocodeResult, Region, Trip } from "@pulse/client";
 import { createMemoryHistory } from "@tanstack/react-router";
 import { cleanup, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -46,7 +46,14 @@ const eventQueries: URLSearchParams[] = [];
 // What /v0/geocode answers, set per test, and the queries it was asked.
 let places: GeocodeResult[] | "off" = [];
 const geocodeQueries: URLSearchParams[] = [];
+// What /v0/trips answers, set per test, and the queries it was asked.
+let trip: Trip = { events: [], plans: [] };
+const tripQueries: URLSearchParams[] = [];
 const server = setupServer(
+  http.get("*/v0/trips", ({ request }) => {
+    tripQueries.push(new URL(request.url).searchParams);
+    return HttpResponse.json(trip);
+  }),
   http.get("*/v0/geocode", ({ request }) => {
     geocodeQueries.push(new URL(request.url).searchParams);
     return places === "off" ? HttpResponse.json({ message: "Address search is off" }, { status: 503 }) : HttpResponse.json({ results: places });
@@ -64,6 +71,8 @@ afterEach(() => {
   eventQueries.length = 0;
   places = [];
   geocodeQueries.length = 0;
+  trip = { events: [], plans: [] };
+  tripQueries.length = 0;
 });
 afterAll(() => server.close());
 
@@ -558,5 +567,96 @@ describe("address search", () => {
     places = "off";
     await userEvent.type(input, "y");
     expect(await heard("Address search isn't available")).toBeInTheDocument();
+  });
+});
+
+describe("Trip mode", () => {
+  const PASILA: GeocodeResult = { name: "Pasila", label: "Pasila, Helsinki", lat: 60.1986, lon: 24.933 };
+  const itinerary = (minutes: number, impact: Trip["plans"][number]["itineraries"][number]["impact"]) => ({
+    start: "2026-10-31T12:00:00+02:00",
+    end: "2026-10-31T12:30:00+02:00",
+    durationS: minutes * 60,
+    legs: [],
+    eventIds: [],
+    impact,
+  });
+  const PLANNED: Trip = {
+    events: [],
+    plans: [
+      { mode: "transit", itineraries: [itinerary(15, "consider"), itinerary(18, "none")] },
+      { mode: "walk", itineraries: [] },
+      { mode: "bike", itineraries: [itinerary(22, "none")] },
+    ],
+  };
+  const toField = () => screen.findByRole("combobox", { name: "To" });
+  const modes = () => screen.findByRole("group", { name: "Travel mode" });
+
+  it("opens from the Route button, from where the pin is, and closes back to the map", async () => {
+    renderApp("/?at=60.17000,24.95000");
+
+    await userEvent.click(await screen.findByRole("button", { name: "Route" }));
+    expect(await toField()).toHaveFocus();
+    expect(screen.getByRole("combobox", { name: "From" })).toHaveAttribute("placeholder", "Where the pin is");
+    expect(screen.queryByRole("combobox", { name: "Search for an address or place" })).not.toBeInTheDocument();
+
+    await userEvent.click(screen.getByRole("button", { name: "Close route" }));
+    expect(await screen.findByRole("combobox", { name: "Search for an address or place" })).toBeInTheDocument();
+  });
+
+  it("plans every mode to the place picked, and shows each one's time and how much is in the way", async () => {
+    places = [PASILA];
+    trip = PLANNED;
+    const history = renderApp("/?at=60.17000,24.95000&trip=true");
+
+    await userEvent.type(await toField(), "pasila");
+    await userEvent.click(await screen.findByRole("option", { name: "Pasila, Helsinki" }));
+
+    const group = within(await modes());
+    expect(await group.findByRole("radio", { name: "Public transport, 15 min, worth considering" })).toBeChecked();
+    expect(group.getByRole("radio", { name: "Walk, no route" })).toBeInTheDocument();
+    expect(group.getByRole("radio", { name: "Bike, 22 min" })).toBeInTheDocument();
+    expect(Object.fromEntries(tripQueries.at(-1)!)).toEqual({ from: "60.17,24.95", to: "60.1986,24.933" });
+    expect(history.location.search).toContain("to=60.19860%2C24.93300");
+    expect(await toField()).toHaveValue("Pasila");
+  });
+
+  it("keeps the chosen mode in the URL", async () => {
+    trip = PLANNED;
+    const history = renderApp("/?at=60.17000,24.95000&trip=true&to=60.19860,24.93300&toName=Pasila");
+
+    await userEvent.click(await within(await modes()).findByRole("radio", { name: /^Bike/ }));
+
+    expect(history.location.search).toContain("mode=bike");
+    expect(within(await modes()).getByRole("radio", { name: /^Bike/ })).toBeChecked();
+  });
+
+  it("opens the same Trip from a shared link", async () => {
+    trip = PLANNED;
+    renderApp("/?at=60.17000,24.95000&trip=true&from=60.16000,24.94000&fromName=Kamppi&to=60.19860,24.93300&toName=Pasila&mode=bike");
+
+    expect(await toField()).toHaveValue("Pasila");
+    expect(screen.getByRole("combobox", { name: "From" })).toHaveValue("Kamppi");
+    expect(await within(await modes()).findByRole("radio", { name: /^Bike/ })).toBeChecked();
+    expect(Object.fromEntries(tripQueries.at(-1)!)).toEqual({ from: "60.16,24.94", to: "60.1986,24.933" });
+  });
+
+  it("plans from another place when From is changed", async () => {
+    places = [PASILA];
+    renderApp("/?at=60.17000,24.95000&trip=true&to=60.20000,24.90000&toName=Somewhere");
+
+    await userEvent.type(await screen.findByRole("combobox", { name: "From" }), "pasila");
+    await userEvent.click(await screen.findByRole("option", { name: "Pasila, Helsinki" }));
+
+    await waitFor(() => expect(tripQueries.at(-1)?.get("from")).toBe("60.1986,24.933"));
+  });
+
+  it("closes with Back", async () => {
+    const history = renderApp("/?at=60.17000,24.95000");
+    await userEvent.click(await screen.findByRole("button", { name: "Route" }));
+    await toField();
+
+    act(() => history.back());
+
+    expect(await screen.findByRole("combobox", { name: "Search for an address or place" })).toBeInTheDocument();
   });
 });

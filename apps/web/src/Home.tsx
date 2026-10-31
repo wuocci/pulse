@@ -1,18 +1,20 @@
-import { CircleCheck, LocateFixed, LocateIcon, Navigation } from "lucide-react";
+import type { GeocodeResult } from "@pulse/client";
+import { CircleCheck, LocateFixed, LocateIcon, Navigation, Route } from "lucide-react";
 import { useNavigate, useSearch } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { AddressSearch } from "./AddressSearch.tsx";
-import { useEvents, useRegions } from "./api.ts";
+import { useEvents, useRegions, useTrip } from "./api.ts";
 import { EventCard } from "./EventCard.tsx";
 import { EventList } from "./EventList.tsx";
 import { nearestFirst, statusOf, type Time } from "./events.ts";
 import { EventPin } from "./map/EventPin.tsx";
 import { PointMap } from "./map/PointMap.tsx";
 import { type LatLon, LocationError, usePlatform } from "./platform.tsx";
-import { usePoint } from "./point.ts";
+import { formatAt, parseAt, usePoint } from "./point.ts";
 import { Sheet } from "./Sheet.tsx";
+import { TravelModes, TripForm } from "./TripPanel.tsx";
 
 // The locate button, as in map apps: the first tap goes to my location, the second follows it, the third stops.
 // Panning the map or choosing a place by hand also stops following.
@@ -24,9 +26,14 @@ export function Home() {
   const { location } = usePlatform();
   const { point, setPoint } = usePoint();
   const regions = useRegions();
-  const { time = "now", event: selectedId } = useSearch({ from: "/" });
+  const search = useSearch({ from: "/" });
+  const { time = "now", event: selectedId, mode = "transit" } = search;
   const navigate = useNavigate({ from: "/" });
   const events = useEvents(point, time);
+  // Trip mode: from the point unless From was changed.
+  const tripFrom = parseAt(search.from) ?? point;
+  const tripTo = parseAt(search.to);
+  const trip = useTrip(search.trip ? tripFrom : undefined, search.trip ? tripTo : undefined);
   const [locate, setLocate] = useState<Locate>("off");
   const [locating, setLocating] = useState(false);
   const [failure, setFailure] = useState<LocationError["reason"] | null>(null);
@@ -68,6 +75,15 @@ export function Home() {
     setPoint(at);
   };
 
+  // Opening Trip mode is a step Back undoes; what's chosen inside it isn't.
+  const openTrip = () => void navigate({ search: (prev) => ({ ...prev, trip: true }) });
+  const closeTrip = () =>
+    void navigate({
+      search: (prev) => ({ ...prev, trip: undefined, to: undefined, toName: undefined, from: undefined, fromName: undefined, mode: undefined }),
+      replace: true,
+    });
+  const setTripEnd = (end: "from" | "to") => (place: GeocodeResult) =>
+    void navigate({ search: (prev) => ({ ...prev, [end]: formatAt(place), [`${end}Name`]: place.name }), replace: true });
   const setTime = (next: Time) => void navigate({ search: (prev) => ({ ...prev, time: next }), replace: true });
   const select = (id: string) => void navigate({ search: (prev) => ({ ...prev, event: id }) });
   // Closing the card hands focus back to the pin it came from.
@@ -148,8 +164,40 @@ export function Home() {
       </div>
       <Sheet
         title={t("sheetTitle")}
-        top={<AddressSearch point={point} lang={languages[0] ?? "en"} onPick={choosePlace} />}
+        top={
+          search.trip ? (
+            <TripForm
+              point={point}
+              lang={languages[0] ?? "en"}
+              fromName={search.fromName}
+              toName={search.toName}
+              onFrom={setTripEnd("from")}
+              onTo={setTripEnd("to")}
+              onClose={closeTrip}
+            />
+          ) : (
+            <div className="flex items-center gap-2">
+              <AddressSearch point={point} lang={languages[0] ?? "en"} onPick={choosePlace} />
+              <Button variant="secondary" size="icon" className="size-11 shrink-0" aria-label={t("route")} onClick={openTrip}>
+                <Route aria-hidden />
+              </Button>
+            </div>
+          )
+        }
         peek={
+          search.trip ? (
+            tripTo ? (
+              trip.isError ? (
+                <p role="alert" className="flex-1 text-sm">
+                  {t("tripFailed")}
+                </p>
+              ) : (
+                <TravelModes trip={trip.data} mode={mode} onMode={(next) => void navigate({ search: (prev) => ({ ...prev, mode: next }), replace: true })} />
+              )
+            ) : (
+              <div className="flex-1" />
+            )
+          ) : (
           <>
               <fieldset className="flex rounded-lg bg-muted p-1">
                 <legend className="sr-only">{t("time")}</legend>
@@ -175,6 +223,7 @@ export function Home() {
                 <Icon aria-hidden className={locate === "following" ? "fill-current" : undefined} />
               </Button>
           </>
+          )
         }
       >
         {/* The list is for the docked panel; on phones the map is the list (they asked for no list in the sheet). */}

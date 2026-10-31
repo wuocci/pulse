@@ -87,3 +87,21 @@ export function useGeocode(text: string, point: LatLon | undefined, lang: string
     staleTime: 5 * 60_000,
   });
 }
+
+// Every mode's itineraries from A to B, departing now, with the Events on each.
+export function useTrip(from: LatLon | undefined, to: LatLon | undefined) {
+  return useQuery({
+    queryKey: ["trip", from?.lat, from?.lon, to?.lat, to?.lon],
+    enabled: from !== undefined && to !== undefined,
+    queryFn: async () => {
+      const { data, response } = await client.GET("/trips", {
+        params: { query: { from: `${from!.lat},${from!.lon}`, to: `${to!.lat},${to!.lon}` } },
+      });
+      if (!data) throw new Error(`GET /trips responded ${response.status}`);
+      return data;
+    },
+    // The API already asks Digitransit again once.
+    retry: false,
+    staleTime: 60_000,
+  });
+}
