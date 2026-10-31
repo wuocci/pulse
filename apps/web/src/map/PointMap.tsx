@@ -3,9 +3,11 @@ import "maplibre-gl/dist/maplibre-gl.css";
 import { type ReactNode, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
+import type { Schema } from "@pulse/client";
 import type { Pin } from "../events.ts";
 import type { LatLon } from "../platform.tsx";
 import { DOCKED_MEDIA, PANEL_PX, PEEK_PX } from "../Sheet.tsx";
+import { LEG_STYLE } from "../transit.ts";
 import { longPress } from "./long-press.ts";
 
 // OpenFreeMap: free vector tiles, no key. Positron is muted, so Events drawn on top stand out.
@@ -28,8 +30,9 @@ export interface PointMapProps {
   renderPin: (pin: Pin) => ReactNode;
   // A card popping up from one of the pins.
   popup?: { pinKey: string; content: ReactNode };
-  // A Trip's route, leg by leg: drawn solid where you ride, dotted where you walk, and fitted into view.
-  route?: { mode: string; geometry: { coordinates: number[][] } }[];
+  // A Trip's route, leg by leg: each ride in its mode's colour with its line at the boarding point, walks dotted;
+  // fitted into view.
+  route?: { mode: Schema<"LegMode">; line?: { name: string }; geometry: { coordinates: number[][] } }[];
   // How much of the map the sheet covers: its bottom on phones, its left side when docked as a panel (0 while the
   // panel is hidden). The map centres in the rest.
   bottomInset?: number;
@@ -38,7 +41,6 @@ export interface PointMapProps {
 
 const reducedMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-const ROUTE_COLOUR = "#2563eb";
 const ROUTE_ROOM_PX = 48;
 
 export function PointMap({ point, onLongPress, onPan, onMapClick, pins, renderPin, popup, route, bottomInset = PEEK_PX, leftInset = PANEL_PX }: PointMapProps) {
@@ -121,7 +123,9 @@ export function PointMap({ point, onLongPress, onPan, onMapClick, pins, renderPi
   // Redrawn and refitted when the route itself changes, not on every render.
   const routeRef = useRef(route);
   routeRef.current = route;
-  const routeKey = route ? JSON.stringify(route.map((leg) => [leg.mode, leg.geometry.coordinates.length, leg.geometry.coordinates[0]])) : "";
+  const routeKey = route
+    ? JSON.stringify(route.map((leg) => [leg.mode, leg.line?.name, leg.geometry.coordinates.length, leg.geometry.coordinates[0]]))
+    : "";
   useEffect(() => {
     const m = map.current;
     if (!m) return;
@@ -130,18 +134,32 @@ export function PointMap({ point, onLongPress, onPan, onMapClick, pins, renderPi
       type: "FeatureCollection",
       features: legs.map((leg) => ({
         type: "Feature",
-        properties: { walk: leg.mode === "walk" },
+        properties: { walk: leg.mode === "walk", colour: LEG_STYLE[leg.mode].colour },
         geometry: { type: "LineString", coordinates: leg.geometry.coordinates },
       })),
     };
+    const boardings: maplibregl.Marker[] = [];
     const draw = () => {
       const source = m.getSource<maplibregl.GeoJSONSource>("route");
       if (source) source.setData(data);
       else {
         m.addSource("route", { type: "geojson", data });
         const line = { type: "line", source: "route", layout: { "line-cap": "round", "line-join": "round" } } as const;
-        m.addLayer({ ...line, id: "route-ride", filter: ["!", ["get", "walk"]], paint: { "line-color": ROUTE_COLOUR, "line-width": 6 } });
-        m.addLayer({ ...line, id: "route-walk", filter: ["get", "walk"], paint: { "line-color": ROUTE_COLOUR, "line-width": 4, "line-dasharray": [0, 2] } });
+        // A white edge keeps each colour readable over streets and water.
+        m.addLayer({ ...line, id: "route-edge", filter: ["!", ["get", "walk"]], paint: { "line-color": "#ffffff", "line-width": 9 } });
+        m.addLayer({ ...line, id: "route-ride", filter: ["!", ["get", "walk"]], paint: { "line-color": ["get", "colour"], "line-width": 6 } });
+        m.addLayer({ ...line, id: "route-walk", filter: ["get", "walk"], paint: { "line-color": ["get", "colour"], "line-width": 4, "line-dasharray": [0, 2] } });
+      }
+      // The line you board, where you board it. Decorative: the Routes list says the same in words.
+      for (const leg of legs) {
+        const start = leg.geometry.coordinates[0];
+        if (!leg.line || !start) continue;
+        const label = document.createElement("span");
+        label.setAttribute("aria-hidden", "true");
+        label.className = "rounded px-1.5 py-0.5 text-xs font-bold text-white shadow ring-2 ring-white";
+        label.style.backgroundColor = LEG_STYLE[leg.mode].colour;
+        label.textContent = leg.line.name;
+        boardings.push(new maplibregl.Marker({ element: label }).setLngLat(start as [number, number]).addTo(m));
       }
       const coordinates = legs.flatMap((leg) => leg.geometry.coordinates) as [number, number][];
       if (!coordinates.length) return;
@@ -150,7 +168,10 @@ export function PointMap({ point, onLongPress, onPan, onMapClick, pins, renderPi
     };
     if (m.isStyleLoaded()) draw();
     else m.once("load", draw);
-    return () => void m.off("load", draw);
+    return () => {
+      m.off("load", draw);
+      for (const boarding of boardings) boarding.remove();
+    };
   }, [routeKey]);
 
   useEffect(() => {

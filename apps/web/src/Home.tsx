@@ -1,4 +1,4 @@
-import type { GeocodeResult } from "@pulse/client";
+import type { GeocodeResult, TravelMode } from "@pulse/client";
 import { CircleCheck, LocateFixed, LocateIcon, Navigation, Route } from "lucide-react";
 import { useNavigate, useSearch } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -8,13 +8,13 @@ import { AddressSearch } from "./AddressSearch.tsx";
 import { useEvents, useRegions, useTrip } from "./api.ts";
 import { EventCard } from "./EventCard.tsx";
 import { EventList } from "./EventList.tsx";
-import { nearestFirst, statusOf, type Time } from "./events.ts";
+import { nearestFirst, statusOf, textIn, type Time } from "./events.ts";
 import { EventPin } from "./map/EventPin.tsx";
 import { PointMap } from "./map/PointMap.tsx";
 import { type LatLon, LocationError, usePlatform } from "./platform.tsx";
 import { formatAt, parseAt, usePoint } from "./point.ts";
 import { PANEL_PX, PEEK_PX, Sheet } from "./Sheet.tsx";
-import { TravelModes, TripForm } from "./TripPanel.tsx";
+import { Itineraries, TravelModes, TripForm } from "./TripPanel.tsx";
 
 // The locate button, as in map apps: the first tap goes to my location, the second follows it, the third stops.
 // Panning the map or choosing a place by hand also stops following.
@@ -111,8 +111,23 @@ export function Home() {
     () => [...navigator.languages.map((l) => l.split("-")[0]!), ...(regions.data?.[0]?.languages ?? [])],
     [regions.data],
   );
-  // In Trip mode the map shows the chosen mode's best itinerary and only the Events on it.
-  const itinerary = search.trip ? trip.data?.plans.find((p) => p.mode === mode)?.itineraries[0] : undefined;
+  // In Trip mode the map shows the chosen itinerary and only the Events on it: the one picked, else the one that's
+  // better today, else the first.
+  const recommended = trip.data?.recommended;
+  const shownIndex = (m: TravelMode) => (m === mode && search.route !== undefined ? search.route : recommended?.mode === m ? recommended.index : 0);
+  const plan = search.trip ? trip.data?.plans.find((p) => p.mode === mode) : undefined;
+  const itinerary = plan ? (plan.itineraries[shownIndex(mode)] ?? plan.itineraries[0]) : undefined;
+  // What the better way avoids: the worst of what's on the fastest way and not on it.
+  const avoids = (() => {
+    if (!trip.data || !recommended) return undefined;
+    const ways = trip.data.plans.flatMap((p) => p.itineraries);
+    const fastest = ways.reduce<(typeof ways)[number] | undefined>((a, b) => (!a || Date.parse(b.end) < Date.parse(a.end) ? b : a), undefined);
+    const better = trip.data.plans.find((p) => p.mode === recommended.mode)?.itineraries[recommended.index];
+    const avoided = trip.data.events.filter((e) => fastest?.eventIds.includes(e.id) && !better?.eventIds.includes(e.id));
+    const rank = { info: 0, minor: 1, consider: 2, major: 3 };
+    const worst = avoided.sort((a, b) => rank[b.severity] - rank[a.severity])[0];
+    return worst && textIn(worst.title, languages);
+  })();
   const shown = useMemo(() => {
     if (!search.trip) return events.data;
     if (!itinerary || !trip.data) return [];
@@ -225,7 +240,12 @@ export function Home() {
                   {t("tripFailed")}
                 </p>
               ) : (
-                <TravelModes trip={trip.data} mode={mode} onMode={(next) => void navigate({ search: (prev) => ({ ...prev, mode: next }), replace: true })} />
+                <TravelModes
+                  trip={trip.data}
+                  mode={mode}
+                  shownIndex={shownIndex}
+                  onMode={(next) => void navigate({ search: (prev) => ({ ...prev, mode: next, route: undefined }), replace: true })}
+                />
               )
             ) : (
               <div className="flex-1" />
@@ -259,11 +279,30 @@ export function Home() {
           )
         }
       >
-        {/* The list is for the docked panel; on phones the map is the list (they asked for no list in the sheet). */}
-        <div className="hidden lg:block">
-          <EventList pins={pins} selectedId={selectedId} languages={languages} timeZone={timeZone} onSelect={select} />
-        </div>
-        <p className="text-sm text-muted-foreground lg:hidden">{t("sheetHint")}</p>
+        {search.trip ? (
+          plan && (
+            <div className="space-y-4">
+              <Itineraries
+                itineraries={plan.itineraries}
+                chosen={shownIndex(mode)}
+                {...(recommended?.mode === mode ? { better: { index: recommended.index, ...(avoids ? { avoids } : {}) } } : {})}
+                timeZone={timeZone}
+                onChoose={(index) => void navigate({ search: (prev) => ({ ...prev, route: index }), replace: true })}
+              />
+              {pins.length > 0 && (
+                <EventList label={t("onTheWay")} pins={pins} selectedId={selectedId} languages={languages} timeZone={timeZone} onSelect={select} />
+              )}
+            </div>
+          )
+        ) : (
+          <>
+            {/* The list is for the docked panel; on phones the map is the list (they asked for no list in the sheet). */}
+            <div className="hidden lg:block">
+              <EventList pins={pins} selectedId={selectedId} languages={languages} timeZone={timeZone} onSelect={select} />
+            </div>
+            <p className="text-sm text-muted-foreground lg:hidden">{t("sheetHint")}</p>
+          </>
+        )}
       </Sheet>
     </main>
   );

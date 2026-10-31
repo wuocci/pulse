@@ -18,6 +18,8 @@ const SearchSchema = z.object({
   fromName: z.string().optional().catch(undefined),
   // The chosen travel mode; public transport when absent.
   mode: z.enum(["transit", "walk", "bike"]).optional().catch(undefined),
+  // Which of that mode's itineraries; the recommended one, else the first, when absent.
+  route: z.number().int().min(0).optional().catch(undefined),
 });
 
 const rootRoute = createRootRoute({ component: Outlet });

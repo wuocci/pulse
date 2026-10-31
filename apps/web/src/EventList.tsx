@@ -7,6 +7,8 @@ import { EventIcon, TONE_CLASSES } from "./map/EventPin.tsx";
 // Every Event on the map as a list, nearest first: the same choice as tapping its pin, without hunting for it.
 
 export interface EventListProps {
+  // Names the list; "Nearest first" when absent.
+  label?: string;
   // Nearest first; an Event with many pins (stops) is listed once, at its nearest.
   pins: Pin[];
   selectedId: string | undefined;
@@ -15,14 +17,14 @@ export interface EventListProps {
   onSelect: (id: string) => void;
 }
 
-export function EventList({ pins, selectedId, languages, timeZone, onSelect }: EventListProps) {
+export function EventList({ label, pins, selectedId, languages, timeZone, onSelect }: EventListProps) {
   const { t, i18n } = useTranslation();
   const seen = new Set<string>();
   const nearest = pins.filter(({ event }) => !seen.has(event.id) && seen.add(event.id));
   const now = new Date();
 
   return (
-    <ul aria-label={t("listTitle")} className="-mx-2 space-y-1">
+    <ul aria-label={label ?? t("listTitle")} className="-mx-2 space-y-1">
       {nearest.map(({ event, distanceM }) => (
         <li key={event.id}>
           <button

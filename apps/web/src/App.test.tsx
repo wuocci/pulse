@@ -720,7 +720,7 @@ describe("a Trip on the map", () => {
     expect(await screen.findByRole("button", { name: "Works on the way, Drivers, minor" })).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: /^Works around here,/ })).not.toBeInTheDocument();
     expect(screen.getByRole("status")).toHaveTextContent("1 thing on your way");
-    expect(within(await screen.findByRole("list", { name: "Nearest first" })).getAllByRole("button")).toHaveLength(1);
+    expect(within(await screen.findByRole("list", { name: "On the way" })).getAllByRole("button")).toHaveLength(1);
   });
 
   it("redraws for another mode, and says when nothing is in the way", async () => {
@@ -755,5 +755,78 @@ describe("a Trip on the map", () => {
     await screen.findByRole("group", { name: "Travel mode" });
 
     expect(screen.getByTestId("map")).toHaveAttribute("data-route", "");
+  });
+});
+
+describe("a Trip's itineraries", () => {
+  const leg = (mode: "walk" | "tram" | "bus", line?: string) => ({
+    mode,
+    ...(line ? { line: { id: `HSL:${line}`, name: line } } : {}),
+    from: { name: "A", lat: 60.17, lon: 24.95 },
+    to: { name: "B", lat: 60.19, lon: 24.94 },
+    start: "2026-10-31T12:00:00+02:00",
+    end: "2026-10-31T12:04:00+02:00",
+    stops: [],
+    geometry: { type: "LineString" as const, coordinates: [[24.95, 60.17], [24.94, 60.19]] as [number, number][] },
+  });
+  const ride = (end: string, eventIds: string[], impact: "none" | "consider" | "major", ...legs: ReturnType<typeof leg>[]) => ({
+    start: "2026-10-31T12:00:00+02:00",
+    end,
+    durationS: (Date.parse(end) - Date.parse("2026-10-31T12:00:00+02:00")) / 1000,
+    legs,
+    eventIds,
+    impact,
+  });
+  const dig = anEvent("dig", { where: { geometry: { type: "Point", coordinates: [24.945, 60.18] }, precision: "area" } });
+  const TO = "/?at=60.17000,24.95000&trip=true&to=60.19000,24.94000&toName=Pasila";
+  const TRAM = ride("2026-10-31T12:15:00+02:00", ["dig"], "consider", leg("walk"), leg("tram", "2"), leg("walk"));
+  const BUS = ride("2026-10-31T12:20:00+02:00", [], "none", leg("walk"), leg("bus", "69"), leg("walk"));
+  const routes = async () => within(await screen.findByRole("group", { name: "Routes" }));
+
+  it("lists the mode's itineraries with their legs, times and Impact, and draws the one picked", async () => {
+    trip = { events: [dig], plans: [{ mode: "transit", itineraries: [TRAM, BUS] }] };
+    const history = renderApp(TO);
+
+    const rows = await (await routes()).findAllByRole("radio");
+    expect(rows.map((r) => r.getAttribute("aria-label"))).toEqual([
+      "Walk 4 min, tram 2, walk 4 min. 12:00–12:15, 15 min, worth considering",
+      "Walk 4 min, bus 69, walk 4 min. 12:00–12:20, 20 min",
+    ]);
+    expect(rows[0]).toBeChecked();
+
+    await userEvent.click(rows[1]!);
+
+    expect(history.location.search).toContain("route=1");
+    await waitFor(() => expect(screen.getByTestId("map")).toHaveAttribute("data-route", "walk,bus,walk"));
+    expect(screen.getByRole("status")).toHaveTextContent("Nothing in your way");
+  });
+
+  it("starts on the way that's better today, and says what it avoids", async () => {
+    trip = { events: [dig], plans: [{ mode: "transit", itineraries: [TRAM, BUS] }], recommended: { mode: "transit", index: 1 } };
+    renderApp(TO);
+
+    const better = await (await routes()).findByRole("radio", { name: /bus 69/ });
+    expect(better).toBeChecked();
+    expect(better).toHaveAccessibleName(/better today, avoids Works dig$/);
+    await waitFor(() => expect(screen.getByTestId("map")).toHaveAttribute("data-route", "walk,bus,walk"));
+    expect(within(await screen.findByRole("group", { name: "Travel mode" })).getByRole("radio", { name: /^Public transport, 20 min, better today/ })).toBeChecked();
+  });
+
+  it("lists what's on the chosen way under the routes", async () => {
+    trip = { events: [dig], plans: [{ mode: "transit", itineraries: [TRAM, BUS] }] };
+    renderApp(TO);
+
+    const onTheWay = within(await screen.findByRole("list", { name: "On the way" }));
+    expect(await onTheWay.findByRole("button", { name: /^Works dig/ })).toBeInTheDocument();
+  });
+
+  it("starts each mode from its first way again", async () => {
+    trip = { events: [dig], plans: [{ mode: "transit", itineraries: [TRAM, BUS] }, { mode: "walk", itineraries: [ride("2026-10-31T12:40:00+02:00", [], "none", leg("walk"))] }] };
+    const history = renderApp(`${TO}&route=1`);
+
+    await userEvent.click(await within(await screen.findByRole("group", { name: "Travel mode" })).findByRole("radio", { name: /^Walk/ }));
+
+    expect(history.location.search).not.toContain("route=");
+    await waitFor(() => expect(screen.getByTestId("map")).toHaveAttribute("data-route", "walk"));
   });
 });
