@@ -1,5 +1,6 @@
 import type { Event, Impact, Leg, LegMode, MainlyAffected } from "@pulse/schema";
 import type { RoutedItinerary } from "../adapters/digitransit-routing.ts";
+import { localClock, withinDailyHours } from "../events/hours.ts";
 
 // Which Events are on an itinerary, and how much they matter for it (Impact). PRD #34:
 // an Event is on it when it shares a line or stop with a transit leg, or lies within CORRIDOR_M of a street leg,
@@ -15,13 +16,20 @@ export interface Match {
   legs: { leg: Leg; by: "line" | "stop" | "corridor" }[];
 }
 
-export function matchItinerary(itinerary: RoutedItinerary, events: Event[], corridorM = CORRIDOR_M): Match[] {
+export interface MatchOptions {
+  // The Region's, for reading Events' daily hours; UTC when absent.
+  timeZone?: string;
+  corridorM?: number;
+}
+
+export function matchItinerary(itinerary: RoutedItinerary, events: Event[], { timeZone = "UTC", corridorM = CORRIDOR_M }: MatchOptions = {}): Match[] {
   const start = Date.parse(itinerary.start);
   const end = Date.parse(itinerary.end);
+  const moments = momentsOf(start, end, timeZone);
   const legs = itinerary.legs.map((leg) => ({ leg, shape: shapeOf([leg.geometry.coordinates]) }));
 
   return events.flatMap((event) => {
-    if (!goingOn(event, start, end)) return [];
+    if (!goingOn(event, start, end, moments)) return [];
     // An area or line is placed where it is; a vague Event only by the lines and stops it names.
     const shape = event.where.precision === "vague" ? undefined : eventShape(event);
     const matched = legs.flatMap(({ leg, shape: route }): Match["legs"] => {
@@ -34,9 +42,22 @@ export function matchItinerary(itinerary: RoutedItinerary, events: Event[], corr
   });
 }
 
-function goingOn({ when, status }: Event, start: number, end: number): boolean {
+const SAMPLE_MS = 5 * 60_000;
+
+// The trip's local clock every few minutes, start and end included: enough to tell whether hours overlap it.
+function momentsOf(start: number, end: number, timeZone: string) {
+  const times = [];
+  for (let t = start; t < end; t += SAMPLE_MS) times.push(t);
+  times.push(end);
+  return times.map((t) => localClock(new Date(t), timeZone));
+}
+
+// Going on during the trip: in its time window and, if the Source gives daily hours, within them at some point.
+// Only the Source's own hours: a dig blocks the street at night too, whatever the kind's usual working hours.
+function goingOn({ when, status }: Event, start: number, end: number, moments: ReturnType<typeof momentsOf>): boolean {
   if (status === "resolved") return false;
-  return Date.parse(when.start) <= end && (!when.end || Date.parse(when.end) >= start);
+  if (Date.parse(when.start) > end || (when.end && Date.parse(when.end) < start)) return false;
+  return !when.dailyHours || moments.some((moment) => withinDailyHours(moment, when.dailyHours));
 }
 
 export const RANK: Record<Impact, number> = { none: 0, minor: 1, consider: 2, major: 3 };

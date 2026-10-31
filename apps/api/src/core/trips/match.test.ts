@@ -102,6 +102,22 @@ describe("which Events are on an itinerary", () => {
   });
 });
 
+describe("an Event's own daily hours", () => {
+  // 12:00–12:30 in Helsinki; the leg passes the works.
+  const night = event("night closure", { when: { start: "2026-10-01T00:00:00+03:00", dailyHours: { from: "22:00", to: "06:00", days: ["fri", "sat"] } } });
+  const at = (start: string, end: string): RoutedItinerary => ({ ...itinerary(leg()), start, end });
+  const options = { timeZone: "Europe/Helsinki" };
+
+  it("leave out what's off while the trip passes", () => {
+    expect(matchItinerary(at("2026-10-31T12:00:00+02:00", "2026-10-31T12:30:00+02:00"), [night], options)).toEqual([]);
+  });
+
+  it("take what's on at any point of the trip, past midnight too", () => {
+    expect(matchItinerary(at("2026-10-31T21:50:00+02:00", "2026-10-31T22:20:00+02:00"), [night], options)).toHaveLength(1);
+    expect(matchItinerary(at("2026-11-01T05:30:00+02:00", "2026-11-01T06:10:00+02:00"), [night], options)).toHaveLength(1);
+  });
+});
+
 describe("Impact", () => {
   const impact = (it: RoutedItinerary, ...events: Event[]) => impactOf(matchItinerary(it, events));
 

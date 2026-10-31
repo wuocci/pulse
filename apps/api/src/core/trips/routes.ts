@@ -83,7 +83,7 @@ export function tripRoutes(
     const plans = planned.map(({ mode, itineraries }) => ({
       mode,
       itineraries: itineraries.map((itinerary) => {
-        const matches = matchItinerary(itinerary, candidates);
+        const matches = matchItinerary(itinerary, candidates, { timeZone: region.timeZone });
         for (const { event } of matches) events.set(event.id, event);
         return { ...itinerary, eventIds: matches.map((m) => m.event.id), impact: impactOf(matches) };
       }),

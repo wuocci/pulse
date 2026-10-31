@@ -1,6 +1,5 @@
 import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
 import {
-  type DailyHours,
   type Event,
   EventKindSchema,
   EventSchema,
@@ -9,10 +8,9 @@ import {
   type Layer,
   LayerSchema,
   NoticeableSchema,
-  type Weekday,
-  WeekdaySchema,
 } from "@pulse/schema";
 import { type Region, regionAt } from "../regions/index.ts";
+import { localClock, withinDailyHours } from "./hours.ts";
 import type { EventStore } from "./store.ts";
 
 const DEFAULT_RADIUS_M = 1000;
@@ -125,41 +123,4 @@ function rightNow(nearest: Event[], at: Date, region: Region | undefined): Event
   return nearest
     .filter((event) => withinDailyHours(local, event.when.dailyHours ?? region?.defaultDailyHours[event.kind]))
     .sort((a, b) => Number(b.noticeable.length > 0) - Number(a.noticeable.length > 0)); // stable: distance order stays
-}
-
-interface LocalClock {
-  day: Weekday;
-  minutes: number;
-}
-
-// The weekday and minutes since midnight at `at` in the given IANA time zone, summer time included.
-// The inverse of `localTime` in the permit Adapter, with the same Intl lookup.
-function localClock(at: Date, timeZone: string): LocalClock {
-  const format = { timeZone, weekday: "short", hour: "2-digit", minute: "2-digit", hourCycle: "h23" } as const;
-  const parts = new Intl.DateTimeFormat("en-US", format).formatToParts(at);
-  const part = (type: Intl.DateTimeFormatPartTypes) => parts.find((p) => p.type === type)!.value;
-  return {
-    day: WeekdaySchema.parse(part("weekday").toLowerCase()),
-    minutes: Number(part("hour")) * 60 + Number(part("minute")),
-  };
-}
-
-// No hours means all day. Hours that end before they start run past midnight; `days` are the days they start on.
-function withinDailyHours({ day, minutes }: LocalClock, hours: DailyHours | undefined): boolean {
-  if (!hours) return true;
-  const from = minutesOf(hours.from);
-  const to = minutesOf(hours.to);
-  const startsOn = (d: Weekday) => !hours.days || hours.days.includes(d);
-  if (from <= to) return startsOn(day) && minutes >= from && minutes < to;
-  return (minutes >= from && startsOn(day)) || (minutes < to && startsOn(previousDay(day)));
-}
-
-function minutesOf(time: string): number {
-  const [hours, minutes] = time.split(":").map(Number) as [number, number];
-  return hours * 60 + minutes;
-}
-
-function previousDay(day: Weekday): Weekday {
-  const week = WeekdaySchema.options;
-  return week[(week.indexOf(day) + week.length - 1) % week.length]!;
 }
