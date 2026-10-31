@@ -55,5 +55,12 @@ export const TripSchema = z
   .object({
     events: z.array(EventSchema).openapi({ description: "Every Event on any itinerary, once" }),
     plans: z.array(TripPlanSchema),
+    recommended: z
+      .object({ mode: TravelModeSchema, index: z.number().int().openapi({ description: "Into that mode's itineraries" }) })
+      .optional()
+      .openapi({
+        description:
+          "Better today: when the fastest way has something worth considering in it, the earliest way in any mode that's less in the way and at most 10 min later",
+      }),
   })
   .openapi("Trip");

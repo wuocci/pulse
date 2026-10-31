@@ -460,6 +460,12 @@ export interface components {
             /** @description Every Event on any itinerary, once */
             events: components["schemas"]["Event"][];
             plans: components["schemas"]["TripPlan"][];
+            /** @description Better today: when the fastest way has something worth considering in it, the earliest way in any mode that's less in the way and at most 10 min later */
+            recommended?: {
+                mode: components["schemas"]["TravelMode"];
+                /** @description Into that mode's itineraries */
+                index: number;
+            };
         };
         TripPlan: {
             mode: components["schemas"]["TravelMode"];

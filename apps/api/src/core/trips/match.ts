@@ -36,7 +36,7 @@ function goingOn({ when, status }: Event, start: number, end: number): boolean {
   return Date.parse(when.start) <= end && (!when.end || Date.parse(when.end) >= start);
 }
 
-const RANK: Record<Impact, number> = { none: 0, minor: 1, consider: 2, major: 3 };
+export const RANK: Record<Impact, number> = { none: 0, minor: 1, consider: 2, major: 3 };
 
 // Who is in the way of what, by how a leg is travelled.
 const FITS: Partial<Record<LegMode, MainlyAffected[]>> = { walk: ["pedestrians", "everyone"], bike: ["cyclists", "everyone"] };

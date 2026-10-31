@@ -660,6 +660,23 @@
             "items": {
               "$ref": "#/components/schemas/TripPlan"
             }
+          },
+          "recommended": {
+            "type": "object",
+            "properties": {
+              "mode": {
+                "$ref": "#/components/schemas/TravelMode"
+              },
+              "index": {
+                "type": "integer",
+                "description": "Into that mode's itineraries"
+              }
+            },
+            "required": [
+              "mode",
+              "index"
+            ],
+            "description": "Better today: when the fastest way has something worth considering in it, the earliest way in any mode that's less in the way and at most 10 min later"
           }
         },
         "required": [

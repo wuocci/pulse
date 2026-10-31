@@ -75,6 +75,19 @@ describe("GET /v0/trips", () => {
     ]);
   });
 
+  it("marks the way that's better today, and none when the fastest is fine", async () => {
+    const clear: Leg = { ...walk, geometry: { type: "LineString", coordinates: [[24.93, 60.2], [24.94, 60.2]] } };
+    const router: Router = {
+      plan: async ({ mode }) => (mode === "bike" ? [{ ...route("bike"), legs: [clear] }] : mode === "transit" ? [route("transit")] : []),
+    };
+
+    const body = (await (await get(await appWith(() => router), AB)).json()) as Trip;
+
+    expect(body.recommended).toEqual({ mode: "bike", index: 0 });
+    const fine = (await (await get(await appWith(() => router), `${AB}&modes=bike`)).json()) as Trip;
+    expect(fine.recommended).toBeUndefined();
+  });
+
   it("plans only the modes asked for, departing when asked", async () => {
     const { router, asked } = fakeRouter();
 

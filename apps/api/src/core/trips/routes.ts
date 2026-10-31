@@ -4,6 +4,7 @@ import type { Router } from "../adapters/digitransit-routing.ts";
 import type { EventStore } from "../events/store.ts";
 import { type Region, regionAt } from "../regions/index.ts";
 import { impactOf, matchItinerary } from "./match.ts";
+import { recommend } from "./recommend.ts";
 
 const MODES = TravelModeSchema.options;
 const MessageSchema = z.object({ message: z.string() });
@@ -87,6 +88,7 @@ export function tripRoutes(
         return { ...itinerary, eventIds: matches.map((m) => m.event.id), impact: impactOf(matches) };
       }),
     }));
-    return c.json({ events: [...events.values()], plans }, 200);
+    const recommended = recommend(plans);
+    return c.json({ events: [...events.values()], plans, ...(recommended ? { recommended } : {}) }, 200);
   });
 }
