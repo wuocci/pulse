@@ -10,6 +10,8 @@ export interface Region extends PublicRegion {
   defaultDailyHours: Partial<Record<EventKind, DailyHours>>;
   // Where address search looks; without it, the Region has none.
   geocoder?: { kind: "digitransit"; url: string };
+  // Where Trips are planned; without it, the Region has no Trips.
+  router?: { kind: "digitransit"; url: string };
 }
 
 // One entry per feed a Source publishes. `adapter` picks the code that reads its format (ADR 0002).

@@ -14,3 +14,6 @@ export type * from "./region/types.ts";
 
 export * from "./geocode/schema.ts";
 export type * from "./geocode/types.ts";
+
+export * from "./trip/schema.ts";
+export type * from "./trip/types.ts";

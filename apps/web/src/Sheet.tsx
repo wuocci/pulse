@@ -1,5 +1,5 @@
-import { ChevronUp } from "lucide-react";
-import { type PointerEvent, type ReactNode, useId, useLayoutEffect, useRef, useState } from "react";
+import { ChevronUp, PanelLeftClose, PanelLeftOpen } from "lucide-react";
+import { type PointerEvent, type ReactNode, useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { type Snap, snapAfterDrag } from "./sheet-snap.ts";
@@ -12,8 +12,10 @@ import { type Snap, snapAfterDrag } from "./sheet-snap.ts";
 // have one. Measured; this is its height without an inset, which the map leaves uncovered (PointMap.tsx).
 export const PEEK_PX = 144;
 
-// From this width the sheet is a panel docked on the left, always open: no dragging, no Expand.
+// From this width the sheet is a panel docked on the left: no dragging, no Expand, but it can be hidden.
 export const DOCKED_MEDIA = "(min-width: 64rem)";
+// The docked panel's width (lg:w-90); the map lies under it and centres in the rest.
+export const PANEL_PX = 360;
 
 export interface SheetProps {
   // Names the sheet for screen readers.
@@ -24,6 +26,23 @@ export interface SheetProps {
   peek: ReactNode;
   // What expanding the sheet shows.
   children: ReactNode;
+  // The peek's measured height, for the map to centre above it.
+  onPeekHeight?: (px: number) => void;
+  // Docked only: the panel slid away, and the button that does it.
+  hidden?: boolean;
+  onHiddenChange?: (hidden: boolean) => void;
+}
+
+function useDocked(): boolean {
+  const [docked, setDocked] = useState(() => window.matchMedia?.(DOCKED_MEDIA).matches ?? false);
+  useEffect(() => {
+    const media = window.matchMedia?.(DOCKED_MEDIA);
+    if (!media) return;
+    const onChange = () => setDocked(media.matches);
+    media.addEventListener("change", onChange);
+    return () => media.removeEventListener("change", onChange);
+  }, []);
+  return docked;
 }
 
 interface DragState {
@@ -34,9 +53,12 @@ interface DragState {
   travel: number;
 }
 
-export function Sheet({ title, top, peek, children }: SheetProps) {
+export function Sheet({ title, top, peek, children, onPeekHeight, hidden = false, onHiddenChange }: SheetProps) {
   const { t } = useTranslation();
   const titleId = useId();
+  const docked = useDocked();
+  const onPeekHeightRef = useRef(onPeekHeight);
+  onPeekHeightRef.current = onPeekHeight;
   const sheet = useRef<HTMLElement>(null);
   const header = useRef<HTMLDivElement>(null);
   const [peekPx, setPeekPx] = useState(PEEK_PX);
@@ -49,7 +71,10 @@ export function Sheet({ title, top, peek, children }: SheetProps) {
   useLayoutEffect(() => {
     const el = header.current;
     if (!el || typeof ResizeObserver === "undefined") return;
-    const observer = new ResizeObserver(() => setPeekPx(el.offsetHeight));
+    const observer = new ResizeObserver(() => {
+      setPeekPx(el.offsetHeight);
+      onPeekHeightRef.current?.(el.offsetHeight);
+    });
     observer.observe(el);
     return () => observer.disconnect();
   }, []);
@@ -57,7 +82,6 @@ export function Sheet({ title, top, peek, children }: SheetProps) {
   const travel = () => Math.max(0, (sheet.current?.offsetHeight ?? peekPx) - peekPx);
 
   const onPointerDown = (e: PointerEvent<HTMLDivElement>) => {
-    // Let the button take its own clicks.
     // Controls in the header keep their own taps; only the rest drags.
     if ((e.target as HTMLElement).closest("button, input, [role=option]")) return;
     if (window.matchMedia?.(DOCKED_MEDIA).matches) return;
@@ -91,11 +115,17 @@ export function Sheet({ title, top, peek, children }: SheetProps) {
     return `${Math.min(Math.max(base + dy, 0), travel())}px`;
   })();
 
+  const panelHidden = docked && hidden;
+
   return (
+    <>
     <section
       ref={sheet}
+      id={titleId + "-panel"}
       aria-labelledby={titleId}
-      className={`fixed inset-x-0 bottom-0 z-10 flex h-[90dvh] flex-col rounded-t-xl border-t bg-popover text-popover-foreground shadow-lg lg:inset-y-0 lg:right-auto lg:h-dvh lg:w-90 lg:transform-none! lg:rounded-none lg:border-t-0 lg:border-r lg:shadow-none ${dy === null ? "motion-safe:transition-transform motion-safe:duration-300" : ""}`}
+      // A hidden panel's controls are out of reach for keyboards and screen readers too.
+      inert={panelHidden}
+      className={`fixed inset-x-0 bottom-0 z-10 flex h-[90dvh] flex-col rounded-t-xl border-t bg-popover text-popover-foreground shadow-lg lg:inset-y-0 lg:right-auto lg:h-dvh lg:w-90 lg:transform-none! lg:rounded-none lg:border-t-0 lg:border-r lg:shadow-none lg:motion-safe:transition-[translate] lg:motion-safe:duration-300 ${panelHidden ? "lg:-translate-x-full" : ""} ${dy === null ? "motion-safe:transition-transform motion-safe:duration-300" : ""}`}
       style={{ transform: `translateY(${offset})` }}
     >
       <div
@@ -127,5 +157,19 @@ export function Sheet({ title, top, peek, children }: SheetProps) {
       </div>
       <div className="flex-1 overflow-y-auto px-4 pt-3 pb-[max(1rem,env(safe-area-inset-bottom))]">{children}</div>
     </section>
+    {/* On the panel's edge; at the screen's edge while the panel is hidden. */}
+    <Button
+      variant="outline"
+      size="icon"
+      // Moves with the panel: same property timing as its slide, and no press nudge (it would shift the click).
+      className={`fixed top-[calc(50%-1.375rem)] z-10 hidden size-11 rounded-l-none border-l-0 bg-popover shadow-sm active:not-aria-[haspopup]:translate-y-0 lg:inline-flex lg:motion-safe:transition-[left] lg:motion-safe:duration-300 ${hidden ? "left-0" : "left-90"}`}
+      aria-label={hidden ? t("showPanel") : t("hidePanel")}
+      aria-expanded={!hidden}
+      aria-controls={titleId + "-panel"}
+      onClick={() => onHiddenChange?.(!hidden)}
+    >
+      {hidden ? <PanelLeftOpen aria-hidden /> : <PanelLeftClose aria-hidden />}
+    </Button>
+    </>
   );
 }

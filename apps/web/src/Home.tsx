@@ -1,33 +1,52 @@
-import { CircleCheck, LocateFixed, LocateIcon, Navigation } from "lucide-react";
+import type { GeocodeResult, TravelMode } from "@pulse/client";
+import { CircleCheck, LocateFixed, LocateIcon, Navigation, Route } from "lucide-react";
 import { useNavigate, useSearch } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { AddressSearch } from "./AddressSearch.tsx";
-import { useEvents, useRegions } from "./api.ts";
+import { useEvents, useRegions, useTrip } from "./api.ts";
 import { EventCard } from "./EventCard.tsx";
 import { EventList } from "./EventList.tsx";
-import { nearestFirst, statusOf, type Time } from "./events.ts";
+import { nearestFirst, statusOf, textIn, type Time } from "./events.ts";
 import { EventPin } from "./map/EventPin.tsx";
 import { PointMap } from "./map/PointMap.tsx";
 import { type LatLon, LocationError, usePlatform } from "./platform.tsx";
-import { usePoint } from "./point.ts";
-import { Sheet } from "./Sheet.tsx";
+import { formatAt, parseAt, usePoint } from "./point.ts";
+import { PANEL_PX, PEEK_PX, Sheet } from "./Sheet.tsx";
+import { Itineraries, TravelModes, TripForm } from "./TripPanel.tsx";
 
 // The locate button, as in map apps: the first tap goes to my location, the second follows it, the third stops.
 // Panning the map or choosing a place by hand also stops following.
 type Locate = "off" | "centred" | "following";
 
+const PANEL_HIDDEN_KEY = "panelHidden";
+
 // The one screen: the map with its status chip and the pins' cards, and the sheet with the controls.
 export function Home() {
   const { t } = useTranslation();
-  const { location } = usePlatform();
+  const { location, storage } = usePlatform();
   const { point, setPoint } = usePoint();
   const regions = useRegions();
-  const { time = "now", event: selectedId } = useSearch({ from: "/" });
+  const search = useSearch({ from: "/" });
+  const { time = "now", event: selectedId, mode = "transit" } = search;
   const navigate = useNavigate({ from: "/" });
   const events = useEvents(point, time);
+  // Trip mode: from the point unless From was changed.
+  const tripFrom = parseAt(search.from) ?? point;
+  const tripTo = parseAt(search.to);
+  const trip = useTrip(search.trip ? tripFrom : undefined, search.trip ? tripTo : undefined);
   const [locate, setLocate] = useState<Locate>("off");
+  const [peekPx, setPeekPx] = useState(PEEK_PX);
+  // The docked panel slid away, as it was last time on this device.
+  const [panelHidden, setPanelHidden] = useState(false);
+  useEffect(() => {
+    void storage.get(PANEL_HIDDEN_KEY).then((value) => setPanelHidden(value === "true"));
+  }, [storage]);
+  const hidePanel = (hidden: boolean) => {
+    setPanelHidden(hidden);
+    void storage.set(PANEL_HIDDEN_KEY, String(hidden));
+  };
   const [locating, setLocating] = useState(false);
   const [failure, setFailure] = useState<LocationError["reason"] | null>(null);
 
@@ -68,6 +87,15 @@ export function Home() {
     setPoint(at);
   };
 
+  // Opening Trip mode is a step Back undoes; what's chosen inside it isn't.
+  const openTrip = () => void navigate({ search: (prev) => ({ ...prev, trip: true }) });
+  const closeTrip = () =>
+    void navigate({
+      search: (prev) => ({ ...prev, trip: undefined, to: undefined, toName: undefined, from: undefined, fromName: undefined, mode: undefined }),
+      replace: true,
+    });
+  const setTripEnd = (end: "from" | "to") => (place: GeocodeResult) =>
+    void navigate({ search: (prev) => ({ ...prev, [end]: formatAt(place), [`${end}Name`]: place.name }), replace: true });
   const setTime = (next: Time) => void navigate({ search: (prev) => ({ ...prev, time: next }), replace: true });
   const select = (id: string) => void navigate({ search: (prev) => ({ ...prev, event: id }) });
   // Closing the card hands focus back to the pin it came from.
@@ -83,13 +111,41 @@ export function Home() {
     () => [...navigator.languages.map((l) => l.split("-")[0]!), ...(regions.data?.[0]?.languages ?? [])],
     [regions.data],
   );
-  const pins = useMemo(() => (point && events.data ? nearestFirst(events.data, point) : []), [events.data, point]);
-  const selected = events.data?.find((e) => e.id === selectedId);
+  // In Trip mode the map shows the chosen itinerary and only the Events on it: the one picked, else the one that's
+  // better today, else the first.
+  const recommended = trip.data?.recommended;
+  const shownIndex = (m: TravelMode) => (m === mode && search.route !== undefined ? search.route : recommended?.mode === m ? recommended.index : 0);
+  const plan = search.trip ? trip.data?.plans.find((p) => p.mode === mode) : undefined;
+  const itinerary = plan ? (plan.itineraries[shownIndex(mode)] ?? plan.itineraries[0]) : undefined;
+  // What the better way avoids: the worst of what's on the fastest way and not on it.
+  const avoids = (() => {
+    if (!trip.data || !recommended) return undefined;
+    const ways = trip.data.plans.flatMap((p) => p.itineraries);
+    const fastest = ways.reduce<(typeof ways)[number] | undefined>((a, b) => (!a || Date.parse(b.end) < Date.parse(a.end) ? b : a), undefined);
+    const better = trip.data.plans.find((p) => p.mode === recommended.mode)?.itineraries[recommended.index];
+    const avoided = trip.data.events.filter((e) => fastest?.eventIds.includes(e.id) && !better?.eventIds.includes(e.id));
+    const rank = { info: 0, minor: 1, consider: 2, major: 3 };
+    const worst = avoided.sort((a, b) => rank[b.severity] - rank[a.severity])[0];
+    return worst && textIn(worst.title, languages);
+  })();
+  const shown = useMemo(() => {
+    if (!search.trip) return events.data;
+    if (!itinerary || !trip.data) return [];
+    return trip.data.events.filter((e) => itinerary.eventIds.includes(e.id));
+  }, [search.trip, events.data, itinerary, trip.data]);
+  const here = search.trip ? tripFrom : point;
+  const pins = useMemo(() => (here && shown ? nearestFirst(shown, here) : []), [shown, here]);
+  const selected = shown?.find((e) => e.id === selectedId);
   // The card pops up from the selected Event's nearest pin.
   const selectedPin = selected ? pins.find((p) => p.event.id === selected.id) : undefined;
   const timeZone = regions.data?.[0]?.timeZone ?? "UTC";
 
   const status = (() => {
+    if (search.trip) {
+      if (!itinerary) return null;
+      const count = itinerary.eventIds.length;
+      return count ? { text: t("statusTrip", { count }), clear: false } : { text: t("statusTripClear"), clear: true };
+    }
     if (events.isError) return { text: t("statusError"), clear: false };
     if (!events.data) return null;
     const s = statusOf(events.data, time);
@@ -104,14 +160,17 @@ export function Home() {
   return (
     <main className="relative h-dvh w-full overflow-hidden bg-background text-foreground">
       <h1 className="sr-only">{t("appName")}</h1>
-      {/* The map fills the screen; on wide screens it starts where the docked panel ends. */}
-      <div className="absolute inset-0 lg:left-90">
+      {/* The map fills the screen, under the sheet or panel too; it centres in the part that shows. */}
+      <div className="absolute inset-0">
         <PointMap
           point={point}
           onLongPress={choosePlace}
           onPan={() => setLocate("off")}
           onMapClick={closeCard}
           pins={pins}
+        bottomInset={peekPx}
+        leftInset={panelHidden ? 0 : PANEL_PX}
+        {...(itinerary ? { route: itinerary.legs } : {})}
           {...(selected && selectedPin
             ? {
                 popup: {
@@ -129,7 +188,9 @@ export function Home() {
             />
           )}
         />
-        <div className="pointer-events-none absolute inset-x-0 top-0 flex flex-col items-start gap-2 p-4 pt-[max(1rem,env(safe-area-inset-top))]">
+        <div
+          className={`pointer-events-none absolute inset-x-0 top-0 flex flex-col items-start gap-2 p-4 pt-[max(1rem,env(safe-area-inset-top))] lg:motion-safe:transition-[left] lg:motion-safe:duration-300 ${panelHidden ? "" : "lg:left-90"}`}
+        >
           <p role="status" className={`flex items-center gap-1.5 rounded-full bg-background/95 px-3 py-1.5 text-sm font-medium shadow ${status ? "" : "invisible"}`}>
             {status?.clear && <CircleCheck aria-hidden className="size-4 text-emerald-600" />}
             {status?.text}
@@ -148,8 +209,48 @@ export function Home() {
       </div>
       <Sheet
         title={t("sheetTitle")}
-        top={<AddressSearch point={point} lang={languages[0] ?? "en"} onPick={choosePlace} />}
+        onPeekHeight={setPeekPx}
+        hidden={panelHidden}
+        onHiddenChange={hidePanel}
+        top={
+          search.trip ? (
+            <TripForm
+              point={point}
+              lang={languages[0] ?? "en"}
+              fromName={search.fromName}
+              toName={search.toName}
+              onFrom={setTripEnd("from")}
+              onTo={setTripEnd("to")}
+              onClose={closeTrip}
+            />
+          ) : (
+            <div className="flex items-center gap-2">
+              <AddressSearch point={point} lang={languages[0] ?? "en"} onPick={choosePlace} />
+              <Button variant="secondary" size="icon" className="size-11 shrink-0" aria-label={t("route")} onClick={openTrip}>
+                <Route aria-hidden />
+              </Button>
+            </div>
+          )
+        }
         peek={
+          search.trip ? (
+            tripTo ? (
+              trip.isError ? (
+                <p role="alert" className="flex-1 text-sm">
+                  {t("tripFailed")}
+                </p>
+              ) : (
+                <TravelModes
+                  trip={trip.data}
+                  mode={mode}
+                  shownIndex={shownIndex}
+                  onMode={(next) => void navigate({ search: (prev) => ({ ...prev, mode: next, route: undefined }), replace: true })}
+                />
+              )
+            ) : (
+              <div className="flex-1" />
+            )
+          ) : (
           <>
               <fieldset className="flex rounded-lg bg-muted p-1">
                 <legend className="sr-only">{t("time")}</legend>
@@ -175,13 +276,33 @@ export function Home() {
                 <Icon aria-hidden className={locate === "following" ? "fill-current" : undefined} />
               </Button>
           </>
+          )
         }
       >
-        {/* The list is for the docked panel; on phones the map is the list (they asked for no list in the sheet). */}
-        <div className="hidden lg:block">
-          <EventList pins={pins} selectedId={selectedId} languages={languages} timeZone={timeZone} onSelect={select} />
-        </div>
-        <p className="text-sm text-muted-foreground lg:hidden">{t("sheetHint")}</p>
+        {search.trip ? (
+          plan && (
+            <div className="space-y-4">
+              <Itineraries
+                itineraries={plan.itineraries}
+                chosen={shownIndex(mode)}
+                {...(recommended?.mode === mode ? { better: { index: recommended.index, ...(avoids ? { avoids } : {}) } } : {})}
+                timeZone={timeZone}
+                onChoose={(index) => void navigate({ search: (prev) => ({ ...prev, route: index }), replace: true })}
+              />
+              {pins.length > 0 && (
+                <EventList label={t("onTheWay")} pins={pins} selectedId={selectedId} languages={languages} timeZone={timeZone} onSelect={select} />
+              )}
+            </div>
+          )
+        ) : (
+          <>
+            {/* The list is for the docked panel; on phones the map is the list (they asked for no list in the sheet). */}
+            <div className="hidden lg:block">
+              <EventList pins={pins} selectedId={selectedId} languages={languages} timeZone={timeZone} onSelect={select} />
+            </div>
+            <p className="text-sm text-muted-foreground lg:hidden">{t("sheetHint")}</p>
+          </>
+        )}
       </Sheet>
     </main>
   );

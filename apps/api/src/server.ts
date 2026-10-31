@@ -3,6 +3,7 @@ import { createApp } from "./app.ts";
 import { classifierConfig, createPool, digitransitApiKey } from "./config.ts";
 import { digitransitDirectory } from "./core/adapters/digitransit.ts";
 import { digitransitGeocoder, type Geocoder } from "./core/adapters/digitransit-geocoding.ts";
+import { digitransitRouter, type Router } from "./core/adapters/digitransit-routing.ts";
 import type { StopDirectory } from "./core/adapters/gtfs-rt.ts";
 import { PgAnswerCache } from "./core/classifier/cache.ts";
 import { Classification } from "./core/classifier/enrich.ts";
@@ -71,6 +72,21 @@ const geocoderFor = digitransitKey
   : undefined;
 if (!digitransitKey) console.log("Address search off: DIGITRANSIT_API_KEY not set");
 
+// One router per Region that names one; the same key again.
+const routers = new Map<string, Router>();
+const routerFor = digitransitKey
+  ? (region: Region) => {
+      if (region.router?.kind !== "digitransit") return undefined;
+      let router = routers.get(region.id);
+      if (!router) {
+        router = digitransitRouter({ url: region.router.url, apiKey: digitransitKey });
+        routers.set(region.id, router);
+      }
+      return router;
+    }
+  : undefined;
+if (!digitransitKey) console.log("Trips off: DIGITRANSIT_API_KEY not set");
+
 const stopIngest = startIngest(regions, events, { classification, ...(stopDirectory ? { stopDirectory } : {}) });
 
 const app = createApp({
@@ -83,6 +99,7 @@ const app = createApp({
   events,
   regions,
   ...(geocoderFor ? { geocoderFor } : {}),
+  ...(routerFor ? { routerFor } : {}),
 });
 
 const port = Number(process.env.PORT ?? 3000);

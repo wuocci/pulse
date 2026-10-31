@@ -188,6 +188,81 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/trips": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query: {
+                    from: string;
+                    to: string;
+                    /** @description Comma-separated; default transit,walk,bike */
+                    modes?: string;
+                    /** @description Default: now */
+                    departAt?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Each mode's itineraries, best first, with the Events on each and its Impact */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Trip"];
+                    };
+                };
+                /** @description A and B aren't in the same Region */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            message: string;
+                        };
+                    };
+                };
+                /** @description Planning failed */
+                502: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            message: string;
+                        };
+                    };
+                };
+                /** @description The Region has no Trips */
+                503: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            message: string;
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -381,6 +456,86 @@ export interface components {
             /** @example 24.931662 */
             lon: number;
         };
+        Trip: {
+            /** @description Every Event on any itinerary, once */
+            events: components["schemas"]["Event"][];
+            plans: components["schemas"]["TripPlan"][];
+            /** @description Better today: when the fastest way has something worth considering in it, the earliest way in any mode that's less in the way and at most 10 min later */
+            recommended?: {
+                mode: components["schemas"]["TravelMode"];
+                /** @description Into that mode's itineraries */
+                index: number;
+            };
+        };
+        TripPlan: {
+            mode: components["schemas"]["TravelMode"];
+            /** @description Best first; empty when there's no route */
+            itineraries: components["schemas"]["Itinerary"][];
+        };
+        /** @enum {string} */
+        TravelMode: "transit" | "walk" | "bike";
+        Itinerary: {
+            /** Format: date-time */
+            start: string;
+            /** Format: date-time */
+            end: string;
+            durationS: number;
+            legs: components["schemas"]["Leg"][];
+            /** @description The Events on this itinerary, from the response's `events` */
+            eventIds: string[];
+            impact: components["schemas"]["Impact"];
+        };
+        Leg: {
+            mode: components["schemas"]["LegMode"];
+            /** @description The line a transit leg rides */
+            line?: {
+                /** @example HSL:31M1 */
+                id: string;
+                /** @example M1 */
+                name: string;
+            };
+            from: {
+                /** @example Kamppi */
+                name: string;
+                lat: number;
+                lon: number;
+                /**
+                 * @description The stop's id, when the place is one
+                 * @example HSL:1040601
+                 */
+                stop?: string;
+            };
+            to: {
+                /** @example Kamppi */
+                name: string;
+                lat: number;
+                lon: number;
+                /**
+                 * @description The stop's id, when the place is one
+                 * @example HSL:1040601
+                 */
+                stop?: string;
+            };
+            /** Format: date-time */
+            start: string;
+            /** Format: date-time */
+            end: string;
+            /** @description Ids of the stops a transit leg passes, first to last */
+            stops: string[];
+            geometry: {
+                /** @enum {string} */
+                type: "LineString";
+                /** @description [lon, lat] in WGS84 */
+                coordinates: [
+                    number,
+                    number
+                ][];
+            };
+        };
+        /** @enum {string} */
+        LegMode: "walk" | "bike" | "bus" | "tram" | "rail" | "subway" | "ferry" | "other";
+        /** @enum {string} */
+        Impact: "none" | "minor" | "consider" | "major";
     };
     responses: never;
     parameters: never;

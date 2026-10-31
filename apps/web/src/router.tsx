@@ -10,6 +10,16 @@ const SearchSchema = z.object({
   time: z.enum(["now", "14d"]).optional().catch(undefined),
   // The selected Event's id.
   event: z.string().optional().catch(undefined),
+  // Trip mode, and the Trip: To (and From, else the point) as lat,lon with the name the search gave.
+  trip: z.boolean().optional().catch(undefined),
+  to: z.string().optional().catch(undefined),
+  toName: z.string().optional().catch(undefined),
+  from: z.string().optional().catch(undefined),
+  fromName: z.string().optional().catch(undefined),
+  // The chosen travel mode; public transport when absent.
+  mode: z.enum(["transit", "walk", "bike"]).optional().catch(undefined),
+  // Which of that mode's itineraries; the recommended one, else the first, when absent.
+  route: z.number().int().min(0).optional().catch(undefined),
 });
 
 const rootRoute = createRootRoute({ component: Outlet });

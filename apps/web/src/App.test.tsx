@@ -1,4 +1,4 @@
-import type { Event, GeocodeResult, Region } from "@pulse/client";
+import type { Event, GeocodeResult, Region, Trip } from "@pulse/client";
 import { createMemoryHistory } from "@tanstack/react-router";
 import { cleanup, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -13,8 +13,8 @@ import { type DeviceLocation, type LatLon, LocationError, type Platform } from "
 // The real map draws with WebGL, which jsdom lacks: this one shows what it was given, and can be long-pressed
 // and panned.
 vi.mock("./map/PointMap.tsx", () => ({
-  PointMap: ({ point, onLongPress, onPan, onMapClick, pins, renderPin, popup }: PointMapProps) => (
-    <div data-testid="map" data-point={point ? `${point.lat},${point.lon}` : ""}>
+  PointMap: ({ point, onLongPress, onPan, onMapClick, pins, renderPin, popup, route }: PointMapProps) => (
+    <div data-testid="map" data-point={point ? `${point.lat},${point.lon}` : ""} data-route={route?.map((leg) => leg.mode).join(",") ?? ""}>
       {pins.map((pin) => (
         <div key={pin.key}>{renderPin(pin)}</div>
       ))}
@@ -46,7 +46,14 @@ const eventQueries: URLSearchParams[] = [];
 // What /v0/geocode answers, set per test, and the queries it was asked.
 let places: GeocodeResult[] | "off" = [];
 const geocodeQueries: URLSearchParams[] = [];
+// What /v0/trips answers, set per test, and the queries it was asked.
+let trip: Trip = { events: [], plans: [] };
+const tripQueries: URLSearchParams[] = [];
 const server = setupServer(
+  http.get("*/v0/trips", ({ request }) => {
+    tripQueries.push(new URL(request.url).searchParams);
+    return HttpResponse.json(trip);
+  }),
   http.get("*/v0/geocode", ({ request }) => {
     geocodeQueries.push(new URL(request.url).searchParams);
     return places === "off" ? HttpResponse.json({ message: "Address search is off" }, { status: 503 }) : HttpResponse.json({ results: places });
@@ -64,6 +71,8 @@ afterEach(() => {
   eventQueries.length = 0;
   places = [];
   geocodeQueries.length = 0;
+  trip = { events: [], plans: [] };
+  tripQueries.length = 0;
 });
 afterAll(() => server.close());
 
@@ -458,6 +467,29 @@ describe("the list of Events, in the panel on wide screens", () => {
 });
 
 describe("the bottom sheet", () => {
+  it("can be hidden on wide screens, and shown again, remembered on the device", async () => {
+    const { platform, storage } = fakePlatform();
+    renderApp("/?at=60.17000,24.95000", platform);
+
+    const hide = await screen.findByRole("button", { name: "Hide panel" });
+    expect(hide).toHaveAttribute("aria-expanded", "true");
+    await userEvent.click(hide);
+
+    const show = screen.getByRole("button", { name: "Show panel" });
+    expect(show).toHaveAttribute("aria-expanded", "false");
+    await waitFor(() => expect(storage.get("panelHidden")).toBe("true"));
+    await userEvent.click(show);
+    expect(screen.getByRole("button", { name: "Hide panel" })).toBeInTheDocument();
+  });
+
+  it("starts hidden when it was hidden last time", async () => {
+    const { platform, storage } = fakePlatform();
+    storage.set("panelHidden", "true");
+    renderApp("/?at=60.17000,24.95000", platform);
+
+    expect(await screen.findByRole("button", { name: "Show panel" })).toBeInTheDocument();
+  });
+
   it("is always there, with the controls", async () => {
     events = [anEvent("a")];
     renderApp("/?at=60.17000,24.95000");
@@ -558,5 +590,243 @@ describe("address search", () => {
     places = "off";
     await userEvent.type(input, "y");
     expect(await heard("Address search isn't available")).toBeInTheDocument();
+  });
+});
+
+describe("Trip mode", () => {
+  const PASILA: GeocodeResult = { name: "Pasila", label: "Pasila, Helsinki", lat: 60.1986, lon: 24.933 };
+  const itinerary = (minutes: number, impact: Trip["plans"][number]["itineraries"][number]["impact"]) => ({
+    start: "2026-10-31T12:00:00+02:00",
+    end: "2026-10-31T12:30:00+02:00",
+    durationS: minutes * 60,
+    legs: [],
+    eventIds: [],
+    impact,
+  });
+  const PLANNED: Trip = {
+    events: [],
+    plans: [
+      { mode: "transit", itineraries: [itinerary(15, "consider"), itinerary(18, "none")] },
+      { mode: "walk", itineraries: [] },
+      { mode: "bike", itineraries: [itinerary(22, "none")] },
+    ],
+  };
+  const toField = () => screen.findByRole("combobox", { name: "To" });
+  const modes = () => screen.findByRole("group", { name: "Travel mode" });
+
+  it("opens from the Route button, from where the pin is, and closes back to the map", async () => {
+    renderApp("/?at=60.17000,24.95000");
+
+    await userEvent.click(await screen.findByRole("button", { name: "Route" }));
+    expect(await toField()).toHaveFocus();
+    expect(screen.getByRole("combobox", { name: "From" })).toHaveAttribute("placeholder", "Where the pin is");
+    expect(screen.queryByRole("combobox", { name: "Search for an address or place" })).not.toBeInTheDocument();
+
+    await userEvent.click(screen.getByRole("button", { name: "Close route" }));
+    expect(await screen.findByRole("combobox", { name: "Search for an address or place" })).toBeInTheDocument();
+  });
+
+  it("plans every mode to the place picked, and shows each one's time and how much is in the way", async () => {
+    places = [PASILA];
+    trip = PLANNED;
+    const history = renderApp("/?at=60.17000,24.95000&trip=true");
+
+    await userEvent.type(await toField(), "pasila");
+    await userEvent.click(await screen.findByRole("option", { name: "Pasila, Helsinki" }));
+
+    const group = within(await modes());
+    expect(await group.findByRole("radio", { name: "Public transport, 15 min, worth considering" })).toBeChecked();
+    expect(group.getByRole("radio", { name: "Walk, no route" })).toBeInTheDocument();
+    expect(group.getByRole("radio", { name: "Bike, 22 min" })).toBeInTheDocument();
+    expect(Object.fromEntries(tripQueries.at(-1)!)).toEqual({ from: "60.17,24.95", to: "60.1986,24.933" });
+    expect(history.location.search).toContain("to=60.19860%2C24.93300");
+    expect(await toField()).toHaveValue("Pasila");
+  });
+
+  it("keeps the chosen mode in the URL", async () => {
+    trip = PLANNED;
+    const history = renderApp("/?at=60.17000,24.95000&trip=true&to=60.19860,24.93300&toName=Pasila");
+
+    await userEvent.click(await within(await modes()).findByRole("radio", { name: /^Bike/ }));
+
+    expect(history.location.search).toContain("mode=bike");
+    expect(within(await modes()).getByRole("radio", { name: /^Bike/ })).toBeChecked();
+  });
+
+  it("opens the same Trip from a shared link", async () => {
+    trip = PLANNED;
+    renderApp("/?at=60.17000,24.95000&trip=true&from=60.16000,24.94000&fromName=Kamppi&to=60.19860,24.93300&toName=Pasila&mode=bike");
+
+    expect(await toField()).toHaveValue("Pasila");
+    expect(screen.getByRole("combobox", { name: "From" })).toHaveValue("Kamppi");
+    expect(await within(await modes()).findByRole("radio", { name: /^Bike/ })).toBeChecked();
+    expect(Object.fromEntries(tripQueries.at(-1)!)).toEqual({ from: "60.16,24.94", to: "60.1986,24.933" });
+  });
+
+  it("plans from another place when From is changed", async () => {
+    places = [PASILA];
+    renderApp("/?at=60.17000,24.95000&trip=true&to=60.20000,24.90000&toName=Somewhere");
+
+    await userEvent.type(await screen.findByRole("combobox", { name: "From" }), "pasila");
+    await userEvent.click(await screen.findByRole("option", { name: "Pasila, Helsinki" }));
+
+    await waitFor(() => expect(tripQueries.at(-1)?.get("from")).toBe("60.1986,24.933"));
+  });
+
+  it("closes with Back", async () => {
+    const history = renderApp("/?at=60.17000,24.95000");
+    await userEvent.click(await screen.findByRole("button", { name: "Route" }));
+    await toField();
+
+    act(() => history.back());
+
+    expect(await screen.findByRole("combobox", { name: "Search for an address or place" })).toBeInTheDocument();
+  });
+});
+
+describe("a Trip on the map", () => {
+  const leg = (mode: "walk" | "tram" | "bike") => ({
+    mode,
+    from: { name: "A", lat: 60.17, lon: 24.95 },
+    to: { name: "B", lat: 60.19, lon: 24.94 },
+    start: "2026-10-31T12:00:00+02:00",
+    end: "2026-10-31T12:10:00+02:00",
+    stops: [],
+    geometry: { type: "LineString" as const, coordinates: [[24.95, 60.17], [24.94, 60.19]] as [number, number][] },
+  });
+  const ride = (eventIds: string[], ...legs: ReturnType<typeof leg>[]) => ({
+    start: "2026-10-31T12:00:00+02:00",
+    end: "2026-10-31T12:20:00+02:00",
+    durationS: 1200,
+    legs,
+    eventIds,
+    impact: eventIds.length ? ("consider" as const) : ("none" as const),
+  });
+  const onTheWay = anEvent("on the way", { where: { geometry: { type: "Point", coordinates: [24.945, 60.18] }, precision: "area" } });
+  const TO = "/?at=60.17000,24.95000&trip=true&to=60.19000,24.94000&toName=Pasila";
+
+  it("draws the chosen mode's best route, and pins and counts only what's on it", async () => {
+    events = [anEvent("around here")];
+    trip = {
+      events: [onTheWay],
+      plans: [
+        { mode: "transit", itineraries: [ride(["on the way"], leg("walk"), leg("tram"), leg("walk"))] },
+        { mode: "bike", itineraries: [ride([], leg("bike"))] },
+      ],
+    };
+    renderApp(TO);
+
+    await waitFor(() => expect(screen.getByTestId("map")).toHaveAttribute("data-route", "walk,tram,walk"));
+    expect(await screen.findByRole("button", { name: "Works on the way, Drivers, minor" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /^Works around here,/ })).not.toBeInTheDocument();
+    expect(screen.getByRole("status")).toHaveTextContent("1 thing on your way");
+    expect(within(await screen.findByRole("list", { name: "On the way" })).getAllByRole("button")).toHaveLength(1);
+  });
+
+  it("redraws for another mode, and says when nothing is in the way", async () => {
+    trip = {
+      events: [onTheWay],
+      plans: [
+        { mode: "transit", itineraries: [ride(["on the way"], leg("tram"))] },
+        { mode: "bike", itineraries: [ride([], leg("bike"))] },
+      ],
+    };
+    renderApp(TO);
+
+    await userEvent.click(await within(await screen.findByRole("group", { name: "Travel mode" })).findByRole("radio", { name: /^Bike/ }));
+
+    await waitFor(() => expect(screen.getByTestId("map")).toHaveAttribute("data-route", "bike"));
+    expect(screen.queryByRole("button", { name: /^Works on the way,/ })).not.toBeInTheDocument();
+    expect(screen.getByRole("status")).toHaveTextContent("Nothing in your way");
+  });
+
+  it("opens the card of an Event on the route", async () => {
+    trip = { events: [onTheWay], plans: [{ mode: "transit", itineraries: [ride(["on the way"], leg("tram"))] }] };
+    renderApp(TO);
+
+    await userEvent.click(await screen.findByRole("button", { name: "Works on the way, Drivers, minor" }));
+
+    expect(await within(await screen.findByTestId("popup")).findByRole("article", { name: "Works on the way" })).toBeInTheDocument();
+  });
+
+  it("draws nothing until there is a route", async () => {
+    trip = { events: [], plans: [{ mode: "transit", itineraries: [] }] };
+    renderApp(TO);
+    await screen.findByRole("group", { name: "Travel mode" });
+
+    expect(screen.getByTestId("map")).toHaveAttribute("data-route", "");
+  });
+});
+
+describe("a Trip's itineraries", () => {
+  const leg = (mode: "walk" | "tram" | "bus", line?: string) => ({
+    mode,
+    ...(line ? { line: { id: `HSL:${line}`, name: line } } : {}),
+    from: { name: "A", lat: 60.17, lon: 24.95 },
+    to: { name: "B", lat: 60.19, lon: 24.94 },
+    start: "2026-10-31T12:00:00+02:00",
+    end: "2026-10-31T12:04:00+02:00",
+    stops: [],
+    geometry: { type: "LineString" as const, coordinates: [[24.95, 60.17], [24.94, 60.19]] as [number, number][] },
+  });
+  const ride = (end: string, eventIds: string[], impact: "none" | "consider" | "major", ...legs: ReturnType<typeof leg>[]) => ({
+    start: "2026-10-31T12:00:00+02:00",
+    end,
+    durationS: (Date.parse(end) - Date.parse("2026-10-31T12:00:00+02:00")) / 1000,
+    legs,
+    eventIds,
+    impact,
+  });
+  const dig = anEvent("dig", { where: { geometry: { type: "Point", coordinates: [24.945, 60.18] }, precision: "area" } });
+  const TO = "/?at=60.17000,24.95000&trip=true&to=60.19000,24.94000&toName=Pasila";
+  const TRAM = ride("2026-10-31T12:15:00+02:00", ["dig"], "consider", leg("walk"), leg("tram", "2"), leg("walk"));
+  const BUS = ride("2026-10-31T12:20:00+02:00", [], "none", leg("walk"), leg("bus", "69"), leg("walk"));
+  const routes = async () => within(await screen.findByRole("group", { name: "Routes" }));
+
+  it("lists the mode's itineraries with their legs, times and Impact, and draws the one picked", async () => {
+    trip = { events: [dig], plans: [{ mode: "transit", itineraries: [TRAM, BUS] }] };
+    const history = renderApp(TO);
+
+    const rows = await (await routes()).findAllByRole("radio");
+    expect(rows.map((r) => r.getAttribute("aria-label"))).toEqual([
+      "Walk 4 min, tram 2, walk 4 min. 12:00–12:15, 15 min, worth considering",
+      "Walk 4 min, bus 69, walk 4 min. 12:00–12:20, 20 min",
+    ]);
+    expect(rows[0]).toBeChecked();
+
+    await userEvent.click(rows[1]!);
+
+    expect(history.location.search).toContain("route=1");
+    await waitFor(() => expect(screen.getByTestId("map")).toHaveAttribute("data-route", "walk,bus,walk"));
+    expect(screen.getByRole("status")).toHaveTextContent("Nothing in your way");
+  });
+
+  it("starts on the way that's better today, and says what it avoids", async () => {
+    trip = { events: [dig], plans: [{ mode: "transit", itineraries: [TRAM, BUS] }], recommended: { mode: "transit", index: 1 } };
+    renderApp(TO);
+
+    const better = await (await routes()).findByRole("radio", { name: /bus 69/ });
+    expect(better).toBeChecked();
+    expect(better).toHaveAccessibleName(/better today, avoids Works dig$/);
+    await waitFor(() => expect(screen.getByTestId("map")).toHaveAttribute("data-route", "walk,bus,walk"));
+    expect(within(await screen.findByRole("group", { name: "Travel mode" })).getByRole("radio", { name: /^Public transport, 20 min, better today/ })).toBeChecked();
+  });
+
+  it("lists what's on the chosen way under the routes", async () => {
+    trip = { events: [dig], plans: [{ mode: "transit", itineraries: [TRAM, BUS] }] };
+    renderApp(TO);
+
+    const onTheWay = within(await screen.findByRole("list", { name: "On the way" }));
+    expect(await onTheWay.findByRole("button", { name: /^Works dig/ })).toBeInTheDocument();
+  });
+
+  it("starts each mode from its first way again", async () => {
+    trip = { events: [dig], plans: [{ mode: "transit", itineraries: [TRAM, BUS] }, { mode: "walk", itineraries: [ride("2026-10-31T12:40:00+02:00", [], "none", leg("walk"))] }] };
+    const history = renderApp(`${TO}&route=1`);
+
+    await userEvent.click(await within(await screen.findByRole("group", { name: "Travel mode" })).findByRole("radio", { name: /^Walk/ }));
+
+    expect(history.location.search).not.toContain("route=");
+    await waitFor(() => expect(screen.getByTestId("map")).toHaveAttribute("data-route", "walk"));
   });
 });
