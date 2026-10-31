@@ -12,7 +12,7 @@ import {
   type Weekday,
   WeekdaySchema,
 } from "@pulse/schema";
-import type { Region } from "../regions/index.ts";
+import { type Region, regionAt } from "../regions/index.ts";
 import type { EventStore } from "./store.ts";
 
 const DEFAULT_RADIUS_M = 1000;
@@ -119,12 +119,6 @@ export function eventRoutes(store: EventStore, regions: Region[], clock: () => D
 
 // Events don't belong to a Region, but daily hours are local time: the Region at the query point gives the zone
 // and the default hours per kind. Outside every Region, hours are read in UTC and kinds have no defaults.
-function regionAt(regions: Region[], lat: number, lon: number): Region | undefined {
-  return regions.find(
-    ({ bbox: [minLon, minLat, maxLon, maxLat] }) => lon >= minLon && lon <= maxLon && lat >= minLat && lat <= maxLat,
-  );
-}
-
 // Keeps the Events whose daily hours contain `at`, already nearest first, and moves noticeable ones to the front.
 function rightNow(nearest: Event[], at: Date, region: Region | undefined): Event[] {
   const local = localClock(at, region?.timeZone ?? "UTC");

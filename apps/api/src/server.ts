@@ -2,13 +2,14 @@ import { serve } from "@hono/node-server";
 import { createApp } from "./app.ts";
 import { classifierConfig, createPool, digitransitApiKey } from "./config.ts";
 import { digitransitDirectory } from "./core/adapters/digitransit.ts";
+import { digitransitGeocoder, type Geocoder } from "./core/adapters/digitransit-geocoding.ts";
 import type { StopDirectory } from "./core/adapters/gtfs-rt.ts";
 import { PgAnswerCache } from "./core/classifier/cache.ts";
 import { Classification } from "./core/classifier/enrich.ts";
 import { createJevClassifier } from "./core/classifier/jev.ts";
 import { InMemoryEventStore } from "./core/events/store.ts";
 import { startIngest } from "./core/ingest/scheduler.ts";
-import { type GtfsRtSource, regions } from "./core/regions/index.ts";
+import { type GtfsRtSource, type Region, regions } from "./core/regions/index.ts";
 import { runMigrations } from "./db.ts";
 
 const pool = createPool();
@@ -55,6 +56,21 @@ const stopDirectory = digitransitKey
   : undefined;
 if (!digitransitKey) console.log("Stop directory off: DIGITRANSIT_API_KEY not set");
 
+// One geocoder per Region that names one; the same key as the stop directory.
+const geocoders = new Map<string, Geocoder>();
+const geocoderFor = digitransitKey
+  ? (region: Region) => {
+      if (region.geocoder?.kind !== "digitransit") return undefined;
+      let geocoder = geocoders.get(region.id);
+      if (!geocoder) {
+        geocoder = digitransitGeocoder({ url: region.geocoder.url, apiKey: digitransitKey });
+        geocoders.set(region.id, geocoder);
+      }
+      return geocoder;
+    }
+  : undefined;
+if (!digitransitKey) console.log("Address search off: DIGITRANSIT_API_KEY not set");
+
 const stopIngest = startIngest(regions, events, { classification, ...(stopDirectory ? { stopDirectory } : {}) });
 
 const app = createApp({
@@ -66,6 +82,7 @@ const app = createApp({
   },
   events,
   regions,
+  ...(geocoderFor ? { geocoderFor } : {}),
 });
 
 const port = Number(process.env.PORT ?? 3000);

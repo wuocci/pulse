@@ -1,0 +1,165 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          24.931662,
+          60.169048
+        ]
+      },
+      "properties": {
+        "id": "node:1378007268",
+        "layer": "station",
+        "name": "Kamppi",
+        "label": "Kamppi, Kampinkuja 1, Helsinki"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          24.929668,
+          60.169598
+        ]
+      },
+      "properties": {
+        "id": "GTFS:HSL:1040144#H1237",
+        "layer": "stop",
+        "name": "Kamppi (M)",
+        "label": "Kamppi (M), Kamppi, Helsinki"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          24.929909,
+          60.169268
+        ]
+      },
+      "properties": {
+        "id": "GTFS:HSL:1040148#H1222",
+        "layer": "stop",
+        "name": "Kamppi (M)",
+        "label": "Kamppi (M), Kamppi, Helsinki"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          24.93128,
+          60.1689
+        ]
+      },
+      "properties": {
+        "id": "GTFS:HSL:1040280#H1250",
+        "layer": "stop",
+        "name": "Kamppi",
+        "label": "Kamppi, Helsinki"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          24.93155,
+          60.16898
+        ]
+      },
+      "properties": {
+        "id": "GTFS:HSL:1040277#H1247",
+        "layer": "stop",
+        "name": "Kamppi",
+        "label": "Kamppi (bussipysäkki), Kamppi, Helsinki"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          24.93146,
+          60.16895
+        ]
+      },
+      "properties": {
+        "id": "GTFS:HSL:1040278#H1248",
+        "layer": "stop",
+        "name": "Kamppi",
+        "label": "Kamppi (bussipysäkki), Kamppi, Helsinki"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          24.93137,
+          60.16892
+        ]
+      },
+      "properties": {
+        "id": "GTFS:HSL:1040279#H1249",
+        "layer": "stop",
+        "name": "Kamppi",
+        "label": "Kamppi (bussipysäkki), Kamppi, Helsinki"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          24.93119,
+          60.16887
+        ]
+      },
+      "properties": {
+        "id": "GTFS:HSL:1040281#H1251",
+        "layer": "stop",
+        "name": "Kamppi",
+        "label": "Kamppi (bussipysäkki), Kamppi, Helsinki"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          24.93109,
+          60.16885
+        ]
+      },
+      "properties": {
+        "id": "GTFS:HSL:1040282#H1252",
+        "layer": "stop",
+        "name": "Kamppi",
+        "label": "Kamppi (bussipysäkki), Kamppi, Helsinki"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          24.93093,
+          60.1688
+        ]
+      },
+      "properties": {
+        "id": "GTFS:HSL:1040284#H1254",
+        "layer": "stop",
+        "name": "Kamppi",
+        "label": "Kamppi, Helsinki"
+      }
+    }
+  ]
+}

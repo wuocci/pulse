@@ -35,8 +35,8 @@ describe("excavation notices → Events", () => {
     expect(event.where.precision).toBe("area");
     expect(event.when).toEqual({ start: "2026-10-29T00:00:00+02:00", end: "2026-11-13T23:59:59+02:00" });
     expect(event.title).toEqual({
-      en: "Excavation · Vilppulantie 26 · until 13 Nov",
-      fi: "Kaivutyö · Vilppulantie 26 · 13.11. asti",
+      en: "Excavation · Vilppulantie 26",
+      fi: "Kaivutyö · Vilppulantie 26",
     });
     expect(event.originalText?.fi).toMatch(/^Sadevesiviemärin korjaus/);
     expect(event.sources[0]).toMatchObject({ name: source.publisher, id: "KP2602791-2", license: source.license });
@@ -51,8 +51,8 @@ describe("excavation notices → Events", () => {
     const title = (properties: object) =>
       toEvents({ features: [{ ...first!, properties: { ...first!.properties, ...properties } }] }, context)[0]!.title.en;
 
-    expect(title({ osoite: null })).toBe("Excavation · Malmi · until 13 Nov");
-    expect(title({ osoite: null, kaupunginosa: null })).toBe("Excavation · until 13 Nov");
+    expect(title({ osoite: null })).toBe("Excavation · Malmi");
+    expect(title({ osoite: null, kaupunginosa: null })).toBe("Excavation");
   });
 
   it("derives status from the dates", () => {
@@ -114,8 +114,8 @@ describe("temporary traffic arrangements → Events", () => {
       id: "hel-traffic-arrangements:LJ2600093",
       when: { start: "2026-12-13T00:00:00+02:00", end: "2026-12-13T23:59:59+02:00" },
       title: {
-        en: "Traffic arrangement · Kirkkokatu · until 13 Dec",
-        fi: "Liikennejärjestely · Kirkkokatu · 13.12. asti",
+        en: "Traffic arrangement · Kirkkokatu",
+        fi: "Liikennejärjestely · Kirkkokatu",
       },
       originalText: { fi: "Tilapäiset liikennejärjestelyt; yleisötilaisuus (Lucia-kulkue)" },
       status: "upcoming",
@@ -155,17 +155,17 @@ describe("outdoor events → Events", () => {
     expect(byId.TP2500373!.where.geometry.coordinates).toHaveLength(2);
   });
 
-  it("uses the event's dates when there is no build-up or teardown", () => {
+  it("leaves dates out of the title when the event has no build-up or teardown", () => {
     expect(byId.TP2601020).toMatchObject({
       when: { start: "2026-11-15T00:00:00+02:00", end: "2026-11-15T23:59:59+02:00" },
-      title: { en: "Kurvin talkoot · Vaasanpuistikko · until 15 Nov" },
+      title: { en: "Kurvin talkoot · Vaasanpuistikko" },
     });
   });
 
   it("names a promotion generically and places it by district when it has no address", () => {
     expect(byId.TP2600853!.title).toEqual({
-      en: "Promotion · Kluuvi · until 15 Nov",
-      fi: "Promootio · Kluuvi · 15.11. asti",
+      en: "Promotion · Kluuvi",
+      fi: "Promootio · Kluuvi",
     });
   });
 });
