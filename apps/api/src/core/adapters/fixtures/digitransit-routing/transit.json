@@ -1,0 +1,495 @@
+{
+ "data": {
+  "planConnection": {
+   "routingErrors": [],
+   "edges": [
+    {
+     "node": {
+      "start": "2026-10-31T12:22:52+02:00",
+      "end": "2026-10-31T12:38:50+02:00",
+      "duration": 958,
+      "legs": [
+       {
+        "mode": "WALK",
+        "duration": 143,
+        "distance": 152.18,
+        "start": {
+         "scheduledTime": "2026-10-31T12:22:52+02:00",
+         "estimated": null
+        },
+        "end": {
+         "scheduledTime": "2026-10-31T12:25:15+02:00",
+         "estimated": null
+        },
+        "from": {
+         "name": "Origin",
+         "lat": 60.169,
+         "lon": 24.9316,
+         "stop": null
+        },
+        "to": {
+         "name": "Kamppi",
+         "lat": 60.16883,
+         "lon": 24.931215,
+         "stop": {
+          "gtfsId": "HSL:1040601"
+         }
+        },
+        "route": null,
+        "intermediatePlaces": null,
+        "legGeometry": {
+         "points": "gwfnJomdwC@I?C?GI{AR[LSDPOR?B?BCBCKEQCIAGEQEOGUBCFX^zA"
+        }
+       },
+       {
+        "mode": "SUBWAY",
+        "duration": 55,
+        "distance": 508,
+        "start": {
+         "scheduledTime": "2026-10-31T12:24:00+02:00",
+         "estimated": {
+          "time": "2026-10-31T12:25:15+02:00"
+         }
+        },
+        "end": {
+         "scheduledTime": "2026-10-31T12:25:00+02:00",
+         "estimated": {
+          "time": "2026-10-31T12:26:10+02:00"
+         }
+        },
+        "from": {
+         "name": "Kamppi",
+         "lat": 60.16883,
+         "lon": 24.931215,
+         "stop": {
+          "gtfsId": "HSL:1040601"
+         }
+        },
+        "to": {
+         "name": "Rautatientori",
+         "lat": 60.170379,
+         "lon": 24.939846,
+         "stop": {
+          "gtfsId": "HSL:1020601"
+         }
+        },
+        "route": {
+         "gtfsId": "HSL:31M1",
+         "shortName": "M1"
+        },
+        "intermediatePlaces": [],
+        "legGeometry": {
+         "points": "_ufnJmldwCQu@cBgHaA{Da@mC]mCY}CQgDMsCIwDCoC@u@"
+        }
+       },
+       {
+        "mode": "WALK",
+        "duration": 313,
+        "distance": 346.92,
+        "start": {
+         "scheduledTime": "2026-10-31T12:26:10+02:00",
+         "estimated": null
+        },
+        "end": {
+         "scheduledTime": "2026-10-31T12:31:23+02:00",
+         "estimated": null
+        },
+        "from": {
+         "name": "Rautatientori",
+         "lat": 60.170379,
+         "lon": 24.939846,
+         "stop": {
+          "gtfsId": "HSL:1020601"
+         }
+        },
+        "to": {
+         "name": "Helsinki",
+         "lat": 60.17272,
+         "lon": 24.939911,
+         "stop": {
+          "gtfsId": "HSL:1020502"
+         }
+        },
+        "route": null,
+        "intermediatePlaces": null,
+        "legGeometry": {
+         "points": "e_gnJa~ewCA_BQLAgCA?A?A?I@G?@R?PE?C@W@A?C?aHb@K@}@d@E?A@_@IAA"
+        }
+       },
+       {
+        "mode": "RAIL",
+        "duration": 240,
+        "distance": 3020,
+        "start": {
+         "scheduledTime": "2026-10-31T12:33:00+02:00",
+         "estimated": null
+        },
+        "end": {
+         "scheduledTime": "2026-10-31T12:37:00+02:00",
+         "estimated": null
+        },
+        "from": {
+         "name": "Helsinki",
+         "lat": 60.17272,
+         "lon": 24.939911,
+         "stop": {
+          "gtfsId": "HSL:1020502"
+         }
+        },
+        "to": {
+         "name": "Pasila",
+         "lat": 60.19941,
+         "lon": 24.93212,
+         "stop": {
+          "gtfsId": "HSL:1174502"
+         }
+        },
+        "route": {
+         "gtfsId": "HSL:3002A",
+         "shortName": "A"
+        },
+        "intermediatePlaces": [],
+        "legGeometry": {
+         "points": "ongnJmafwCie@bBqKnDei@|PiHfDeK|DuDp@cHr@uFQ{Ps@yJhH"
+        }
+       },
+       {
+        "mode": "WALK",
+        "duration": 110,
+        "distance": 89.69,
+        "start": {
+         "scheduledTime": "2026-10-31T12:37:00+02:00",
+         "estimated": null
+        },
+        "end": {
+         "scheduledTime": "2026-10-31T12:38:50+02:00",
+         "estimated": null
+        },
+        "from": {
+         "name": "Pasila",
+         "lat": 60.19941,
+         "lon": 24.93212,
+         "stop": {
+          "gtfsId": "HSL:1174502"
+         }
+        },
+        "to": {
+         "name": "Destination",
+         "lat": 60.1986,
+         "lon": 24.933,
+         "stop": null
+        },
+        "route": null,
+        "intermediatePlaces": null,
+        "legGeometry": {
+         "points": "atlnJcqdwCJAJA\\MAC@[Ji@x@eA"
+        }
+       }
+      ]
+     }
+    },
+    {
+     "node": {
+      "start": "2026-10-31T12:23:23+02:00",
+      "end": "2026-10-31T12:38:50+02:00",
+      "duration": 927,
+      "legs": [
+       {
+        "mode": "WALK",
+        "duration": 577,
+        "distance": 685.41,
+        "start": {
+         "scheduledTime": "2026-10-31T12:23:23+02:00",
+         "estimated": null
+        },
+        "end": {
+         "scheduledTime": "2026-10-31T12:33:00+02:00",
+         "estimated": null
+        },
+        "from": {
+         "name": "Origin",
+         "lat": 60.169,
+         "lon": 24.9316,
+         "stop": null
+        },
+        "to": {
+         "name": "Helsinki",
+         "lat": 60.17272,
+         "lon": 24.939911,
+         "stop": {
+          "gtfsId": "HSL:1020502"
+         }
+        },
+        "route": null,
+        "intermediatePlaces": null,
+        "legGeometry": {
+         "points": "gwfnJomdwCIFQSAACASCOc@cAgDOc@aCeJIWQe@i@kA}@a@IYCGAG?@IFA@A@ABEGGACQAEAGAIGc@EY?IOoBIq@qAq@]oBIuCA]?C?Y?YEME@G?OcC]IE?A@_@IAA"
+        }
+       },
+       {
+        "mode": "RAIL",
+        "duration": 240,
+        "distance": 3020,
+        "start": {
+         "scheduledTime": "2026-10-31T12:33:00+02:00",
+         "estimated": null
+        },
+        "end": {
+         "scheduledTime": "2026-10-31T12:37:00+02:00",
+         "estimated": null
+        },
+        "from": {
+         "name": "Helsinki",
+         "lat": 60.17272,
+         "lon": 24.939911,
+         "stop": {
+          "gtfsId": "HSL:1020502"
+         }
+        },
+        "to": {
+         "name": "Pasila",
+         "lat": 60.19941,
+         "lon": 24.93212,
+         "stop": {
+          "gtfsId": "HSL:1174502"
+         }
+        },
+        "route": {
+         "gtfsId": "HSL:3002A",
+         "shortName": "A"
+        },
+        "intermediatePlaces": [],
+        "legGeometry": {
+         "points": "ongnJmafwCie@bBqKnDei@|PiHfDeK|DuDp@cHr@uFQ{Ps@yJhH"
+        }
+       },
+       {
+        "mode": "WALK",
+        "duration": 110,
+        "distance": 89.69,
+        "start": {
+         "scheduledTime": "2026-10-31T12:37:00+02:00",
+         "estimated": null
+        },
+        "end": {
+         "scheduledTime": "2026-10-31T12:38:50+02:00",
+         "estimated": null
+        },
+        "from": {
+         "name": "Pasila",
+         "lat": 60.19941,
+         "lon": 24.93212,
+         "stop": {
+          "gtfsId": "HSL:1174502"
+         }
+        },
+        "to": {
+         "name": "Destination",
+         "lat": 60.1986,
+         "lon": 24.933,
+         "stop": null
+        },
+        "route": null,
+        "intermediatePlaces": null,
+        "legGeometry": {
+         "points": "atlnJcqdwCJAJA\\MAC@[Ji@x@eA"
+        }
+       }
+      ]
+     }
+    },
+    {
+     "node": {
+      "start": "2026-10-31T12:23:46+02:00",
+      "end": "2026-10-31T12:43:01+02:00",
+      "duration": 1155,
+      "legs": [
+       {
+        "mode": "WALK",
+        "duration": 137,
+        "distance": 141.69,
+        "start": {
+         "scheduledTime": "2026-10-31T12:23:46+02:00",
+         "estimated": null
+        },
+        "end": {
+         "scheduledTime": "2026-10-31T12:26:03+02:00",
+         "estimated": null
+        },
+        "from": {
+         "name": "Origin",
+         "lat": 60.169,
+         "lon": 24.9316,
+         "stop": null
+        },
+        "to": {
+         "name": "Kampintori",
+         "lat": 60.16795,
+         "lon": 24.931494,
+         "stop": {
+          "gtfsId": "HSL:1040408"
+         }
+        },
+        "route": null,
+        "intermediatePlaces": null,
+        "legGeometry": {
+         "points": "gwfnJomdwCl@fABNd@GNU\\k@FJDJLW@AVH@E@INFBB"
+        }
+       },
+       {
+        "mode": "TRAM",
+        "duration": 170,
+        "distance": 673,
+        "start": {
+         "scheduledTime": "2026-10-31T12:26:00+02:00",
+         "estimated": {
+          "time": "2026-10-31T12:26:03+02:00"
+         }
+        },
+        "end": {
+         "scheduledTime": "2026-10-31T12:30:00+02:00",
+         "estimated": {
+          "time": "2026-10-31T12:28:53+02:00"
+         }
+        },
+        "from": {
+         "name": "Kampintori",
+         "lat": 60.16795,
+         "lon": 24.931494,
+         "stop": {
+          "gtfsId": "HSL:1040408"
+         }
+        },
+        "to": {
+         "name": "Päärautatieasema",
+         "lat": 60.170347,
+         "lon": 24.941008,
+         "stop": {
+          "gtfsId": "HSL:1020453"
+         }
+        },
+        "route": {
+         "gtfsId": "HSL:1005T",
+         "shortName": "5T"
+        },
+        "intermediatePlaces": [
+         {
+          "stop": {
+           "gtfsId": "HSL:1040410"
+          }
+         }
+        ],
+        "legGeometry": {
+         "points": "{pfnJoldwC[OIKGMGOaAcEi@wBUaAEQ?Q?WBYN[l@cAFQ@W?YCQG_@k@kBYiA[iAu@mCkB}Gi@qBMg@Mg@CQI]CSAo@EmF"
+        }
+       },
+       {
+        "mode": "WALK",
+        "duration": 278,
+        "distance": 330,
+        "start": {
+         "scheduledTime": "2026-10-31T12:28:53+02:00",
+         "estimated": null
+        },
+        "end": {
+         "scheduledTime": "2026-10-31T12:33:31+02:00",
+         "estimated": null
+        },
+        "from": {
+         "name": "Päärautatieasema",
+         "lat": 60.170347,
+         "lon": 24.941008,
+         "stop": {
+          "gtfsId": "HSL:1020453"
+         }
+        },
+        "to": {
+         "name": "Helsinki",
+         "lat": 60.172992,
+         "lon": 24.942044,
+         "stop": {
+          "gtfsId": "HSL:1020503"
+         }
+        },
+        "route": null,
+        "intermediatePlaces": null,
+        "legGeometry": {
+         "points": "u_gnJyifwCAg@?OE?E@E?I@M?A?_@MQ@Ae@}@BG@UKQg@gH\\?EMGIY??"
+        }
+       },
+       {
+        "mode": "RAIL",
+        "duration": 240,
+        "distance": 3014,
+        "start": {
+         "scheduledTime": "2026-10-31T12:36:00+02:00",
+         "estimated": null
+        },
+        "end": {
+         "scheduledTime": "2026-10-31T12:40:00+02:00",
+         "estimated": null
+        },
+        "from": {
+         "name": "Helsinki",
+         "lat": 60.172992,
+         "lon": 24.942044,
+         "stop": {
+          "gtfsId": "HSL:1020503"
+         }
+        },
+        "to": {
+         "name": "Pasila",
+         "lat": 60.199593,
+         "lon": 24.933611,
+         "stop": {
+          "gtfsId": "HSL:1174501"
+         }
+        },
+        "route": {
+         "gtfsId": "HSL:3001I",
+         "shortName": "I"
+        },
+        "intermediatePlaces": [],
+        "legGeometry": {
+         "points": "epgnJwnfwCyQhDsLjGwOfGei@|PiHfDeK|DuDp@qFf@yIgB}POiJzA"
+        }
+       },
+       {
+        "mode": "WALK",
+        "duration": 181,
+        "distance": 166.96,
+        "start": {
+         "scheduledTime": "2026-10-31T12:40:00+02:00",
+         "estimated": null
+        },
+        "end": {
+         "scheduledTime": "2026-10-31T12:43:01+02:00",
+         "estimated": null
+        },
+        "from": {
+         "name": "Pasila",
+         "lat": 60.199593,
+         "lon": 24.933611,
+         "stop": {
+          "gtfsId": "HSL:1174501"
+         }
+        },
+        "to": {
+         "name": "Destination",
+         "lat": 60.1986,
+         "lon": 24.933,
+         "stop": null
+        },
+        "route": null,
+        "intermediatePlaces": null,
+        "legGeometry": {
+         "points": "gplnJc}dwCoA\\@?ZOB?D~@F`AA@[LEL?Ex@n@JD"
+        }
+       }
+      ]
+     }
+    }
+   ]
+  }
+ }
+}

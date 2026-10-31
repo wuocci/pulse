@@ -1,0 +1,48 @@
+{
+ "data": {
+  "planConnection": {
+   "routingErrors": [],
+   "edges": [
+    {
+     "node": {
+      "start": "2026-10-31T12:21:52+02:00",
+      "end": "2026-10-31T12:44:05+02:00",
+      "duration": 1333,
+      "legs": [
+       {
+        "mode": "BICYCLE",
+        "duration": 1333,
+        "distance": 4621.82,
+        "start": {
+         "scheduledTime": "2026-10-31T12:21:52+02:00",
+         "estimated": null
+        },
+        "end": {
+         "scheduledTime": "2026-10-31T12:44:05+02:00",
+         "estimated": null
+        },
+        "from": {
+         "name": "Origin",
+         "lat": 60.169,
+         "lon": 24.9316,
+         "stop": null
+        },
+        "to": {
+         "name": "Destination",
+         "lat": 60.1986,
+         "lon": 24.933,
+         "stop": null
+        },
+        "route": null,
+        "intermediatePlaces": null,
+        "legGeometry": {
+         "points": "gwfnJomdwCUjCNhADT@DU\\i@v@QXo@~@c@n@?DHZ@DlAbFDPDNJXEHGLEHFRMRDXLf@f@~Bb@pDAZGYq@aD}@mEEOM[EQUgAkBaJ{@}D]cB[yAYoAEUk@{BUy@Qo@Sm@M]IWO_@_AaCUk@g@oAIQEIGQEIACCMMmAAKAIOuAASE{AQuG?G?AAEAMGFI@G@oGZQ?QBQLEAC?G?y@DG@G?]@E@i@B[@iAF_@BI@g@BA?E?e@Ba@@A@A??BM\\CBC@A?C?GCGAKEICQCMAW@QA_@OOIUIWG]EwCMUBI@KA_@CYCU@U@YDWFYLYNYT[XULSBUBQHIRKROVWPYLMFQHI@KAIBQJUFUBG@GEEEIMEIEGIJADMf@KZYb@EFCBMPE@[Tc@Ti@Tg@PYF_@AMCQE_@QMG}@_@W?QBeBl@GBKD?]a@yEQgBJA\\~A@D@DG@eBn@GBs@VwCdAeC|@SHUN}@ZODq@J{CnAUF]Bc@Da@HgAZeB`@G@iANWNe@^c@T_@HYB_@Hy@Vi@b@UH[F_@BoBAq@IaASsFaAKCc@IoAOi@CEAe@AOEi@QOCKAGBQDGHGDC@KFcDVQCCA}@CS@WFODOFI?IELGd@QJEFCB???B?BBB@?@BD@D@H@J@N?D?B?DADAD?BAD?@?BRtDFh@BVEBIBA?A@IBSMg@GOG"
+        }
+       }
+      ]
+     }
+    }
+   ]
+  }
+ }
+}
