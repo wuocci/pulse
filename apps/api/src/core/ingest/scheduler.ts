@@ -1,5 +1,6 @@
 import type { Event } from "@pulse/schema";
 import { type Directory, fetchAlerts, idsToLook, type StopDirectory, toEvents } from "../adapters/gtfs-rt.ts";
+import { fetchMessages, toEvents as toRoadEvents } from "../adapters/digitraffic.ts";
 import { fetchPermits, toPermitItems } from "../adapters/land-use-permits.ts";
 import type { Classification } from "../classifier/enrich.ts";
 import type { EventStore } from "../events/store.ts";
@@ -63,5 +64,7 @@ async function read(
       const directory = stopDirectory ? await stopDirectory(source).lookup(idsToLook(alerts, source)) : NO_DIRECTORY;
       return { events: toEvents(alerts, directory, { source, region, now }) };
     }
+    case "digitraffic":
+      return { events: toRoadEvents(await fetchMessages(source, fetchFn), { source, region, now }) };
   }
 }

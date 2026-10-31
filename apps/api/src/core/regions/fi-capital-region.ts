@@ -48,5 +48,16 @@ export const fiCapitalRegion: Region = {
       feedId: "HSL",
       directory: { kind: "digitransit", url: "https://api.digitransit.fi/routing/v2/hsl/gtfs/v1" },
     },
+    {
+      adapter: "digitraffic",
+      id: "fintraffic-road-messages",
+      url: "https://tie.digitraffic.fi/api/traffic-message/v1/messages",
+      // The attribution Digitraffic asks for: "Liikennetietojen lähde Fintraffic / digitraffic.fi, lisenssi CC 4.0 BY".
+      publisher: "Fintraffic / digitraffic.fi",
+      license: "CC BY 4.0",
+      refreshMinutes: 5,
+      // A message that's gone is over: resolved, shown for an hour.
+      keepVanishedHours: 1,
+    },
   ],
 };

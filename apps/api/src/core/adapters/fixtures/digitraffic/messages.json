@@ -1,0 +1,1381 @@
+{
+ "type": "FeatureCollection",
+ "features": [
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "MultiLineString",
+    "coordinates": [
+     [
+      [
+       24.982236,
+       60.241539
+      ],
+      [
+       24.981841,
+       60.241544
+      ],
+      [
+       24.98182,
+       60.241545
+      ],
+      [
+       24.981714,
+       60.241547
+      ]
+     ],
+     [
+      [
+       24.982581,
+       60.241659
+      ],
+      [
+       24.982445,
+       60.241659
+      ],
+      [
+       24.982426,
+       60.24166
+      ],
+      [
+       24.98205,
+       60.241665
+      ]
+     ]
+    ]
+   },
+   "properties": {
+    "situationId": "GUID50472972",
+    "situationType": "ROAD_WORK",
+    "trafficAnnouncementType": null,
+    "version": 1,
+    "releaseTime": "2026-10-30T08:05:31.255Z",
+    "versionTime": "2026-10-30T08:05:31.254Z",
+    "announcements": [
+     {
+      "language": "FI",
+      "title": "Tie 101, eli Kehä I, Helsinki. Tietyö. ",
+      "location": {
+       "countryCode": 6,
+       "locationTableNumber": 17,
+       "locationTableVersion": "1.11.45",
+       "description": "Tie 101, eli Kehä I, Helsinki.\nTarkempi paikka: Paikasta Pukinmäen liittymä 500 m, suuntaan Pukinmäenkaari."
+      },
+      "locationDetails": {
+       "roadAddressLocation": {
+        "primaryPoint": {
+         "municipality": "Helsinki",
+         "province": "Uusimaa",
+         "country": "Suomi",
+         "roadAddress": {
+          "road": 101,
+          "roadSection": 7,
+          "distance": 2185
+         },
+         "roadName": "Kehä I",
+         "alertCLocation": {
+          "locationCode": 3585,
+          "name": "Pukinmäen liittymä",
+          "distance": 532
+         }
+        },
+        "secondaryPoint": {
+         "municipality": "Helsinki",
+         "province": "Uusimaa",
+         "country": "Suomi",
+         "roadAddress": {
+          "road": 101,
+          "roadSection": 7,
+          "distance": 2156
+         },
+         "roadName": "Kehä I",
+         "alertCLocation": {
+          "locationCode": 38092,
+          "name": "Pukinmäenkaari",
+          "distance": 57
+         }
+        },
+        "direction": "BOTH"
+       }
+      },
+      "locationOpenLr": {
+       "binary": "CxHFAirWvwo3Efj8ALIKaU+o",
+       "secondaryBinary": "CxHB3irXBQoqEQbB/1sKd59Y"
+      },
+      "features": [
+       {
+        "name": "Nopeusrajoitus",
+        "quantity": 60,
+        "unit": "km/h"
+       },
+       {
+        "name": "Ajokaista suljettu liikenteeltä"
+       }
+      ],
+      "roadWorkPhases": [
+       {
+        "id": "GUID50475809",
+        "location": {
+         "countryCode": 6,
+         "locationTableNumber": 17,
+         "locationTableVersion": "1.11.45",
+         "description": "Tie 101, eli Kehä I, Helsinki.\nTarkempi paikka: Paikasta Pukinmäen liittymä 500 m, suuntaan Pukinmäenkaari."
+        },
+        "locationDetails": {
+         "roadAddressLocation": {
+          "primaryPoint": {
+           "municipality": "Helsinki",
+           "province": "Uusimaa",
+           "country": "Suomi",
+           "roadAddress": {
+            "road": 101,
+            "roadSection": 7,
+            "distance": 2185
+           },
+           "roadName": "Kehä I",
+           "alertCLocation": {
+            "locationCode": 3585,
+            "name": "Pukinmäen liittymä",
+            "distance": 532
+           }
+          },
+          "secondaryPoint": {
+           "municipality": "Helsinki",
+           "province": "Uusimaa",
+           "country": "Suomi",
+           "roadAddress": {
+            "road": 101,
+            "roadSection": 7,
+            "distance": 2156
+           },
+           "roadName": "Kehä I",
+           "alertCLocation": {
+            "locationCode": 38092,
+            "name": "Pukinmäenkaari",
+            "distance": 57
+           }
+          },
+          "direction": "BOTH"
+         }
+        },
+        "locationOpenLr": {
+         "binary": "CxHFAirWvwo3Efj8ALIKaU+o",
+         "secondaryBinary": "CxHB3irXBQoqEQbB/1sKd59Y"
+        },
+        "workingHours": [
+         {
+          "weekday": "TUESDAY",
+          "startTime": "22:00:00",
+          "endTime": "06:00:00"
+         },
+         {
+          "weekday": "WEDNESDAY",
+          "startTime": "22:00:00",
+          "endTime": "06:00:00"
+         },
+         {
+          "weekday": "MONDAY",
+          "startTime": "22:00:00",
+          "endTime": "06:00:00"
+         }
+        ],
+        "timeAndDuration": {
+         "startTime": "2026-11-01T22:00:00Z",
+         "endTime": "2026-11-04T21:59:59.999Z"
+        },
+        "workTypes": [
+         {
+          "type": "BRIDGE",
+          "description": "Siltatyö"
+         },
+         {
+          "type": "MEASUREMENT",
+          "description": "Tutkimus/mittaus"
+         },
+         {
+          "type": "OTHER",
+          "description": ""
+         }
+        ],
+        "restrictions": [
+         {
+          "type": "SINGLE_LANE_CLOSED",
+          "restriction": {
+           "name": "Yksi ajokaista suljettu"
+          }
+         },
+         {
+          "type": "SPEED_LIMIT",
+          "restriction": {
+           "name": "Nopeusrajoitus",
+           "quantity": 60,
+           "unit": "km/h"
+          }
+         },
+         {
+          "type": "SPEED_LIMIT_LENGTH",
+          "restriction": {
+           "name": "Matka, jolla nopeusrajoitus voimassa",
+           "quantity": 300,
+           "unit": "m"
+          }
+         }
+        ],
+        "restrictionsLiftable": false,
+        "severity": "HIGHEST",
+        "slowTrafficTimes": [],
+        "queuingTrafficTimes": []
+       }
+      ],
+      "timeAndDuration": {
+       "startTime": "2026-11-01T22:00:00Z",
+       "endTime": "2026-11-04T21:59:59.999Z"
+      },
+      "additionalInformation": "Liikenne- ja kelitiedot verkossa: https://liikennetilanne.fintraffic.fi/",
+      "sender": "Fintraffic Tieliikennekeskus"
+     }
+    ],
+    "contact": {
+     "phone": "02002100",
+     "email": "helsinki.liikennekeskus@fintraffic.fi"
+    },
+    "dataUpdatedTime": "2026-10-30T08:06:01Z"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     24.933931,
+     60.197051
+    ]
+   },
+   "properties": {
+    "situationId": "GUID50472939",
+    "situationType": "ROAD_WORK",
+    "trafficAnnouncementType": null,
+    "version": 1,
+    "releaseTime": "2026-10-29T12:24:16.788Z",
+    "versionTime": "2026-10-29T12:24:16.785Z",
+    "announcements": [
+     {
+      "language": "FI",
+      "title": "Teollisuuskatu, Helsinki. Tietyö. ",
+      "location": {
+       "countryCode": 6,
+       "locationTableNumber": 17,
+       "locationTableVersion": "1.11.45",
+       "description": "Teollisuuskatu, Helsinki.\nTarkempi paikka: Teollisuuskadun tunneli."
+      },
+      "locationDetails": {
+       "roadAddressLocation": {
+        "primaryPoint": {
+         "municipality": "Helsinki",
+         "province": "Uusimaa",
+         "country": "Suomi",
+         "roadAddress": {},
+         "roadName": "Teollisuuskatu",
+         "alertCLocation": {
+          "locationCode": 43598,
+          "name": "Teollisuuskadun tunneli",
+          "distance": 0
+         }
+        },
+        "direction": "BOTH"
+       }
+      },
+      "locationOpenLr": {
+       "binary": "IxG7FirOiw=="
+      },
+      "features": [
+       {
+        "name": "Tie on suljettu liikenteeltä"
+       },
+       {
+        "name": "Tapahtumapaikalla on käytössä kiertotie"
+       }
+      ],
+      "roadWorkPhases": [
+       {
+        "id": "GUID50475775",
+        "location": {
+         "countryCode": 6,
+         "locationTableNumber": 17,
+         "locationTableVersion": "1.11.45",
+         "description": "Teollisuuskatu, Helsinki.\nTarkempi paikka: Teollisuuskadun tunneli."
+        },
+        "locationDetails": {
+         "roadAddressLocation": {
+          "primaryPoint": {
+           "municipality": "Helsinki",
+           "province": "Uusimaa",
+           "country": "Suomi",
+           "roadAddress": {},
+           "roadName": "Teollisuuskatu",
+           "alertCLocation": {
+            "locationCode": 43598,
+            "name": "Teollisuuskadun tunneli",
+            "distance": 0
+           }
+          },
+          "direction": "BOTH"
+         }
+        },
+        "locationOpenLr": {
+         "binary": "IxG7FirOiw=="
+        },
+        "workingHours": [],
+        "timeAndDuration": {
+         "startTime": "2026-11-04T20:00:00Z",
+         "endTime": "2026-11-05T04:00:00Z"
+        },
+        "workTypes": [
+         {
+          "type": "OTHER",
+          "description": "Julkisivuasennus"
+         }
+        ],
+        "restrictions": [
+         {
+          "type": "ROAD_CLOSED",
+          "restriction": {
+           "name": "Tie on suljettu liikenteeltä"
+          }
+         },
+         {
+          "type": "DETOUR",
+          "restriction": {
+           "name": "Kiertotie käytössä"
+          }
+         }
+        ],
+        "restrictionsLiftable": false,
+        "severity": "HIGHEST",
+        "slowTrafficTimes": [],
+        "queuingTrafficTimes": []
+       }
+      ],
+      "timeAndDuration": {
+       "startTime": "2026-11-04T20:00:00Z",
+       "endTime": "2026-11-05T04:00:00Z"
+      },
+      "additionalInformation": "Liikenne- ja kelitiedot verkossa: https://liikennetilanne.fintraffic.fi/",
+      "sender": "Fintraffic Tieliikennekeskus"
+     }
+    ],
+    "contact": {
+     "phone": "02002100",
+     "email": "helsinki.liikennekeskus@fintraffic.fi"
+    },
+    "dataUpdatedTime": "2026-10-29T12:24:21Z"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "MultiLineString",
+    "coordinates": [
+     [
+      [
+       25.065724,
+       60.252209
+      ],
+      [
+       25.065699,
+       60.252176
+      ],
+      [
+       25.065644,
+       60.2521
+      ],
+      [
+       25.06528,
+       60.251622
+      ],
+      [
+       25.064873,
+       60.25111
+      ],
+      [
+       25.064467,
+       60.250639
+      ],
+      [
+       25.064121,
+       60.250244
+      ],
+      [
+       25.063544,
+       60.249648
+      ],
+      [
+       25.063141,
+       60.249263
+      ],
+      [
+       25.062696,
+       60.248847
+      ],
+      [
+       25.06253,
+       60.248713
+      ],
+      [
+       25.062169,
+       60.248419
+      ],
+      [
+       25.061973,
+       60.24827
+      ],
+      [
+       25.061482,
+       60.247898
+      ],
+      [
+       25.060872,
+       60.247444
+      ]
+     ],
+     [
+      [
+       25.065466,
+       60.252302
+      ],
+      [
+       25.065333,
+       60.252132
+      ],
+      [
+       25.065325,
+       60.252115
+      ],
+      [
+       25.06505,
+       60.251766
+      ],
+      [
+       25.064746,
+       60.25137
+      ],
+      [
+       25.064393,
+       60.250935
+      ],
+      [
+       25.064036,
+       60.250519
+      ],
+      [
+       25.063723,
+       60.250172
+      ],
+      [
+       25.063368,
+       60.24982
+      ],
+      [
+       25.063024,
+       60.249491
+      ],
+      [
+       25.06267,
+       60.249168
+      ],
+      [
+       25.062258,
+       60.248813
+      ],
+      [
+       25.062203,
+       60.248766
+      ],
+      [
+       25.061754,
+       60.248396
+      ],
+      [
+       25.061225,
+       60.247987
+      ],
+      [
+       25.060724,
+       60.247618
+      ],
+      [
+       25.060616,
+       60.247542
+      ]
+     ]
+    ]
+   },
+   "properties": {
+    "situationId": "GUID50472949",
+    "situationType": "ROAD_WORK",
+    "trafficAnnouncementType": null,
+    "version": 1,
+    "releaseTime": "2026-10-29T15:37:19.520Z",
+    "versionTime": "2026-10-29T15:37:19.519Z",
+    "announcements": [
+     {
+      "language": "FI",
+      "title": "Tie 4, eli Lahdenväylä, Helsinki. Tietyö. ",
+      "location": {
+       "countryCode": 6,
+       "locationTableNumber": 17,
+       "locationTableVersion": "1.11.45",
+       "description": "Tie 4, eli Lahdenväylä, Helsinki.\nTarkempi paikka: Paikasta Porvoonväylän liittymä, vaikutusalue 600 m, suuntaan Kehä I:n liittymä. Tieltä 7 liittyvä ramppi."
+      },
+      "locationDetails": {
+       "roadAddressLocation": {
+        "primaryPoint": {
+         "municipality": "Helsinki",
+         "province": "Uusimaa",
+         "country": "Suomi",
+         "roadAddress": {
+          "road": 4,
+          "roadSection": 103,
+          "distance": 2210
+         },
+         "roadName": "Lahdenväylä",
+         "alertCLocation": {
+          "locationCode": 1048,
+          "name": "Porvoonväylän liittymä",
+          "distance": 7
+         }
+        },
+        "secondaryPoint": {
+         "municipality": "Helsinki",
+         "province": "Uusimaa",
+         "country": "Suomi",
+         "roadAddress": {
+          "road": 4,
+          "roadSection": 103,
+          "distance": 1615
+         },
+         "roadName": "Lahdenväylä",
+         "alertCLocation": {
+          "locationCode": 1047,
+          "name": "Kehä I:n liittymä",
+          "distance": 1615
+         }
+        },
+        "direction": "UNKNOWN"
+       }
+      },
+      "locationOpenLr": {
+       "binary": "CxHVKyrbHwETKPkI+GkBY7MM",
+       "secondaryBinary": "CxHQsirW6QEENwsDCcYBczWb"
+      },
+      "features": [
+       {
+        "name": "Nopeusrajoitus",
+        "quantity": 80,
+        "unit": "km/h"
+       },
+       {
+        "name": "Ajokaistoja on kavennettu"
+       }
+      ],
+      "roadWorkPhases": [
+       {
+        "id": "GUID50475785",
+        "location": {
+         "countryCode": 6,
+         "locationTableNumber": 17,
+         "locationTableVersion": "1.11.45",
+         "description": "Tie 4, eli Lahdenväylä, Helsinki.\nTarkempi paikka: Paikasta Porvoonväylän liittymä, vaikutusalue 600 m, suuntaan Kehä I:n liittymä. Tieltä 7 liittyvä ramppi."
+        },
+        "locationDetails": {
+         "roadAddressLocation": {
+          "primaryPoint": {
+           "municipality": "Helsinki",
+           "province": "Uusimaa",
+           "country": "Suomi",
+           "roadAddress": {
+            "road": 4,
+            "roadSection": 103,
+            "distance": 2210
+           },
+           "roadName": "Lahdenväylä",
+           "alertCLocation": {
+            "locationCode": 1048,
+            "name": "Porvoonväylän liittymä",
+            "distance": 7
+           }
+          },
+          "secondaryPoint": {
+           "municipality": "Helsinki",
+           "province": "Uusimaa",
+           "country": "Suomi",
+           "roadAddress": {
+            "road": 4,
+            "roadSection": 103,
+            "distance": 1615
+           },
+           "roadName": "Lahdenväylä",
+           "alertCLocation": {
+            "locationCode": 1047,
+            "name": "Kehä I:n liittymä",
+            "distance": 1615
+           }
+          },
+          "direction": "UNKNOWN"
+         }
+        },
+        "locationOpenLr": {
+         "binary": "CxHVKyrbHwETKPkI+GkBY7MM",
+         "secondaryBinary": "CxHQsirW6QEENwsDCcYBczWb"
+        },
+        "workingHours": [
+         {
+          "weekday": "WEDNESDAY",
+          "startTime": "07:00:00",
+          "endTime": "18:00:00"
+         },
+         {
+          "weekday": "THURSDAY",
+          "startTime": "07:00:00",
+          "endTime": "18:00:00"
+         },
+         {
+          "weekday": "MONDAY",
+          "startTime": "07:00:00",
+          "endTime": "18:00:00"
+         },
+         {
+          "weekday": "TUESDAY",
+          "startTime": "07:00:00",
+          "endTime": "18:00:00"
+         }
+        ],
+        "timeAndDuration": {
+         "startTime": "2026-11-01T22:00:00Z",
+         "endTime": "2026-11-13T21:59:59.999Z"
+        },
+        "workTypes": [
+         {
+          "type": "MEASUREMENT",
+          "description": "Tutkimus/mittaus"
+         },
+         {
+          "type": "OTHER",
+          "description": ""
+         }
+        ],
+        "restrictions": [
+         {
+          "type": "NARROW_LANES",
+          "restriction": {
+           "name": "Ajokaista kavennettu työmaan kohdalla"
+          }
+         },
+         {
+          "type": "SPEED_LIMIT",
+          "restriction": {
+           "name": "Nopeusrajoitus",
+           "quantity": 80,
+           "unit": "km/h"
+          }
+         },
+         {
+          "type": "SPEED_LIMIT_LENGTH",
+          "restriction": {
+           "name": "Matka, jolla nopeusrajoitus voimassa",
+           "quantity": 800,
+           "unit": "m"
+          }
+         }
+        ],
+        "restrictionsLiftable": true,
+        "severity": "HIGH",
+        "slowTrafficTimes": [],
+        "queuingTrafficTimes": []
+       }
+      ],
+      "timeAndDuration": {
+       "startTime": "2026-11-01T22:00:00Z",
+       "endTime": "2026-11-13T21:59:59.999Z"
+      },
+      "additionalInformation": "Liikenne- ja kelitiedot verkossa: https://liikennetilanne.fintraffic.fi/",
+      "sender": "Fintraffic Tieliikennekeskus"
+     }
+    ],
+    "contact": {
+     "phone": "02002100",
+     "email": "helsinki.liikennekeskus@fintraffic.fi"
+    },
+    "dataUpdatedTime": "2026-10-29T15:37:51Z"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "MultiLineString",
+    "coordinates": [
+     [
+      [
+       25.039719,
+       60.402167
+      ],
+      [
+       25.039674,
+       60.402174
+      ],
+      [
+       25.039664,
+       60.402175
+      ],
+      [
+       25.038964,
+       60.40227
+      ],
+      [
+       25.038509,
+       60.402333
+      ],
+      [
+       25.038384,
+       60.402347
+      ]
+     ]
+    ]
+   },
+   "properties": {
+    "situationId": "GUID50472176",
+    "situationType": "ROAD_WORK",
+    "trafficAnnouncementType": null,
+    "version": 1,
+    "releaseTime": "2026-10-12T07:13:45.374Z",
+    "versionTime": "2026-10-12T07:13:45.373Z",
+    "announcements": [
+     {
+      "language": "FI",
+      "title": "Tie 148, Tuusula. Tietyö. ",
+      "location": {
+       "countryCode": 6,
+       "locationTableNumber": 17,
+       "locationTableVersion": "1.11.45",
+       "description": "Tie 148 välillä Hyrylä - Sköldvik, Tuusula.\nTarkempi paikka: Paikasta Tuusulan Itäväylä 2,0 km, vaikutusalue 100 m, suuntaan Hyökkälän kiertoliittymä."
+      },
+      "locationDetails": {
+       "roadAddressLocation": {
+        "primaryPoint": {
+         "municipality": "Tuusula",
+         "province": "Uusimaa",
+         "country": "Suomi",
+         "roadAddress": {
+          "road": 148,
+          "roadSection": 1,
+          "distance": 399
+         },
+         "alertCLocation": {
+          "locationCode": 3867,
+          "name": "Tuusulan Itäväylä",
+          "distance": 1985
+         }
+        },
+        "secondaryPoint": {
+         "municipality": "Tuusula",
+         "province": "Uusimaa",
+         "country": "Suomi",
+         "roadAddress": {
+          "road": 148,
+          "roadSection": 1,
+          "distance": 323
+         },
+         "alertCLocation": {
+          "locationCode": 3866,
+          "name": "Hyökkälän kiertoliittymä",
+          "distance": 323
+         }
+        },
+        "direction": "BOTH"
+       }
+      },
+      "locationOpenLr": {
+       "binary": "IxHOWCrz4Q=="
+      },
+      "features": [],
+      "roadWorkPhases": [
+       {
+        "id": "GUID50475000",
+        "location": {
+         "countryCode": 6,
+         "locationTableNumber": 17,
+         "locationTableVersion": "1.11.45",
+         "description": "Tie 148 välillä Hyrylä - Sköldvik, Tuusula.\nTarkempi paikka: Paikasta Tuusulan Itäväylä 2,0 km, vaikutusalue 100 m, suuntaan Hyökkälän kiertoliittymä."
+        },
+        "locationDetails": {
+         "roadAddressLocation": {
+          "primaryPoint": {
+           "municipality": "Tuusula",
+           "province": "Uusimaa",
+           "country": "Suomi",
+           "roadAddress": {
+            "road": 148,
+            "roadSection": 1,
+            "distance": 399
+           },
+           "alertCLocation": {
+            "locationCode": 3867,
+            "name": "Tuusulan Itäväylä",
+            "distance": 1985
+           }
+          },
+          "secondaryPoint": {
+           "municipality": "Tuusula",
+           "province": "Uusimaa",
+           "country": "Suomi",
+           "roadAddress": {
+            "road": 148,
+            "roadSection": 1,
+            "distance": 323
+           },
+           "alertCLocation": {
+            "locationCode": 3866,
+            "name": "Hyökkälän kiertoliittymä",
+            "distance": 323
+           }
+          },
+          "direction": "BOTH"
+         }
+        },
+        "locationOpenLr": {
+         "binary": "IxHOWCrz4Q=="
+        },
+        "workingHours": [
+         {
+          "weekday": "FRIDAY",
+          "startTime": "07:00:00",
+          "endTime": "15:30:00"
+         },
+         {
+          "weekday": "WEDNESDAY",
+          "startTime": "07:00:00",
+          "endTime": "15:30:00"
+         },
+         {
+          "weekday": "MONDAY",
+          "startTime": "07:00:00",
+          "endTime": "15:30:00"
+         },
+         {
+          "weekday": "THURSDAY",
+          "startTime": "07:00:00",
+          "endTime": "15:30:00"
+         },
+         {
+          "weekday": "TUESDAY",
+          "startTime": "07:00:00",
+          "endTime": "15:30:00"
+         }
+        ],
+        "timeAndDuration": {
+         "startTime": "2026-10-11T21:00:00Z",
+         "endTime": "2026-10-31T21:59:59.999Z"
+        },
+        "workTypes": [
+         {
+          "type": "BURIED_CABLES",
+          "description": "Kaapelityö"
+         },
+         {
+          "type": "OTHER",
+          "description": ""
+         }
+        ],
+        "restrictions": [
+         {
+          "type": "NARROW_OR_CLOSED_PEDESTRIAN_AND_BICYLE_PATH",
+          "restriction": {
+           "name": "Kevyen liikenteen väylä suljettu/kavennettu"
+          }
+         }
+        ],
+        "restrictionsLiftable": false,
+        "severity": "LOW",
+        "slowTrafficTimes": [],
+        "queuingTrafficTimes": []
+       }
+      ],
+      "timeAndDuration": {
+       "startTime": "2026-10-11T21:00:00Z",
+       "endTime": "2026-10-31T21:59:59.999Z"
+      },
+      "additionalInformation": "Liikenne- ja kelitiedot verkossa: https://liikennetilanne.fintraffic.fi/",
+      "sender": "Fintraffic Tieliikennekeskus"
+     }
+    ],
+    "contact": {
+     "phone": "02002100",
+     "email": "helsinki.liikennekeskus@fintraffic.fi"
+    },
+    "dataUpdatedTime": "2026-10-12T07:13:51Z"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "MultiLineString",
+    "coordinates": [
+     [
+      [
+       25.146355,
+       60.245132
+      ],
+      [
+       25.146425,
+       60.245092
+      ],
+      [
+       25.146645,
+       60.244967
+      ],
+      [
+       25.147376,
+       60.244523
+      ],
+      [
+       25.147882,
+       60.244215
+      ],
+      [
+       25.148648,
+       60.24375
+      ],
+      [
+       25.14953,
+       60.243205
+      ],
+      [
+       25.150174,
+       60.242821
+      ],
+      [
+       25.150709,
+       60.242528
+      ],
+      [
+       25.151545,
+       60.242105
+      ],
+      [
+       25.15232,
+       60.241726
+      ],
+      [
+       25.153276,
+       60.241283
+      ],
+      [
+       25.153719,
+       60.241091
+      ],
+      [
+       25.154496,
+       60.240754
+      ],
+      [
+       25.155367,
+       60.240336
+      ],
+      [
+       25.15592,
+       60.240037
+      ],
+      [
+       25.156418,
+       60.239768
+      ],
+      [
+       25.15715,
+       60.239378
+      ],
+      [
+       25.157841,
+       60.238898
+      ],
+      [
+       25.158201,
+       60.238658
+      ],
+      [
+       25.158719,
+       60.238315
+      ],
+      [
+       25.159091,
+       60.238081
+      ],
+      [
+       25.159437,
+       60.237868
+      ],
+      [
+       25.159796,
+       60.237646
+      ],
+      [
+       25.160139,
+       60.237389
+      ],
+      [
+       25.160411,
+       60.237166
+      ],
+      [
+       25.160619,
+       60.236953
+      ],
+      [
+       25.160835,
+       60.236708
+      ],
+      [
+       25.161078,
+       60.236391
+      ],
+      [
+       25.161242,
+       60.236131
+      ],
+      [
+       25.161414,
+       60.235831
+      ],
+      [
+       25.161552,
+       60.235508
+      ],
+      [
+       25.161647,
+       60.235164
+      ],
+      [
+       25.161697,
+       60.234865
+      ],
+      [
+       25.1617,
+       60.234611
+      ],
+      [
+       25.161701,
+       60.234312
+      ],
+      [
+       25.161676,
+       60.233907
+      ],
+      [
+       25.161597,
+       60.233501
+      ],
+      [
+       25.161509,
+       60.233001
+      ],
+      [
+       25.161397,
+       60.232356
+      ],
+      [
+       25.16135,
+       60.232068
+      ],
+      [
+       25.161339,
+       60.231689
+      ],
+      [
+       25.16136,
+       60.231412
+      ],
+      [
+       25.161425,
+       60.231149
+      ],
+      [
+       25.161515,
+       60.230881
+      ],
+      [
+       25.161671,
+       60.230528
+      ],
+      [
+       25.16187,
+       60.230224
+      ],
+      [
+       25.162151,
+       60.229889
+      ],
+      [
+       25.162488,
+       60.229547
+      ],
+      [
+       25.162907,
+       60.229143
+      ],
+      [
+       25.163316,
+       60.228758
+      ],
+      [
+       25.163691,
+       60.22842
+      ],
+      [
+       25.163981,
+       60.228161
+      ],
+      [
+       25.164748,
+       60.227657
+      ],
+      [
+       25.165443,
+       60.227223
+      ],
+      [
+       25.166037,
+       60.226898
+      ]
+     ],
+     [
+      [
+       25.146859,
+       60.245019
+      ],
+      [
+       25.147327,
+       60.244753
+      ],
+      [
+       25.148143,
+       60.244277
+      ],
+      [
+       25.148819,
+       60.243837
+      ],
+      [
+       25.149444,
+       60.243438
+      ],
+      [
+       25.149766,
+       60.243235
+      ],
+      [
+       25.150143,
+       60.242996
+      ],
+      [
+       25.150757,
+       60.242648
+      ],
+      [
+       25.151487,
+       60.242265
+      ],
+      [
+       25.152051,
+       60.241996
+      ],
+      [
+       25.152579,
+       60.241751
+      ],
+      [
+       25.153364,
+       60.241423
+      ],
+      [
+       25.154494,
+       60.240954
+      ],
+      [
+       25.155169,
+       60.240667
+      ],
+      [
+       25.155362,
+       60.240583
+      ],
+      [
+       25.156186,
+       60.240217
+      ],
+      [
+       25.156238,
+       60.240188
+      ],
+      [
+       25.15697,
+       60.239763
+      ],
+      [
+       25.157384,
+       60.239537
+      ],
+      [
+       25.159017,
+       60.238538
+      ],
+      [
+       25.160106,
+       60.237792
+      ],
+      [
+       25.160895,
+       60.23715
+      ],
+      [
+       25.161536,
+       60.236368
+      ],
+      [
+       25.161914,
+       60.235579
+      ],
+      [
+       25.162111,
+       60.234841
+      ],
+      [
+       25.16214,
+       60.234236
+      ],
+      [
+       25.161988,
+       60.23339
+      ],
+      [
+       25.16177,
+       60.232374
+      ],
+      [
+       25.161725,
+       60.231971
+      ],
+      [
+       25.161779,
+       60.231204
+      ],
+      [
+       25.16204,
+       60.230557
+      ],
+      [
+       25.162535,
+       60.229927
+      ],
+      [
+       25.163258,
+       60.229165
+      ],
+      [
+       25.164151,
+       60.22834
+      ],
+      [
+       25.165236,
+       60.227623
+      ],
+      [
+       25.166285,
+       60.227048
+      ],
+      [
+       25.166334,
+       60.227022
+      ]
+     ]
+    ]
+   },
+   "properties": {
+    "situationId": "GUID50459844",
+    "situationType": "TRAFFIC_ANNOUNCEMENT",
+    "trafficAnnouncementType": "GENERAL",
+    "version": 222,
+    "releaseTime": "2026-01-05T15:12:43.389Z",
+    "versionTime": "2026-01-14T13:55:04.140Z",
+    "announcements": [
+     {
+      "language": "FI",
+      "title": "Tie 103, eli Vuosaaren satamatie, Helsinki. Liikennetiedote. Tilanne jatkuu. ",
+      "location": {
+       "countryCode": 6,
+       "locationTableNumber": 17,
+       "locationTableVersion": "1.11.44",
+       "description": "Tie 103, eli Vuosaaren satamatie, Helsinki.\nTarkempi paikka: Välillä Itäväylän liittymä - Vuosaaren tunnelin eteläpää. \n\nVuosaaren maantietunneli."
+      },
+      "locationDetails": {
+       "roadAddressLocation": {
+        "primaryPoint": {
+         "municipality": "Helsinki",
+         "province": "Uusimaa",
+         "country": "Suomi",
+         "roadAddress": {
+          "road": 103,
+          "roadSection": 1,
+          "distance": 1553
+         },
+         "roadName": "Vuosaaren satamatie",
+         "alertCLocation": {
+          "locationCode": 118,
+          "name": "Itäväylän liittymä",
+          "distance": 0
+         }
+        },
+        "secondaryPoint": {
+         "municipality": "Helsinki",
+         "province": "Uusimaa",
+         "country": "Suomi",
+         "roadAddress": {
+          "road": 103,
+          "roadSection": 1,
+          "distance": 3971
+         },
+         "roadName": "Vuosaaren satamatie",
+         "alertCLocation": {
+          "locationCode": 1777,
+          "name": "Vuosaaren tunnelin eteläpää",
+          "distance": 0
+         }
+        },
+        "direction": "BOTH"
+       }
+      },
+      "features": [
+       {
+        "name": "Tie on suljettu liikenteeltä"
+       },
+       {
+        "name": "Paikalla on kiertotieopastus"
+       }
+      ],
+      "roadWorkPhases": [],
+      "comment": "Tunneli suljetaan 6.1.2026 noin vuoden kestävän remontin ajaksi.\n\nKiertotie: Itäväylä - Kallvikintie - Niinisaarentie - Vuosaaren satama",
+      "timeAndDuration": {
+       "startTime": "2026-01-06T04:00:00Z",
+       "endTime": "2026-12-31T22:00:00Z"
+      },
+      "additionalInformation": "Liikenne- ja kelitiedot verkossa: https://liikennetilanne.fintraffic.fi/",
+      "sender": "Fintraffic Tieliikennekeskus Helsinki"
+     }
+    ],
+    "contact": {
+     "phone": "02002100",
+     "email": "helsinki.liikennekeskus@fintraffic.fi"
+    },
+    "dataUpdatedTime": "2026-01-14T13:55:11Z"
+   }
+  }
+ ]
+}

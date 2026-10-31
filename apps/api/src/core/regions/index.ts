@@ -15,7 +15,7 @@ export interface Region extends PublicRegion {
 }
 
 // One entry per feed a Source publishes. `adapter` picks the code that reads its format (ADR 0002).
-export type SourceConfig = LandUsePermitSource | GtfsRtSource;
+export type SourceConfig = LandUsePermitSource | GtfsRtSource | DigitrafficSource;
 
 interface BaseSource {
   id: string;
@@ -34,6 +34,11 @@ export interface LandUsePermitSource extends BaseSource {
   permitType: "excavation" | "traffic-arrangement" | "outdoor-event";
   // Month-days (MM-DD) the system's rules put in an end date field instead of the work's own end.
   ruleEndDays?: string[];
+}
+
+// Fintraffic's road traffic messages: a national feed, kept to the Region's bbox.
+export interface DigitrafficSource extends BaseSource {
+  adapter: "digitraffic";
 }
 
 export const isPermitSource = (source: SourceConfig): source is LandUsePermitSource => source.adapter === "land-use-permits";
