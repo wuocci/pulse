@@ -2,10 +2,13 @@ import type { Event, Impact, Leg, LegMode, MainlyAffected } from "@pulse/schema"
 import type { RoutedItinerary } from "../adapters/digitransit-routing.ts";
 
 // Which Events are on an itinerary, and how much they matter for it (Impact). PRD #34:
-// an Event is on it when it shares a line or stop with a transit leg, or lies within CORRIDOR_M of any leg,
+// an Event is on it when it shares a line or stop with a transit leg, or lies within CORRIDOR_M of a street leg,
 // and it's going on during the trip.
 
 export const CORRIDOR_M = 30;
+
+// Off the street: works beside the track or the fairway don't touch the ride, only its own line and stops do.
+const OFF_STREET = new Set<LegMode>(["rail", "subway", "ferry"]);
 
 export interface Match {
   event: Event;
@@ -24,7 +27,7 @@ export function matchItinerary(itinerary: RoutedItinerary, events: Event[], corr
     const matched = legs.flatMap(({ leg, shape: route }): Match["legs"] => {
       if (leg.line && event.where.lines?.includes(leg.line.id)) return [{ leg, by: "line" }];
       if (leg.stops.some((stop) => event.where.stops?.includes(stop))) return [{ leg, by: "stop" }];
-      if (shape && distanceM(shape, route) <= corridorM) return [{ leg, by: "corridor" }];
+      if (shape && !OFF_STREET.has(leg.mode) && distanceM(shape, route) <= corridorM) return [{ leg, by: "corridor" }];
       return [];
     });
     return matched.length ? [{ event, legs: matched }] : [];

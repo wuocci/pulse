@@ -65,6 +65,14 @@ describe("which Events are on an itinerary", () => {
     expect(matchedIds(itinerary(leg()), [crossing, around])).toEqual(["line", "area"]);
   });
 
+  it("doesn't take street works beside a train, metro or ferry: those are reached by their own lines and stops", () => {
+    const off = (mode: Leg["mode"]) => leg({ mode, line: { id: "HSL:X", name: "X" }, stops: ["HSL:9"] });
+
+    for (const mode of ["rail", "subway", "ferry"] as const) expect(matchedIds(itinerary(off(mode)), [event("dig")])).toEqual([]);
+    for (const mode of ["bus", "tram"] as const) expect(matchedIds(itinerary(off(mode)), [event("dig")])).toEqual(["dig"]);
+    expect(matchedIds(itinerary(off("rail")), [alert("stop", { stops: ["HSL:9"] })])).toEqual(["stop"]);
+  });
+
   it("doesn't place a region-wide notice on the route by its geometry", () => {
     expect(matchedIds(itinerary(leg()), [event("vague", { where: { geometry: { type: "Point", coordinates: [24.935, LAT] }, precision: "vague" } })])).toEqual([]);
   });
