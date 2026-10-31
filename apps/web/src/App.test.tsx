@@ -13,8 +13,8 @@ import { type DeviceLocation, type LatLon, LocationError, type Platform } from "
 // The real map draws with WebGL, which jsdom lacks: this one shows what it was given, and can be long-pressed
 // and panned.
 vi.mock("./map/PointMap.tsx", () => ({
-  PointMap: ({ point, onLongPress, onPan, onMapClick, pins, renderPin, popup }: PointMapProps) => (
-    <div data-testid="map" data-point={point ? `${point.lat},${point.lon}` : ""}>
+  PointMap: ({ point, onLongPress, onPan, onMapClick, pins, renderPin, popup, route }: PointMapProps) => (
+    <div data-testid="map" data-point={point ? `${point.lat},${point.lon}` : ""} data-route={route?.map((leg) => leg.mode).join(",") ?? ""}>
       {pins.map((pin) => (
         <div key={pin.key}>{renderPin(pin)}</div>
       ))}
@@ -467,6 +467,29 @@ describe("the list of Events, in the panel on wide screens", () => {
 });
 
 describe("the bottom sheet", () => {
+  it("can be hidden on wide screens, and shown again, remembered on the device", async () => {
+    const { platform, storage } = fakePlatform();
+    renderApp("/?at=60.17000,24.95000", platform);
+
+    const hide = await screen.findByRole("button", { name: "Hide panel" });
+    expect(hide).toHaveAttribute("aria-expanded", "true");
+    await userEvent.click(hide);
+
+    const show = screen.getByRole("button", { name: "Show panel" });
+    expect(show).toHaveAttribute("aria-expanded", "false");
+    await waitFor(() => expect(storage.get("panelHidden")).toBe("true"));
+    await userEvent.click(show);
+    expect(screen.getByRole("button", { name: "Hide panel" })).toBeInTheDocument();
+  });
+
+  it("starts hidden when it was hidden last time", async () => {
+    const { platform, storage } = fakePlatform();
+    storage.set("panelHidden", "true");
+    renderApp("/?at=60.17000,24.95000", platform);
+
+    expect(await screen.findByRole("button", { name: "Show panel" })).toBeInTheDocument();
+  });
+
   it("is always there, with the controls", async () => {
     events = [anEvent("a")];
     renderApp("/?at=60.17000,24.95000");
@@ -658,5 +681,79 @@ describe("Trip mode", () => {
     act(() => history.back());
 
     expect(await screen.findByRole("combobox", { name: "Search for an address or place" })).toBeInTheDocument();
+  });
+});
+
+describe("a Trip on the map", () => {
+  const leg = (mode: "walk" | "tram" | "bike") => ({
+    mode,
+    from: { name: "A", lat: 60.17, lon: 24.95 },
+    to: { name: "B", lat: 60.19, lon: 24.94 },
+    start: "2026-10-31T12:00:00+02:00",
+    end: "2026-10-31T12:10:00+02:00",
+    stops: [],
+    geometry: { type: "LineString" as const, coordinates: [[24.95, 60.17], [24.94, 60.19]] as [number, number][] },
+  });
+  const ride = (eventIds: string[], ...legs: ReturnType<typeof leg>[]) => ({
+    start: "2026-10-31T12:00:00+02:00",
+    end: "2026-10-31T12:20:00+02:00",
+    durationS: 1200,
+    legs,
+    eventIds,
+    impact: eventIds.length ? ("consider" as const) : ("none" as const),
+  });
+  const onTheWay = anEvent("on the way", { where: { geometry: { type: "Point", coordinates: [24.945, 60.18] }, precision: "area" } });
+  const TO = "/?at=60.17000,24.95000&trip=true&to=60.19000,24.94000&toName=Pasila";
+
+  it("draws the chosen mode's best route, and pins and counts only what's on it", async () => {
+    events = [anEvent("around here")];
+    trip = {
+      events: [onTheWay],
+      plans: [
+        { mode: "transit", itineraries: [ride(["on the way"], leg("walk"), leg("tram"), leg("walk"))] },
+        { mode: "bike", itineraries: [ride([], leg("bike"))] },
+      ],
+    };
+    renderApp(TO);
+
+    await waitFor(() => expect(screen.getByTestId("map")).toHaveAttribute("data-route", "walk,tram,walk"));
+    expect(await screen.findByRole("button", { name: "Works on the way, Drivers, minor" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /^Works around here,/ })).not.toBeInTheDocument();
+    expect(screen.getByRole("status")).toHaveTextContent("1 thing on your way");
+    expect(within(await screen.findByRole("list", { name: "Nearest first" })).getAllByRole("button")).toHaveLength(1);
+  });
+
+  it("redraws for another mode, and says when nothing is in the way", async () => {
+    trip = {
+      events: [onTheWay],
+      plans: [
+        { mode: "transit", itineraries: [ride(["on the way"], leg("tram"))] },
+        { mode: "bike", itineraries: [ride([], leg("bike"))] },
+      ],
+    };
+    renderApp(TO);
+
+    await userEvent.click(await within(await screen.findByRole("group", { name: "Travel mode" })).findByRole("radio", { name: /^Bike/ }));
+
+    await waitFor(() => expect(screen.getByTestId("map")).toHaveAttribute("data-route", "bike"));
+    expect(screen.queryByRole("button", { name: /^Works on the way,/ })).not.toBeInTheDocument();
+    expect(screen.getByRole("status")).toHaveTextContent("Nothing in your way");
+  });
+
+  it("opens the card of an Event on the route", async () => {
+    trip = { events: [onTheWay], plans: [{ mode: "transit", itineraries: [ride(["on the way"], leg("tram"))] }] };
+    renderApp(TO);
+
+    await userEvent.click(await screen.findByRole("button", { name: "Works on the way, Drivers, minor" }));
+
+    expect(await within(await screen.findByTestId("popup")).findByRole("article", { name: "Works on the way" })).toBeInTheDocument();
+  });
+
+  it("draws nothing until there is a route", async () => {
+    trip = { events: [], plans: [{ mode: "transit", itineraries: [] }] };
+    renderApp(TO);
+    await screen.findByRole("group", { name: "Travel mode" });
+
+    expect(screen.getByTestId("map")).toHaveAttribute("data-route", "");
   });
 });

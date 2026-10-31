@@ -5,7 +5,7 @@ import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
 import type { Pin } from "../events.ts";
 import type { LatLon } from "../platform.tsx";
-import { DOCKED_MEDIA, PEEK_PX } from "../Sheet.tsx";
+import { DOCKED_MEDIA, PANEL_PX, PEEK_PX } from "../Sheet.tsx";
 import { longPress } from "./long-press.ts";
 
 // OpenFreeMap: free vector tiles, no key. Positron is muted, so Events drawn on top stand out.
@@ -28,11 +28,20 @@ export interface PointMapProps {
   renderPin: (pin: Pin) => ReactNode;
   // A card popping up from one of the pins.
   popup?: { pinKey: string; content: ReactNode };
+  // A Trip's route, leg by leg: drawn solid where you ride, dotted where you walk, and fitted into view.
+  route?: { mode: string; geometry: { coordinates: number[][] } }[];
+  // How much of the map the sheet covers: its bottom on phones, its left side when docked as a panel (0 while the
+  // panel is hidden). The map centres in the rest.
+  bottomInset?: number;
+  leftInset?: number;
 }
 
 const reducedMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-export function PointMap({ point, onLongPress, onPan, onMapClick, pins, renderPin, popup }: PointMapProps) {
+const ROUTE_COLOUR = "#2563eb";
+const ROUTE_ROOM_PX = 48;
+
+export function PointMap({ point, onLongPress, onPan, onMapClick, pins, renderPin, popup, route, bottomInset = PEEK_PX, leftInset = PANEL_PX }: PointMapProps) {
   const { t } = useTranslation();
   const container = useRef<HTMLDivElement>(null);
   const map = useRef<maplibregl.Map | null>(null);
@@ -57,12 +66,6 @@ export function PointMap({ point, onLongPress, onPan, onMapClick, pins, renderPi
   useEffect(() => {
     if (!container.current) return;
     const m = new maplibregl.Map({ container: container.current, style: STYLE, zoom: ZOOM, center: [0, 0], attributionControl: { compact: true } });
-    // On phones the bottom sheet covers the bottom of the map: centre the point in the part that shows.
-    // Docked on the left, the panel sits beside the map instead.
-    const docked = window.matchMedia(DOCKED_MEDIA);
-    const pad = () => m.setPadding({ top: 0, right: 0, left: 0, bottom: docked.matches ? 0 : PEEK_PX });
-    pad();
-    docked.addEventListener("change", pad);
     const choose = ({ lat, lng }: maplibregl.LngLat) => onLongPressRef.current({ lat, lon: lng });
     const press = longPress({ onLongPress: ({ x, y }) => choose(m.unproject([x, y])) });
 
@@ -90,7 +93,6 @@ export function PointMap({ point, onLongPress, onPan, onMapClick, pins, renderPi
     map.current = m;
     return () => {
       press.cancel();
-      docked.removeEventListener("change", pad);
       m.remove();
       map.current = null;
       marker.current = null;
@@ -98,6 +100,58 @@ export function PointMap({ point, onLongPress, onPan, onMapClick, pins, renderPi
       pinMarkers.current.clear();
     };
   }, []);
+
+  // The sheet covers part of the map: centre in the part that shows. When that part changes (the panel hides, the
+  // peek grows) the map stays where it is: the new centre is the place already under it.
+  useEffect(() => {
+    const m = map.current;
+    if (!m) return;
+    const docked = window.matchMedia(DOCKED_MEDIA);
+    const pad = () => {
+      const next = { top: 0, right: 0, left: docked.matches ? leftInset : 0, bottom: docked.matches ? 0 : bottomInset };
+      const { clientWidth: width, clientHeight: height } = m.getContainer();
+      const centre = m.unproject([(width + next.left - next.right) / 2, (height + next.top - next.bottom) / 2]);
+      m.jumpTo({ center: centre, padding: next });
+    };
+    pad();
+    docked.addEventListener("change", pad);
+    return () => docked.removeEventListener("change", pad);
+  }, [bottomInset, leftInset]);
+
+  // Redrawn and refitted when the route itself changes, not on every render.
+  const routeRef = useRef(route);
+  routeRef.current = route;
+  const routeKey = route ? JSON.stringify(route.map((leg) => [leg.mode, leg.geometry.coordinates.length, leg.geometry.coordinates[0]])) : "";
+  useEffect(() => {
+    const m = map.current;
+    if (!m) return;
+    const legs = routeRef.current ?? [];
+    const data: maplibregl.GeoJSONSourceSpecification["data"] = {
+      type: "FeatureCollection",
+      features: legs.map((leg) => ({
+        type: "Feature",
+        properties: { walk: leg.mode === "walk" },
+        geometry: { type: "LineString", coordinates: leg.geometry.coordinates },
+      })),
+    };
+    const draw = () => {
+      const source = m.getSource<maplibregl.GeoJSONSource>("route");
+      if (source) source.setData(data);
+      else {
+        m.addSource("route", { type: "geojson", data });
+        const line = { type: "line", source: "route", layout: { "line-cap": "round", "line-join": "round" } } as const;
+        m.addLayer({ ...line, id: "route-ride", filter: ["!", ["get", "walk"]], paint: { "line-color": ROUTE_COLOUR, "line-width": 6 } });
+        m.addLayer({ ...line, id: "route-walk", filter: ["get", "walk"], paint: { "line-color": ROUTE_COLOUR, "line-width": 4, "line-dasharray": [0, 2] } });
+      }
+      const coordinates = legs.flatMap((leg) => leg.geometry.coordinates) as [number, number][];
+      if (!coordinates.length) return;
+      const bounds = coordinates.reduce((b, c) => b.extend(c), new maplibregl.LngLatBounds(coordinates[0], coordinates[0]));
+      m.fitBounds(bounds, { padding: ROUTE_ROOM_PX, maxZoom: 16, duration: reducedMotion() ? 0 : 600 });
+    };
+    if (m.isStyleLoaded()) draw();
+    else m.once("load", draw);
+    return () => void m.off("load", draw);
+  }, [routeKey]);
 
   useEffect(() => {
     const m = map.current;
