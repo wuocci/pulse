@@ -644,6 +644,247 @@
           "lat",
           "lon"
         ]
+      },
+      "Trip": {
+        "type": "object",
+        "properties": {
+          "events": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Event"
+            },
+            "description": "Every Event on any itinerary, once"
+          },
+          "plans": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TripPlan"
+            }
+          }
+        },
+        "required": [
+          "events",
+          "plans"
+        ]
+      },
+      "TripPlan": {
+        "type": "object",
+        "properties": {
+          "mode": {
+            "$ref": "#/components/schemas/TravelMode"
+          },
+          "itineraries": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Itinerary"
+            },
+            "description": "Best first; empty when there's no route"
+          }
+        },
+        "required": [
+          "mode",
+          "itineraries"
+        ]
+      },
+      "TravelMode": {
+        "type": "string",
+        "enum": [
+          "transit",
+          "walk",
+          "bike"
+        ]
+      },
+      "Itinerary": {
+        "type": "object",
+        "properties": {
+          "start": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "end": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "durationS": {
+            "type": "integer"
+          },
+          "legs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Leg"
+            }
+          },
+          "eventIds": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "The Events on this itinerary, from the response's `events`"
+          },
+          "impact": {
+            "$ref": "#/components/schemas/Impact"
+          }
+        },
+        "required": [
+          "start",
+          "end",
+          "durationS",
+          "legs",
+          "eventIds",
+          "impact"
+        ]
+      },
+      "Leg": {
+        "type": "object",
+        "properties": {
+          "mode": {
+            "$ref": "#/components/schemas/LegMode"
+          },
+          "line": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "example": "HSL:31M1"
+              },
+              "name": {
+                "type": "string",
+                "example": "M1"
+              }
+            },
+            "required": [
+              "id",
+              "name"
+            ],
+            "description": "The line a transit leg rides"
+          },
+          "from": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "example": "Kamppi"
+              },
+              "lat": {
+                "type": "number"
+              },
+              "lon": {
+                "type": "number"
+              },
+              "stop": {
+                "type": "string",
+                "description": "The stop's id, when the place is one",
+                "example": "HSL:1040601"
+              }
+            },
+            "required": [
+              "name",
+              "lat",
+              "lon"
+            ]
+          },
+          "to": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "example": "Kamppi"
+              },
+              "lat": {
+                "type": "number"
+              },
+              "lon": {
+                "type": "number"
+              },
+              "stop": {
+                "type": "string",
+                "description": "The stop's id, when the place is one",
+                "example": "HSL:1040601"
+              }
+            },
+            "required": [
+              "name",
+              "lat",
+              "lon"
+            ]
+          },
+          "start": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "end": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "stops": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Ids of the stops a transit leg passes, first to last"
+          },
+          "geometry": {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "LineString"
+                ]
+              },
+              "coordinates": {
+                "type": "array",
+                "items": {
+                  "type": "array",
+                  "prefixItems": [
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "number"
+                    }
+                  ]
+                },
+                "description": "[lon, lat] in WGS84"
+              }
+            },
+            "required": [
+              "type",
+              "coordinates"
+            ]
+          }
+        },
+        "required": [
+          "mode",
+          "from",
+          "to",
+          "start",
+          "end",
+          "stops",
+          "geometry"
+        ]
+      },
+      "LegMode": {
+        "type": "string",
+        "enum": [
+          "walk",
+          "bike",
+          "bus",
+          "tram",
+          "rail",
+          "subway",
+          "ferry",
+          "other"
+        ]
+      },
+      "Impact": {
+        "type": "string",
+        "enum": [
+          "none",
+          "minor",
+          "consider",
+          "major"
+        ]
       }
     },
     "parameters": {}
@@ -876,6 +1117,120 @@
           },
           "503": {
             "description": "The Region has no address search",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/trips": {
+      "get": {
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^-?\\d+(\\.\\d+)?,-?\\d+(\\.\\d+)?$",
+              "example": "60.1690,24.9316"
+            },
+            "required": true,
+            "name": "from",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^-?\\d+(\\.\\d+)?,-?\\d+(\\.\\d+)?$",
+              "example": "60.1986,24.9330"
+            },
+            "required": true,
+            "name": "to",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "example": "transit,bike",
+              "description": "Comma-separated; default transit,walk,bike"
+            },
+            "required": false,
+            "description": "Comma-separated; default transit,walk,bike",
+            "name": "modes",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "format": "date-time",
+              "description": "Default: now"
+            },
+            "required": false,
+            "description": "Default: now",
+            "name": "departAt",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Each mode's itineraries, best first, with the Events on each and its Impact",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Trip"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "A and B aren't in the same Region",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ]
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Planning failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ]
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "The Region has no Trips",
             "content": {
               "application/json": {
                 "schema": {
