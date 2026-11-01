@@ -7,7 +7,7 @@ import { geocodingRoutes } from "./core/geocoding/routes.ts";
 import { type Database, healthRoutes } from "./core/health.ts";
 import type { Region } from "./core/regions/index.ts";
 import { regionRoutes } from "./core/regions/routes.ts";
-import { tripRoutes } from "./core/trips/routes.ts";
+import { type ParkingFinder, tripRoutes } from "./core/trips/routes.ts";
 
 export interface AppDeps {
   db: Database;
@@ -19,6 +19,8 @@ export interface AppDeps {
   geocoderFor?: (region: Region) => Geocoder | undefined;
   // Trip planning per Region; no Trips when absent.
   routerFor?: (region: Region) => Router | undefined;
+  // Parking near a Trip's destination per Region; none when absent.
+  parkingFor?: (region: Region) => ParkingFinder | undefined;
 }
 
 // Portable HTTP layer (AGENTS.md): Web APIs only. Node-specific code is injected through deps.
@@ -28,7 +30,7 @@ export function createApp(deps: AppDeps) {
   v0.route("/", eventRoutes(deps.events, deps.regions, deps.clock ?? (() => new Date())));
   v0.route("/", regionRoutes(deps.regions));
   v0.route("/", geocodingRoutes(deps.regions, deps.geocoderFor));
-  v0.route("/", tripRoutes(deps.events, deps.regions, deps.clock ?? (() => new Date()), deps.routerFor));
+  v0.route("/", tripRoutes(deps.events, deps.regions, deps.clock ?? (() => new Date()), deps.routerFor, deps.parkingFor));
 
   v0.doc31("/openapi.json", {
     openapi: "3.1.0",

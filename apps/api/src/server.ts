@@ -3,7 +3,10 @@ import { createApp } from "./app.ts";
 import { classifierConfig, createPool, digitransitApiKey } from "./config.ts";
 import { digitransitDirectory } from "./core/adapters/digitransit.ts";
 import { digitransitGeocoder, type Geocoder } from "./core/adapters/digitransit-geocoding.ts";
+import { digitransitCarParks } from "./core/adapters/digitransit-parking.ts";
 import { digitransitRouter, type Router } from "./core/adapters/digitransit-routing.ts";
+import { helsinkiStreetParking } from "./core/adapters/street-parking.ts";
+import type { ParkingFinder } from "./core/trips/routes.ts";
 import type { StopDirectory } from "./core/adapters/gtfs-rt.ts";
 import { PgAnswerCache } from "./core/classifier/cache.ts";
 import { Classification } from "./core/classifier/enrich.ts";
@@ -87,6 +90,32 @@ const routerFor = digitransitKey
   : undefined;
 if (!digitransitKey) console.log("Trips off: DIGITRANSIT_API_KEY not set");
 
+// Parking near a Trip's destination: the Region's street parking, and car parks from its router.
+const parkingFinders = new Map<string, ParkingFinder>();
+const parkingFor = (region: Region): ParkingFinder | undefined => {
+  let finder = parkingFinders.get(region.id);
+  if (finder) return finder;
+  const street = region.streetParking && helsinkiStreetParking(region.streetParking);
+  const carParks = digitransitKey && region.router ? digitransitCarParks({ url: region.router.url, apiKey: digitransitKey }) : undefined;
+  if (!street && !carParks) return undefined;
+  finder = {
+    async near(point) {
+      const [streetNear, parksNear] = await Promise.all([
+        street?.around(point).catch(() => undefined),
+        carParks?.near(point).catch(() => []) ?? [],
+      ]);
+      if (!streetNear && !parksNear.length) return undefined;
+      const sources = [
+        ...(streetNear && region.streetParking ? [`${region.streetParking.publisher} (${region.streetParking.license})`] : []),
+        ...(parksNear.length ? ["HSL / Digitransit"] : []),
+      ];
+      return { ...(streetNear ? { street: streetNear } : {}), carParks: parksNear, sources };
+    },
+  };
+  parkingFinders.set(region.id, finder);
+  return finder;
+};
+
 const stopIngest = startIngest(regions, events, { classification, ...(stopDirectory ? { stopDirectory } : {}) });
 
 const app = createApp({
@@ -100,6 +129,7 @@ const app = createApp({
   regions,
   ...(geocoderFor ? { geocoderFor } : {}),
   ...(routerFor ? { routerFor } : {}),
+  parkingFor,
 });
 
 const port = Number(process.env.PORT ?? 3000);

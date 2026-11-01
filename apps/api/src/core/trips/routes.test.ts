@@ -4,6 +4,7 @@ import { createApp } from "../../app.ts";
 import type { RoutedItinerary, Router, TripRequest } from "../adapters/digitransit-routing.ts";
 import { InMemoryEventStore } from "../events/store.ts";
 import { type Region, regions } from "../regions/index.ts";
+import type { ParkingFinder } from "./routes.ts";
 
 const NOW = new Date("2026-10-31T10:00:00Z");
 const LAT = 60.17;
@@ -48,10 +49,17 @@ function fakeRouter({ fail = false } = {}) {
   return { router, asked };
 }
 
-async function appWith(routerFor?: (region: Region) => Router | undefined) {
+async function appWith(routerFor?: (region: Region) => Router | undefined, parkingFor?: (region: Region) => ParkingFinder | undefined) {
   const events = new InMemoryEventStore();
   await events.replaceSource("src", [works, elsewhere]);
-  return createApp({ db: { ping: async () => true }, events, regions, clock: () => NOW, ...(routerFor ? { routerFor } : {}) });
+  return createApp({
+    db: { ping: async () => true },
+    events,
+    regions,
+    clock: () => NOW,
+    ...(routerFor ? { routerFor } : {}),
+    ...(parkingFor ? { parkingFor } : {}),
+  });
 }
 
 const get = async (app: Awaited<ReturnType<typeof appWith>>, query: string) => app.request(`/v0/trips?${query}`);
@@ -87,6 +95,50 @@ describe("GET /v0/trips", () => {
     expect(body.recommended).toEqual({ mode: "bike", index: 0 });
     const fine = (await (await get(await appWith(() => router), `${AB}&modes=bike`)).json()) as Trip;
     expect(fine.recommended).toBeUndefined();
+  });
+
+  describe("parking near the destination", () => {
+    const PARKING: NonNullable<Trip["parking"]> = {
+      street: { spaces: 19, paid: 15, free: 4, ev: 0, accessible: 0, radiusM: 300 },
+      carParks: [{ name: "Postintaival", lat: 60.2, lon: 24.94, carSpaces: 47, distanceM: 600 }],
+      sources: ["City of Helsinki (CC BY 4.0)"],
+    };
+    const finder = (fail = false) => {
+      const asked: { lat: number; lon: number }[] = [];
+      const parking: ParkingFinder = {
+        async near(point) {
+          asked.push(point);
+          if (fail) throw new Error("WFS down");
+          return PARKING;
+        },
+      };
+      return { parking, asked };
+    };
+
+    it("comes with a car Trip, found around B", async () => {
+      const { parking, asked } = finder();
+
+      const body = (await (await get(await appWith(() => fakeRouter().router, () => parking), AB)).json()) as Trip;
+
+      expect(body.parking).toEqual(PARKING);
+      expect(asked).toEqual([{ lat: 60.17, lon: 24.94 }]);
+    });
+
+    it("isn't looked for without a car route", async () => {
+      const { parking, asked } = finder();
+
+      const body = (await (await get(await appWith(() => fakeRouter().router, () => parking), `${AB}&modes=bike`)).json()) as Trip;
+
+      expect(body.parking).toBeUndefined();
+      expect(asked).toEqual([]);
+    });
+
+    it("doesn't hold up the Trip when it can't be found", async () => {
+      const res = await get(await appWith(() => fakeRouter().router, () => finder(true).parking), AB);
+
+      expect(res.status).toBe(200);
+      expect(((await res.json()) as Trip).parking).toBeUndefined();
+    });
   });
 
   it("plans only the modes asked for, departing when asked", async () => {

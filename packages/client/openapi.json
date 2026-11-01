@@ -661,6 +661,33 @@
               "$ref": "#/components/schemas/TripPlan"
             }
           },
+          "parking": {
+            "type": "object",
+            "properties": {
+              "street": {
+                "$ref": "#/components/schemas/StreetParking"
+              },
+              "carParks": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/CarPark"
+                },
+                "description": "Nearest first, within a kilometre"
+              },
+              "sources": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Where the parking data comes from, to credit it"
+              }
+            },
+            "required": [
+              "carParks",
+              "sources"
+            ],
+            "description": "Parking around B, with a car route: static, not whether spaces are free now"
+          },
           "recommended": {
             "type": "object",
             "properties": {
@@ -914,6 +941,69 @@
           "minor",
           "consider",
           "major"
+        ]
+      },
+      "StreetParking": {
+        "type": "object",
+        "properties": {
+          "spaces": {
+            "type": "integer"
+          },
+          "paid": {
+            "type": "integer"
+          },
+          "free": {
+            "type": "integer",
+            "description": "Free short-term parking"
+          },
+          "ev": {
+            "type": "integer",
+            "description": "For electric cars"
+          },
+          "accessible": {
+            "type": "integer",
+            "description": "For disabled parking permits"
+          },
+          "radiusM": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "spaces",
+          "paid",
+          "free",
+          "ev",
+          "accessible",
+          "radiusM"
+        ]
+      },
+      "CarPark": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Matinkylän asema"
+          },
+          "lat": {
+            "type": "number"
+          },
+          "lon": {
+            "type": "number"
+          },
+          "carSpaces": {
+            "type": "integer"
+          },
+          "distanceM": {
+            "type": "integer",
+            "description": "As the crow flies from the destination"
+          }
+        },
+        "required": [
+          "name",
+          "lat",
+          "lon",
+          "carSpaces",
+          "distanceM"
         ]
       }
     },

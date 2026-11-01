@@ -460,6 +460,14 @@ export interface components {
             /** @description Every Event on any itinerary, once */
             events: components["schemas"]["Event"][];
             plans: components["schemas"]["TripPlan"][];
+            /** @description Parking around B, with a car route: static, not whether spaces are free now */
+            parking?: {
+                street?: components["schemas"]["StreetParking"];
+                /** @description Nearest first, within a kilometre */
+                carParks: components["schemas"]["CarPark"][];
+                /** @description Where the parking data comes from, to credit it */
+                sources: string[];
+            };
             /** @description Better today: when the fastest way has something worth considering in it, the earliest way in any mode that's less in the way and at most 10 min later */
             recommended?: {
                 mode: components["schemas"]["TravelMode"];
@@ -549,6 +557,26 @@ export interface components {
         LegMode: "walk" | "bike" | "car" | "bus" | "tram" | "rail" | "subway" | "ferry" | "other";
         /** @enum {string} */
         Impact: "none" | "minor" | "consider" | "major";
+        StreetParking: {
+            spaces: number;
+            paid: number;
+            /** @description Free short-term parking */
+            free: number;
+            /** @description For electric cars */
+            ev: number;
+            /** @description For disabled parking permits */
+            accessible: number;
+            radiusM: number;
+        };
+        CarPark: {
+            /** @example Matinkylän asema */
+            name: string;
+            lat: number;
+            lon: number;
+            carSpaces: number;
+            /** @description As the crow flies from the destination */
+            distanceM: number;
+        };
     };
     responses: never;
     parameters: never;

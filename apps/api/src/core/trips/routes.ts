@@ -1,5 +1,5 @@
 import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
-import { type Event, type TravelMode, TravelModeSchema, TripSchema } from "@pulse/schema";
+import { type Event, type TravelMode, TravelModeSchema, type Trip, TripSchema } from "@pulse/schema";
 import type { Router } from "../adapters/digitransit-routing.ts";
 import type { EventStore } from "../events/store.ts";
 import { type Region, regionAt } from "../regions/index.ts";
@@ -43,6 +43,11 @@ const route = createRoute({
   },
 });
 
+// Parking around a place, from whatever Sources the Region has; nothing when it has none.
+export interface ParkingFinder {
+  near(point: { lat: number; lon: number }): Promise<Trip["parking"]>;
+}
+
 const point = (value: string) => {
   const [lat, lon] = value.split(",").map(Number) as [number, number];
   return { lat, lon };
@@ -54,6 +59,7 @@ export function tripRoutes(
   regions: Region[],
   clock: () => Date,
   routerFor: (region: Region) => Router | undefined = () => undefined,
+  parkingFor: (region: Region) => ParkingFinder | undefined = () => undefined,
 ) {
   return new OpenAPIHono().openapi(route, async (c) => {
     const query = c.req.valid("query");
@@ -89,6 +95,13 @@ export function tripRoutes(
       }),
     }));
     const recommended = recommend(plans);
-    return c.json({ events: [...events.values()], plans, ...(recommended ? { recommended } : {}) }, 200);
+    // Where to leave the car, when there's a way to drive: a suggestion, so it never holds up the Trip.
+    const drives = plans.some((p) => p.mode === "car" && p.itineraries.length);
+    const parking = drives
+      ? await parkingFor(region)
+          ?.near(to)
+          .catch((error: unknown) => console.error("Parking lookup failed:", error instanceof Error ? error.message : error))
+      : undefined;
+    return c.json({ events: [...events.values()], plans, ...(parking ? { parking } : {}), ...(recommended ? { recommended } : {}) }, 200);
   });
 }

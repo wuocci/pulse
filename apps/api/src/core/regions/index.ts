@@ -12,6 +12,8 @@ export interface Region extends PublicRegion {
   geocoder?: { kind: "digitransit"; url: string };
   // Where Trips are planned; without it, the Region has no Trips.
   router?: { kind: "digitransit"; url: string };
+  // Street parking around a Trip's destination (car parks come from the router). Credited by publisher and licence.
+  streetParking?: { kind: "helsinki-wfs"; url: string; layer: string; publisher: string; license: string };
 }
 
 // One entry per feed a Source publishes. `adapter` picks the code that reads its format (ADR 0002).

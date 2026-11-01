@@ -17,6 +17,14 @@ export const fiCapitalRegion: Region = {
   languages: ["fi", "sv", "en"],
   geocoder: { kind: "digitransit", url: "https://api.digitransit.fi/geocoding/v1" },
   router: { kind: "digitransit", url: "https://api.digitransit.fi/routing/v2/hsl/gtfs/v1" },
+  // Helsinki only: elsewhere in the Region it finds nothing, and car parks still come from Digitransit.
+  streetParking: {
+    kind: "helsinki-wfs",
+    url: "https://kartta.hel.fi/ws/geoserver/avoindata/wfs",
+    layer: "avoindata:Pysakointipaikat_alue",
+    publisher: "City of Helsinki",
+    license: "CC BY 4.0",
+  },
   defaultDailyHours: {
     works: { from: "07:00", to: "18:00", days: ["mon", "tue", "wed", "thu", "fri"] },
     public_event: { from: "10:00", to: "22:00" },
