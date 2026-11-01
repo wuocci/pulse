@@ -14,7 +14,7 @@ import { PointMap } from "./map/PointMap.tsx";
 import { type LatLon, LocationError, usePlatform } from "./platform.tsx";
 import { formatAt, parseAt, usePoint } from "./point.ts";
 import { PANEL_PX, PEEK_PX, Sheet } from "./Sheet.tsx";
-import { Itineraries, TravelModes, TripForm } from "./TripPanel.tsx";
+import { Itineraries, ParkingNear, TravelModes, TripForm } from "./TripPanel.tsx";
 
 // The locate button, as in map apps: the first tap goes to my location, the second follows it, the third stops.
 // Panning the map or choosing a place by hand also stops following.
@@ -289,6 +289,7 @@ export function Home() {
                 timeZone={timeZone}
                 onChoose={(index) => void navigate({ search: (prev) => ({ ...prev, route: index }), replace: true })}
               />
+              {mode === "car" && trip.data?.parking && <ParkingNear parking={trip.data.parking} place={search.toName ?? t("to")} />}
               {pins.length > 0 && (
                 <EventList label={t("onTheWay")} pins={pins} selectedId={selectedId} languages={languages} timeZone={timeZone} onSelect={select} />
               )}

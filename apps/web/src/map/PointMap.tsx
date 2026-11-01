@@ -32,7 +32,7 @@ export interface PointMapProps {
   popup?: { pinKey: string; content: ReactNode };
   // A Trip's route, leg by leg: each ride in its mode's colour with its line at the boarding point, walks dotted;
   // fitted into view.
-  route?: { mode: Schema<"LegMode">; line?: { name: string }; geometry: { coordinates: number[][] } }[];
+  route?: { mode: Schema<"LegMode">; line?: { name: string }; to?: { parking?: string }; geometry: { coordinates: number[][] } }[];
   // How much of the map the sheet covers: its bottom on phones, its left side when docked as a panel (0 while the
   // panel is hidden). The map centres in the rest.
   bottomInset?: number;
@@ -152,6 +152,15 @@ export function PointMap({ point, onLongPress, onPan, onMapClick, pins, renderPi
       }
       // The line you board, where you board it. Decorative: the Routes list says the same in words.
       for (const leg of legs) {
+        // Where to leave the car on a park-and-ride way.
+        const end = leg.geometry.coordinates.at(-1);
+        if (leg.to?.parking && end) {
+          const park = document.createElement("span");
+          park.setAttribute("aria-hidden", "true");
+          park.className = "rounded bg-blue-600 px-1.5 py-0.5 text-xs font-bold text-white shadow ring-2 ring-white";
+          park.textContent = "P";
+          boardings.push(new maplibregl.Marker({ element: park }).setLngLat(end as [number, number]).addTo(m));
+        }
         const start = leg.geometry.coordinates[0];
         if (!leg.line || !start) continue;
         const label = document.createElement("span");

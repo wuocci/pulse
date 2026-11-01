@@ -66,8 +66,8 @@ export function TravelModes({ trip, mode, shownIndex, onMode }: TravelModesProps
         return (
           <label
             key={option}
-            // Four chips fit a phone: the icon above the time there, beside it from `sm` up.
-            className="flex min-h-11 min-w-0 flex-1 cursor-pointer flex-col items-center justify-center gap-0.5 rounded-md px-1 py-1 text-xs font-medium has-checked:bg-background has-checked:shadow-sm has-focus-visible:ring-2 has-focus-visible:ring-ring sm:flex-row sm:gap-1.5 sm:px-2 sm:text-sm"
+            // The icon above the time: four chips fit a phone's sheet and the docked panel alike.
+            className="flex min-h-11 min-w-0 flex-1 cursor-pointer flex-col items-center justify-center gap-0.5 rounded-md px-1 py-1 text-xs font-medium has-checked:bg-background has-checked:shadow-sm has-focus-visible:ring-2 has-focus-visible:ring-ring"
           >
             <input type="radio" name="mode" className="sr-only" aria-label={label} checked={mode === option} onChange={() => onMode(option)} />
             <Icon aria-hidden className="size-4 shrink-0" />
@@ -92,7 +92,7 @@ function ImpactMark({ impact }: { impact: Extract<Impact, "consider" | "major"> 
 }
 
 type Itinerary = Pick<Schema<"Itinerary">, "start" | "end" | "durationS" | "impact"> & {
-  legs: Pick<Schema<"Leg">, "mode" | "line" | "start" | "end">[];
+  legs: (Pick<Schema<"Leg">, "mode" | "line" | "start" | "end"> & { to?: { parking?: string } })[];
 };
 
 export interface ItinerariesProps {
@@ -114,7 +114,12 @@ export function Itineraries({ itineraries, chosen, better, timeZone, onChoose }:
     <fieldset className="space-y-1">
       <legend className="sr-only">{t("routes")}</legend>
       {itineraries.map((itinerary, i) => {
-        const legs = itinerary.legs.map((leg) => `${t(`leg_${leg.mode}`)} ${leg.line ? leg.line.name : minutes(leg.start, leg.end)}`).join(", ");
+        const legs = itinerary.legs
+          .map((leg) => {
+            const what = `${t(`leg_${leg.mode}`)} ${leg.line ? leg.line.name : minutes(leg.start, leg.end)}`;
+            return leg.to?.parking ? `${what} ${t("toParking", { name: leg.to.parking })}` : what;
+          })
+          .join(", ");
         const times = `${clock.format(new Date(itinerary.start))}–${clock.format(new Date(itinerary.end))}`;
         const impact = itinerary.impact === "consider" || itinerary.impact === "major" ? itinerary.impact : undefined;
         const isBetter = better?.index === i;
@@ -129,6 +134,20 @@ export function Itineraries({ itineraries, chosen, better, timeZone, onChoose }:
             <span aria-hidden className="flex flex-wrap items-center gap-1">
               {itinerary.legs.map((leg, j) => {
                 const { icon: Icon, colour } = LEG_STYLE[leg.mode];
+                const parkAt = leg.to?.parking && (
+                  <span key={`${j}-p`} className="flex items-center gap-1 rounded bg-blue-600 px-1.5 py-0.5 text-xs font-semibold text-white">
+                    P<span className="font-normal">{leg.to.parking}</span>
+                  </span>
+                );
+                if (parkAt) {
+                  return [
+                    <span key={j} className="flex items-center gap-0.5 text-xs text-muted-foreground">
+                      <Icon className="size-3.5" />
+                      {Math.round((Date.parse(leg.end) - Date.parse(leg.start)) / 60_000)}
+                    </span>,
+                    parkAt,
+                  ];
+                }
                 return leg.line ? (
                   <span key={j} className="flex items-center gap-1 rounded px-1.5 py-0.5 text-xs font-semibold text-white" style={{ backgroundColor: colour }}>
                     <Icon className="size-3.5" />
@@ -157,5 +176,48 @@ export function Itineraries({ itineraries, chosen, better, timeZone, onChoose }:
         );
       })}
     </fieldset>
+  );
+}
+
+export interface ParkingNearProps {
+  parking: NonNullable<Schema<"Trip">["parking"]>;
+  place: string;
+}
+
+// Where to leave the car at B: the street parking around it (how many spaces, of which kind) and the nearest car
+// parks. Static data: the kinds of spaces, not whether any are free now. Credited to its Sources.
+export function ParkingNear({ parking: { street, carParks, sources }, place }: ParkingNearProps) {
+  const { t } = useTranslation();
+  const kinds = street
+    ? [
+        street.paid && t("parkingPaid", { count: street.paid }),
+        street.free && t("parkingFree", { count: street.free }),
+        street.ev && t("parkingEv", { count: street.ev }),
+        street.accessible && t("parkingAccessible", { count: street.accessible }),
+      ].filter(Boolean)
+    : [];
+  return (
+    <section aria-label={t("parkingNear", { place })} className="space-y-1.5 rounded-lg border p-3 text-sm">
+      <h3 className="flex items-center gap-2 font-medium">
+        <span aria-hidden className="grid size-5 place-items-center rounded bg-blue-600 text-xs font-bold text-white">
+          P
+        </span>
+        {t("parkingNear", { place })}
+      </h3>
+      {street && (
+        <p>
+          {t("parkingSpaces", { count: street.spaces, radius: street.radiusM })}
+          {kinds.length > 0 && <span className="block text-muted-foreground">{kinds.join(" · ")}</span>}
+        </p>
+      )}
+      {carParks.length > 0 && (
+        <ul>
+          {carParks.map((park) => (
+            <li key={park.name}>{t("carPark", { name: park.name, spaces: park.carSpaces, distance: park.distanceM })}</li>
+          ))}
+        </ul>
+      )}
+      <p className="text-xs text-muted-foreground">{t("parkingSources", { sources: sources.join(", ") })}</p>
+    </section>
   );
 }

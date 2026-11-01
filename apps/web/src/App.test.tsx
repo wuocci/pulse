@@ -839,3 +839,62 @@ describe("a Trip's itineraries", () => {
     await waitFor(() => expect(screen.getByTestId("map")).toHaveAttribute("data-route", "walk"));
   });
 });
+
+describe("parking with a car Trip", () => {
+  const leg = (mode: "walk" | "car" | "subway", minutes: number, extra: object = {}) => ({
+    mode,
+    from: { name: "A", lat: 60.17, lon: 24.95 },
+    to: { name: "B", lat: 60.19, lon: 24.94 },
+    start: "2026-11-01T12:00:00+02:00",
+    end: new Date(Date.parse("2026-11-01T12:00:00+02:00") + minutes * 60_000).toISOString(),
+    stops: [],
+    geometry: { type: "LineString" as const, coordinates: [[24.95, 60.17], [24.94, 60.19]] as [number, number][] },
+    ...extra,
+  });
+  const way = (minutes: number, ...legs: ReturnType<typeof leg>[]) => ({
+    start: "2026-11-01T12:00:00+02:00",
+    end: new Date(Date.parse("2026-11-01T12:00:00+02:00") + minutes * 60_000).toISOString(),
+    durationS: minutes * 60,
+    legs,
+    eventIds: [],
+    impact: "none" as const,
+  });
+  const DRIVE = way(14, leg("car", 14));
+  const PARK_AND_RIDE = way(34, leg("car", 12, { to: { name: "Niittykumpu", lat: 60.17, lon: 24.76, parking: "Niittykumpu" } }), leg("walk", 3), leg("subway", 15, { line: { id: "HSL:31M1", name: "M1" } }), leg("walk", 4));
+  const PARKING: NonNullable<Trip["parking"]> = {
+    street: { spaces: 19, paid: 15, free: 4, ev: 2, accessible: 1, radiusM: 300 },
+    carParks: [{ name: "Postintaival", lat: 60.2, lon: 24.94, carSpaces: 47, distanceM: 600 }],
+    sources: ["City of Helsinki (CC BY 4.0)", "HSL / Digitransit"],
+  };
+  const TO = "/?at=60.17000,24.95000&trip=true&to=60.19860,24.93300&toName=Pasila";
+
+  it("lists park-and-ride ways under car, saying where to park", async () => {
+    trip = { events: [], plans: [{ mode: "car", itineraries: [DRIVE, PARK_AND_RIDE] }] };
+    renderApp(`${TO}&mode=car`);
+
+    const rows = await within(await screen.findByRole("group", { name: "Routes" })).findAllByRole("radio");
+    expect(rows.map((r) => r.getAttribute("aria-label")?.split(".")[0])).toEqual([
+      "Drive 14 min",
+      "Drive 12 min to P Niittykumpu, walk 3 min, metro M1, walk 4 min",
+    ]);
+  });
+
+  it("says what parking there is near the destination, and where that's from", async () => {
+    trip = { events: [], plans: [{ mode: "car", itineraries: [DRIVE] }], parking: PARKING };
+    renderApp(`${TO}&mode=car`);
+
+    const parking = await screen.findByRole("region", { name: "Parking near Pasila" });
+    expect(parking).toHaveTextContent("19 spaces within 300 m");
+    expect(parking).toHaveTextContent("15 paid · 4 free short-term · 2 for electric cars · 1 accessible");
+    expect(parking).toHaveTextContent("Postintaival · 47 spaces · 600 m");
+    expect(parking).toHaveTextContent("City of Helsinki (CC BY 4.0), HSL / Digitransit");
+  });
+
+  it("only shows parking with the car", async () => {
+    trip = { events: [], plans: [{ mode: "transit", itineraries: [DRIVE] }, { mode: "car", itineraries: [DRIVE] }], parking: PARKING };
+    renderApp(TO);
+    await screen.findByRole("group", { name: "Routes" });
+
+    expect(screen.queryByRole("region", { name: "Parking near Pasila" })).not.toBeInTheDocument();
+  });
+});
