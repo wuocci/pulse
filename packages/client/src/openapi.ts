@@ -507,6 +507,11 @@ export interface components {
                  * @example HSL:1040601
                  */
                 stop?: string;
+                /**
+                 * @description The car park, when a car leg ends at one (park-and-ride)
+                 * @example Niittykumpu
+                 */
+                parking?: string;
             };
             to: {
                 /** @example Kamppi */
@@ -518,6 +523,11 @@ export interface components {
                  * @example HSL:1040601
                  */
                 stop?: string;
+                /**
+                 * @description The car park, when a car leg ends at one (park-and-ride)
+                 * @example Niittykumpu
+                 */
+                parking?: string;
             };
             /** Format: date-time */
             start: string;

@@ -17,6 +17,7 @@ const TripPlaceSchema = z.object({
   lat: z.number(),
   lon: z.number(),
   stop: z.string().optional().openapi({ description: "The stop's id, when the place is one", example: "HSL:1040601" }),
+  parking: z.string().optional().openapi({ description: "The car park, when a car leg ends at one (park-and-ride)", example: "Niittykumpu" }),
 });
 
 export const LegSchema = z

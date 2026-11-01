@@ -794,6 +794,11 @@
                 "type": "string",
                 "description": "The stop's id, when the place is one",
                 "example": "HSL:1040601"
+              },
+              "parking": {
+                "type": "string",
+                "description": "The car park, when a car leg ends at one (park-and-ride)",
+                "example": "Niittykumpu"
               }
             },
             "required": [
@@ -819,6 +824,11 @@
                 "type": "string",
                 "description": "The stop's id, when the place is one",
                 "example": "HSL:1040601"
+              },
+              "parking": {
+                "type": "string",
+                "description": "The car park, when a car leg ends at one (park-and-ride)",
+                "example": "Niittykumpu"
               }
             },
             "required": [
