@@ -54,10 +54,42 @@ export const TripPlanSchema = z
   .object({ mode: TravelModeSchema, itineraries: z.array(ItinerarySchema).openapi({ description: "Best first; empty when there's no route" }) })
   .openapi("TripPlan");
 
+// A car park with spaces for cars (mostly park-and-ride), near a Trip's destination. Static: no live availability.
+export const CarParkSchema = z
+  .object({
+    name: z.string().openapi({ example: "Matinkylän asema" }),
+    lat: z.number(),
+    lon: z.number(),
+    carSpaces: z.number().int(),
+    distanceM: z.number().int().openapi({ description: "As the crow flies from the destination" }),
+  })
+  .openapi("CarPark");
+
+// The street parking around a Trip's destination, summed: how many spaces and of which kind. Static rules, not
+// whether they're free right now.
+export const StreetParkingSchema = z
+  .object({
+    spaces: z.number().int(),
+    paid: z.number().int(),
+    free: z.number().int().openapi({ description: "Free short-term parking" }),
+    ev: z.number().int().openapi({ description: "For electric cars" }),
+    accessible: z.number().int().openapi({ description: "For disabled parking permits" }),
+    radiusM: z.number().int(),
+  })
+  .openapi("StreetParking");
+
 export const TripSchema = z
   .object({
     events: z.array(EventSchema).openapi({ description: "Every Event on any itinerary, once" }),
     plans: z.array(TripPlanSchema),
+    parking: z
+      .object({
+        street: StreetParkingSchema.optional(),
+        carParks: z.array(CarParkSchema).openapi({ description: "Nearest first, within a kilometre" }),
+        sources: z.array(z.string()).openapi({ description: "Where the parking data comes from, to credit it" }),
+      })
+      .optional()
+      .openapi({ description: "Parking around B, with a car route: static, not whether spaces are free now" }),
     recommended: z
       .object({ mode: TravelModeSchema, index: z.number().int().openapi({ description: "Into that mode's itineraries" }) })
       .optional()
