@@ -643,6 +643,15 @@ describe("Trip mode", () => {
     expect(await toField()).toHaveValue("Pasila");
   });
 
+  it("says a car's time is without traffic", async () => {
+    trip = { events: [], plans: [...PLANNED.plans, { mode: "car", itineraries: [itinerary(16, "none")] }] };
+    renderApp("/?at=60.17000,24.95000&trip=true&to=60.19860,24.93300&toName=Pasila&mode=car");
+
+    const car = await within(await modes()).findByRole("radio", { name: "Car, 16 min without traffic" });
+    expect(car.closest("label")).toHaveTextContent("~16 min");
+    expect(car).toBeChecked();
+  });
+
   it("keeps the chosen mode in the URL", async () => {
     trip = PLANNED;
     const history = renderApp("/?at=60.17000,24.95000&trip=true&to=60.19860,24.93300&toName=Pasila");

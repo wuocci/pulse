@@ -7,6 +7,8 @@ import { localClock, withinDailyHours } from "../events/hours.ts";
 // and it's going on during the trip.
 
 export const CORRIDOR_M = 30;
+// A motorway's two carriageways are drawn apart, and road works are drawn on either: a car leg looks wider.
+export const CAR_CORRIDOR_M = 50;
 
 // Off the street: works beside the track or the fairway don't touch the ride, only its own line and stops do.
 const OFF_STREET = new Set<LegMode>(["rail", "subway", "ferry"]);
@@ -35,7 +37,8 @@ export function matchItinerary(itinerary: RoutedItinerary, events: Event[], { ti
     const matched = legs.flatMap(({ leg, shape: route }): Match["legs"] => {
       if (leg.line && event.where.lines?.includes(leg.line.id)) return [{ leg, by: "line" }];
       if (leg.stops.some((stop) => event.where.stops?.includes(stop))) return [{ leg, by: "stop" }];
-      if (shape && !OFF_STREET.has(leg.mode) && distanceM(shape, route) <= corridorM) return [{ leg, by: "corridor" }];
+      const width = leg.mode === "car" ? Math.max(corridorM, CAR_CORRIDOR_M) : corridorM;
+      if (shape && !OFF_STREET.has(leg.mode) && distanceM(shape, route) <= width) return [{ leg, by: "corridor" }];
       return [];
     });
     return matched.length ? [{ event, legs: matched }] : [];
@@ -63,7 +66,11 @@ function goingOn({ when, status }: Event, start: number, end: number, moments: R
 export const RANK: Record<Impact, number> = { none: 0, minor: 1, consider: 2, major: 3 };
 
 // Who is in the way of what, by how a leg is travelled.
-const FITS: Partial<Record<LegMode, MainlyAffected[]>> = { walk: ["pedestrians", "everyone"], bike: ["cyclists", "everyone"] };
+const FITS: Partial<Record<LegMode, MainlyAffected[]>> = {
+  walk: ["pedestrians", "everyone"],
+  bike: ["cyclists", "everyone"],
+  car: ["drivers", "everyone"],
+};
 const TRANSIT_FITS: MainlyAffected[] = ["transit", "everyone"];
 
 // The worst of the matched Events. No delay data yet, so: `major` when a line or stop used is badly disrupted;
@@ -78,6 +85,9 @@ export function impactOf(matches: Match[]): Impact {
 function impactOfMatch({ event, legs }: Match): Impact {
   const byLineOrStop = legs.some((l) => l.by !== "corridor");
   if (byLineOrStop && (event.severity === "major" || event.noticeable.includes("outage"))) return "major";
+  // A closed road on the way: the car has to go round.
+  const onCarLeg = legs.some(({ leg }) => leg.mode === "car");
+  if (onCarLeg && event.severity === "major" && event.noticeable.includes("blocked")) return "major";
   const fits = legs.some(({ leg }) => (leg.line ? TRANSIT_FITS : (FITS[leg.mode] ?? [])).includes(event.mainlyAffected));
   return fits || event.noticeable.includes("blocked") ? "consider" : "minor";
 }

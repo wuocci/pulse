@@ -73,6 +73,13 @@ describe("which Events are on an itinerary", () => {
     expect(matchedIds(itinerary(off("rail")), [alert("stop", { stops: ["HSL:9"] })])).toEqual(["stop"]);
   });
 
+  it("looks wider beside a car leg: a motorway's two carriageways are drawn apart", () => {
+    const beside = event("45 m off", at({ type: "Point", coordinates: [24.935, LAT + 0.0004] }));
+
+    expect(matchedIds(itinerary(leg({ mode: "car" })), [beside])).toEqual(["45 m off"]);
+    expect(matchedIds(itinerary(leg()), [beside])).toEqual([]);
+  });
+
   it("doesn't place a region-wide notice on the route by its geometry", () => {
     expect(matchedIds(itinerary(leg()), [event("vague", { where: { geometry: { type: "Point", coordinates: [24.935, LAT] }, precision: "vague" } })])).toEqual([]);
   });
@@ -137,6 +144,14 @@ describe("Impact", () => {
     expect(impact(itinerary(TRAM), alert("a", { lines: ["HSL:1005T"] }))).toBe("consider");
     expect(impact(itinerary(leg()), event("a", { mainlyAffected: "everyone" }))).toBe("consider");
     expect(impact(itinerary(leg()), event("a", { noticeable: ["blocked"] }))).toBe("consider");
+  });
+
+  it("is major for a car when the road is closed, consider when drivers are in the way", () => {
+    const car = itinerary(leg({ mode: "car" }));
+
+    expect(impact(car, event("a", { severity: "major", noticeable: ["blocked"], mainlyAffected: "drivers" }))).toBe("major");
+    expect(impact(car, event("a", { mainlyAffected: "drivers" }))).toBe("consider");
+    expect(impact(car, event("a", { mainlyAffected: "pedestrians" }))).toBe("minor");
   });
 
   it("is minor for the rest, e.g. a closure for drivers next to a walk", () => {

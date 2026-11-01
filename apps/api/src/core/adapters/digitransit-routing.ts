@@ -27,7 +27,7 @@ export interface Router {
 const TIMEOUT_MS = 10_000;
 const TRANSIT_ITINERARIES = 3;
 const TRANSIT_MODES = ["BUS", "TRAM", "RAIL", "SUBWAY", "FERRY"].map((mode) => ({ mode }));
-const DIRECT = { walk: "WALK", bike: "BICYCLE" } as const;
+const DIRECT = { walk: "WALK", bike: "BICYCLE", car: "CAR" } as const;
 
 const QUERY = `query($o: PlanLabeledLocationInput!, $d: PlanLabeledLocationInput!, $t: OffsetDateTime, $modes: PlanModesInput, $first: Int) {
   planConnection(origin: $o, destination: $d, dateTime: { earliestDeparture: $t }, modes: $modes, first: $first) {
@@ -131,7 +131,7 @@ export function digitransitRouter({ url, apiKey, fetchFn = fetch, timeoutMs = TI
   };
 }
 
-const LEG_MODES: Record<string, LegMode> = { WALK: "walk", BICYCLE: "bike", BUS: "bus", TRAM: "tram", RAIL: "rail", SUBWAY: "subway", FERRY: "ferry" };
+const LEG_MODES: Record<string, LegMode> = { WALK: "walk", BICYCLE: "bike", CAR: "car", BUS: "bus", TRAM: "tram", RAIL: "rail", SUBWAY: "subway", FERRY: "ferry" };
 const legMode = (mode: string): LegMode => LEG_MODES[mode] ?? "other";
 
 function place({ name, lat, lon, stop }: Place) {

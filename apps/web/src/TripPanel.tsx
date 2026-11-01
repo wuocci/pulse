@@ -1,5 +1,5 @@
 import type { GeocodeResult, Impact, Schema, TravelMode } from "@pulse/client";
-import { BadgeCheck, Bike, Bus, Footprints, type LucideIcon, OctagonAlert, TriangleAlert, X } from "lucide-react";
+import { BadgeCheck, Bike, Bus, Car, Footprints, type LucideIcon, OctagonAlert, TriangleAlert, X } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { AddressSearch } from "./AddressSearch.tsx";
@@ -9,8 +9,8 @@ import { LEG_STYLE } from "./transit.ts";
 // Trip mode: From (the point unless changed) and To, then every travel mode at once with its time and how much
 // is in the way, so the choice of mode is the comparison.
 
-export const TRAVEL_MODES: TravelMode[] = ["transit", "walk", "bike"];
-const MODE_ICONS: Record<TravelMode, LucideIcon> = { transit: Bus, walk: Footprints, bike: Bike };
+export const TRAVEL_MODES: TravelMode[] = ["transit", "walk", "bike", "car"];
+const MODE_ICONS: Record<TravelMode, LucideIcon> = { transit: Bus, walk: Footprints, bike: Bike, car: Car };
 
 export interface TripFormProps {
   point: LatLon | undefined;
@@ -56,21 +56,26 @@ export function TravelModes({ trip, mode, shownIndex, onMode }: TravelModesProps
         const plan = trip?.plans.find((p) => p.mode === option);
         const best = plan?.itineraries[shownIndex(option)] ?? plan?.itineraries[0];
         const better = trip?.recommended?.mode === option;
-        const time = best ? t("minutes", { count: Math.round(best.durationS / 60) }) : plan ? t("noRoute") : undefined;
+        // A car's time ignores traffic (Digitransit's free-flow times): shown as "~" and said so.
+        const count = best ? Math.round(best.durationS / 60) : 0;
+        const freeFlow = option === "car";
+        const time = best ? t(freeFlow ? "minutesNoTraffic" : "minutes", { count }) : plan ? t("noRoute") : undefined;
+        const shownTime = best && freeFlow ? `~${t("minutes", { count })}` : time;
         const impact = best && (best.impact === "consider" || best.impact === "major") ? best.impact : undefined;
         const label = [t(`mode_${option}`), time, impact && t(`impact_${impact}`), better && t("betterToday")].filter(Boolean).join(", ");
         return (
           <label
             key={option}
-            className="flex min-h-11 flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-md px-2 text-sm font-medium has-checked:bg-background has-checked:shadow-sm has-focus-visible:ring-2 has-focus-visible:ring-ring"
+            // Four chips fit a phone: the icon above the time there, beside it from `sm` up.
+            className="flex min-h-11 min-w-0 flex-1 cursor-pointer flex-col items-center justify-center gap-0.5 rounded-md px-1 py-1 text-xs font-medium has-checked:bg-background has-checked:shadow-sm has-focus-visible:ring-2 has-focus-visible:ring-ring sm:flex-row sm:gap-1.5 sm:px-2 sm:text-sm"
           >
             <input type="radio" name="mode" className="sr-only" aria-label={label} checked={mode === option} onChange={() => onMode(option)} />
             <Icon aria-hidden className="size-4 shrink-0" />
-            <span aria-hidden className={`truncate ${best ? "" : "text-muted-foreground"}`}>
-              {time ?? "…"}
+            <span aria-hidden className="flex max-w-full items-center gap-1">
+              <span className={`truncate ${best ? "" : "text-muted-foreground"}`}>{shownTime ?? "…"}</span>
+              {impact && <ImpactMark impact={impact} />}
+              {better && <BadgeCheck className="size-4 shrink-0 text-emerald-600" />}
             </span>
-            {impact && <ImpactMark impact={impact} />}
-            {better && <BadgeCheck aria-hidden className="size-4 shrink-0 text-emerald-600" />}
           </label>
         );
       })}

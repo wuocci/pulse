@@ -64,7 +64,7 @@ describe("GET /v0/trips", () => {
 
     expect(res.status).toBe(200);
     expect(asked).toEqual(
-      ["transit", "walk", "bike"].map((mode) => ({ from: { lat: 60.17, lon: 24.93 }, to: { lat: 60.17, lon: 24.94 }, mode, departAt: NOW.toISOString() })),
+      ["transit", "walk", "bike", "car"].map((mode) => ({ from: { lat: 60.17, lon: 24.93 }, to: { lat: 60.17, lon: 24.94 }, mode, departAt: NOW.toISOString() })),
     );
     const body = (await res.json()) as Trip;
     expect(body.events.map((e) => e.id)).toEqual(["src:works"]);
@@ -72,6 +72,7 @@ describe("GET /v0/trips", () => {
       { mode: "transit", itineraries: [{ ...route("transit"), eventIds: ["src:works"], impact: "consider" }] },
       { mode: "walk", itineraries: [] },
       { mode: "bike", itineraries: [{ ...route("bike"), eventIds: ["src:works"], impact: "consider" }] },
+      { mode: "car", itineraries: [{ ...route("car"), eventIds: ["src:works"], impact: "consider" }] },
     ]);
   });
 
@@ -114,6 +115,6 @@ describe("GET /v0/trips", () => {
     const app = await appWith(() => fakeRouter().router);
 
     expect((await get(app, "from=60.17,24.93")).status).toBe(400);
-    expect((await get(app, `${AB}&modes=car`)).status).toBe(400);
+    expect((await get(app, `${AB}&modes=boat`)).status).toBe(400);
   });
 });

@@ -45,16 +45,18 @@ describe("the Digitransit router", () => {
     });
   });
 
-  it("asks for one direct route when walking or cycling", async () => {
+  it("asks for one direct route when walking, cycling or driving", async () => {
     const { fetchFn, asked } = fakeDigitransit(bike);
     const router = digitransitRouter({ url: URL_, apiKey: "k", fetchFn });
 
     await router.plan({ from: KAMPPI, to: PASILA, mode: "bike", departAt });
     await router.plan({ from: KAMPPI, to: PASILA, mode: "walk", departAt });
+    await router.plan({ from: KAMPPI, to: PASILA, mode: "car", departAt });
 
     expect(asked.map((a) => [a.variables.modes, a.variables.first])).toEqual([
       [{ directOnly: true, direct: ["BICYCLE"] }, 1],
       [{ directOnly: true, direct: ["WALK"] }, 1],
+      [{ directOnly: true, direct: ["CAR"] }, 1],
     ]);
   });
 
@@ -81,6 +83,16 @@ describe("the Digitransit router", () => {
     expect(lon).toBeCloseTo(KAMPPI.lon, 3);
     expect(lat).toBeCloseTo(KAMPPI.lat, 3);
     expect(itineraries[0]!.legs[0]!.stops).toEqual([]);
+  });
+
+  it("maps a car route to one car leg", async () => {
+    const node = bike.data.planConnection.edges[0]!.node;
+    const car = { data: { planConnection: { routingErrors: [], edges: [{ node: { ...node, legs: [{ ...node.legs[0]!, mode: "CAR" }] } }] } } };
+    const { fetchFn } = fakeDigitransit(car);
+
+    const [route] = await digitransitRouter({ url: URL_, apiKey: "k", fetchFn }).plan({ from: KAMPPI, to: PASILA, mode: "car", departAt });
+
+    expect(route!.legs.map((l) => l.mode)).toEqual(["car"]);
   });
 
   it("maps a bike route to one bike leg", async () => {

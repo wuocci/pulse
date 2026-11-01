@@ -3,9 +3,11 @@ import { EventSchema } from "../event/schema.ts";
 
 // A Trip (CONTEXT.md): from A to B by a travel mode, departing at a time. Its itineraries are the ways to make it.
 
-export const TravelModeSchema = z.enum(["transit", "walk", "bike"]).openapi("TravelMode");
+export const TravelModeSchema = z
+  .enum(["transit", "walk", "bike", "car"])
+  .openapi("TravelMode", { description: "car: free-flow times, without traffic" });
 
-export const LegModeSchema = z.enum(["walk", "bike", "bus", "tram", "rail", "subway", "ferry", "other"]).openapi("LegMode");
+export const LegModeSchema = z.enum(["walk", "bike", "car", "bus", "tram", "rail", "subway", "ferry", "other"]).openapi("LegMode");
 
 // How much the Events on an itinerary matter for it (Impact in CONTEXT.md). `none`: nothing on the way.
 export const ImpactSchema = z.enum(["none", "minor", "consider", "major"]).openapi("Impact");

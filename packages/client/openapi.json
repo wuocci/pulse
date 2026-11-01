@@ -708,8 +708,10 @@
         "enum": [
           "transit",
           "walk",
-          "bike"
-        ]
+          "bike",
+          "car"
+        ],
+        "description": "car: free-flow times, without traffic"
       },
       "Itinerary": {
         "type": "object",
@@ -886,6 +888,7 @@
         "enum": [
           "walk",
           "bike",
+          "car",
           "bus",
           "tram",
           "rail",
@@ -1180,10 +1183,10 @@
             "schema": {
               "type": "string",
               "example": "transit,bike",
-              "description": "Comma-separated; default transit,walk,bike"
+              "description": "Comma-separated; default transit,walk,bike,car"
             },
             "required": false,
-            "description": "Comma-separated; default transit,walk,bike",
+            "description": "Comma-separated; default transit,walk,bike,car",
             "name": "modes",
             "in": "query"
           },

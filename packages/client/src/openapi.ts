@@ -200,7 +200,7 @@ export interface paths {
                 query: {
                     from: string;
                     to: string;
-                    /** @description Comma-separated; default transit,walk,bike */
+                    /** @description Comma-separated; default transit,walk,bike,car */
                     modes?: string;
                     /** @description Default: now */
                     departAt?: string;
@@ -472,8 +472,11 @@ export interface components {
             /** @description Best first; empty when there's no route */
             itineraries: components["schemas"]["Itinerary"][];
         };
-        /** @enum {string} */
-        TravelMode: "transit" | "walk" | "bike";
+        /**
+         * @description car: free-flow times, without traffic
+         * @enum {string}
+         */
+        TravelMode: "transit" | "walk" | "bike" | "car";
         Itinerary: {
             /** Format: date-time */
             start: string;
@@ -533,7 +536,7 @@ export interface components {
             };
         };
         /** @enum {string} */
-        LegMode: "walk" | "bike" | "bus" | "tram" | "rail" | "subway" | "ferry" | "other";
+        LegMode: "walk" | "bike" | "car" | "bus" | "tram" | "rail" | "subway" | "ferry" | "other";
         /** @enum {string} */
         Impact: "none" | "minor" | "consider" | "major";
     };
