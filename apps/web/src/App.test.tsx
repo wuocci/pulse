@@ -2,7 +2,7 @@ import type { Event, GeocodeResult, Region, Trip } from "@pulse/client";
 import { createMemoryHistory } from "@tanstack/react-router";
 import { cleanup, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { http, HttpResponse } from "msw";
+import { delay, http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
 import { act } from "react";
 import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from "vitest";
@@ -13,8 +13,22 @@ import { type DeviceLocation, type LatLon, LocationError, type Platform } from "
 // The real map draws with WebGL, which jsdom lacks: this one shows what it was given, and can be long-pressed
 // and panned.
 vi.mock("./map/PointMap.tsx", () => ({
-  PointMap: ({ point, onLongPress, onPan, onMapClick, pins, renderPin, popup, route }: PointMapProps) => (
-    <div data-testid="map" data-point={point ? `${point.lat},${point.lon}` : ""} data-route={route?.map((leg) => leg.mode).join(",") ?? ""}>
+  PointMap: ({ point, onLongPress, onPan, onMapClick, pins, renderPin, popup, route, destination, parking, focus }: PointMapProps) => (
+    <div
+      data-testid="map"
+      data-point={point ? `${point.lat},${point.lon}` : ""}
+      data-route={route?.map((leg) => leg.mode).join(",") ?? ""}
+      data-parking={parking ? `${parking.picks.length} picks, ${parking.places.length} places` : ""}
+      data-destination={destination ? `${destination.name} ${destination.lat},${destination.lon}` : ""}
+      data-focus={focus ? `${focus.lat},${focus.lon}` : ""}
+    >
+      {parking && (
+        <ul aria-label="parking spots on the map">
+          {parking.places.map((place, i) => (
+            <li key={i}>{place.label}</li>
+          ))}
+        </ul>
+      )}
       {pins.map((pin) => (
         <div key={pin.key}>{renderPin(pin)}</div>
       ))}
@@ -601,6 +615,8 @@ describe("Trip mode", () => {
     durationS: minutes * 60,
     legs: [],
     eventIds: [],
+    onTheWay: [],
+    comingUp: [],
     impact,
   });
   const PLANNED: Trip = {
@@ -641,6 +657,15 @@ describe("Trip mode", () => {
     expect(Object.fromEntries(tripQueries.at(-1)!)).toEqual({ from: "60.17,24.95", to: "60.1986,24.933" });
     expect(history.location.search).toContain("to=60.19860%2C24.93300");
     expect(await toField()).toHaveValue("Pasila");
+  });
+
+  it("says a car's time is without traffic", async () => {
+    trip = { events: [], plans: [...PLANNED.plans, { mode: "car", itineraries: [itinerary(16, "none")] }] };
+    renderApp("/?at=60.17000,24.95000&trip=true&to=60.19860,24.93300&toName=Pasila&mode=car");
+
+    const car = await within(await modes()).findByRole("radio", { name: "Car, 16 min without traffic" });
+    expect(car.closest("label")).toHaveTextContent("~16 min");
+    expect(car).toBeChecked();
   });
 
   it("keeps the chosen mode in the URL", async () => {
@@ -685,8 +710,9 @@ describe("Trip mode", () => {
 });
 
 describe("a Trip on the map", () => {
-  const leg = (mode: "walk" | "tram" | "bike") => ({
+  const leg = (mode: "walk" | "tram" | "bike", line?: string) => ({
     mode,
+    ...(line ? { line: { id: `HSL:${line}`, name: line } } : {}),
     from: { name: "A", lat: 60.17, lon: 24.95 },
     to: { name: "B", lat: 60.19, lon: 24.94 },
     start: "2026-10-31T12:00:00+02:00",
@@ -700,6 +726,8 @@ describe("a Trip on the map", () => {
     durationS: 1200,
     legs,
     eventIds,
+    onTheWay: eventIds.map((eventId) => ({ eventId, impact: "consider" as const, leg: 0, at: [24.945, 60.18] as [number, number], minutes: 3 })),
+    comingUp: [],
     impact: eventIds.length ? ("consider" as const) : ("none" as const),
   });
   const onTheWay = anEvent("on the way", { where: { geometry: { type: "Point", coordinates: [24.945, 60.18] }, precision: "area" } });
@@ -720,7 +748,34 @@ describe("a Trip on the map", () => {
     expect(await screen.findByRole("button", { name: "Works on the way, Drivers, minor" })).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: /^Works around here,/ })).not.toBeInTheDocument();
     expect(screen.getByRole("status")).toHaveTextContent("1 thing on your way");
-    expect(within(await screen.findByRole("list", { name: "On the way" })).getAllByRole("button")).toHaveLength(1);
+    expect(within(await screen.findByRole("region", { name: "On the way" })).getAllByRole("button")).toHaveLength(1);
+  });
+
+  it("lists and pins only what's in the way, where the trip meets it: what's merely nearby isn't shown", async () => {
+    const minor = anEvent("beside the way");
+    trip = {
+      events: [onTheWay, minor],
+      plans: [
+        {
+          mode: "transit",
+          itineraries: [
+            {
+              ...ride(["on the way", "beside the way"], leg("walk"), leg("tram", "9"), leg("walk")),
+              onTheWay: [
+                { eventId: "beside the way", impact: "minor" as const, leg: 0, at: [24.95, 60.17] as [number, number], minutes: 1 },
+                { eventId: "on the way", impact: "consider" as const, leg: 1, at: [24.945, 60.18] as [number, number], minutes: 6 },
+              ],
+            },
+          ],
+        },
+      ],
+    };
+    renderApp(TO);
+
+    const list = within(await screen.findByRole("region", { name: "On the way" }));
+    expect(within(list.getByRole("list", { name: "Tram 9" })).getByRole("button", { name: /^Works on the way/ })).toHaveTextContent("at 6 min");
+    expect(screen.getByRole("status")).toHaveTextContent("1 thing on your way");
+    expect(screen.queryByRole("button", { name: /^Works beside the way/ })).not.toBeInTheDocument();
   });
 
   it("redraws for another mode, and says when nothing is in the way", async () => {
@@ -749,7 +804,17 @@ describe("a Trip on the map", () => {
     expect(await within(await screen.findByTestId("popup")).findByRole("article", { name: "Works on the way" })).toBeInTheDocument();
   });
 
-  it("draws nothing until there is a route", async () => {
+  it("says it's finding routes while they load", async () => {
+    server.use(http.get("*/v0/trips", async () => {
+      await delay("infinite");
+      return HttpResponse.json(trip);
+    }));
+    renderApp(TO);
+
+    await waitFor(() => expect(screen.getByRole("status")).toHaveTextContent("Finding routes…"));
+  });
+
+    it("draws nothing until there is a route", async () => {
     trip = { events: [], plans: [{ mode: "transit", itineraries: [] }] };
     renderApp(TO);
     await screen.findByRole("group", { name: "Travel mode" });
@@ -775,6 +840,8 @@ describe("a Trip's itineraries", () => {
     durationS: (Date.parse(end) - Date.parse("2026-10-31T12:00:00+02:00")) / 1000,
     legs,
     eventIds,
+    onTheWay: eventIds.map((eventId) => ({ eventId, impact: "consider" as const, leg: 1, at: [24.945, 60.18] as [number, number], minutes: 6 })),
+    comingUp: [],
     impact,
   });
   const dig = anEvent("dig", { where: { geometry: { type: "Point", coordinates: [24.945, 60.18] }, precision: "area" } });
@@ -789,7 +856,7 @@ describe("a Trip's itineraries", () => {
 
     const rows = await (await routes()).findAllByRole("radio");
     expect(rows.map((r) => r.getAttribute("aria-label"))).toEqual([
-      "Walk 4 min, tram 2, walk 4 min. 12:00–12:15, 15 min, worth considering",
+      "Walk 4 min, tram 2, walk 4 min. 12:00–12:15, 15 min, worth considering, 1 in the way: Works dig",
       "Walk 4 min, bus 69, walk 4 min. 12:00–12:20, 20 min",
     ]);
     expect(rows[0]).toBeChecked();
@@ -816,8 +883,19 @@ describe("a Trip's itineraries", () => {
     trip = { events: [dig], plans: [{ mode: "transit", itineraries: [TRAM, BUS] }] };
     renderApp(TO);
 
-    const onTheWay = within(await screen.findByRole("list", { name: "On the way" }));
+    const onTheWay = within(await screen.findByRole("list", { name: "Tram 2" }));
     expect(await onTheWay.findByRole("button", { name: /^Works dig/ })).toBeInTheDocument();
+  });
+
+  it("gives a heads-up of what starts on the chosen way in the coming week", async () => {
+    const closure = anEvent("closure next week", { status: "upcoming" });
+    const withHeadsUp = { ...BUS, comingUp: [{ eventId: "closure next week", impact: "consider" as const, leg: 1, at: [24.945, 60.18] as [number, number], minutes: 6, startsAt: "2026-11-05T06:00:00+02:00" }] };
+    trip = { events: [dig, closure], plans: [{ mode: "transit", itineraries: [withHeadsUp] }] };
+    renderApp(TO);
+
+    const headsUp = await screen.findByRole("region", { name: "Heads up" });
+    expect(headsUp).toHaveTextContent("From Thu 5 Nov · Works closure next week (on the bus 69)");
+    expect(screen.queryByRole("button", { name: /^Works closure next week/ })).not.toBeInTheDocument();
   });
 
   it("starts each mode from its first way again", async () => {
@@ -828,5 +906,112 @@ describe("a Trip's itineraries", () => {
 
     expect(history.location.search).not.toContain("route=");
     await waitFor(() => expect(screen.getByTestId("map")).toHaveAttribute("data-route", "walk"));
+  });
+});
+
+describe("parking with a car Trip", () => {
+  const leg = (mode: "walk" | "car" | "subway", minutes: number, extra: object = {}) => ({
+    mode,
+    from: { name: "A", lat: 60.17, lon: 24.95 },
+    to: { name: "B", lat: 60.19, lon: 24.94 },
+    start: "2026-11-01T12:00:00+02:00",
+    end: new Date(Date.parse("2026-11-01T12:00:00+02:00") + minutes * 60_000).toISOString(),
+    stops: [],
+    geometry: { type: "LineString" as const, coordinates: [[24.95, 60.17], [24.94, 60.19]] as [number, number][] },
+    ...extra,
+  });
+  const way = (minutes: number, ...legs: ReturnType<typeof leg>[]) => ({
+    start: "2026-11-01T12:00:00+02:00",
+    end: new Date(Date.parse("2026-11-01T12:00:00+02:00") + minutes * 60_000).toISOString(),
+    durationS: minutes * 60,
+    legs,
+    eventIds: [],
+    onTheWay: [],
+    comingUp: [],
+    impact: "none" as const,
+  });
+  const DRIVE = way(14, leg("car", 14));
+  const PARK_AND_RIDE = way(34, leg("car", 12, { to: { name: "Niittykumpu", lat: 60.17, lon: 24.76, parking: "Niittykumpu" } }), leg("walk", 3), leg("subway", 15, { line: { id: "HSL:31M1", name: "M1" } }), leg("walk", 4));
+  const PARKING: NonNullable<Trip["parking"]> = {
+    street: { spaces: 19, paid: 15, free: 4, ev: 2, accessible: 1, radiusM: 300, places: [] },
+    carParks: [{ name: "Postintaival", lat: 60.2, lon: 24.94, carSpaces: 47, distanceM: 600 }],
+    sources: ["City of Helsinki (CC BY 4.0)", "HSL / Digitransit"],
+    picks: [
+      { reasons: ["closest"], kind: "street", lat: 60.199, lon: 24.933, distanceM: 80, spaces: 4, cost: "paid", perHour: 4, paidUntil: "21:00", maxStayMin: 240, disc: false },
+      { reasons: ["cheapest"], kind: "street", lat: 60.2, lon: 24.933, distanceM: 250, spaces: 6, cost: "free", maxStayMin: 30, disc: true },
+      { reasons: ["biggest"], kind: "carPark", name: "Postintaival", lat: 60.2, lon: 24.94, distanceM: 600, spaces: 47, cost: "unknown", disc: false },
+    ],
+  };
+  const TO = "/?at=60.17000,24.95000&trip=true&to=60.19860,24.93300&toName=Pasila";
+
+  it("lists park-and-ride ways under car, saying where to park, and every way's length", async () => {
+    const long = way(14, leg("car", 14, { distanceM: 4150 }));
+    trip = { events: [], plans: [{ mode: "car", itineraries: [long, PARK_AND_RIDE] }] };
+    renderApp(`${TO}&mode=car`);
+
+    const rows = await within(await screen.findByRole("group", { name: "Routes" })).findAllByRole("radio");
+    expect(rows.map((r) => r.getAttribute("aria-label")?.split(". ")[0])).toEqual([
+      "Drive 14 min",
+      "Drive 12 min to P Niittykumpu, walk 3 min, metro M1, walk 4 min",
+    ]);
+    expect(rows[0]).toHaveAccessibleName(/, 14 min, 4\.2 km/);
+    expect(rows[0]!.closest("label")).toHaveTextContent("4.2 km");
+  });
+
+  it("says where to park on arrival, numbered as on the map, then what parking there is around", async () => {
+    const places = [
+      { lat: 60.199, lon: 24.933, spaces: 4, kind: "paid" as const, cost: "paid" as const, perHour: 4, paidUntil: "21:00", maxStayMin: 240, disc: false },
+      { lat: 60.1985, lon: 24.934, spaces: 2, kind: "other" as const, type: "ev" as const, disc: false },
+    ];
+    trip = { events: [], plans: [{ mode: "car", itineraries: [DRIVE] }], parking: { ...PARKING, street: { ...PARKING.street!, places } } };
+    renderApp(`${TO}&mode=car`);
+
+    const parking = await screen.findByRole("region", { name: "Parking near Pasila" });
+    expect(within(parking).getAllByRole("listitem").map((item) => item.textContent)).toEqual([
+      "1Closest · Street parking80 m · 4 spaces · €4/h until 21:00 · max 4 h",
+      "2Cheapest · Street parking250 m · 6 spaces · free · max 30 min · parking disc",
+      "3Most spaces · Postintaival600 m · 47 spaces",
+    ]);
+    expect(parking).toHaveTextContent("19 spaces within 300 m · 15 paid · 4 free short-term · 2 for electric cars · 1 accessible");
+    expect(parking).toHaveTextContent("City of Helsinki (CC BY 4.0), HSL / Digitransit");
+    expect(screen.getByTestId("map")).toHaveAttribute("data-parking", "3 picks, 2 places");
+  });
+
+  it("marks the destination, tells what each spot on the map offers, and zooms to a pick chosen in the panel", async () => {
+    const places = [
+      { lat: 60.199, lon: 24.933, spaces: 4, kind: "paid" as const, cost: "paid" as const, perHour: 4, paidUntil: "21:00", maxStayMin: 240, disc: false },
+      { lat: 60.1985, lon: 24.934, spaces: 2, kind: "other" as const, type: "ev" as const, disc: false },
+    ];
+    trip = { events: [], plans: [{ mode: "car", itineraries: [DRIVE] }], parking: { ...PARKING, street: { ...PARKING.street!, places } } };
+    renderApp(`${TO}&mode=car`);
+
+    const parking = await screen.findByRole("region", { name: "Parking near Pasila" });
+    const map = screen.getByTestId("map");
+    expect(map).toHaveAttribute("data-destination", "Pasila 60.1986,24.933");
+    expect(within(screen.getByRole("list", { name: "parking spots on the map" })).getAllByRole("listitem").map((li) => li.textContent)).toEqual([
+      "4 spaces · €4/h until 21:00 · max 4 h",
+      "2 spaces · for electric cars",
+    ]);
+
+    await userEvent.click(within(parking).getByRole("button", { name: /^Cheapest/ }));
+
+    expect(map).toHaveAttribute("data-focus", "60.2,24.933");
+  });
+
+  it("doesn't show parking at the destination for a park-and-ride way: you park on the way", async () => {
+    trip = { events: [], plans: [{ mode: "car", itineraries: [DRIVE, PARK_AND_RIDE] }], parking: PARKING };
+    renderApp(`${TO}&mode=car&route=1`);
+    await screen.findByRole("group", { name: "Routes" });
+
+    expect(screen.queryByRole("region", { name: "Parking near Pasila" })).not.toBeInTheDocument();
+    expect(screen.getByTestId("map")).toHaveAttribute("data-parking", "");
+  });
+
+  it("only shows parking with the car", async () => {
+    trip = { events: [], plans: [{ mode: "transit", itineraries: [DRIVE] }, { mode: "car", itineraries: [DRIVE] }], parking: PARKING };
+    renderApp(TO);
+    await screen.findByRole("group", { name: "Routes" });
+
+    expect(screen.queryByRole("region", { name: "Parking near Pasila" })).not.toBeInTheDocument();
   });
 });

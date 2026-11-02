@@ -17,7 +17,7 @@ const SearchSchema = z.object({
   from: z.string().optional().catch(undefined),
   fromName: z.string().optional().catch(undefined),
   // The chosen travel mode; public transport when absent.
-  mode: z.enum(["transit", "walk", "bike"]).optional().catch(undefined),
+  mode: z.enum(["transit", "walk", "bike", "car"]).optional().catch(undefined),
   // Which of that mode's itineraries; the recommended one, else the first, when absent.
   route: z.number().int().min(0).optional().catch(undefined),
 });

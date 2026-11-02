@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import { digitransitRouter } from "./digitransit-routing.ts";
 import bike from "./fixtures/digitransit-routing/bike.json" with { type: "json" };
+import parkride from "./fixtures/digitransit-routing/parkride.json" with { type: "json" };
 import transit from "./fixtures/digitransit-routing/transit.json" with { type: "json" };
 
 const URL_ = "https://api.digitransit.fi/routing/v2/hsl/gtfs/v1";
@@ -45,7 +46,7 @@ describe("the Digitransit router", () => {
     });
   });
 
-  it("asks for one direct route when walking or cycling", async () => {
+  it("asks for one direct route when walking, cycling or driving", async () => {
     const { fetchFn, asked } = fakeDigitransit(bike);
     const router = digitransitRouter({ url: URL_, apiKey: "k", fetchFn });
 
@@ -81,6 +82,88 @@ describe("the Digitransit router", () => {
     expect(lon).toBeCloseTo(KAMPPI.lon, 3);
     expect(lat).toBeCloseTo(KAMPPI.lat, 3);
     expect(itineraries[0]!.legs[0]!.stops).toEqual([]);
+  });
+
+  it("plans a car trip both ways: driving all the way, and parking at a park-and-ride for public transport", async () => {
+    const { fetchFn, asked } = fakeDigitransit(bike, parkride);
+
+    await digitransitRouter({ url: URL_, apiKey: "k", fetchFn }).plan({ from: KAMPPI, to: PASILA, mode: "car", departAt });
+
+    expect(asked.map((a) => [a.variables.modes, a.variables.first])).toEqual([
+      [{ directOnly: true, direct: ["CAR"] }, 1],
+      [{ transit: { access: ["CAR_PARKING"], transit: expect.arrayContaining([{ mode: "SUBWAY" }]) } }, 2],
+    ]);
+  });
+
+  describe("park-and-ride ways", () => {
+    // Recorded from Matinkylä to Kamppi: parking at Niittykumpu, arriving 18:17 and 18:22.
+    const ESPOO = { lat: 60.1395, lon: 24.643 };
+    const carTrip = (to = KAMPPI) => ({ from: ESPOO, to, mode: "car" as const, departAt });
+    const carLeg = parkride.data.planConnection.edges[0]!.node.legs[0]!;
+    const driveUntil = (end: string) => ({
+      data: { planConnection: { routingErrors: [], edges: [{ node: { start: carLeg.start.scheduledTime, end, duration: 1500, legs: [{ ...carLeg, to: { ...carLeg.to, vehicleParking: null }, end: { scheduledTime: end, estimated: null } }] } }] } },
+    });
+    const plan = (...answers: object[]) => digitransitRouter({ url: URL_, apiKey: "k", fetchFn: fakeDigitransit(...answers).fetchFn }).plan(carTrip());
+
+    it("gives the drive first, then the park-and-ride ways, naming where to park", async () => {
+      const ways = await plan(driveUntil("2026-11-01T18:15:00+02:00"), parkride);
+
+      expect(ways.map((w) => w.legs.map((l) => l.mode))).toEqual([
+        ["car"],
+        ["car", "walk", "subway", "walk"],
+        ["car", "walk", "bus", "walk", "subway", "walk"],
+      ]);
+      expect(ways[1]!.legs[0]!.to).toMatchObject({ parking: "Niittykumpu" });
+    });
+
+    it("tells how many cars the car park takes, when Digitransit knows", async () => {
+      const edges = parkride.data.planConnection.edges.map(({ node }) => ({
+        node: { ...node, legs: [{ ...node.legs[0]!, to: { ...node.legs[0]!.to, vehicleParking: { name: "Niittykumpu", capacity: { carSpaces: 340 } } } }, ...node.legs.slice(1)] },
+      }));
+
+      const ways = await plan(driveUntil("2026-11-01T18:15:00+02:00"), { data: { planConnection: { routingErrors: [], edges } } });
+
+      expect(ways[1]!.legs[0]!.to).toMatchObject({ parking: "Niittykumpu", parkingSpaces: 340 });
+    });
+
+    it("leaves out a way that doesn't drive: Digitransit adds walking all the way", async () => {
+      const walkOnly = transit.data.planConnection.edges[0]!;
+      const answer = { data: { planConnection: { routingErrors: [], edges: [walkOnly, ...parkride.data.planConnection.edges] } } };
+
+      const ways = await plan(driveUntil("2026-11-01T18:15:00+02:00"), answer);
+
+      expect(ways.map((w) => w.legs[0]!.mode)).toEqual(["car", "car", "car"]);
+    });
+  });
+
+  it("tells each leg's length along its line", async () => {
+    const { fetchFn } = fakeDigitransit(bike);
+
+    const [route] = await digitransitRouter({ url: URL_, apiKey: "k", fetchFn }).plan({ from: KAMPPI, to: PASILA, mode: "bike", departAt });
+
+    // Kamppi to Pasila is 3.3 km as the crow flies.
+    expect(route!.legs[0]!.distanceM).toBeGreaterThan(3300);
+    expect(route!.legs[0]!.distanceM).toBeLessThan(6000);
+  });
+
+  it("still gives the drive when the park-and-ride plan fails", async () => {
+    const node = bike.data.planConnection.edges[0]!.node;
+    const drive = { data: { planConnection: { routingErrors: [], edges: [{ node: { ...node, legs: [{ ...node.legs[0]!, mode: "CAR" }] } }] } } };
+    const { fetchFn } = fakeDigitransit(drive, 503, 503);
+
+    const ways = await digitransitRouter({ url: URL_, apiKey: "k", fetchFn }).plan({ from: KAMPPI, to: PASILA, mode: "car", departAt });
+
+    expect(ways).toHaveLength(1);
+  });
+
+  it("maps a car route to one car leg", async () => {
+    const node = bike.data.planConnection.edges[0]!.node;
+    const car = { data: { planConnection: { routingErrors: [], edges: [{ node: { ...node, legs: [{ ...node.legs[0]!, mode: "CAR" }] } }] } } };
+    const { fetchFn } = fakeDigitransit(car);
+
+    const [route] = await digitransitRouter({ url: URL_, apiKey: "k", fetchFn }).plan({ from: KAMPPI, to: PASILA, mode: "car", departAt });
+
+    expect(route!.legs.map((l) => l.mode)).toEqual(["car"]);
   });
 
   it("maps a bike route to one bike leg", async () => {

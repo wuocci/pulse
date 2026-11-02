@@ -9,7 +9,7 @@ import { parseArgs } from "node:util";
 import { EventSchema, HealthSchema, type Region, RegionSchema } from "@pulse/schema";
 import { z } from "@hono/zod-openapi";
 
-const apiUrl = process.env.PULSE_API_URL ?? `http://localhost:${process.env.PORT ?? 3000}/v0`;
+const apiUrl = process.env.PULSE_API_URL ?? `http://localhost:${process.env.PORT ?? 3002}/v0`;
 
 const { positionals, values } = parseArgs({
   allowPositionals: true,

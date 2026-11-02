@@ -200,7 +200,7 @@ export interface paths {
                 query: {
                     from: string;
                     to: string;
-                    /** @description Comma-separated; default transit,walk,bike */
+                    /** @description Comma-separated; default transit,walk,bike,car */
                     modes?: string;
                     /** @description Default: now */
                     departAt?: string;
@@ -460,6 +460,16 @@ export interface components {
             /** @description Every Event on any itinerary, once */
             events: components["schemas"]["Event"][];
             plans: components["schemas"]["TripPlan"][];
+            /** @description Parking around B on arrival by car: static, not whether spaces are free now */
+            parking?: {
+                street?: components["schemas"]["StreetParking"];
+                /** @description Nearest first, within a kilometre */
+                carParks: components["schemas"]["CarPark"][];
+                /** @description Where the parking data comes from, to credit it */
+                sources: string[];
+                /** @description Where to park on arrival: the closest spot, the cheapest, and the car park with the most spaces */
+                picks: components["schemas"]["ParkingPick"][];
+            };
             /** @description Better today: when the fastest way has something worth considering in it, the earliest way in any mode that's less in the way and at most 10 min later */
             recommended?: {
                 mode: components["schemas"]["TravelMode"];
@@ -472,8 +482,11 @@ export interface components {
             /** @description Best first; empty when there's no route */
             itineraries: components["schemas"]["Itinerary"][];
         };
-        /** @enum {string} */
-        TravelMode: "transit" | "walk" | "bike";
+        /**
+         * @description car: free-flow times, without traffic
+         * @enum {string}
+         */
+        TravelMode: "transit" | "walk" | "bike" | "car";
         Itinerary: {
             /** Format: date-time */
             start: string;
@@ -483,6 +496,13 @@ export interface components {
             legs: components["schemas"]["Leg"][];
             /** @description The Events on this itinerary, from the response's `events` */
             eventIds: string[];
+            /** @description Where and how each of `eventIds` is on the itinerary, in the order the trip reaches them */
+            onTheWay: components["schemas"]["OnTheWay"][];
+            /** @description A heads-up: what would be in this way (worth considering or major) and starts in the 7 days after it, soonest first. Its Events are in the response's `events` too */
+            comingUp: (components["schemas"]["OnTheWay"] & {
+                /** Format: date-time */
+                startsAt: string;
+            })[];
             impact: components["schemas"]["Impact"];
         };
         Leg: {
@@ -504,6 +524,13 @@ export interface components {
                  * @example HSL:1040601
                  */
                 stop?: string;
+                /**
+                 * @description The car park, when a car leg ends at one (park-and-ride)
+                 * @example Niittykumpu
+                 */
+                parking?: string;
+                /** @description The car park's spaces for cars, when known */
+                parkingSpaces?: number;
             };
             to: {
                 /** @example Kamppi */
@@ -515,6 +542,13 @@ export interface components {
                  * @example HSL:1040601
                  */
                 stop?: string;
+                /**
+                 * @description The car park, when a car leg ends at one (park-and-ride)
+                 * @example Niittykumpu
+                 */
+                parking?: string;
+                /** @description The car park's spaces for cars, when known */
+                parkingSpaces?: number;
             };
             /** Format: date-time */
             start: string;
@@ -522,6 +556,8 @@ export interface components {
             end: string;
             /** @description Ids of the stops a transit leg passes, first to last */
             stops: string[];
+            /** @description Along the leg's line */
+            distanceM?: number;
             geometry: {
                 /** @enum {string} */
                 type: "LineString";
@@ -533,9 +569,101 @@ export interface components {
             };
         };
         /** @enum {string} */
-        LegMode: "walk" | "bike" | "bus" | "tram" | "rail" | "subway" | "ferry" | "other";
-        /** @enum {string} */
+        LegMode: "walk" | "bike" | "car" | "bus" | "tram" | "rail" | "subway" | "ferry" | "other";
+        OnTheWay: {
+            eventId: string;
+            impact: components["schemas"]["Impact"];
+            /** @description Index of the first leg it's on */
+            leg: number;
+            /** @description [lon, lat] on the route where the trip meets it */
+            at: [
+                number,
+                number
+            ];
+            /** @description Minutes from the itinerary's start to `at` */
+            minutes: number;
+        };
+        /**
+         * @description How much this Event matters for this itinerary
+         * @enum {string}
+         */
         Impact: "none" | "minor" | "consider" | "major";
+        StreetParking: {
+            spaces: number;
+            paid: number;
+            /** @description Free short-term parking */
+            free: number;
+            /** @description For electric cars */
+            ev: number;
+            /** @description For disabled parking permits */
+            accessible: number;
+            radiusM: number;
+            /** @description Each parking area's centre and what it costs on arrival, for the map */
+            places: {
+                lat: number;
+                lon: number;
+                spaces: number;
+                /**
+                 * @description other: only for some cars (`type`)
+                 * @enum {string}
+                 */
+                kind: "paid" | "free" | "other";
+                /** @enum {string} */
+                type?: "ev" | "accessible";
+                /**
+                 * @description On arrival, as a pick's; absent for `other`
+                 * @enum {string}
+                 */
+                cost?: "free" | "paid";
+                perHour?: number;
+                paidUntil?: string;
+                freeUntil?: string;
+                maxStayMin?: number;
+                disc: boolean;
+            }[];
+        };
+        CarPark: {
+            /** @example Matinkylän asema */
+            name: string;
+            lat: number;
+            lon: number;
+            carSpaces: number;
+            /** @description As the crow flies from the destination */
+            distanceM: number;
+        };
+        ParkingPick: {
+            /** @description Why it's picked: one spot can be several */
+            reasons: ("closest" | "cheapest" | "biggest")[];
+            /** @enum {string} */
+            kind: "street" | "carPark";
+            /** @description A car park's name */
+            name?: string;
+            lat: number;
+            lon: number;
+            /** @description As the crow flies from the destination */
+            distanceM: number;
+            spaces: number;
+            /**
+             * @description On arrival: free also when it's outside the paid hours
+             * @enum {string}
+             */
+            cost: "free" | "paid" | "unknown";
+            /** @description Euros an hour, from the fee zone, when it's paid */
+            perHour?: number;
+            /**
+             * @description When the paid hours end on the day of arrival, as HH:MM
+             * @example 21:00
+             */
+            paidUntil?: string;
+            /**
+             * @description When the paid hours begin, if it's free on arrival but not all day
+             * @example 09:00
+             */
+            freeUntil?: string;
+            maxStayMin?: number;
+            /** @description A parking disc is needed */
+            disc: boolean;
+        };
     };
     responses: never;
     parameters: never;

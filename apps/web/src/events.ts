@@ -1,4 +1,4 @@
-import type { Event, Schema } from "@pulse/client";
+import type { Event, Impact, Schema } from "@pulse/client";
 import type { LatLon } from "./platform.tsx";
 
 // How Events become what the map shows: where their pins go, what colour, in what order, and the status line.
@@ -64,6 +64,8 @@ export interface Pin {
   event: Event;
   lngLat: Position;
   distanceM: number;
+  // On a Trip: where the trip meets it — which leg, how many minutes in — and how much it matters for the trip.
+  trip?: { leg: number; minutes: number; impact: Impact };
 }
 
 const EARTH_RADIUS_M = 6_371_000;
@@ -80,6 +82,17 @@ export function nearestFirst(events: Event[], here: LatLon): Pin[] {
   return events
     .flatMap((event) => pinsFor(event).map((lngLat, i) => ({ key: `${event.id}#${i}`, event, lngLat, distanceM: distanceM(here, lngLat) })))
     .sort((a, b) => a.distanceM - b.distanceM);
+}
+
+// What's in a Trip's way (worth considering or major), pinned where the trip meets it, in the order it does. What's
+// only nearby isn't shown: it doesn't get in the way.
+export function tripPins(onTheWay: (Omit<Schema<"OnTheWay">, "at"> & { at: number[] })[], events: Event[]): Pin[] {
+  const byId = new Map(events.map((e) => [e.id, e]));
+  const pins = onTheWay.flatMap(({ eventId, at, leg, minutes, impact }): Pin[] => {
+    const event = byId.get(eventId);
+    return event ? [{ key: `${eventId}#trip`, event, lngLat: [at[0] ?? 0, at[1] ?? 0], distanceM: 0, trip: { leg, minutes, impact } }] : [];
+  });
+  return pins.filter((pin) => pin.trip?.impact === "consider" || pin.trip?.impact === "major");
 }
 
 export type Status =

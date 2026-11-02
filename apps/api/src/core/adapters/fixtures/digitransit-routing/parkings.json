@@ -1,0 +1,2355 @@
+{
+ "data": {
+  "vehicleParkings": [
+   {
+    "vehicleParkingId": "liipi:195",
+    "name": "Saviontie",
+    "lat": 60.3808716,
+    "lon": 25.0965869,
+    "capacity": {
+     "carSpaces": 25
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:1139",
+    "name": "Lahden rautatieasema P1",
+    "lat": 60.9771858,
+    "lon": 25.6571594,
+    "capacity": {
+     "carSpaces": 50
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:559",
+    "name": "Rajamäen liikuntapuisto",
+    "lat": 60.52665,
+    "lon": 24.749089,
+    "capacity": {
+     "carSpaces": 10
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:220",
+    "name": "Laurintie P2",
+    "lat": 60.3308987,
+    "lon": 25.0679226,
+    "capacity": {
+     "carSpaces": 42
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:94",
+    "name": "Solbonkatu pohjoinen",
+    "lat": 60.6327553,
+    "lon": 24.8542183,
+    "capacity": {
+     "carSpaces": 185
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:343",
+    "name": "Porkkalantie",
+    "lat": 60.1183987,
+    "lon": 24.480989,
+    "capacity": {
+     "carSpaces": 24
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:693",
+    "name": "Karsikkokuja P1",
+    "lat": 60.3217585,
+    "lon": 25.0591484,
+    "capacity": {
+     "carSpaces": 78
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:430",
+    "name": "Kirkkojärventie Espoonportti",
+    "lat": 60.2060377,
+    "lon": 24.6600552,
+    "capacity": {
+     "carSpaces": 36
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:599",
+    "name": "Myllypuron ostari",
+    "lat": 60.2240285,
+    "lon": 25.0734725,
+    "capacity": {
+     "carSpaces": 38
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:386",
+    "name": "Hansatie",
+    "lat": 60.1902611,
+    "lon": 24.6021413,
+    "capacity": {
+     "carSpaces": 98
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:1005",
+    "name": "Insinöörintie",
+    "lat": 60.1961095,
+    "lon": 25.0354982,
+    "capacity": {
+     "carSpaces": 148
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:718",
+    "name": "Seimelänkuja",
+    "lat": 60.4167963,
+    "lon": 24.3263974,
+    "capacity": {
+     "carSpaces": 10
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:26",
+    "name": "Sitratie",
+    "lat": 60.2403305,
+    "lon": 24.8748086,
+    "capacity": {
+     "carSpaces": 24
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:674",
+    "name": "Torivoudintie kadunvarsi",
+    "lat": 60.230085,
+    "lon": 24.9678979,
+    "capacity": {
+     "carSpaces": 53
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:1304",
+    "name": "Valtuustokatu",
+    "lat": 60.4754723,
+    "lon": 25.0925348,
+    "capacity": {
+     "carSpaces": 89
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:492",
+    "name": "Turuntie",
+    "lat": 60.2197616,
+    "lon": 24.8098499,
+    "capacity": {
+     "carSpaces": 68
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:733",
+    "name": "Louhelan asema P1",
+    "lat": 60.2706563,
+    "lon": 24.8542466,
+    "capacity": {
+     "carSpaces": 29
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:1164",
+    "name": "Pietarsaari-Pedersöre rautatieasema P3",
+    "lat": 63.5960197,
+    "lon": 22.7901543,
+    "capacity": {
+     "carSpaces": 50
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:609",
+    "name": "Tyynylaavantie itäinen",
+    "lat": 60.2079943,
+    "lon": 25.1461076,
+    "capacity": {
+     "carSpaces": 45
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:248",
+    "name": "Jokiniementie",
+    "lat": 60.2957974,
+    "lon": 25.048097,
+    "capacity": {
+     "carSpaces": 194
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:381",
+    "name": "Luomankuja",
+    "lat": 60.1721818,
+    "lon": 24.5490464,
+    "capacity": {
+     "carSpaces": 16
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:288",
+    "name": "Seunalankuja",
+    "lat": 60.2629608,
+    "lon": 25.0285024,
+    "capacity": {
+     "carSpaces": 11
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:175",
+    "name": "Veturiaukio",
+    "lat": 60.4057352,
+    "lon": 25.1053304,
+    "capacity": {
+     "carSpaces": 71
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:1006",
+    "name": "Niittykumpu",
+    "lat": 60.1702441,
+    "lon": 24.7639107,
+    "capacity": {
+     "carSpaces": 100
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:512",
+    "name": "Siilitie itäinen P2",
+    "lat": 60.2064858,
+    "lon": 25.0456368,
+    "capacity": {
+     "carSpaces": 17
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:16",
+    "name": "Luutnantinaukio",
+    "lat": 60.2479112,
+    "lon": 24.8637167,
+    "capacity": {
+     "carSpaces": 45
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:1209",
+    "name": "Suorama",
+    "lat": 61.4719287,
+    "lon": 24.0021544,
+    "capacity": {
+     "carSpaces": 22
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:1004",
+    "name": "Väritehtaankatu P2",
+    "lat": 60.2936946,
+    "lon": 25.045708,
+    "capacity": {
+     "carSpaces": 66
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:1286",
+    "name": "Kivenlahden liityntäpysäköinti",
+    "lat": 60.1567878,
+    "lon": 24.6313794,
+    "capacity": {
+     "carSpaces": 650
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:550",
+    "name": "Pihtisillantie",
+    "lat": 60.3017992,
+    "lon": 24.3609453,
+    "capacity": {
+     "carSpaces": 14
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:1444",
+    "name": "Lieto Keskusta, K-Supermarket Lietorin piha",
+    "lat": 60.5041551,
+    "lon": 22.4572676,
+    "capacity": {
+     "carSpaces": 8
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:444",
+    "name": "Helsingintie",
+    "lat": 60.2122854,
+    "lon": 24.7309291,
+    "capacity": {
+     "carSpaces": 247
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:594",
+    "name": "Vanhanlinnantori P3",
+    "lat": 60.2153135,
+    "lon": 25.0920557,
+    "capacity": {
+     "carSpaces": 104
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:1030",
+    "name": "Ilvesvuori",
+    "lat": 60.4555042,
+    "lon": 24.8414511,
+    "capacity": {
+     "carSpaces": 30
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:1601",
+    "name": "Nokian rautatieasema, pohjoinen",
+    "lat": 61.4823229,
+    "lon": 23.5005825,
+    "capacity": {
+     "carSpaces": 224
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:118",
+    "name": "Jokelantie eteläinen",
+    "lat": 60.55129,
+    "lon": 24.9729173,
+    "capacity": {
+     "carSpaces": 124
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:1145",
+    "name": "Seinäjoen rautatieasema P3",
+    "lat": 62.7908015,
+    "lon": 22.845412,
+    "capacity": {
+     "carSpaces": 140
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:333",
+    "name": "Hanasaarenranta",
+    "lat": 60.1653899,
+    "lon": 24.8444106,
+    "capacity": {
+     "carSpaces": 80
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:1280",
+    "name": "Kajaani P1",
+    "lat": 64.2200487,
+    "lon": 27.7411594,
+    "capacity": {
+     "carSpaces": 50
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:654",
+    "name": "Hyrylän linja-autoasema",
+    "lat": 60.402037,
+    "lon": 25.0270228,
+    "capacity": {
+     "carSpaces": 40
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:1450",
+    "name": "Lieto Ilmarinen K-Market Ilmarisen piha",
+    "lat": 60.5060789,
+    "lon": 22.3808506,
+    "capacity": {
+     "carSpaces": 4
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:1133",
+    "name": "Haarikkokuja P1",
+    "lat": 60.3033534,
+    "lon": 25.0486884,
+    "capacity": {
+     "carSpaces": 9
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:81",
+    "name": "Mäntsälän asema pohjoinen",
+    "lat": 60.6486097,
+    "lon": 25.307816,
+    "capacity": {
+     "carSpaces": 60
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:362",
+    "name": "Tolsanmäki",
+    "lat": 60.1176541,
+    "lon": 24.4697725,
+    "capacity": {
+     "carSpaces": 1
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:728",
+    "name": "Kurpantie",
+    "lat": 60.3837777,
+    "lon": 25.0103358,
+    "capacity": {
+     "carSpaces": 28
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:449",
+    "name": "Karapellontie pohjoinen",
+    "lat": 60.2171204,
+    "lon": 24.7517605,
+    "capacity": {
+     "carSpaces": 12
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:644",
+    "name": "Opintie",
+    "lat": 60.3007114,
+    "lon": 25.3276705,
+    "capacity": {
+     "carSpaces": 60
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:1208",
+    "name": "Tarpila",
+    "lat": 61.4642862,
+    "lon": 24.0581015,
+    "capacity": {
+     "carSpaces": 16
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:990",
+    "name": "Tapiola Park",
+    "lat": 60.1760189,
+    "lon": 24.804713,
+    "capacity": {
+     "carSpaces": 2049
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:1125",
+    "name": "Klaukkalan kehätie - mt 130 th",
+    "lat": 60.3850831,
+    "lon": 24.8083781,
+    "capacity": {
+     "carSpaces": 15
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:624",
+    "name": "Leppävaaranaukio",
+    "lat": 60.2191266,
+    "lon": 24.8111641,
+    "capacity": {
+     "carSpaces": 219
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:1149",
+    "name": "Oulun rautatieasema P1",
+    "lat": 65.0114708,
+    "lon": 25.4835954,
+    "capacity": {
+     "carSpaces": 50
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:238",
+    "name": "Ratatie P1",
+    "lat": 60.2967081,
+    "lon": 25.0457379,
+    "capacity": {
+     "carSpaces": 115
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:1036",
+    "name": "Tolsan asema läntinen",
+    "lat": 60.1178252,
+    "lon": 24.4726591,
+    "capacity": {
+     "carSpaces": 73
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:1158",
+    "name": "Hämeenlinnan rautatieasema P3",
+    "lat": 61.0013884,
+    "lon": 24.4801198,
+    "capacity": {
+     "carSpaces": 50
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:1137",
+    "name": "Kemin rautatieasema P1",
+    "lat": 65.7371033,
+    "lon": 24.5728152,
+    "capacity": {
+     "carSpaces": 51
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:1032",
+    "name": "Larin Kyöstin tie",
+    "lat": 60.2286512,
+    "lon": 24.9688614,
+    "capacity": {
+     "carSpaces": 21
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:200",
+    "name": "Keskustatie",
+    "lat": 60.2984654,
+    "lon": 25.3281378,
+    "capacity": {
+     "carSpaces": 35
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:1091",
+    "name": "Hertsi",
+    "lat": 60.194748,
+    "lon": 25.0338529,
+    "capacity": {
+     "carSpaces": 100
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:353",
+    "name": "Munkinmäentie",
+    "lat": 60.1191639,
+    "lon": 24.4385485,
+    "capacity": {
+     "carSpaces": 135
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:348",
+    "name": "Munkinmäki",
+    "lat": 60.1192097,
+    "lon": 24.440301,
+    "capacity": {
+     "carSpaces": 91
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:1138",
+    "name": "Rovaniemen rautatieasema P1",
+    "lat": 66.4982833,
+    "lon": 25.7069587,
+    "capacity": {
+     "carSpaces": 65
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:1110",
+    "name": "Kirkkojärventie By Pia's",
+    "lat": 60.2056949,
+    "lon": 24.6582403,
+    "capacity": {
+     "carSpaces": 12
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:1147",
+    "name": "Kuopion rautatieasema P1",
+    "lat": 62.8980128,
+    "lon": 27.6820912,
+    "capacity": {
+     "carSpaces": 50
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:688",
+    "name": "Peijaksentie P2",
+    "lat": 60.3249619,
+    "lon": 25.0607789,
+    "capacity": {
+     "carSpaces": 78
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:338",
+    "name": "Sarvvikinportti",
+    "lat": 60.1463989,
+    "lon": 24.578155,
+    "capacity": {
+     "carSpaces": 30
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:151",
+    "name": "Haarajoen Asemakatu",
+    "lat": 60.4964548,
+    "lon": 25.1325071,
+    "capacity": {
+     "carSpaces": 176
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:1384",
+    "name": "Ylöjärven Prisma",
+    "lat": 61.5641865,
+    "lon": 23.5947631,
+    "capacity": {
+     "carSpaces": 23
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:1237",
+    "name": "Soukka",
+    "lat": 60.1422188,
+    "lon": 24.6698784,
+    "capacity": {
+     "carSpaces": 27
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:703",
+    "name": "Mellunmäenraitio eteläinen",
+    "lat": 60.2379776,
+    "lon": 25.1087793,
+    "capacity": {
+     "carSpaces": 39
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:604",
+    "name": "Kauppakeskus Itis",
+    "lat": 60.2099956,
+    "lon": 25.0774029,
+    "capacity": {
+     "carSpaces": 442
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:1083",
+    "name": "Veturitalli 2",
+    "lat": 60.1201812,
+    "lon": 24.4342171,
+    "capacity": {
+     "carSpaces": 84
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:1140",
+    "name": "Muija",
+    "lat": 60.3019915,
+    "lon": 24.219688,
+    "capacity": {
+     "carSpaces": 8
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:56",
+    "name": "Hämeentien maasilta",
+    "lat": 60.2002152,
+    "lon": 24.9622253,
+    "capacity": {
+     "carSpaces": 68
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:992",
+    "name": "Matinkylän asema",
+    "lat": 60.1614082,
+    "lon": 24.7376621,
+    "capacity": {
+     "carSpaces": 350
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:540",
+    "name": "Eerikinkartanontie pohjoinen",
+    "lat": 60.2699537,
+    "lon": 24.440539,
+    "capacity": {
+     "carSpaces": 73
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:66",
+    "name": "Postintaival",
+    "lat": 60.2086772,
+    "lon": 24.9207879,
+    "capacity": {
+     "carSpaces": 47
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:1108",
+    "name": "Mahlamäentie",
+    "lat": 60.4621897,
+    "lon": 24.8096277,
+    "capacity": {
+     "carSpaces": 11
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:738",
+    "name": "Radioasemantie P2",
+    "lat": 60.3118571,
+    "lon": 24.8392696,
+    "capacity": {
+     "carSpaces": 170
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:185",
+    "name": "Tapulikatu eteläinen",
+    "lat": 60.4040472,
+    "lon": 25.1070819,
+    "capacity": {
+     "carSpaces": 88
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:1151",
+    "name": "Oulun rautatieasema P3",
+    "lat": 65.0092304,
+    "lon": 25.4831107,
+    "capacity": {
+     "carSpaces": 50
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:1144",
+    "name": "Jyväskylän rautatieasema P1",
+    "lat": 62.243064,
+    "lon": 25.7569341,
+    "capacity": {
+     "carSpaces": 432
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:357",
+    "name": "Aseman ostoskeskus",
+    "lat": 60.1203266,
+    "lon": 24.4411089,
+    "capacity": {
+     "carSpaces": 372
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:1153",
+    "name": "Vaasan rautatieasema P2",
+    "lat": 63.0965333,
+    "lon": 21.6243522,
+    "capacity": {
+     "carSpaces": 50
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:190",
+    "name": "Tapulikatu pohjoinen",
+    "lat": 60.4055867,
+    "lon": 25.1076259,
+    "capacity": {
+     "carSpaces": 207
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:230",
+    "name": "Haarikkokuja P2",
+    "lat": 60.3040351,
+    "lon": 25.0490602,
+    "capacity": {
+     "carSpaces": 42
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:1065",
+    "name": "Siuntion asema",
+    "lat": 60.1405091,
+    "lon": 24.2228132,
+    "capacity": {
+     "carSpaces": 95
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:1284",
+    "name": "Toijala Akaa P1",
+    "lat": 61.1699519,
+    "lon": 23.8600096,
+    "capacity": {
+     "carSpaces": 40
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:747",
+    "name": "Kivistön asema P1",
+    "lat": 60.3149725,
+    "lon": 24.8432396,
+    "capacity": {
+     "carSpaces": 114
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:1412",
+    "name": "Prisma Itäharju",
+    "lat": 60.4452836,
+    "lon": 22.3258896,
+    "capacity": {
+     "carSpaces": 4
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:1210",
+    "name": "Sääksjärvi",
+    "lat": 61.4183585,
+    "lon": 23.7580432,
+    "capacity": {
+     "carSpaces": 60
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:1233",
+    "name": "Finnoo",
+    "lat": 60.154563,
+    "lon": 24.7102119,
+    "capacity": {
+     "carSpaces": 97
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:234",
+    "name": "Kiskokuja P3",
+    "lat": 60.3021324,
+    "lon": 25.048012,
+    "capacity": {
+     "carSpaces": 16
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:1",
+    "name": "Ratastie P1",
+    "lat": 60.2852508,
+    "lon": 24.8473275,
+    "capacity": {
+     "carSpaces": 195
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:6",
+    "name": "Martinlaakso P1",
+    "lat": 60.2784739,
+    "lon": 24.8535962,
+    "capacity": {
+     "carSpaces": 150
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:132",
+    "name": "Ankkapurontie",
+    "lat": 60.4997802,
+    "lon": 25.0502897,
+    "capacity": {
+     "carSpaces": 9
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:507",
+    "name": "Siilitie läntinen P1",
+    "lat": 60.2061044,
+    "lon": 25.0443767,
+    "capacity": {
+     "carSpaces": 53
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:127",
+    "name": "Nuppulinnanmutka",
+    "lat": 60.529083,
+    "lon": 25.0200719,
+    "capacity": {
+     "carSpaces": 12
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:463",
+    "name": "Kilonkuja",
+    "lat": 60.2180993,
+    "lon": 24.7801184,
+    "capacity": {
+     "carSpaces": 34
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:1605",
+    "name": "Lempäälän rautatieasema, Kuusitie",
+    "lat": 61.315231,
+    "lon": 23.7547408,
+    "capacity": {
+     "carSpaces": 32
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:614",
+    "name": "Valkopaadentie",
+    "lat": 60.2082013,
+    "lon": 25.1432087,
+    "capacity": {
+     "carSpaces": 128
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:522",
+    "name": "Keinulaudantie pohjoinen",
+    "lat": 60.2357112,
+    "lon": 25.0810717,
+    "capacity": {
+     "carSpaces": 20
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:416",
+    "name": "Espoonaukio",
+    "lat": 60.2065047,
+    "lon": 24.6600251,
+    "capacity": {
+     "carSpaces": 29
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:210",
+    "name": "Monitoimikeskus Lumo",
+    "lat": 60.3524697,
+    "lon": 25.078142,
+    "capacity": {
+     "carSpaces": 266
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:31",
+    "name": "Soittajantie",
+    "lat": 60.2406772,
+    "lon": 24.8736546,
+    "capacity": {
+     "carSpaces": 23
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:1311",
+    "name": "Räikän ranta",
+    "lat": 61.5573884,
+    "lon": 23.5985834,
+    "capacity": {
+     "carSpaces": 18
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:1470",
+    "name": "Nuolemo, Vanha Tyllintie 1, Toimintakeskuksen pysäköintialue",
+    "lat": 60.5155154,
+    "lon": 22.4819296,
+    "capacity": {
+     "carSpaces": 12
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:708",
+    "name": "Pallaksentie",
+    "lat": 60.2380769,
+    "lon": 25.1104766,
+    "capacity": {
+     "carSpaces": 80
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:41",
+    "name": "Kuparitie",
+    "lat": 60.2308987,
+    "lon": 24.8840436,
+    "capacity": {
+     "carSpaces": 83
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:293",
+    "name": "Malmin asema",
+    "lat": 60.2518533,
+    "lon": 25.0115372,
+    "capacity": {
+     "carSpaces": 114
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:371",
+    "name": "Masalan asema läntinen",
+    "lat": 60.1579457,
+    "lon": 24.5380973,
+    "capacity": {
+     "carSpaces": 38
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:1046",
+    "name": "Kontulan ostoskeskus",
+    "lat": 60.2373362,
+    "lon": 25.0819424,
+    "capacity": {
+     "carSpaces": 30
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:439",
+    "name": "Koivuhovin seisake",
+    "lat": 60.2065586,
+    "lon": 24.7024881,
+    "capacity": {
+     "carSpaces": 103
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:253",
+    "name": "Tapulinkaupungintie pohjoinen",
+    "lat": 60.2760097,
+    "lon": 25.0355927,
+    "capacity": {
+     "carSpaces": 100
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:669",
+    "name": "Asemapuisto",
+    "lat": 60.120142,
+    "lon": 24.4363721,
+    "capacity": {
+     "carSpaces": 36
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:376",
+    "name": "Masalan asema itäinen",
+    "lat": 60.1585155,
+    "lon": 24.5396065,
+    "capacity": {
+     "carSpaces": 89
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:1204",
+    "name": "Koivistonkylä",
+    "lat": 61.4693722,
+    "lon": 23.7765518,
+    "capacity": {
+     "carSpaces": 34
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:215",
+    "name": "Korsontie",
+    "lat": 60.349557,
+    "lon": 25.0765953,
+    "capacity": {
+     "carSpaces": 23
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:71",
+    "name": "Mäntsälän asema etelä",
+    "lat": 60.648033,
+    "lon": 25.3067005,
+    "capacity": {
+     "carSpaces": 176
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:1166",
+    "name": "Kokkolan rautatieasema P1",
+    "lat": 63.8349492,
+    "lon": 23.1342916,
+    "capacity": {
+     "carSpaces": 100
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:1471",
+    "name": "Littoinen, Itäsippaantie",
+    "lat": 60.4583585,
+    "lon": 22.4300748,
+    "capacity": {
+     "carSpaces": 10
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:136",
+    "name": "Loutinkatu",
+    "lat": 60.4866639,
+    "lon": 25.0653004,
+    "capacity": {
+     "carSpaces": 28
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:1414",
+    "name": "Prisma Tampereentie",
+    "lat": 60.4724498,
+    "lon": 22.284242,
+    "capacity": {
+     "carSpaces": 4
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:1281",
+    "name": "Kolari P1",
+    "lat": 67.3495584,
+    "lon": 23.8354285,
+    "capacity": {
+     "carSpaces": 20
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:487",
+    "name": "Sello",
+    "lat": 60.2181093,
+    "lon": 24.8122032,
+    "capacity": {
+     "carSpaces": 99
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:1037",
+    "name": "Kalasatama (Kauppakeskus REDI)",
+    "lat": 60.1871042,
+    "lon": 24.9791659,
+    "capacity": {
+     "carSpaces": 300
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:664",
+    "name": "Maisalantie",
+    "lat": 60.3575918,
+    "lon": 25.000092,
+    "capacity": {
+     "carSpaces": 62
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:156",
+    "name": "Järvenpään linja-autoasema",
+    "lat": 60.4755634,
+    "lon": 25.0864708,
+    "capacity": {
+     "carSpaces": 68
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:1212",
+    "name": "Matkatie",
+    "lat": 61.5488466,
+    "lon": 23.599044,
+    "capacity": {
+     "carSpaces": 54
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:85",
+    "name": "Solbonkatu itäinen",
+    "lat": 60.6321733,
+    "lon": 24.8536377,
+    "capacity": {
+     "carSpaces": 64
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:579",
+    "name": "Rastilan metroasema",
+    "lat": 60.2051558,
+    "lon": 25.1215144,
+    "capacity": {
+     "carSpaces": 47
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:1416",
+    "name": "K-Supermarket Hirvensalo",
+    "lat": 60.4190274,
+    "lon": 22.2287784,
+    "capacity": {
+     "carSpaces": 4
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:421",
+    "name": "Kirkkojärventie Kirkkokatu",
+    "lat": 60.2065257,
+    "lon": 24.6625382,
+    "capacity": {
+     "carSpaces": 61
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:1143",
+    "name": "Turun rautatieasema P2",
+    "lat": 60.4533469,
+    "lon": 22.2509224,
+    "capacity": {
+     "carSpaces": 50
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:425",
+    "name": "Kirkkojärventie Kannusillankatu",
+    "lat": 60.2046224,
+    "lon": 24.6527643,
+    "capacity": {
+     "carSpaces": 100
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:298",
+    "name": "Pikkalankatu",
+    "lat": 60.2504239,
+    "lon": 25.0116846,
+    "capacity": {
+     "carSpaces": 63
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:1031",
+    "name": "Kulosaaren puistotie läntinen P2",
+    "lat": 60.1885641,
+    "lon": 25.0035484,
+    "capacity": {
+     "carSpaces": 117
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:1009",
+    "name": "P-Urheilupuisto",
+    "lat": 60.1747013,
+    "lon": 24.7815988,
+    "capacity": {
+     "carSpaces": 796
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:473",
+    "name": "Takkakuja",
+    "lat": 60.2229155,
+    "lon": 24.8568712,
+    "capacity": {
+     "carSpaces": 78
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:497",
+    "name": "Ukko-Pekan porras P1",
+    "lat": 60.1888818,
+    "lon": 25.0058927,
+    "capacity": {
+     "carSpaces": 36
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:308",
+    "name": "Ratavallintie P2",
+    "lat": 60.2412877,
+    "lon": 24.993042,
+    "capacity": {
+     "carSpaces": 26
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:584",
+    "name": "Puotilan metrokatu P1",
+    "lat": 60.2152031,
+    "lon": 25.0948835,
+    "capacity": {
+     "carSpaces": 52
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:698",
+    "name": "Mellunmäenraitio pohjoinen",
+    "lat": 60.2385574,
+    "lon": 25.1080523,
+    "capacity": {
+     "carSpaces": 120
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:1136",
+    "name": "Porin rautatieasema P1",
+    "lat": 61.4781652,
+    "lon": 21.7868782,
+    "capacity": {
+     "carSpaces": 92
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:180",
+    "name": "Junailijankatu",
+    "lat": 60.4063406,
+    "lon": 25.1058462,
+    "capacity": {
+     "carSpaces": 74
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:1606",
+    "name": "Lempäälän rautatieasema, Piiponraitti",
+    "lat": 61.3152536,
+    "lon": 23.7561062,
+    "capacity": {
+     "carSpaces": 79
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:1510",
+    "name": "Odilammenkaarre",
+    "lat": 60.3011578,
+    "lon": 24.7650921,
+    "capacity": {
+     "carSpaces": 30
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:659",
+    "name": "Sahapuistikko",
+    "lat": 60.3332044,
+    "lon": 24.3357775,
+    "capacity": {
+     "carSpaces": 52
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:401",
+    "name": "Asemakuja itäinen",
+    "lat": 60.2053239,
+    "lon": 24.6594118,
+    "capacity": {
+     "carSpaces": 72
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:263",
+    "name": "Tapulinkaupungintie eteläinen",
+    "lat": 60.2741893,
+    "lon": 25.0354088,
+    "capacity": {
+     "carSpaces": 15
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:1064",
+    "name": "Koivukylänväylä P2",
+    "lat": 60.323913,
+    "lon": 25.0337767,
+    "capacity": {
+     "carSpaces": 59
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:123",
+    "name": "Lehtilinna",
+    "lat": 60.5289233,
+    "lon": 25.0194522,
+    "capacity": {
+     "carSpaces": 4
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:1150",
+    "name": "Oulun rautatieasema P2",
+    "lat": 65.0103749,
+    "lon": 25.4855628,
+    "capacity": {
+     "carSpaces": 50
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:1283",
+    "name": "Oulainen P2",
+    "lat": 64.2689076,
+    "lon": 24.8202076,
+    "capacity": {
+     "carSpaces": 25
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:649",
+    "name": "Sipoonlahden koulu",
+    "lat": 60.2993016,
+    "lon": 25.3399769,
+    "capacity": {
+     "carSpaces": 124
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:1109",
+    "name": "Krannilan liikuntapuisto",
+    "lat": 60.4685102,
+    "lon": 24.8020559,
+    "capacity": {
+     "carSpaces": 70
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:1415",
+    "name": "K-Citymarket Länsikeskus",
+    "lat": 60.4733136,
+    "lon": 22.2338773,
+    "capacity": {
+     "carSpaces": 4
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:1494",
+    "name": "Hiedanranta",
+    "lat": 61.511723,
+    "lon": 23.6851522,
+    "capacity": {
+     "carSpaces": 130
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:396",
+    "name": "Vantinportti-Hyttipojankuja",
+    "lat": 60.1906205,
+    "lon": 24.6052313,
+    "capacity": {
+     "carSpaces": 100
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:11",
+    "name": "Punamultapolku P1",
+    "lat": 60.2601195,
+    "lon": 24.8548516,
+    "capacity": {
+     "carSpaces": 58
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:61",
+    "name": "Haukilahdenkatu kadunvarsi",
+    "lat": 60.1993898,
+    "lon": 24.9627513,
+    "capacity": {
+     "carSpaces": 35
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:108",
+    "name": "Jokelantie asema",
+    "lat": 60.5531533,
+    "lon": 24.9691405,
+    "capacity": {
+     "carSpaces": 11
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:1187",
+    "name": "Matkakeskus VR 2",
+    "lat": 60.8662204,
+    "lon": 26.6993923,
+    "capacity": {
+     "carSpaces": 100
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:1146",
+    "name": "Pieksämäen rautatieasema P1",
+    "lat": 62.3009368,
+    "lon": 27.1653504,
+    "capacity": {
+     "carSpaces": 50
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:742",
+    "name": "Koivukylänväylä P1",
+    "lat": 60.3227505,
+    "lon": 25.0399588,
+    "capacity": {
+     "carSpaces": 74
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:391",
+    "name": "Hansatie-Vantinportti",
+    "lat": 60.191283,
+    "lon": 24.6046047,
+    "capacity": {
+     "carSpaces": 71
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:1015",
+    "name": "Teatteripolku P3",
+    "lat": 60.2963974,
+    "lon": 25.0472895,
+    "capacity": {
+     "carSpaces": 214
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:639",
+    "name": "Puualhonpolku",
+    "lat": 60.4057227,
+    "lon": 25.1085433,
+    "capacity": {
+     "carSpaces": 15
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:517",
+    "name": "Muuntajankatu P4",
+    "lat": 60.2057511,
+    "lon": 25.0478586,
+    "capacity": {
+     "carSpaces": 80
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:454",
+    "name": "Karapellontie eteläinen",
+    "lat": 60.216579,
+    "lon": 24.7521472,
+    "capacity": {
+     "carSpaces": 21
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:1163",
+    "name": "Pietarsaari-Pedersöre rautatieasema P2",
+    "lat": 63.5965504,
+    "lon": 22.7904019,
+    "capacity": {
+     "carSpaces": 50
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:1156",
+    "name": "Hämeenlinnan rautatieasema P1",
+    "lat": 61.0030413,
+    "lon": 24.4758184,
+    "capacity": {
+     "carSpaces": 50
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:170",
+    "name": "Siltavahdinkatu itäinen",
+    "lat": 60.4552751,
+    "lon": 25.1006022,
+    "capacity": {
+     "carSpaces": 61
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:323",
+    "name": "Torivoudintie",
+    "lat": 60.2294889,
+    "lon": 24.9672215,
+    "capacity": {
+     "carSpaces": 36
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:328",
+    "name": "Osmontie",
+    "lat": 60.2182335,
+    "lon": 24.9455545,
+    "capacity": {
+     "carSpaces": 23
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:555",
+    "name": "Majatuvankuja",
+    "lat": 60.3341187,
+    "lon": 24.327059,
+    "capacity": {
+     "carSpaces": 70
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:1155",
+    "name": "Joensuu P-asemaparkki",
+    "lat": 62.6014891,
+    "lon": 29.7764887,
+    "capacity": {
+     "carSpaces": 50
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:1165",
+    "name": "Parikkalan rautatieasema P1",
+    "lat": 61.5581153,
+    "lon": 29.5016445,
+    "capacity": {
+     "carSpaces": 50
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:1090",
+    "name": "Vuosaaren Mosaiikkiparkki",
+    "lat": 60.208211,
+    "lon": 25.1429557,
+    "capacity": {
+     "carSpaces": 128
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:1282",
+    "name": "Oulainen P1",
+    "lat": 64.2692151,
+    "lon": 24.8203894,
+    "capacity": {
+     "carSpaces": 15
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:1305",
+    "name": "Rantaniityntie",
+    "lat": 61.4672196,
+    "lon": 23.6425122,
+    "capacity": {
+     "carSpaces": 50
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:810",
+    "name": "Jorvaksen asema / Myllymestarinkuja",
+    "lat": 60.138005,
+    "lon": 24.5119765,
+    "capacity": {
+     "carSpaces": 80
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:141",
+    "name": "Saunakalliontie",
+    "lat": 60.4874094,
+    "lon": 25.064698,
+    "capacity": {
+     "carSpaces": 5
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:161",
+    "name": "Pajalantie",
+    "lat": 60.4758967,
+    "lon": 25.0875593,
+    "capacity": {
+     "carSpaces": 19
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:1168",
+    "name": "Katajamäen liityntäpysäköinti",
+    "lat": 60.3907683,
+    "lon": 25.6370934,
+    "capacity": {
+     "carSpaces": 105
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:1086",
+    "name": "Susiympyrä",
+    "lat": 60.3738438,
+    "lon": 25.2501877,
+    "capacity": {
+     "carSpaces": 24
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:1047",
+    "name": "Kauppakeskus Saari",
+    "lat": 60.1792642,
+    "lon": 25.0515765,
+    "capacity": {
+     "carSpaces": 20
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:46",
+    "name": "Haagan pappilantie",
+    "lat": 60.2183551,
+    "lon": 24.8946507,
+    "capacity": {
+     "carSpaces": 63
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:502",
+    "name": "Hiihtäjänkuja 2",
+    "lat": 60.1941516,
+    "lon": 25.0279576,
+    "capacity": {
+     "carSpaces": 180
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:1141",
+    "name": "Turun rautatieasema P1",
+    "lat": 60.4537143,
+    "lon": 22.2534487,
+    "capacity": {
+     "carSpaces": 50
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:482",
+    "name": "Perkkaantie",
+    "lat": 60.2203248,
+    "lon": 24.8397038,
+    "capacity": {
+     "carSpaces": 20
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:1159",
+    "name": "Hämeenlinnan Pööli",
+    "lat": 61.0024319,
+    "lon": 24.4756473,
+    "capacity": {
+     "carSpaces": 600
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:273",
+    "name": "Päitsipolku",
+    "lat": 60.2778406,
+    "lon": 25.0369854,
+    "capacity": {
+     "carSpaces": 17
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:1185",
+    "name": "Matkakeskus VR",
+    "lat": 60.8662596,
+    "lon": 26.7010685,
+    "capacity": {
+     "carSpaces": 234
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:1162",
+    "name": "Pietarsaari-Pedersöre rautatieasema P1",
+    "lat": 63.5969528,
+    "lon": 22.7887808,
+    "capacity": {
+     "carSpaces": 50
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:792",
+    "name": "Siltavahdinkatu läntinen",
+    "lat": 60.4552159,
+    "lon": 25.0997489,
+    "capacity": {
+     "carSpaces": 49
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:89",
+    "name": "Solbonkatu eteläinen",
+    "lat": 60.6316575,
+    "lon": 24.8551845,
+    "capacity": {
+     "carSpaces": 48
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:1076",
+    "name": "Veturitalli",
+    "lat": 60.1201762,
+    "lon": 24.4341874,
+    "capacity": {
+     "carSpaces": 84
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:458",
+    "name": "Vanharaide",
+    "lat": 60.217426,
+    "lon": 24.7813406,
+    "capacity": {
+     "carSpaces": 44
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:1050",
+    "name": "Miilin terminaali",
+    "lat": 60.2985457,
+    "lon": 25.3374531,
+    "capacity": {
+     "carSpaces": 46
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:751",
+    "name": "Härkälenkki P1",
+    "lat": 60.2940859,
+    "lon": 24.8455397,
+    "capacity": {
+     "carSpaces": 496
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:569",
+    "name": "Rykmentintie",
+    "lat": 60.4006626,
+    "lon": 25.0331104,
+    "capacity": {
+     "carSpaces": 30
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:619",
+    "name": "Kauppakeskus Ruoholahti",
+    "lat": 60.1639742,
+    "lon": 24.9114932,
+    "capacity": {
+     "carSpaces": 141
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:532",
+    "name": "Tyynylaavantie läntinen",
+    "lat": 60.2076948,
+    "lon": 25.1429832,
+    "capacity": {
+     "carSpaces": 32
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:225",
+    "name": "Ulrikankuja P1",
+    "lat": 60.3322035,
+    "lon": 25.066443,
+    "capacity": {
+     "carSpaces": 58
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:1236",
+    "name": "Kaitaa",
+    "lat": 60.1499689,
+    "lon": 24.6907349,
+    "capacity": {
+     "carSpaces": 47
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:1067",
+    "name": "Loutinoja",
+    "lat": 60.4772354,
+    "lon": 25.0854062,
+    "capacity": {
+     "carSpaces": 123
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:468",
+    "name": "Kilonportti",
+    "lat": 60.2195409,
+    "lon": 24.7853424,
+    "capacity": {
+     "carSpaces": 39
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:1152",
+    "name": "Vaasan rautatieasema P1",
+    "lat": 63.0981862,
+    "lon": 21.6201096,
+    "capacity": {
+     "carSpaces": 132
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:303",
+    "name": "Eskolantie P1",
+    "lat": 60.2435506,
+    "lon": 24.9952477,
+    "capacity": {
+     "carSpaces": 89
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:1035",
+    "name": "Tolsan asema itäinen",
+    "lat": 60.1192967,
+    "lon": 24.4756818,
+    "capacity": {
+     "carSpaces": 70
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:1451",
+    "name": "Lieto Asema Zoolandian pysäköintialue",
+    "lat": 60.5680779,
+    "lon": 22.4364555,
+    "capacity": {
+     "carSpaces": 50
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:679",
+    "name": "Mäntsälän linja-autoasema",
+    "lat": 60.6342926,
+    "lon": 25.3149064,
+    "capacity": {
+     "carSpaces": 28
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:1034",
+    "name": "Tolsan asema pohjoinen",
+    "lat": 60.1193655,
+    "lon": 24.4735501,
+    "capacity": {
+     "carSpaces": 13
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:1157",
+    "name": "Hämeenlinnan rautatieasema P2",
+    "lat": 61.0019599,
+    "lon": 24.4773701,
+    "capacity": {
+     "carSpaces": 50
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:713",
+    "name": "Tuuliviirinkuja",
+    "lat": 60.4124631,
+    "lon": 24.3354567,
+    "capacity": {
+     "carSpaces": 30
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:1203",
+    "name": "Kaukajärvi",
+    "lat": 61.4765721,
+    "lon": 23.8955518,
+    "capacity": {
+     "carSpaces": 58
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:278",
+    "name": "Smoltinkuja 4",
+    "lat": 60.2646575,
+    "lon": 25.0317055,
+    "capacity": {
+     "carSpaces": 81
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:205",
+    "name": "Mäyräkuja P1",
+    "lat": 60.3523761,
+    "lon": 25.080143,
+    "capacity": {
+     "carSpaces": 56
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:1446",
+    "name": "Lieto Nenämäki, K-Market Loukinaisen piha",
+    "lat": 60.4850539,
+    "lon": 22.3986275,
+    "capacity": {
+     "carSpaces": 4
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:1303",
+    "name": "Kirjastokatu itäinen",
+    "lat": 60.4754764,
+    "lon": 25.0915842,
+    "capacity": {
+     "carSpaces": 14
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:99",
+    "name": "Hankopaanankatu",
+    "lat": 60.6296391,
+    "lon": 24.8547975,
+    "capacity": {
+     "carSpaces": 186
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:1033",
+    "name": "Muuntajankatu Itäväylän alla P3",
+    "lat": 60.2059327,
+    "lon": 25.0463878,
+    "capacity": {
+     "carSpaces": 12
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:1148",
+    "name": "Ylivieskan rautatieasema P1",
+    "lat": 64.072535,
+    "lon": 24.5401701,
+    "capacity": {
+     "carSpaces": 50
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:103",
+    "name": "Jokelantie pohjoinen",
+    "lat": 60.5536993,
+    "lon": 24.9684692,
+    "capacity": {
+     "carSpaces": 39
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:113",
+    "name": "Puhelinkuja",
+    "lat": 60.5536234,
+    "lon": 24.9710413,
+    "capacity": {
+     "carSpaces": 76
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:1154",
+    "name": "Lappeenrannan rautatieasema P1",
+    "lat": 61.0488837,
+    "lon": 28.1960147,
+    "capacity": {
+     "carSpaces": 170
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:589",
+    "name": "Puotilan metrotori P2",
+    "lat": 60.21436,
+    "lon": 25.092796,
+    "capacity": {
+     "carSpaces": 172
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:318",
+    "name": "Oulunkylän Tori eteläinen",
+    "lat": 60.2292191,
+    "lon": 24.9664607,
+    "capacity": {
+     "carSpaces": 18
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:406",
+    "name": "Asemakuja läntinen",
+    "lat": 60.2050339,
+    "lon": 24.6581428,
+    "capacity": {
+     "carSpaces": 16
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:574",
+    "name": "Tuomarinkylän Vinttikoirakeskus",
+    "lat": 60.2557682,
+    "lon": 24.9592166,
+    "capacity": {
+     "carSpaces": 89
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:1242",
+    "name": "Kivenlahti",
+    "lat": 60.1553456,
+    "lon": 24.6381195,
+    "capacity": {
+     "carSpaces": 86
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:1202",
+    "name": "Tesoman seisake",
+    "lat": 61.5035877,
+    "lon": 23.628164,
+    "capacity": {
+     "carSpaces": 24
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:723",
+    "name": "Nurmijärven linja-autoasema",
+    "lat": 60.461986,
+    "lon": 24.8083584,
+    "capacity": {
+     "carSpaces": 9
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:313",
+    "name": "Oulunkylän Tori pohjoinen",
+    "lat": 60.2294506,
+    "lon": 24.96597,
+    "capacity": {
+     "carSpaces": 26
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:477",
+    "name": "Fonseenintie",
+    "lat": 60.2220228,
+    "lon": 24.8457225,
+    "capacity": {
+     "carSpaces": 22
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:411",
+    "name": "Kamreerintie",
+    "lat": 60.2045462,
+    "lon": 24.654987,
+    "capacity": {
+     "carSpaces": 21
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:146",
+    "name": "Jäppilänkatu",
+    "lat": 60.4876191,
+    "lon": 25.066811,
+    "capacity": {
+     "carSpaces": 7
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:1413",
+    "name": "Prisma Piispanristi",
+    "lat": 60.4165799,
+    "lon": 22.326397,
+    "capacity": {
+     "carSpaces": 4
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:1205",
+    "name": "Niihama",
+    "lat": 61.5000932,
+    "lon": 23.8778689,
+    "capacity": {
+     "carSpaces": 72
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:545",
+    "name": "Eerikinkartanontie eteläinen",
+    "lat": 60.2696621,
+    "lon": 24.4407087,
+    "capacity": {
+     "carSpaces": 79
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:527",
+    "name": "Keinulaudantie eteläinen",
+    "lat": 60.2353237,
+    "lon": 25.0804871,
+    "capacity": {
+     "carSpaces": 32
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:1206",
+    "name": "Turtola",
+    "lat": 61.47752,
+    "lon": 23.8407549,
+    "capacity": {
+     "carSpaces": 36
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:1104",
+    "name": "Erottaja",
+    "lat": 60.3740247,
+    "lon": 25.2656031,
+    "capacity": {
+     "carSpaces": 94
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:1167",
+    "name": "Lippulaiva",
+    "lat": 60.1496283,
+    "lon": 24.6548524,
+    "capacity": {
+     "carSpaces": 698
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:283",
+    "name": "Jäkälätie 10 eteläinen",
+    "lat": 60.2629485,
+    "lon": 25.03018,
+    "capacity": {
+     "carSpaces": 54
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:564",
+    "name": "Klaukkalantie",
+    "lat": 60.3808316,
+    "lon": 24.7498542,
+    "capacity": {
+     "carSpaces": 36
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:434",
+    "name": "Tuomarilantie",
+    "lat": 60.2058148,
+    "lon": 24.6832551,
+    "capacity": {
+     "carSpaces": 24
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:367",
+    "name": "Jorvaksenkaari",
+    "lat": 60.1374144,
+    "lon": 24.5122346,
+    "capacity": {
+     "carSpaces": 31
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:1445",
+    "name": "Lieto Keskusta",
+    "lat": 60.5030099,
+    "lon": 22.4492844,
+    "capacity": {
+     "carSpaces": 53
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:268",
+    "name": "Raidekuja",
+    "lat": 60.2737926,
+    "lon": 25.0362509,
+    "capacity": {
+     "carSpaces": 65
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:634",
+    "name": "Sahankatu",
+    "lat": 60.4034758,
+    "lon": 25.1088726,
+    "capacity": {
+     "carSpaces": 11
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:755",
+    "name": "Lauttasaarentie",
+    "lat": 60.1601794,
+    "lon": 24.8807728,
+    "capacity": {
+     "carSpaces": 50
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:1051",
+    "name": "Viirinlaakso Matkakeskus",
+    "lat": 60.3771482,
+    "lon": 24.761702,
+    "capacity": {
+     "carSpaces": 145
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:165",
+    "name": "Kirjastokatu",
+    "lat": 60.4749405,
+    "lon": 25.0902499,
+    "capacity": {
+     "carSpaces": 272
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:258",
+    "name": "Ajurinaukio",
+    "lat": 60.27456,
+    "lon": 25.0350841,
+    "capacity": {
+     "carSpaces": 7
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:1364",
+    "name": "Syynimaa E",
+    "lat": 65.0520471,
+    "lon": 25.4761769,
+    "capacity": {
+     "carSpaces": null
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:998",
+    "name": "Myyrmäen asema 2",
+    "lat": 60.2609408,
+    "lon": 24.8550136,
+    "capacity": {
+     "carSpaces": null
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:1589",
+    "name": "Maunula pohjoinen",
+    "lat": 60.2317057,
+    "lon": 24.9342911,
+    "capacity": {
+     "carSpaces": null
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:1484",
+    "name": "Nuolemo, Nuolemontie",
+    "lat": 60.5145751,
+    "lon": 22.4723361,
+    "capacity": {
+     "carSpaces": null
+    }
+   },
+   {
+    "vehicleParkingId": "liipi:853",
+    "name": "Savelanpolku",
+    "lat": 60.240672,
+    "lon": 24.991039,
+    "capacity": {
+     "carSpaces": null
+    }
+   }
+  ]
+ }
+}
