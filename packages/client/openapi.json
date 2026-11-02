@@ -680,13 +680,21 @@
                   "type": "string"
                 },
                 "description": "Where the parking data comes from, to credit it"
+              },
+              "picks": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/ParkingPick"
+                },
+                "description": "Where to park on arrival: the closest spot, the cheapest, and the car park with the most spaces"
               }
             },
             "required": [
               "carParks",
-              "sources"
+              "sources",
+              "picks"
             ],
-            "description": "Parking around B, with a car route: static, not whether spaces are free now"
+            "description": "Parking around B on arrival by car: static, not whether spaces are free now"
           },
           "recommended": {
             "type": "object",
@@ -767,6 +775,36 @@
             },
             "description": "The Events on this itinerary, from the response's `events`"
           },
+          "onTheWay": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OnTheWay"
+            },
+            "description": "Where and how each of `eventIds` is on the itinerary, in the order the trip reaches them"
+          },
+          "comingUp": {
+            "type": "array",
+            "items": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/OnTheWay"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "startsAt": {
+                      "type": "string",
+                      "format": "date-time"
+                    }
+                  },
+                  "required": [
+                    "startsAt"
+                  ]
+                }
+              ]
+            },
+            "description": "A heads-up: what would be in this way (worth considering or major) and starts in the 7 days after it, soonest first. Its Events are in the response's `events` too"
+          },
           "impact": {
             "$ref": "#/components/schemas/Impact"
           }
@@ -777,6 +815,8 @@
           "durationS",
           "legs",
           "eventIds",
+          "onTheWay",
+          "comingUp",
           "impact"
         ]
       },
@@ -826,6 +866,10 @@
                 "type": "string",
                 "description": "The car park, when a car leg ends at one (park-and-ride)",
                 "example": "Niittykumpu"
+              },
+              "parkingSpaces": {
+                "type": "integer",
+                "description": "The car park's spaces for cars, when known"
               }
             },
             "required": [
@@ -856,6 +900,10 @@
                 "type": "string",
                 "description": "The car park, when a car leg ends at one (park-and-ride)",
                 "example": "Niittykumpu"
+              },
+              "parkingSpaces": {
+                "type": "integer",
+                "description": "The car park's spaces for cars, when known"
               }
             },
             "required": [
@@ -878,6 +926,10 @@
               "type": "string"
             },
             "description": "Ids of the stops a transit leg passes, first to last"
+          },
+          "distanceM": {
+            "type": "integer",
+            "description": "Along the leg's line"
           },
           "geometry": {
             "type": "object",
@@ -934,6 +986,44 @@
           "other"
         ]
       },
+      "OnTheWay": {
+        "type": "object",
+        "properties": {
+          "eventId": {
+            "type": "string"
+          },
+          "impact": {
+            "$ref": "#/components/schemas/Impact"
+          },
+          "leg": {
+            "type": "integer",
+            "description": "Index of the first leg it's on"
+          },
+          "at": {
+            "type": "array",
+            "prefixItems": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              }
+            ],
+            "description": "[lon, lat] on the route where the trip meets it"
+          },
+          "minutes": {
+            "type": "integer",
+            "description": "Minutes from the itinerary's start to `at`"
+          }
+        },
+        "required": [
+          "eventId",
+          "impact",
+          "leg",
+          "at",
+          "minutes"
+        ]
+      },
       "Impact": {
         "type": "string",
         "enum": [
@@ -941,7 +1031,8 @@
           "minor",
           "consider",
           "major"
-        ]
+        ],
+        "description": "How much this Event matters for this itinerary"
       },
       "StreetParking": {
         "type": "object",
@@ -966,6 +1057,70 @@
           },
           "radiusM": {
             "type": "integer"
+          },
+          "places": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "lat": {
+                  "type": "number"
+                },
+                "lon": {
+                  "type": "number"
+                },
+                "spaces": {
+                  "type": "integer"
+                },
+                "kind": {
+                  "type": "string",
+                  "enum": [
+                    "paid",
+                    "free",
+                    "other"
+                  ],
+                  "description": "other: only for some cars (`type`)"
+                },
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "ev",
+                    "accessible"
+                  ]
+                },
+                "cost": {
+                  "type": "string",
+                  "enum": [
+                    "free",
+                    "paid"
+                  ],
+                  "description": "On arrival, as a pick's; absent for `other`"
+                },
+                "perHour": {
+                  "type": "number"
+                },
+                "paidUntil": {
+                  "type": "string"
+                },
+                "freeUntil": {
+                  "type": "string"
+                },
+                "maxStayMin": {
+                  "type": "integer"
+                },
+                "disc": {
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "lat",
+                "lon",
+                "spaces",
+                "kind",
+                "disc"
+              ]
+            },
+            "description": "Each parking area's centre and what it costs on arrival, for the map"
           }
         },
         "required": [
@@ -974,7 +1129,8 @@
           "free",
           "ev",
           "accessible",
-          "radiusM"
+          "radiusM",
+          "places"
         ]
       },
       "CarPark": {
@@ -1004,6 +1160,87 @@
           "lon",
           "carSpaces",
           "distanceM"
+        ]
+      },
+      "ParkingPick": {
+        "type": "object",
+        "properties": {
+          "reasons": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "closest",
+                "cheapest",
+                "biggest"
+              ]
+            },
+            "description": "Why it's picked: one spot can be several"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "street",
+              "carPark"
+            ]
+          },
+          "name": {
+            "type": "string",
+            "description": "A car park's name"
+          },
+          "lat": {
+            "type": "number"
+          },
+          "lon": {
+            "type": "number"
+          },
+          "distanceM": {
+            "type": "integer",
+            "description": "As the crow flies from the destination"
+          },
+          "spaces": {
+            "type": "integer"
+          },
+          "cost": {
+            "type": "string",
+            "enum": [
+              "free",
+              "paid",
+              "unknown"
+            ],
+            "description": "On arrival: free also when it's outside the paid hours"
+          },
+          "perHour": {
+            "type": "number",
+            "description": "Euros an hour, from the fee zone, when it's paid"
+          },
+          "paidUntil": {
+            "type": "string",
+            "description": "When the paid hours end on the day of arrival, as HH:MM",
+            "example": "21:00"
+          },
+          "freeUntil": {
+            "type": "string",
+            "description": "When the paid hours begin, if it's free on arrival but not all day",
+            "example": "09:00"
+          },
+          "maxStayMin": {
+            "type": "integer"
+          },
+          "disc": {
+            "type": "boolean",
+            "description": "A parking disc is needed"
+          }
+        },
+        "required": [
+          "reasons",
+          "kind",
+          "lat",
+          "lon",
+          "distanceM",
+          "spaces",
+          "cost",
+          "disc"
         ]
       }
     },

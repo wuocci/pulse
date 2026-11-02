@@ -1,7 +1,7 @@
 import type { Event, Leg } from "@pulse/schema";
 import { describe, expect, it } from "vitest";
 import type { RoutedItinerary } from "../adapters/digitransit-routing.ts";
-import { impactOf, matchItinerary } from "./match.ts";
+import { impactOf, impactOfMatch, matchItinerary } from "./match.ts";
 
 // A leg along latitude 60.17 from 24.93 to 24.94 (about 555 m). 0.00018° of latitude is about 20 m.
 const LAT = 60.17;
@@ -97,6 +97,12 @@ describe("which Events are on an itinerary", () => {
     ]);
   });
 
+  it("takes an alert that names lines only for a leg riding one of them, not at a shared stop or walking by", () => {
+    const otherLines = alert("E and L trains", { lines: ["HSL:3002E", "HSL:3002L"], stops: ["HSL:2"], geometry: { type: "Point", coordinates: [24.935, LAT] }, precision: "exact" });
+
+    expect(matchedIds(itinerary(leg(), TRAM), [otherLines])).toEqual([]);
+  });
+
   it("only takes what's going on during the trip", () => {
     const events = [
       event("over", { when: { start: "2026-10-01T00:00:00+03:00", end: "2026-10-31T11:00:00+02:00" } }),
@@ -106,6 +112,47 @@ describe("which Events are on an itinerary", () => {
     ];
 
     expect(matchedIds(itinerary(leg()), events)).toEqual(["during"]);
+  });
+});
+
+describe("where the trip meets an Event", () => {
+  it("is the point of the route nearest the Event, and how many minutes in the trip gets there", () => {
+    // 20 m north of the leg's middle: 5 min into its 10.
+    const [match] = matchItinerary(itinerary(leg()), [event("dig")]);
+
+    expect(match).toMatchObject({ leg: 0, minutes: 5 });
+    expect(match!.at[0]).toBeCloseTo(24.935, 4);
+    expect(match!.at[1]).toBeCloseTo(LAT, 4);
+  });
+
+  it("counts from the itinerary's start, on the first leg the Event is on", () => {
+    const second = leg({ start: "2026-10-31T12:20:00+02:00", end: "2026-10-31T12:30:00+02:00" });
+    const first = leg({ geometry: { type: "LineString", coordinates: [[24.9, 60.1], [24.91, 60.1]] }, from: { name: "X", lat: 60.1, lon: 24.9 } });
+
+    expect(matchItinerary(itinerary(first, second), [event("dig")])[0]).toMatchObject({ leg: 1, minutes: 25 });
+  });
+
+  it("is where an area the route runs through begins", () => {
+    const around = event("area", at({ type: "Polygon", coordinates: [[[24.938, 60.16], [24.95, 60.16], [24.95, 60.18], [24.938, 60.18], [24.938, 60.16]]] }));
+
+    const [match] = matchItinerary(itinerary(leg()), [around]);
+
+    expect(match!.at[0]).toBeCloseTo(24.938, 3);
+    expect(match!.minutes).toBe(8);
+  });
+
+  it("is where the leg begins for an alert on its line or stop", () => {
+    expect(matchItinerary(itinerary(TRAM), [alert("line", { lines: ["HSL:1005T"] })])[0]).toMatchObject({ leg: 0, minutes: 0, at: [24.93, LAT] });
+  });
+});
+
+describe("what's coming up on the route", () => {
+  it("is what's on it in a window instead of during the trip, whatever its daily hours", () => {
+    const nextWeek = event("next week", { when: { start: "2026-11-05T00:00:00+02:00", dailyHours: { from: "22:00", to: "06:00" } }, status: "upcoming" });
+    const window = { start: Date.parse("2026-10-31T12:30:00+02:00"), end: Date.parse("2026-11-07T12:00:00+02:00") };
+
+    expect(matchedIds(itinerary(leg()), [nextWeek])).toEqual([]);
+    expect(matchItinerary(itinerary(leg()), [nextWeek], { window }).map((m) => m.event.id)).toEqual(["next week"]);
   });
 });
 
@@ -137,26 +184,50 @@ describe("Impact", () => {
     expect(impact(itinerary(TRAM), alert("a", { stops: ["HSL:1"] }, { noticeable: ["outage"] }))).toBe("major");
   });
 
-  it("is consider when it's in the way of how that part is travelled, or blocks the way", () => {
-    expect(impact(itinerary(leg()), event("a", { mainlyAffected: "pedestrians" }))).toBe("consider");
-    expect(impact(itinerary(leg({ mode: "bike" })), event("a", { mainlyAffected: "cyclists" }))).toBe("consider");
-    expect(impact(itinerary(TRAM), event("a", { mainlyAffected: "transit" }))).toBe("consider");
-    expect(impact(itinerary(TRAM), alert("a", { lines: ["HSL:1005T"] }))).toBe("consider");
-    expect(impact(itinerary(leg()), event("a", { mainlyAffected: "everyone" }))).toBe("consider");
+  it("is consider when it's in the way of those travelling that part, and it matters: worth considering or blocking", () => {
+    const matters = { severity: "consider" as const };
+    expect(impact(itinerary(leg()), event("a", { mainlyAffected: "pedestrians", ...matters }))).toBe("consider");
+    expect(impact(itinerary(leg({ mode: "bike" })), event("a", { mainlyAffected: "cyclists", noticeable: ["blocked"] }))).toBe("consider");
+    expect(impact(itinerary(TRAM), event("a", { mainlyAffected: "transit", ...matters }))).toBe("consider");
+    expect(impact(itinerary(TRAM), alert("a", { lines: ["HSL:1005T"] }, matters))).toBe("consider");
+    expect(impact(itinerary(leg()), event("a", { mainlyAffected: "everyone", ...matters }))).toBe("consider");
     expect(impact(itinerary(leg()), event("a", { noticeable: ["blocked"] }))).toBe("consider");
+  });
+
+  it("is minor when it's for them but doesn't matter much: a notice on the line, a slower stretch of road", () => {
+    expect(impact(itinerary(TRAM), alert("a", { lines: ["HSL:1005T"] }, { severity: "info" }))).toBe("minor");
+    expect(impact(itinerary(leg({ mode: "car" })), event("a", { mainlyAffected: "drivers", severity: "minor" }))).toBe("minor");
+  });
+
+  it("leaves out what its Source says is in nobody's way", () => {
+    expect(matchedIds(itinerary(leg()), [event("a", { mainlyAffected: "nobody", noticeable: ["blocked"] })])).toEqual([]);
   });
 
   it("is major for a car when the road is closed, consider when drivers are in the way", () => {
     const car = itinerary(leg({ mode: "car" }));
 
     expect(impact(car, event("a", { severity: "major", noticeable: ["blocked"], mainlyAffected: "drivers" }))).toBe("major");
-    expect(impact(car, event("a", { mainlyAffected: "drivers" }))).toBe("consider");
+    expect(impact(car, event("a", { mainlyAffected: "drivers", severity: "consider" }))).toBe("consider");
     expect(impact(car, event("a", { mainlyAffected: "pedestrians" }))).toBe("minor");
+  });
+
+  it("is minor for a car when works block something but don't say who: a street dig mostly blocks the pavement", () => {
+    const dig = event("dig", { noticeable: ["blocked"] });
+
+    expect(impact(itinerary(leg({ mode: "car" })), dig)).toBe("minor");
+    expect(impact(itinerary(leg()), dig)).toBe("consider");
+    expect(impact(itinerary(leg({ mode: "car" })), event("closed", { noticeable: ["blocked"], mainlyAffected: "everyone" }))).toBe("consider");
   });
 
   it("is minor for the rest, e.g. a closure for drivers next to a walk", () => {
     expect(impact(itinerary(leg()), event("a", { mainlyAffected: "drivers" }))).toBe("minor");
     expect(impact(itinerary(leg({ mode: "bike" })), event("a", { mainlyAffected: "pedestrians" }))).toBe("minor");
+  });
+
+  it("is told for each Event too", () => {
+    const [drivers, closed] = matchItinerary(itinerary(leg()), [event("a", { mainlyAffected: "drivers" }), event("b", { noticeable: ["blocked"] })]);
+
+    expect([impactOfMatch(drivers!), impactOfMatch(closed!)]).toEqual(["minor", "consider"]);
   });
 
   it("is the worst of what's on the way", () => {

@@ -1,7 +1,9 @@
 import type { Itinerary, Leg, LegMode, TravelMode } from "@pulse/schema";
+import { distanceM } from "./street-parking.ts";
 
 // Trip planning from Digitransit's routing API (OpenTripPlanner 2, GraphQL `planConnection`), for Regions it covers.
-// A car Trip is planned two ways: driving all the way, and parking at a park-and-ride for public transport.
+// A car Trip is planned two ways: driving all the way, and parking at a park-and-ride for public transport. Which
+// park-and-ride ways are worth offering is the Trip's to judge (`planCar`).
 // It sometimes answers "no route" wrongly, or hangs (spike in #12): every plan is asked again once before it counts.
 
 export interface RouterOptions {
@@ -16,10 +18,12 @@ export interface TripRequest {
   to: { lat: number; lon: number };
   mode: TravelMode;
   departAt: string;
+  // Driving only: no park-and-ride ways.
+  directOnly?: boolean;
 }
 
 // An itinerary as planned, before Events are matched to it.
-export type RoutedItinerary = Omit<Itinerary, "eventIds" | "impact">;
+export type RoutedItinerary = Omit<Itinerary, "eventIds" | "onTheWay" | "comingUp" | "impact">;
 
 export interface Router {
   plan(trip: TripRequest): Promise<RoutedItinerary[]>;
@@ -37,7 +41,7 @@ const QUERY = `query($o: PlanLabeledLocationInput!, $d: PlanLabeledLocationInput
     edges { node { start end duration
       legs { mode
         start { scheduledTime estimated { time } } end { scheduledTime estimated { time } }
-        from { name lat lon stop { gtfsId } vehicleParking { name } } to { name lat lon stop { gtfsId } vehicleParking { name } }
+        from { name lat lon stop { gtfsId } vehicleParking { name } } to { name lat lon stop { gtfsId } vehicleParking { name capacity { carSpaces } } }
         route { gtfsId shortName }
         intermediatePlaces { stop { gtfsId } }
         legGeometry { points } } } }
@@ -53,7 +57,7 @@ interface Place {
   lat: number;
   lon: number;
   stop: { gtfsId: string } | null;
-  vehicleParking?: { name: string } | null;
+  vehicleParking?: { name: string; capacity?: { carSpaces: number | null } | null } | null;
 }
 interface Answer {
   data?: {
@@ -112,16 +116,19 @@ export function digitransitRouter({ url, apiKey, fetchFn = fetch, timeoutMs = TI
       const { mode } = trip;
       if (mode === "transit") return planned(trip, { modes: { transit: { transit: TRANSIT_MODES } }, first: TRANSIT_ITINERARIES });
       const direct = planned(trip, { modes: { directOnly: true, direct: [DIRECT[mode]] }, first: 1 });
-      if (mode !== "car") return direct;
+      if (mode !== "car" || trip.directOnly) return direct;
       // Park-and-ride is a suggestion on top of the drive: without it, the drive still stands.
       const parkAndRide = planned(trip, {
         modes: { transit: { access: ["CAR_PARKING"], transit: TRANSIT_MODES } },
         first: PARK_AND_RIDE_ITINERARIES,
       }).catch(() => []);
-      return [...(await direct), ...(await parkAndRide)];
+      return [...(await direct), ...(await parkAndRide).filter(parksFirst)];
     },
   };
 }
+
+// Driving to a car park first: Digitransit also offers walking all the way.
+const parksFirst = ({ legs }: RoutedItinerary) => legs[0]?.mode === "car" && !!legs[0].to.parking;
 
 function toItinerary({ node }: NonNullable<Answer["data"]>["planConnection"]["edges"][number]): RoutedItinerary {
   return {
@@ -140,7 +147,7 @@ function toItinerary({ node }: NonNullable<Answer["data"]>["planConnection"]["ed
         stops: leg.route
           ? [leg.from.stop, ...(leg.intermediatePlaces ?? []).map((p) => p.stop), leg.to.stop].flatMap((s) => (s ? [s.gtfsId] : []))
           : [],
-        geometry: { type: "LineString", coordinates: decodePolyline(leg.legGeometry.points) },
+        ...withLength(decodePolyline(leg.legGeometry.points)),
       }),
     ),
   };
@@ -150,7 +157,20 @@ const LEG_MODES: Record<string, LegMode> = { WALK: "walk", BICYCLE: "bike", CAR:
 const legMode = (mode: string): LegMode => LEG_MODES[mode] ?? "other";
 
 function place({ name, lat, lon, stop, vehicleParking }: Place) {
-  return { name, lat, lon, ...(stop ? { stop: stop.gtfsId } : {}), ...(vehicleParking ? { parking: vehicleParking.name } : {}) };
+  const spaces = vehicleParking?.capacity?.carSpaces;
+  return {
+    name,
+    lat,
+    lon,
+    ...(stop ? { stop: stop.gtfsId } : {}),
+    ...(vehicleParking ? { parking: vehicleParking.name } : {}),
+    ...(spaces ? { parkingSpaces: spaces } : {}),
+  };
+}
+
+function withLength(coordinates: [number, number][]) {
+  const length = coordinates.slice(1).reduce((sum, [lon, lat], i) => sum + distanceM({ lat, lon }, { lat: coordinates[i]![1], lon: coordinates[i]![0] }), 0);
+  return { distanceM: Math.round(length), geometry: { type: "LineString" as const, coordinates } };
 }
 
 // Google's encoded polyline, precision 5, as [lon, lat] pairs.

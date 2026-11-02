@@ -1,4 +1,4 @@
-import type { DailyHours, EventKind, Region as PublicRegion } from "@pulse/schema";
+import type { DailyHours, Event, EventKind, Region as PublicRegion } from "@pulse/schema";
 import { fiCapitalRegion } from "./fi-capital-region.ts";
 
 // A Region exists only as configuration (CONTEXT.md). Place names belong here, never in code or file names.
@@ -13,11 +13,11 @@ export interface Region extends PublicRegion {
   // Where Trips are planned; without it, the Region has no Trips.
   router?: { kind: "digitransit"; url: string };
   // Street parking around a Trip's destination (car parks come from the router). Credited by publisher and licence.
-  streetParking?: { kind: "helsinki-wfs"; url: string; layer: string; publisher: string; license: string };
+  streetParking?: { kind: "helsinki-wfs"; url: string; layer: string; zonesLayer?: string; publisher: string; license: string };
 }
 
 // One entry per feed a Source publishes. `adapter` picks the code that reads its format (ADR 0002).
-export type SourceConfig = LandUsePermitSource | GtfsRtSource | DigitrafficSource;
+export type SourceConfig = LandUsePermitSource | GtfsRtSource | DigitrafficSource | HandKeptSource;
 
 interface BaseSource {
   id: string;
@@ -41,6 +41,22 @@ export interface LandUsePermitSource extends BaseSource {
 // Fintraffic's road traffic messages: a national feed, kept to the Region's bbox.
 export interface DigitrafficSource extends BaseSource {
   adapter: "digitraffic";
+}
+
+// Long-running disruptions no feed carries (a bridge repair, a metro outage), kept by hand from the publishers' own
+// pages. Each entry says where it was read and when it was last checked: it goes stale unless someone keeps it.
+export interface HandKeptSource extends Omit<BaseSource, "url"> {
+  adapter: "hand-kept";
+  entries: HandKeptEntry[];
+}
+
+export interface HandKeptEntry extends Pick<Event, "kind" | "title" | "where" | "when" | "severity" | "mainlyAffected" | "noticeable"> {
+  id: string;
+  // What it closes, for whom, in the publisher's terms.
+  originalText: Record<string, string>;
+  // Where it was read, and the day it was last checked there (YYYY-MM-DD).
+  readFrom: string;
+  checked: string;
 }
 
 export const isPermitSource = (source: SourceConfig): source is LandUsePermitSource => source.adapter === "land-use-permits";

@@ -1,3 +1,4 @@
+import { handKept } from "./fi-capital-region-hand-kept.ts";
 import type { Region } from "./index.ts";
 
 const permitSystem = {
@@ -22,6 +23,7 @@ export const fiCapitalRegion: Region = {
     kind: "helsinki-wfs",
     url: "https://kartta.hel.fi/ws/geoserver/avoindata/wfs",
     layer: "avoindata:Pysakointipaikat_alue",
+    zonesLayer: "avoindata:Pysakoinnin_maksuvyohykkeet_alue",
     publisher: "City of Helsinki",
     license: "CC BY 4.0",
   },
@@ -66,6 +68,14 @@ export const fiCapitalRegion: Region = {
       refreshMinutes: 5,
       // A message that's gone is over: resolved, shown for an hour.
       keepVanishedHours: 1,
+    },
+    {
+      adapter: "hand-kept",
+      id: "hand-kept",
+      publisher: "City of Helsinki (kept by hand)",
+      license: "CC BY 4.0",
+      refreshMinutes: 60,
+      entries: handKept,
     },
   ],
 };
