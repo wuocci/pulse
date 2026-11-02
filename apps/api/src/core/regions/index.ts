@@ -1,4 +1,4 @@
-import type { DailyHours, Event, EventKind, Region as PublicRegion } from "@pulse/schema";
+import type { DailyHours, Event, EventKind, MainlyAffected, Region as PublicRegion } from "@pulse/schema";
 import { fiCapitalRegion } from "./fi-capital-region.ts";
 
 // A Region exists only as configuration (CONTEXT.md). Place names belong here, never in code or file names.
@@ -17,7 +17,7 @@ export interface Region extends PublicRegion {
 }
 
 // One entry per feed a Source publishes. `adapter` picks the code that reads its format (ADR 0002).
-export type SourceConfig = LandUsePermitSource | GtfsRtSource | DigitrafficSource | HandKeptSource;
+export type SourceConfig = LandUsePermitSource | GtfsRtSource | DigitrafficSource | CapSource | HandKeptSource;
 
 interface BaseSource {
   id: string;
@@ -45,6 +45,13 @@ export interface DigitrafficSource extends BaseSource {
 
 // Long-running disruptions no feed carries (a bridge repair, a metro outage), kept by hand from the publishers' own
 // pages. Each entry says where it was read and when it was last checked: it goes stale unless someone keeps it.
+export interface CapSource extends BaseSource {
+  adapter: "cap";
+  attribution?: string;
+  // Mainly affected per CAP eventCode value; codes not listed affect everyone.
+  mainlyAffected?: Record<string, MainlyAffected>;
+}
+
 export interface HandKeptSource extends Omit<BaseSource, "url"> {
   adapter: "hand-kept";
   entries: HandKeptEntry[];

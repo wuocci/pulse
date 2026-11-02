@@ -1,4 +1,5 @@
 import type { Event } from "@pulse/schema";
+import { fetchAlerts as fetchCapAlerts, toEvents as toWeatherEvents } from "../adapters/cap.ts";
 import { type Directory, fetchAlerts, idsToLook, type StopDirectory, toEvents } from "../adapters/gtfs-rt.ts";
 import { fetchMessages, toEvents as toRoadEvents } from "../adapters/digitraffic.ts";
 import { toEvents as toHandKeptEvents } from "../adapters/hand-kept.ts";
@@ -32,9 +33,10 @@ export function startIngest(regions: Region[], store: EventStore, options: Inges
 export async function refreshSource(source: SourceConfig, region: Region, store: EventStore, options: IngestOptions = {}) {
   try {
     const now = new Date();
-    const fresh = await read(source, region, options, now);
+    const previous = await store.sourceEvents(source.id);
+    const fresh = await read(source, region, options, now, previous);
     const events = source.keepVanishedHours
-      ? keepVanished(await store.sourceEvents(source.id), fresh.events, { now, keepForHours: source.keepVanishedHours })
+      ? keepVanished(previous, fresh.events, { now, keepForHours: source.keepVanishedHours })
       : fresh.events;
     await store.replaceSource(source.id, events);
     console.log(`${region.id}/${source.id}: ${events.length} Events`);
@@ -53,6 +55,7 @@ async function read(
   region: Region,
   { fetchFn = fetch, classification, stopDirectory }: IngestOptions,
   now: Date,
+  previous: Event[],
 ): Promise<{ events: Event[]; classifyRest?: () => Promise<void> }> {
   switch (source.adapter) {
     case "land-use-permits": {
@@ -67,6 +70,8 @@ async function read(
     }
     case "digitraffic":
       return { events: toRoadEvents(await fetchMessages(source, fetchFn), { source, region, now }) };
+    case "cap":
+      return { events: toWeatherEvents(await fetchCapAlerts(source, fetchFn), { source, region, now, previous }) };
     case "hand-kept":
       return { events: toHandKeptEvents(source, now) };
   }
