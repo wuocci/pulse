@@ -57,9 +57,17 @@ export async function fetchMessages(source: DigitrafficSource, fetchFn: typeof f
   return (await res.json()) as MessageCollection;
 }
 
-// What a restriction closes, worst first: the road (or a detour around it), or lanes.
-const CLOSES_ROAD = new Set(["ROAD_CLOSED", "DETOUR", "SINGLE_CARRIAGEWAY_CLOSED"]);
-const CLOSES_LANES = new Set(["SINGLE_LANE_CLOSED", "MULTIPLE_LANES_CLOSED", "SINGLE_ALTERNATE_LINE_TRAFFIC", "INTERMITTENT_STOPS_AND_CLOSURE_EFFECTIVE"]);
+// What a restriction closes, worst first: the road (or a detour around it), or lanes. One carriageway closed moves
+// the traffic onto the other: the road is still open, narrower.
+const CLOSES_ROAD = new Set(["ROAD_CLOSED", "DETOUR"]);
+const CLOSES_LANES = new Set([
+  "SINGLE_LANE_CLOSED",
+  "MULTIPLE_LANES_CLOSED",
+  "SINGLE_CARRIAGEWAY_CLOSED",
+  "SINGLE_ALTERNATE_LINE_TRAFFIC",
+  "INTERMITTENT_STOPS_AND_CLOSURE_EFFECTIVE",
+  "INTERMITTENT_SHORT_TERM_CLOSURE",
+]);
 const CLOSES_PATH = "NARROW_OR_CLOSED_PEDESTRIAN_AND_BICYLE_PATH";
 
 const LABELS = { ROAD_WORK: { en: "Roadworks", fi: "Tietyö" }, TRAFFIC_ANNOUNCEMENT: { en: "Traffic notice", fi: "Liikennetiedote" } } as const;

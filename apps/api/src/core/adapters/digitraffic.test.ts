@@ -45,6 +45,21 @@ describe("Digitraffic road messages → Events", () => {
     expect(byId[LAHDENVAYLA]).toMatchObject({ severity: "minor", noticeable: [], when: { dailyHours: { from: "07:00", to: "18:00", days: ["mon", "tue", "wed", "thu"] } } });
   });
 
+  it("doesn't call it a closed road when one carriageway is closed and traffic goes on the other, or the road closes now and then", () => {
+    const feature = messages.features.find((f) => f.properties.situationId === TEOLLISUUSKATU)!;
+    const withRestriction = (type: string) => {
+      const announcement = feature.properties.announcements[0]!;
+      const phases = announcement.roadWorkPhases!.map((phase) => ({ ...phase, restrictions: [{ type, restriction: { name: type } }] }));
+      return { ...feature, properties: { ...feature.properties, announcements: [{ ...announcement, roadWorkPhases: phases }] } };
+    };
+    const severityWith = (type: string) => toEvents({ features: [withRestriction(type)] }, { source, region: fiCapitalRegion, now })[0]!.severity;
+
+    expect(severityWith("SINGLE_CARRIAGEWAY_CLOSED")).toBe("consider");
+    expect(severityWith("INTERMITTENT_SHORT_TERM_CLOSURE")).toBe("consider");
+    expect(severityWith("ROAD_CLOSED")).toBe("major");
+    expect(severityWith("DETOUR")).toBe("major");
+  });
+
   it("says a closed walking and cycling path is in everyone's way, not only drivers'", () => {
     expect(byId[TUUSULA]).toMatchObject({ mainlyAffected: "everyone", severity: "consider", noticeable: ["blocked"], status: "active" });
     expect(byId[TUUSULA]!.title.en).toBe("Roadworks · Tuusulan Itäväylä");
