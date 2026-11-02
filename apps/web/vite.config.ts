@@ -8,7 +8,7 @@ export default defineConfig({
   // MapLibre loads its worker relative to its own module; pre-bundling moves the module and breaks that.
   optimizeDeps: { exclude: ["maplibre-gl"] },
   resolve: { alias: { "@": new URL("./src", import.meta.url).pathname } },
-  // The local API: `pnpm dev` at the repo root, or the compose `api` service (API_PROXY_TARGET=http://api:3000).
-  server: { proxy: { "/v0": process.env.API_PROXY_TARGET ?? "http://localhost:3000" } },
+  // The local API: `pnpm dev` at the repo root, or the compose `api` service (API_PROXY_TARGET=http://api:3002).
+  server: { proxy: { "/v0": process.env.API_PROXY_TARGET ?? "http://localhost:3002" } },
   test: { name: "web", environment: "jsdom", setupFiles: ["./src/test/setup.ts"] },
 });

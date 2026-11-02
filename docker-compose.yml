@@ -24,7 +24,7 @@ services:
     environment:
       DATABASE_URL: postgres://pulse:pulse@db:5432/pulse
     ports:
-      - "3000:3000"
+      - "3002:3002"
     volumes:
       - .:/repo
       # Keep the container's Linux node_modules separate from the host's.
@@ -41,7 +41,7 @@ services:
     # Installs only the web app and its workspace dependencies; --host makes Vite reachable from outside the container.
     command: sh -c "npm install -g pnpm@12 && pnpm install --frozen-lockfile --filter @pulse/web... && pnpm --filter @pulse/web dev --host 0.0.0.0"
     environment:
-      API_PROXY_TARGET: http://api:3000
+      API_PROXY_TARGET: http://api:3002
     ports:
       - "5173:5173"
     volumes:
