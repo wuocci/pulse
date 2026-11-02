@@ -33,6 +33,13 @@ export interface PointMapProps {
   // A Trip's route, leg by leg: each ride in its mode's colour with its line at the boarding point, walks dotted;
   // fitted into view.
   route?: { mode: Schema<"LegMode">; line?: { name: string }; to?: { parking?: string }; geometry: { coordinates: number[][] } }[];
+  // A Trip's destination, marked with its name.
+  destination?: LatLon & { name: string };
+  // Parking at B: the picks, numbered as in the panel, and every street parking spot around as a small dot that
+  // tells, when tapped, what it offers (`label`).
+  parking?: { picks: { lat: number; lon: number }[]; places: { lat: number; lon: number; kind: "paid" | "free" | "other"; label: string }[] };
+  // A place to zoom in on, e.g. a parking pick chosen in the panel; a new `key` zooms again.
+  focus?: LatLon & { key: number };
   // How much of the map the sheet covers: its bottom on phones, its left side when docked as a panel (0 while the
   // panel is hidden). The map centres in the rest.
   bottomInset?: number;
@@ -43,7 +50,21 @@ const reducedMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)"
 
 const ROUTE_ROOM_PX = 48;
 
-export function PointMap({ point, onLongPress, onPan, onMapClick, pins, renderPin, popup, route, bottomInset = PEEK_PX, leftInset = PANEL_PX }: PointMapProps) {
+export function PointMap({
+  point,
+  onLongPress,
+  onPan,
+  onMapClick,
+  pins,
+  renderPin,
+  popup,
+  route,
+  destination,
+  parking,
+  focus,
+  bottomInset = PEEK_PX,
+  leftInset = PANEL_PX,
+}: PointMapProps) {
   const { t } = useTranslation();
   const container = useRef<HTMLDivElement>(null);
   const map = useRef<maplibregl.Map | null>(null);
@@ -120,7 +141,11 @@ export function PointMap({ point, onLongPress, onPan, onMapClick, pins, renderPi
     return () => docked.removeEventListener("change", pad);
   }, [bottomInset, leftInset]);
 
-  // Redrawn and refitted when the route itself changes, not on every render.
+  // Redrawn when the parking changes, not on every render.
+  const parkingRef = useRef(parking);
+  parkingRef.current = parking;
+  const parkingKey = parking ? JSON.stringify(parking) : "";
+  // Redrawn and refitted when the route itself changes (or where to park), not on every render.
   const routeRef = useRef(route);
   routeRef.current = route;
   const routeKey = route
@@ -170,18 +195,117 @@ export function PointMap({ point, onLongPress, onPan, onMapClick, pins, renderPi
         label.textContent = leg.line.name;
         boardings.push(new maplibregl.Marker({ element: label }).setLngLat(start as [number, number]).addTo(m));
       }
-      const coordinates = legs.flatMap((leg) => leg.geometry.coordinates) as [number, number][];
+      // Where to park too: where the trip ends for a driver.
+      const { picks = [], places = [] } = parkingRef.current ?? {};
+      const parkingAt = [...picks, ...places].map(({ lat, lon }): [number, number] => [lon, lat]);
+      const coordinates = [...(legs.flatMap((leg) => leg.geometry.coordinates) as [number, number][]), ...parkingAt];
       if (!coordinates.length) return;
       const bounds = coordinates.reduce((b, c) => b.extend(c), new maplibregl.LngLatBounds(coordinates[0], coordinates[0]));
       m.fitBounds(bounds, { padding: ROUTE_ROOM_PX, maxZoom: 16, duration: reducedMotion() ? 0 : 600 });
     };
     if (m.isStyleLoaded()) draw();
-    else m.once("load", draw);
+    // Not "load": that fires once, and the style also reads as not loaded while a source updates after it.
+    else m.once("idle", draw);
     return () => {
-      m.off("load", draw);
+      m.off("idle", draw);
       for (const boarding of boardings) boarding.remove();
     };
-  }, [routeKey]);
+  }, [routeKey, parkingKey]);
+
+  useEffect(() => {
+    const m = map.current;
+    if (!m) return;
+    const { picks = [], places = [] } = parkingRef.current ?? {};
+    const data: maplibregl.GeoJSONSourceSpecification["data"] = {
+      type: "FeatureCollection",
+      features: places.map(({ lat, lon, kind, label }) => ({ type: "Feature", properties: { kind, label }, geometry: { type: "Point", coordinates: [lon, lat] } })),
+    };
+    const numbered: maplibregl.Marker[] = [];
+    // A tapped spot says what it offers. Not for keyboards: the panel's picks say the same of the ones worth it.
+    const spotPopup = new maplibregl.Popup({ closeButton: false, offset: 8, className: "parking-spot" });
+    const showSpot = (e: maplibregl.MapLayerMouseEvent) => {
+      const feature = e.features?.[0];
+      if (!feature || feature.geometry.type !== "Point") return;
+      const text = document.createElement("p");
+      text.className = "px-2.5 py-1.5 text-xs";
+      text.textContent = String(feature.properties.label);
+      spotPopup.setLngLat(feature.geometry.coordinates as [number, number]).setDOMContent(text).addTo(m);
+    };
+    const pointer = () => (m.getCanvas().style.cursor = "pointer");
+    const unpointer = () => (m.getCanvas().style.cursor = "");
+    const draw = () => {
+      const source = m.getSource<maplibregl.GeoJSONSource>("parking");
+      if (source) source.setData(data);
+      else {
+        m.addSource("parking", { type: "geojson", data });
+        m.addLayer({
+          id: "parking-places",
+          type: "circle",
+          source: "parking",
+          paint: {
+            "circle-radius": ["interpolate", ["linear"], ["zoom"], 14, 3, 17, 6],
+            "circle-color": ["match", ["get", "kind"], "free", "#059669", "paid", "#2563eb", "#94a3b8"],
+            "circle-stroke-color": "#ffffff",
+            "circle-stroke-width": 1.5,
+            "circle-opacity": 0.8,
+          },
+        });
+      }
+      m.on("click", "parking-places", showSpot);
+      m.on("mouseenter", "parking-places", pointer);
+      m.on("mouseleave", "parking-places", unpointer);
+      // Decorative: the panel lists the same picks in words, in the same order.
+      picks.forEach(({ lat, lon }, i) => {
+        const label = document.createElement("span");
+        label.setAttribute("aria-hidden", "true");
+        label.className = "grid size-6 place-items-center rounded-full bg-blue-600 text-xs font-bold text-white shadow ring-2 ring-white";
+        label.textContent = String(i + 1);
+        numbered.push(new maplibregl.Marker({ element: label }).setLngLat([lon, lat]).addTo(m));
+      });
+    };
+    if (m.isStyleLoaded()) draw();
+    // Not "load": that fires once, and the style also reads as not loaded while a source updates after it.
+    else m.once("idle", draw);
+    return () => {
+      m.off("idle", draw);
+      m.off("click", "parking-places", showSpot);
+      m.off("mouseenter", "parking-places", pointer);
+      m.off("mouseleave", "parking-places", unpointer);
+      spotPopup.remove();
+      for (const marker of numbered) marker.remove();
+    };
+  }, [parkingKey]);
+
+  // The destination: a dark pin with its name, apart from the point's blue one.
+  const destinationKey = destination ? `${destination.lat},${destination.lon},${destination.name}` : "";
+  const destinationRef = useRef(destination);
+  destinationRef.current = destination;
+  useEffect(() => {
+    const m = map.current;
+    const to = destinationRef.current;
+    if (!m || !to) return;
+    const element = document.createElement("div");
+    element.setAttribute("aria-hidden", "true");
+    element.className = "flex flex-col items-center";
+    const name = document.createElement("span");
+    name.className = "max-w-40 truncate rounded bg-slate-900 px-1.5 py-0.5 text-xs font-semibold text-white shadow ring-2 ring-white";
+    name.textContent = to.name;
+    const dot = document.createElement("span");
+    dot.className = "mt-0.5 size-3 rounded-full bg-slate-900 ring-2 ring-white";
+    element.append(name, dot);
+    const marker = new maplibregl.Marker({ element, anchor: "bottom" }).setLngLat([to.lon, to.lat]).addTo(m);
+    return () => void marker.remove();
+  }, [destinationKey]);
+
+  const focusKey = focus?.key;
+  const focusRef = useRef(focus);
+  focusRef.current = focus;
+  useEffect(() => {
+    const m = map.current;
+    const at = focusRef.current;
+    if (!m || !at || focusKey === undefined) return;
+    m.easeTo({ center: [at.lon, at.lat], zoom: Math.max(m.getZoom(), 17), duration: reducedMotion() ? 0 : 600 });
+  }, [focusKey]);
 
   useEffect(() => {
     const m = map.current;

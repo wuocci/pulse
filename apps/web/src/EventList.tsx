@@ -25,7 +25,7 @@ export function EventList({ label, pins, selectedId, languages, timeZone, onSele
 
   return (
     <ul aria-label={label ?? t("listTitle")} className="-mx-2 space-y-1">
-      {nearest.map(({ event, distanceM }) => (
+      {nearest.map(({ event, distanceM, trip }) => (
         <li key={event.id}>
           <button
             type="button"
@@ -42,7 +42,9 @@ export function EventList({ label, pins, selectedId, languages, timeZone, onSele
                 {subtitle(event, timeZone, now, t)}
               </span>
             </span>
-            <span className="shrink-0 text-xs text-muted-foreground tabular-nums">{distance(distanceM, i18n.language)}</span>
+            <span className="shrink-0 text-xs text-muted-foreground tabular-nums">
+              {trip ? (trip.minutes ? t("atMinute", { count: trip.minutes }) : t("atStart")) : distance(distanceM, i18n.language)}
+            </span>
           </button>
         </li>
       ))}

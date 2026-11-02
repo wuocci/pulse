@@ -1,6 +1,6 @@
 import type { GeocodeResult } from "@pulse/client";
 import { Search, X } from "lucide-react";
-import { type KeyboardEvent, useEffect, useId, useState } from "react";
+import { type KeyboardEvent, type ReactNode, useEffect, useId, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { GeocodeError, useGeocode } from "./api.ts";
 import type { LatLon } from "./platform.tsx";
@@ -21,9 +21,11 @@ export interface AddressSearchProps {
   // What the field shows to begin with, e.g. a Trip's destination from a shared link.
   initialText?: string;
   autoFocus?: boolean;
+  // In place of the search glass, e.g. a trip's From and To marks.
+  leading?: ReactNode;
 }
 
-export function AddressSearch({ point, lang, onPick, label, placeholder, initialText = "", autoFocus = false }: AddressSearchProps) {
+export function AddressSearch({ point, lang, onPick, label, placeholder, initialText = "", autoFocus = false, leading }: AddressSearchProps) {
   const { t } = useTranslation();
   const listId = useId();
   const [text, setText] = useState(initialText);
@@ -90,7 +92,10 @@ export function AddressSearch({ point, lang, onPick, label, placeholder, initial
                   aria-selected={i === active}
                   className="cursor-pointer px-4 py-3 text-sm aria-selected:bg-muted"
                   // Picks before the field loses focus.
+                  // Keep the input's focus, or its blur closes the list before the tap lands: the pointer press for most
+                  // browsers, the mouse press a phone sends after the touch for others (iOS Safari).
                   onPointerDown={(e) => e.preventDefault()}
+                  onMouseDown={(e) => e.preventDefault()}
                   onClick={() => pick(place)}
                 >
                   {place.label}
@@ -106,7 +111,9 @@ export function AddressSearch({ point, lang, onPick, label, placeholder, initial
           )}
         </div>
       )}
-      <Search aria-hidden className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
+      <span aria-hidden className="pointer-events-none absolute top-1/2 left-3 grid size-4 -translate-y-1/2 place-items-center text-muted-foreground">
+        {leading ?? <Search className="size-4" />}
+      </span>
       <input
         type="search"
         role="combobox"

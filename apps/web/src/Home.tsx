@@ -1,5 +1,5 @@
 import type { GeocodeResult, TravelMode } from "@pulse/client";
-import { CircleCheck, LocateFixed, LocateIcon, Navigation, Route } from "lucide-react";
+import { CircleCheck, LoaderCircle, LocateFixed, LocateIcon, Navigation, Route } from "lucide-react";
 import { useNavigate, useSearch } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -8,13 +8,13 @@ import { AddressSearch } from "./AddressSearch.tsx";
 import { useEvents, useRegions, useTrip } from "./api.ts";
 import { EventCard } from "./EventCard.tsx";
 import { EventList } from "./EventList.tsx";
-import { nearestFirst, statusOf, textIn, type Time } from "./events.ts";
+import { nearestFirst, statusOf, textIn, type Time, tripPins } from "./events.ts";
 import { EventPin } from "./map/EventPin.tsx";
 import { PointMap } from "./map/PointMap.tsx";
 import { type LatLon, LocationError, usePlatform } from "./platform.tsx";
 import { formatAt, parseAt, usePoint } from "./point.ts";
 import { PANEL_PX, PEEK_PX, Sheet } from "./Sheet.tsx";
-import { Itineraries, ParkingNear, TravelModes, TripForm } from "./TripPanel.tsx";
+import { HeadsUp, Itineraries, OnTheWay, ParkingNear, parkingDetails, TravelModes, TripForm } from "./TripPanel.tsx";
 
 // The locate button, as in map apps: the first tap goes to my location, the second follows it, the third stops.
 // Panning the map or choosing a place by hand also stops following.
@@ -117,33 +117,48 @@ export function Home() {
   const shownIndex = (m: TravelMode) => (m === mode && search.route !== undefined ? search.route : recommended?.mode === m ? recommended.index : 0);
   const plan = search.trip ? trip.data?.plans.find((p) => p.mode === mode) : undefined;
   const itinerary = plan ? (plan.itineraries[shownIndex(mode)] ?? plan.itineraries[0]) : undefined;
-  // What the better way avoids: the worst of what's on the fastest way and not on it.
+  // What the better way avoids: the worst of what's in the fastest way's way and not in its own.
   const avoids = (() => {
     if (!trip.data || !recommended) return undefined;
     const ways = trip.data.plans.flatMap((p) => p.itineraries);
     const fastest = ways.reduce<(typeof ways)[number] | undefined>((a, b) => (!a || Date.parse(b.end) < Date.parse(a.end) ? b : a), undefined);
     const better = trip.data.plans.find((p) => p.mode === recommended.mode)?.itineraries[recommended.index];
-    const avoided = trip.data.events.filter((e) => fastest?.eventIds.includes(e.id) && !better?.eventIds.includes(e.id));
+    // Only what's in the way counts: worth considering or major on that way.
+    const inWay = (way: typeof fastest) => new Set(way?.onTheWay.filter((m) => m.impact === "consider" || m.impact === "major").map((m) => m.eventId));
+    const [onFastest, onBetter] = [inWay(fastest), inWay(better)];
+    const avoided = trip.data.events.filter((e) => onFastest.has(e.id) && !onBetter.has(e.id));
     const rank = { info: 0, minor: 1, consider: 2, major: 3 };
     const worst = avoided.sort((a, b) => rank[b.severity] - rank[a.severity])[0];
     return worst && textIn(worst.title, languages);
   })();
-  const shown = useMemo(() => {
-    if (!search.trip) return events.data;
-    if (!itinerary || !trip.data) return [];
-    return trip.data.events.filter((e) => itinerary.eventIds.includes(e.id));
-  }, [search.trip, events.data, itinerary, trip.data]);
-  const here = search.trip ? tripFrom : point;
-  const pins = useMemo(() => (here && shown ? nearestFirst(shown, here) : []), [shown, here]);
-  const selected = shown?.find((e) => e.id === selectedId);
-  // The card pops up from the selected Event's nearest pin.
-  const selectedPin = selected ? pins.find((p) => p.event.id === selected.id) : undefined;
+  // On a Trip, what's in the way, pinned where the trip meets it.
+  const onTrip = useMemo(
+    () => (search.trip ? tripPins(itinerary?.onTheWay ?? [], trip.data?.events ?? []) : undefined),
+    [search.trip, itinerary, trip.data],
+  );
+  const around = useMemo(() => (!search.trip && point && events.data ? nearestFirst(events.data, point) : []), [search.trip, point, events.data]);
+  const pins = onTrip ?? around;
+  const selectedPin = pins.find((p) => p.event.id === selectedId);
+  const selected = selectedPin?.event;
+  const titleOf = (id: string) => {
+    const event = trip.data?.events.find((e) => e.id === id);
+    return event && textIn(event.title, languages);
+  };
+  // Parking at B is for driving there (walking the last bit, maybe): a park-and-ride way parks on the way.
+  const parking = mode === "car" && itinerary?.legs.every((leg) => leg.mode === "car" || leg.mode === "walk") ? trip.data?.parking : undefined;
+  const parkingOnMap = useMemo(
+    () => parking && { picks: parking.picks, places: (parking.street?.places ?? []).map((place) => ({ ...place, label: parkingDetails(place, t) })) },
+    [parking, t],
+  );
+  // A parking pick chosen in the panel, to zoom the map to: a new key each time, so the same one zooms again.
+  const [focus, setFocus] = useState<LatLon & { key: number }>();
   const timeZone = regions.data?.[0]?.timeZone ?? "UTC";
 
   const status = (() => {
     if (search.trip) {
+      if (tripTo && trip.isFetching && !itinerary) return { text: t("findingRoutes"), clear: false };
       if (!itinerary) return null;
-      const count = itinerary.eventIds.length;
+      const count = onTrip?.length ?? 0;
       return count ? { text: t("statusTrip", { count }), clear: false } : { text: t("statusTripClear"), clear: true };
     }
     if (events.isError) return { text: t("statusError"), clear: false };
@@ -171,6 +186,9 @@ export function Home() {
         bottomInset={peekPx}
         leftInset={panelHidden ? 0 : PANEL_PX}
         {...(itinerary ? { route: itinerary.legs } : {})}
+        {...(parkingOnMap ? { parking: parkingOnMap } : {})}
+        {...(search.trip && tripTo ? { destination: { ...tripTo, name: search.toName ?? t("to") } } : {})}
+        {...(focus ? { focus } : {})}
           {...(selected && selectedPin
             ? {
                 popup: {
@@ -280,18 +298,34 @@ export function Home() {
         }
       >
         {search.trip ? (
-          plan && (
+          // Finding routes: the map's status line says so too, for screen readers.
+          tripTo && trip.isPending ? (
+            <p aria-hidden className="flex items-center gap-2 py-2 text-sm text-muted-foreground">
+              <LoaderCircle className="size-4 animate-spin motion-reduce:animate-none" />
+              {t("findingRoutes")}
+            </p>
+          ) : plan && (
             <div className="space-y-4">
               <Itineraries
                 itineraries={plan.itineraries}
+                titleOf={titleOf}
                 chosen={shownIndex(mode)}
                 {...(recommended?.mode === mode ? { better: { index: recommended.index, ...(avoids ? { avoids } : {}) } } : {})}
                 timeZone={timeZone}
                 onChoose={(index) => void navigate({ search: (prev) => ({ ...prev, route: index }), replace: true })}
               />
-              {mode === "car" && trip.data?.parking && <ParkingNear parking={trip.data.parking} place={search.toName ?? t("to")} />}
-              {pins.length > 0 && (
-                <EventList label={t("onTheWay")} pins={pins} selectedId={selectedId} languages={languages} timeZone={timeZone} onSelect={select} />
+              {itinerary && (
+                <HeadsUp comingUp={itinerary.comingUp} titleOf={titleOf} legs={itinerary.legs} timeZone={timeZone} />
+              )}
+              {parking && (
+                <ParkingNear
+                  parking={parking}
+                  place={search.toName ?? t("to")}
+                  onPick={({ lat, lon }) => setFocus((prev) => ({ lat, lon, key: (prev?.key ?? 0) + 1 }))}
+                />
+              )}
+              {itinerary && onTrip && (
+                <OnTheWay legs={itinerary.legs} pins={onTrip} selectedId={selectedId} languages={languages} timeZone={timeZone} onSelect={select} />
               )}
             </div>
           )
