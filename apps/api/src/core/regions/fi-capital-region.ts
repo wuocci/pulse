@@ -70,6 +70,26 @@ export const fiCapitalRegion: Region = {
       keepVanishedHours: 1,
     },
     {
+      adapter: "cap",
+      id: "fmi-warnings",
+      url: "https://alerts.fmi.fi/cap/feed/atom_en-GB.xml",
+      publisher: "Finnish Meteorological Institute",
+      license: "CC BY 4.0",
+      attribution: "Finnish Meteorological Institute, CC BY 4.0",
+      refreshMinutes: 10,
+      keepVanishedHours: 6,
+      // Event codes from FMI's CAP profile (https://alerts.fmi.fi/cap/profile/v1.1.0/). Sea warnings are for boats.
+      mainlyAffected: {
+        trafficWeather: "drivers",
+        pedestrianSafety: "pedestrians",
+        seaWind: "nobody",
+        seaWaveHeight: "nobody",
+        seaIcing: "nobody",
+        seaThunderstorm: "nobody",
+        shallowWater: "nobody",
+      },
+    },
+    {
       adapter: "hand-kept",
       id: "hand-kept",
       publisher: "City of Helsinki (kept by hand)",
