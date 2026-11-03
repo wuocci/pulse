@@ -8,6 +8,11 @@ export interface Region extends PublicRegion {
   sources: SourceConfig[];
   // Local working hours per Event kind, for the Right now Layer when a Source gives none. Kinds left out count all day.
   defaultDailyHours: Partial<Record<EventKind, DailyHours>>;
+  // How many people make a crowd: at a venue that holds at least `area`, a public event is in My area and Right now
+  // with crowd; `trips`, in a Trip's way (#49).
+  crowd: { area: number; trips: number };
+  // How long a public event lasts when its Source doesn't say.
+  usualEventHours: number;
   // Where address search looks; without it, the Region has none.
   geocoder?: { kind: "digitransit"; url: string };
   // Where Trips are planned; without it, the Region has no Trips.
@@ -19,7 +24,7 @@ export interface Region extends PublicRegion {
 }
 
 // One entry per feed a Source publishes. `adapter` picks the code that reads its format (ADR 0002).
-export type SourceConfig = LandUsePermitSource | GtfsRtSource | DigitrafficSource | CapSource | HandKeptSource;
+export type SourceConfig = LandUsePermitSource | GtfsRtSource | DigitrafficSource | CapSource | HandKeptSource | LinkedEventsSource;
 
 interface BaseSource {
   id: string;
@@ -54,6 +59,11 @@ export interface CapSource extends BaseSource {
   attribution?: string;
   // Mainly affected per CAP eventCode value; codes not listed affect everyone.
   mainlyAffected?: Record<string, MainlyAffected>;
+}
+
+// An event calendar on the Linked Events API: big events, at venues that hold a crowd.
+export interface LinkedEventsSource extends BaseSource {
+  adapter: "linked-events";
 }
 
 export interface HandKeptSource extends Omit<BaseSource, "url"> {

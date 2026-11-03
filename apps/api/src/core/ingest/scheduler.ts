@@ -4,6 +4,7 @@ import { type Directory, fetchAlerts, idsToLook, type StopDirectory, toEvents } 
 import { fetchMessages, toEvents as toRoadEvents } from "../adapters/digitraffic.ts";
 import { toEvents as toHandKeptEvents } from "../adapters/hand-kept.ts";
 import { fetchPermits, toPermitItems } from "../adapters/land-use-permits.ts";
+import { fetchEvents, toEvents as toCalendarEvents } from "../adapters/linked-events.ts";
 import type { Classification } from "../classifier/enrich.ts";
 import type { EventStore } from "../events/store.ts";
 import type { GtfsRtSource, Region, SourceConfig } from "../regions/index.ts";
@@ -79,5 +80,9 @@ async function read(
       return { events: toWeatherEvents(await fetchCapAlerts(source, fetchFn), { source, region, now, previous }) };
     case "hand-kept":
       return { events: toHandKeptEvents(source, now) };
+    case "linked-events": {
+      const context = { source, region, now };
+      return { events: toCalendarEvents(await fetchEvents(context, fetchFn), context) };
+    }
   }
 }
