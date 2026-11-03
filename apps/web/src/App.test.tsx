@@ -336,6 +336,7 @@ describe("Events on the map", () => {
 
     await waitFor(() => expect(history.location.search).toContain("event=metro"));
     expect(screen.getByRole("heading", { name: "Metro: no service" })).toHaveFocus();
+    expect(screen.getByRole("article")).toHaveTextContent("Placed roughly");
     expect(screen.queryByTestId("popup")).not.toBeInTheDocument();
 
     await userEvent.click(screen.getByRole("button", { name: "Close" }));
@@ -515,6 +516,79 @@ describe("the Event card", () => {
     await open(anEvent("a"));
 
     expect(screen.getByRole("region", { name: "Map controls" })).not.toContainElement(screen.getByRole("article"));
+  });
+
+  it("names a transit alert's lines and stops", async () => {
+    const { card } = await open(
+      anEvent("a", {
+        mainlyAffected: "transit",
+        where: { ...anEvent("a").where, lines: ["HSL:1805"], stops: ["HSL:1", "HSL:2"], lineNames: ["805"], stopNames: ["Klaavuntie", "Juorumäki"] },
+      }),
+    );
+
+    expect(card).toHaveTextContent("Line 805");
+    expect(card).toHaveTextContent("Stops Klaavuntie and Juorumäki");
+    expect(card).not.toHaveTextContent("Placed roughly");
+  });
+
+  it("shows the Source's own text and the Source under More", async () => {
+    const { card } = await open(
+      anEvent("a", {
+        originalText: { en: "Water pipe repair. Lane closed." },
+        sources: [{ name: "City of Helsinki", id: "a", url: "https://example.fi/a", updatedAt: "2026-10-01T09:00:00+03:00", license: "CC BY 4.0" }],
+      }),
+    );
+    const more = within(card).getByRole("button", { name: "More" });
+    expect(more).toHaveAttribute("aria-expanded", "false");
+    expect(card).not.toHaveTextContent("Water pipe repair");
+
+    await userEvent.click(more);
+
+    expect(more).toHaveAttribute("aria-expanded", "true");
+    expect(card).toHaveTextContent("Water pipe repair. Lane closed.");
+    expect(card).toHaveTextContent("City of Helsinki · CC BY 4.0");
+    expect(within(card).getByRole("link", { name: "Open at City of Helsinki" })).toHaveAttribute("href", "https://example.fi/a");
+  });
+
+  it("shows what the pipeline made of it under Debug, and reads it in another language", async () => {
+    const { card } = await open(
+      anEvent("a", {
+        title: { en: "Works a", fi: "Työmaa a" },
+        originalText: { en: "Pipe repair", fi: "Putkikorjaus" },
+        layers: ["area", "now"],
+        workType: "water_sewer",
+        confidence: 0.82,
+        when: { start: "2026-10-01T00:00:00+03:00", end: "2026-10-30T00:00:00+02:00", endConflict: { field: "2026-10-30", text: "2026-11-15" } },
+      }),
+    );
+    await userEvent.click(within(card).getByRole("button", { name: "More" }));
+    const debug = within(card).getByRole("button", { name: "Debug" });
+    expect(debug).toHaveAttribute("aria-expanded", "false");
+
+    await userEvent.click(debug);
+
+    expect(card).toHaveTextContent("Confidence82%");
+    expect(card).toHaveTextContent("End dateOct 30, 2026 in the data, Nov 15, 2026 in the text");
+    expect(card).toHaveTextContent("LayersArea, Right now");
+    expect(card).toHaveTextContent("Kind of workWater and sewer works");
+    expect(card).toHaveTextContent("PrecisionAn area");
+
+    const languages = within(card).getByRole("group", { name: "Language" });
+    expect(within(languages).getByRole("button", { name: "English" })).toHaveAttribute("aria-pressed", "true");
+    await userEvent.click(within(languages).getByRole("button", { name: "Finnish" }));
+
+    expect(within(card).getByRole("heading", { name: "Työmaa a" })).toBeInTheDocument();
+    expect(card).toHaveTextContent("Putkikorjaus");
+    expect(within(languages).getByRole("button", { name: "Finnish" })).toHaveAttribute("aria-pressed", "true");
+  });
+
+  it("says when it isn't classified yet, and offers no language switch for one language", async () => {
+    const { card } = await open(anEvent("a"));
+    await userEvent.click(within(card).getByRole("button", { name: "More" }));
+    await userEvent.click(within(card).getByRole("button", { name: "Debug" }));
+
+    expect(card).toHaveTextContent("ConfidenceNot classified yet");
+    expect(within(card).queryByRole("group", { name: "Language" })).not.toBeInTheDocument();
   });
 });
 

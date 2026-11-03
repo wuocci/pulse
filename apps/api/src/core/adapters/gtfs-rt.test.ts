@@ -58,8 +58,25 @@ describe("GTFS-RT service alerts", () => {
     expect(event.where.geometry.coordinates).toHaveLength(5);
   });
 
-  it("lists a line even when the directory doesn't know it", async () => {
-    expect((await byAlert("329298")).where.lines).toContain("HSL:1022K");
+  it("names the lines and stops as riders know them, from the stop directory", async () => {
+    expect((await byAlert("322736")).where).toMatchObject({
+      lineNames: ["805"],
+      stopNames: ["Klaavuntie", "Puotilan leikkiniitt", "Juorumäki", "Puotilan kartano", "Puotilantie"],
+    });
+  });
+
+  it("lists a line even when the directory doesn't know it, but doesn't name it", async () => {
+    const { where } = await byAlert("329298");
+
+    expect(where.lines).toContain("HSL:1022K");
+    expect(where.lineNames ?? []).not.toContain(expect.stringContaining("HSL"));
+  });
+
+  it("names each stop once when several share a name", async () => {
+    for (const event of await eventsFor()) {
+      const names = event.where.stopNames ?? [];
+      expect(new Set(names).size, event.id).toBe(names.length);
+    }
   });
 
   it("takes the time window from the active period", async () => {

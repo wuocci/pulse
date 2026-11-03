@@ -83,6 +83,26 @@
                 "items": {
                   "type": "string"
                 }
+              },
+              "lineNames": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "The lines' names as riders know them (\"805\"), where the Source's directory knows them",
+                "example": [
+                  "805"
+                ]
+              },
+              "stopNames": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "The stops' names, each once (stops on both sides of a street share one)",
+                "example": [
+                  "Puotilantie"
+                ]
               }
             },
             "required": [
