@@ -106,7 +106,10 @@ const FITS: Partial<Record<LegMode, MainlyAffected[]>> = {
   car: ["drivers", "everyone"],
 };
 const TRANSIT_FITS: MainlyAffected[] = ["transit", "everyone"];
-const fitsLeg = (event: Event, leg: Leg) => (leg.line ? TRANSIT_FITS : (FITS[leg.mode] ?? [])).includes(event.mainlyAffected);
+// A cyclist rides on the road and on the pavement: the weather on both is theirs.
+const BIKE_WEATHER_FITS: MainlyAffected[] = ["cyclists", "drivers", "pedestrians", "everyone"];
+const fitsLeg = (event: Event, leg: Leg) =>
+  (leg.line ? TRANSIT_FITS : event.kind === "weather" && leg.mode === "bike" ? BIKE_WEATHER_FITS : (FITS[leg.mode] ?? [])).includes(event.mainlyAffected);
 
 // The worst of the matched Events. No delay data yet, so: `major` when a line or stop used is badly disrupted, a
 // road driven is closed, or an orange weather warning is for them; `consider` when it's in the way of those

@@ -301,4 +301,34 @@ describe("weather warnings", () => {
 
     expect(impactOf(matchItinerary(inHelsinki("car"), [blocking]))).toBe("minor");
   });
+
+  // The same real warning under another FMI event code, read through the Source's config.
+  const asCode = (code: string) =>
+    toEvents([{ ...archive[5]!, infos: archive[5]!.infos.map((info) => ({ ...info, eventCodes: [code] })) }], {
+      source: fmi,
+      region: fiCapitalRegion,
+      now: new Date("2026-02-26T15:00:00Z"),
+    })[0]!;
+
+  it("weigh on a bike as on the road and on the pavement: a cyclist rides both", () => {
+    const impact = (it: RoutedItinerary, warning: Event) => impactOf(matchItinerary(it, [warning]));
+
+    expect(impact(inHelsinki("bike"), orangeRoads)).toBe("major");
+    expect(impact(inHelsinki("bike"), pavements)).toBe("consider");
+    expect(impact(inHelsinki("walk"), orangeRoads)).toBe("minor");
+    expect(impact(inHelsinki("car"), pavements)).toBe("minor");
+  });
+
+  it("are worth considering for everyone in a yellow wind warning", () => {
+    const wind = asCode("wind");
+
+    expect(wind.mainlyAffected).toBe("everyone");
+    for (const mode of ["bike", "walk", "car"] as const) expect(impactOf(matchItinerary(inHelsinki(mode), [wind]))).toBe("consider");
+  });
+
+  it("leave out warnings that aren't about getting around: UV, forest fire, heat, cold, sea level", () => {
+    for (const code of ["uvNote", "forestFireWeather", "hotWeather", "coldWeather", "seaWaterHeight"]) {
+      expect(matchedIds(inHelsinki("walk"), [asCode(code)]), code).toEqual([]);
+    }
+  });
 });
