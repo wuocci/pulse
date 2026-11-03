@@ -48,6 +48,7 @@ export const OnTheWaySchema = z
     leg: z.number().int().openapi({ description: "Index of the first leg it's on" }),
     at: z.tuple([z.number(), z.number()]).openapi({ description: "[lon, lat] on the route where the trip meets it" }),
     minutes: z.number().int().openapi({ description: "Minutes from the itinerary's start to `at`" }),
+    wholeWay: z.boolean().optional().openapi({ description: "An area the itinerary starts and ends in: on the whole way, not one part of it" }),
   })
   .openapi("OnTheWay");
 

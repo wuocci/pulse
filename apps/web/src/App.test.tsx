@@ -778,6 +778,36 @@ describe("a Trip on the map", () => {
     expect(screen.queryByRole("button", { name: /^Works beside the way/ })).not.toBeInTheDocument();
   });
 
+  it("lists what's on the whole way once, above the parts of the trip; a warning the trip runs into stays with its part", async () => {
+    const slippery = anEvent("slippery", { kind: "weather", title: { en: "Orange slippery pavements" }, severity: "major", mainlyAffected: "pedestrians" });
+    const storm = anEvent("storm", { kind: "weather", title: { en: "Yellow wind warning" }, severity: "consider", mainlyAffected: "everyone" });
+    trip = {
+      events: [onTheWay, slippery, storm],
+      plans: [
+        {
+          mode: "transit",
+          itineraries: [
+            {
+              ...ride(["on the way", "slippery", "storm"], leg("walk"), leg("tram", "9"), leg("walk")),
+              onTheWay: [
+                { eventId: "slippery", impact: "major" as const, leg: 0, at: [24.95, 60.17] as [number, number], minutes: 0, wholeWay: true },
+                { eventId: "on the way", impact: "consider" as const, leg: 1, at: [24.945, 60.18] as [number, number], minutes: 6 },
+                { eventId: "storm", impact: "consider" as const, leg: 2, at: [24.94, 60.19] as [number, number], minutes: 12, wholeWay: false },
+              ],
+            },
+          ],
+        },
+      ],
+    };
+    renderApp(TO);
+
+    const list = within(await screen.findByRole("region", { name: "On the way" }));
+    expect(list.getAllByRole("heading").map((h) => h.textContent)).toEqual(["The whole way", "Tram 9", "Walking"]);
+    expect(within(list.getByRole("list", { name: "The whole way" })).getByRole("button", { name: /^Orange slippery pavements/ })).toBeInTheDocument();
+    expect(list.getAllByRole("button", { name: /^Orange slippery pavements/ })).toHaveLength(1);
+    expect(within(list.getByRole("list", { name: "Walking" })).getByRole("button", { name: /^Yellow wind warning/ })).toBeInTheDocument();
+  });
+
   it("redraws for another mode, and says when nothing is in the way", async () => {
     trip = {
       events: [onTheWay],

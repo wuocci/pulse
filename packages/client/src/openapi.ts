@@ -582,6 +582,8 @@ export interface components {
             ];
             /** @description Minutes from the itinerary's start to `at` */
             minutes: number;
+            /** @description An area the itinerary starts and ends in: on the whole way, not one part of it */
+            wholeWay?: boolean;
         };
         /**
          * @description How much this Event matters for this itinerary

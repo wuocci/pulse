@@ -43,6 +43,7 @@ export const en = {
   betterToday: "better today",
   avoids: "avoids {{what}}",
   onTheWay: "On the way",
+  wholeWay: "The whole way",
   leg_walk: "walk",
   leg_bike: "bike",
   leg_bus: "bus",

@@ -1014,6 +1014,10 @@
           "minutes": {
             "type": "integer",
             "description": "Minutes from the itinerary's start to `at`"
+          },
+          "wholeWay": {
+            "type": "boolean",
+            "description": "An area the itinerary starts and ends in: on the whole way, not one part of it"
           }
         },
         "required": [
