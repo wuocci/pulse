@@ -1,5 +1,11 @@
+import helsinkiOutline from "./fi-capital-region-helsinki.json" with { type: "json" };
 import { handKept } from "./fi-capital-region-hand-kept.ts";
 import type { Region } from "./index.ts";
+
+// Helsinki, its islands and shores: the City of Helsinki's districts (avoindata:Maavesi_suurpiirit, CC BY 4.0), joined,
+// widened by 150 m so piers and the shoreline count, and simplified to about 80 m. Enough to tell a point in
+// Helsinki from one in Espoo or Vantaa.
+const helsinki: number[][][][] = helsinkiOutline;
 
 const permitSystem = {
   adapter: "land-use-permits",
@@ -7,6 +13,7 @@ const permitSystem = {
   publisher: "City of Helsinki",
   license: "CC BY 4.0",
   refreshMinutes: 180,
+  covers: helsinki,
 } as const;
 
 export const fiCapitalRegion: Region = {
@@ -27,6 +34,17 @@ export const fiCapitalRegion: Region = {
     publisher: "City of Helsinki",
     license: "CC BY 4.0",
   },
+  unavailable: [
+    {
+      id: "emergency-call-outs",
+      name: { en: "Emergency call-outs", fi: "Hälytystehtävät", sv: "Larmuppdrag" },
+      reason: {
+        en: "No open feed publishes rescue call-outs since 1 Sep 2026",
+        fi: "Mikään avoin syöte ei julkaise pelastustoimen hälytyksiä 1.9.2026 jälkeen",
+        sv: "Inget öppet flöde publicerar räddningsverkets larm sedan 1.9.2026",
+      },
+    },
+  ],
   defaultDailyHours: {
     works: { from: "07:00", to: "18:00", days: ["mon", "tue", "wed", "thu", "fri"] },
     public_event: { from: "10:00", to: "22:00" },

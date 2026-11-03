@@ -7,6 +7,7 @@ import { fetchPermits, toPermitItems } from "../adapters/land-use-permits.ts";
 import type { Classification } from "../classifier/enrich.ts";
 import type { EventStore } from "../events/store.ts";
 import type { GtfsRtSource, Region, SourceConfig } from "../regions/index.ts";
+import type { SourceHealthLog } from "./health.ts";
 import { keepVanished } from "./vanished.ts";
 
 export interface IngestOptions {
@@ -15,6 +16,8 @@ export interface IngestOptions {
   classification?: Classification;
   // A GTFS-RT Source's stop directory. Without it, alerts are placed vaguely in the Region.
   stopDirectory?: (source: GtfsRtSource) => StopDirectory;
+  // Where each refresh's outcome is kept, for /v0/sources/health.
+  health?: SourceHealthLog;
 }
 
 // Temporary scheduler until pg-boss jobs land (#2): refreshes every Source of every Region on its own interval.
@@ -39,11 +42,13 @@ export async function refreshSource(source: SourceConfig, region: Region, store:
       ? keepVanished(previous, fresh.events, { now, keepForHours: source.keepVanishedHours })
       : fresh.events;
     await store.replaceSource(source.id, events);
+    options.health?.succeeded(source.id, new Date());
     console.log(`${region.id}/${source.id}: ${events.length} Events`);
     // In the background: the next refresh doesn't wait for it.
     void fresh.classifyRest?.();
   } catch (error) {
     console.error(`${region.id}/${source.id}: refresh failed:`, error);
+    options.health?.failed(source.id, new Date(), error instanceof Error ? error.message : String(error));
   }
 }
 

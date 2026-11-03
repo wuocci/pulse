@@ -263,6 +263,80 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/sources/health": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Each Source of each Region: when it last updated, its last error, and whether it keeps up */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            sources: components["schemas"]["SourceHealth"][];
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/coverage": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query: {
+                    near: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The Layers and Sources at the point, from Region config; none outside every Region */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Coverage"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -665,6 +739,48 @@ export interface components {
             maxStayMin?: number;
             /** @description A parking disc is needed */
             disc: boolean;
+        };
+        SourceHealth: {
+            /** @example hsl-service-alerts */
+            id: string;
+            /** @example fi-capital-region */
+            region: string;
+            /** @example HSL */
+            publisher: string;
+            status: components["schemas"]["SourceStatus"];
+            /** @description How often it's expected to update */
+            refreshMinutes: number;
+            /** Format: date-time */
+            lastSuccessAt?: string;
+            lastError?: {
+                /** Format: date-time */
+                at: string;
+                message: string;
+            };
+        };
+        /**
+         * @description `delayed`: no successful fetch for longer than its refresh interval (or none yet); `down`: its last fetches all failed
+         * @enum {string}
+         */
+        SourceStatus: "ok" | "delayed" | "down";
+        Coverage: {
+            /**
+             * @description The Region's id; absent outside every Region
+             * @example fi-capital-region
+             */
+            region?: string;
+            layers: components["schemas"]["Layer"][];
+            sources: {
+                id: string;
+                publisher: string;
+                license: string;
+            }[];
+            /** @description What the Region has no Source for, so its absence isn't read as nothing going on */
+            unavailable: {
+                id: string;
+                name: components["schemas"]["LocalizedText"];
+                reason: components["schemas"]["LocalizedText"];
+            }[];
         };
     };
     responses: never;

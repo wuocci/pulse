@@ -5,14 +5,18 @@ import { eventRoutes } from "./core/events/routes.ts";
 import type { EventStore } from "./core/events/store.ts";
 import { geocodingRoutes } from "./core/geocoding/routes.ts";
 import { type Database, healthRoutes } from "./core/health.ts";
+import { InMemorySourceHealthLog, type SourceHealthLog } from "./core/ingest/health.ts";
 import type { Region } from "./core/regions/index.ts";
 import { regionRoutes } from "./core/regions/routes.ts";
+import { sourceRoutes } from "./core/sources/routes.ts";
 import { type ParkingFinder, tripRoutes } from "./core/trips/routes.ts";
 
 export interface AppDeps {
   db: Database;
   events: EventStore;
   regions: Region[];
+  // How ingest's refreshes went; with none, no Source has updated yet.
+  sourceHealth?: SourceHealthLog;
   // "Now" for the Right now Layer; the real time when absent.
   clock?: () => Date;
   // Address search per Region; none when absent.
@@ -31,6 +35,7 @@ export function createApp(deps: AppDeps) {
   v0.route("/", regionRoutes(deps.regions));
   v0.route("/", geocodingRoutes(deps.regions, deps.geocoderFor));
   v0.route("/", tripRoutes(deps.events, deps.regions, deps.clock ?? (() => new Date()), deps.routerFor, deps.parkingFor));
+  v0.route("/", sourceRoutes(deps.regions, deps.sourceHealth ?? new InMemorySourceHealthLog(), deps.clock ?? (() => new Date()), deps.routerFor));
 
   v0.doc31("/openapi.json", {
     openapi: "3.1.0",
