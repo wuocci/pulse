@@ -5,11 +5,12 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { AddressSearch } from "./AddressSearch.tsx";
-import { useEvents, useRegions, useTrip } from "./api.ts";
+import { RADIUS_M, useEvents, useRegions, useTrip } from "./api.ts";
 import { EventCard } from "./EventCard.tsx";
 import { EventList } from "./EventList.tsx";
-import { nearestFirst, statusOf, textIn, type Time, tripPins } from "./events.ts";
-import { EventPin } from "./map/EventPin.tsx";
+import { nearestFirst, regionWide, statusOf, textIn, type Time, tripPins } from "./events.ts";
+import { EventPin, PinGroup } from "./map/EventPin.tsx";
+import { Legend, RegionWide } from "./MapOverlays.tsx";
 import { PointMap } from "./map/PointMap.tsx";
 import { type LatLon, LocationError, usePlatform } from "./platform.tsx";
 import { formatAt, parseAt, usePoint } from "./point.ts";
@@ -29,7 +30,14 @@ export function Home() {
   const { point, setPoint } = usePoint();
   const regions = useRegions();
   const search = useSearch({ from: "/" });
-  const { time = "now", event: selectedId, mode = "transit" } = search;
+  const { event: selectedId, mode = "transit" } = search;
+  // The time switch opens on Now where the app may know where you are, else on the next two weeks: "right now"
+  // somewhere you aren't means little. A time in the URL wins.
+  const [locationAllowed, setLocationAllowed] = useState(false);
+  useEffect(() => {
+    void location.allowed().then(setLocationAllowed);
+  }, [location]);
+  const time: Time = search.time ?? (locationAllowed ? "now" : "14d");
   const navigate = useNavigate({ from: "/" });
   const events = useEvents(point, time);
   // Trip mode: from the point unless From was changed.
@@ -140,6 +148,9 @@ export function Home() {
   const pins = onTrip ?? around;
   const selectedPin = pins.find((p) => p.event.id === selectedId);
   const selected = selectedPin?.event;
+  // What's region-wide has no pin: its card opens under the chip instead.
+  const notices = useMemo(() => (!search.trip && events.data ? regionWide(events.data) : []), [search.trip, events.data]);
+  const selectedNotice = selectedPin ? undefined : notices.find((e) => e.id === selectedId);
   const titleOf = (id: string) => {
     const event = trip.data?.events.find((e) => e.id === id);
     return event && textIn(event.title, languages);
@@ -152,6 +163,8 @@ export function Home() {
   );
   // A parking pick chosen in the panel, to zoom the map to: a new key each time, so the same one zooms again.
   const [focus, setFocus] = useState<LatLon & { key: number }>();
+  // An Event pointed at in the panel's list: its shape stands out on the map.
+  const [highlighted, setHighlighted] = useState<string>();
   const timeZone = regions.data?.[0]?.timeZone ?? "UTC";
 
   const status = (() => {
@@ -205,6 +218,10 @@ export function Home() {
               onSelect={() => select(pin.event.id)}
             />
           )}
+          renderGroup={(group, zoomIn) => <PinGroup pins={group} languages={languages} zoomIn={zoomIn} onSelect={select} />}
+          onShapeClick={select}
+          emphasised={[selectedId, highlighted].filter((id): id is string => id !== undefined)}
+          {...(!search.trip ? { radiusM: RADIUS_M } : {})}
         />
         <div
           className={`pointer-events-none absolute inset-x-0 top-0 flex flex-col items-start gap-2 p-4 pt-[max(1rem,env(safe-area-inset-top))] lg:motion-safe:transition-[left] lg:motion-safe:duration-300 ${panelHidden ? "" : "lg:left-90"}`}
@@ -213,6 +230,14 @@ export function Home() {
             {status?.clear && <CircleCheck aria-hidden className="size-4 text-emerald-600" />}
             {status?.text}
           </p>
+          <RegionWide
+            events={notices}
+            selectedId={selectedId}
+            languages={languages}
+            timeZone={timeZone}
+            onSelect={select}
+            card={selectedNotice ? <EventCard event={selectedNotice} languages={languages} timeZone={timeZone} onClose={closeCard} /> : null}
+          />
           {regions.isError && (
             <p role="alert" className="pointer-events-auto rounded-md bg-background px-3 py-2 text-sm shadow">
               {t("regionsFailed")}
@@ -223,6 +248,9 @@ export function Home() {
               {t(failure === "denied" ? "locationDenied" : "locationUnavailable")}
             </p>
           )}
+        </div>
+        <div className="pointer-events-none absolute top-0 right-0 p-4 pt-[max(1rem,env(safe-area-inset-top))]">
+          <Legend radiusM={search.trip ? undefined : RADIUS_M} />
         </div>
       </div>
       <Sheet
@@ -333,7 +361,7 @@ export function Home() {
           <>
             {/* The list is for the docked panel; on phones the map is the list (they asked for no list in the sheet). */}
             <div className="hidden lg:block">
-              <EventList pins={pins} selectedId={selectedId} languages={languages} timeZone={timeZone} onSelect={select} />
+              <EventList pins={pins} selectedId={selectedId} languages={languages} timeZone={timeZone} onSelect={select} onHighlight={setHighlighted} />
             </div>
             <p className="text-sm text-muted-foreground lg:hidden">{t("sheetHint")}</p>
           </>

@@ -96,6 +96,59 @@ export function tripPins(onTheWay: (Omit<Schema<"OnTheWay">, "at"> & { at: numbe
   return pins.filter((pin) => pin.trip?.impact === "consider" || pin.trip?.impact === "major");
 }
 
+// What isn't anywhere in particular (e.g. an HSL alert for the whole Region): no pin, but the chip above the map
+// counts it, so it isn't missed.
+export function regionWide(events: Event[]): Event[] {
+  return events.filter((e) => e.where.precision === "vague");
+}
+
+const M_PER_DEG = 111_320;
+// An area or line this big isn't drawn: shading half the map (a weather warning over the county) says nothing.
+const OUTLINE_MAX_M = 5000;
+
+// The shape to draw under an Event's pin: its area lightly shaded, or its line along its path. None for a point,
+// a vague Event, or one too big to draw.
+export function outlineOf({ where }: Event): Geometry | undefined {
+  const { geometry, precision } = where;
+  if (precision === "vague" || geometry.type === "Point" || geometry.type === "MultiPoint") return undefined;
+  const all = (geometry.type === "LineString" ? [geometry.coordinates] : geometry.type === "Polygon" || geometry.type === "MultiLineString" ? geometry.coordinates : geometry.coordinates.flat()).flat();
+  if (!all.length) return undefined;
+  const lons = all.map((c) => c[0] ?? 0);
+  const lats = all.map((c) => c[1] ?? 0);
+  const midLat = (Math.min(...lats) + Math.max(...lats)) / 2;
+  const width = (Math.max(...lons) - Math.min(...lons)) * M_PER_DEG * Math.cos((midLat * Math.PI) / 180);
+  const height = (Math.max(...lats) - Math.min(...lats)) * M_PER_DEG;
+  return Math.hypot(width, height) <= OUTLINE_MAX_M ? geometry : undefined;
+}
+
+// A circle of `radiusM` around the point, as a ring of [lon, lat]: how far the map looks.
+export function circleAround({ lat, lon }: LatLon, radiusM: number, steps = 64): Position[] {
+  const dLat = radiusM / M_PER_DEG;
+  const dLon = dLat / Math.cos((lat * Math.PI) / 180);
+  return Array.from({ length: steps + 1 }, (_, i) => {
+    const angle = (2 * Math.PI * i) / steps;
+    return [lon + dLon * Math.cos(angle), lat + dLat * Math.sin(angle)];
+  });
+}
+
+// Pins closer than `px` on screen, grouped: each pin joins the first group whose first pin is that close, in the
+// order given (nearest first), so a group sits where its nearest pin is.
+export function groupNear<T extends { x: number; y: number }>(points: T[], px: number): T[][] {
+  const groups: T[][] = [];
+  for (const point of points) {
+    const group = groups.find(([first]) => Math.hypot(first!.x - point.x, first!.y - point.y) < px);
+    if (group) group.push(point);
+    else groups.push([point]);
+  }
+  return groups;
+}
+
+// Pins at one spot (a stop's alerts, a venue's events): zooming in won't part them.
+export function sameSpot(pins: Pick<Pin, "lngLat">[]): boolean {
+  const [first] = pins;
+  return !!first && pins.every(({ lngLat }) => Math.abs(lngLat[0] - first.lngLat[0]) < 1e-5 && Math.abs(lngLat[1] - first.lngLat[1]) < 1e-5);
+}
+
 export type Status =
   | { key: "statusClearNow" | "statusClearSoon" }
   | { key: "statusNow" | "statusSoon"; count: number; major: number };

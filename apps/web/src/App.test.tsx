@@ -11,12 +11,14 @@ import type { PointMapProps } from "./map/PointMap.tsx";
 import { type DeviceLocation, type LatLon, LocationError, type Platform } from "./platform.tsx";
 
 // The real map draws with WebGL, which jsdom lacks: this one shows what it was given, and can be long-pressed
-// and panned.
+// and panned. Pins at the very same spot are drawn as one group, as the real map does at any zoom.
 vi.mock("./map/PointMap.tsx", () => ({
-  PointMap: ({ point, onLongPress, onPan, onMapClick, pins, renderPin, popup, route, destination, parking, focus }: PointMapProps) => (
+  PointMap: ({ point, onLongPress, onPan, onMapClick, pins, renderPin, renderGroup, radiusM, onShapeClick, emphasised, popup, route, destination, parking, focus }: PointMapProps) => (
     <div
       data-testid="map"
       data-point={point ? `${point.lat},${point.lon}` : ""}
+      data-radius={radiusM ?? ""}
+      data-emphasised={emphasised?.join(",") ?? ""}
       data-route={route?.map((leg) => leg.mode).join(",") ?? ""}
       data-parking={parking ? `${parking.picks.length} picks, ${parking.places.length} places` : ""}
       data-destination={destination ? `${destination.name} ${destination.lat},${destination.lon}` : ""}
@@ -29,13 +31,26 @@ vi.mock("./map/PointMap.tsx", () => ({
           ))}
         </ul>
       )}
-      {pins.map((pin) => (
-        <div key={pin.key}>{renderPin(pin)}</div>
-      ))}
+      {[
+        ...pins
+          .reduce((groups, pin) => {
+            const spot = renderGroup && pin.key !== popup?.pinKey ? pin.lngLat.join(",") : pin.key;
+            return groups.set(spot, [...(groups.get(spot) ?? []), pin]);
+          }, new Map<string, typeof pins>())
+          .values(),
+      ].map(([first, ...rest]) =>
+        rest.length ? <div key={first!.key}>{renderGroup!([first!, ...rest], undefined)}</div> : <div key={first!.key}>{renderPin(first!)}</div>,
+      )}
       {popup && <div data-testid="popup">{popup.content}</div>}
       <button type="button" onClick={onMapClick}>
         tap empty map
       </button>
+      {onShapeClick &&
+        pins.map((pin) => (
+          <button key={pin.key} type="button" onClick={() => onShapeClick(pin.event.id)}>
+            tap the shape of {pin.event.id}
+          </button>
+        ))}
       <button type="button" onClick={() => onLongPress({ lat: 60.2, lon: 24.9 })}>
         long-press the map
       </button>
@@ -93,7 +108,7 @@ afterAll(() => server.close());
 const KAMPPI: LatLon = { lat: 60.169, lon: 24.93164 };
 
 // A device whose location and storage the test controls.
-function fakePlatform({ stored, location }: { stored?: string; location?: LatLon | "denied" } = {}) {
+function fakePlatform({ stored, location, allowed = true }: { stored?: string; location?: LatLon | "denied"; allowed?: boolean } = {}) {
   const storage = new Map(stored ? [["point", stored]] : []);
   // The location watch, so a test can send fixes and see whether it is still on.
   const watching: { active: boolean; onFix?: (p: LatLon) => void; onError?: (e: LocationError) => void } = { active: false };
@@ -111,6 +126,7 @@ function fakePlatform({ stored, location }: { stored?: string; location?: LatLon
         watching.active = false;
       };
     },
+    allowed: async () => allowed,
   };
   const platform: Platform = {
     location: deviceLocation,
@@ -273,6 +289,9 @@ const anEvent = (id: string, patch: Partial<Event> = {}): Event => ({
   ...patch,
 });
 
+// Somewhere else than anEvent's own spot, so the two aren't drawn as one group.
+const APART: Partial<Event> = { where: { geometry: { type: "Point", coordinates: [24.96, 60.172] }, precision: "area" } };
+
 describe("Events on the map", () => {
   it("shows what's going on right now near the point, by default", async () => {
     events = [anEvent("a")];
@@ -281,10 +300,94 @@ describe("Events on the map", () => {
     expect(await screen.findByRole("button", { name: "Works a, Drivers, minor" })).toBeInTheDocument();
     expect(eventQueries.at(-1)?.get("layer")).toBe("now");
     expect(eventQueries.at(-1)?.get("near")).toBe("60.17,24.95,1000");
+    expect(screen.getByTestId("map")).toHaveAttribute("data-radius", "1000");
+  });
+
+  it("opens on the next 14 days where location isn't allowed, and on the URL's time when there is one", async () => {
+    renderApp("/?at=60.17000,24.95000", fakePlatform({ allowed: false }).platform);
+
+    expect(await screen.findByRole("radio", { name: "14 days" })).toBeChecked();
+    await waitFor(() => expect(eventQueries.at(-1)?.get("near")).toBe("60.17,24.95,1000"));
+    cleanup();
+
+    renderApp("/?at=60.17000,24.95000&time=now", fakePlatform({ allowed: false }).platform);
+    expect(await screen.findByRole("radio", { name: "Now" })).toBeChecked();
+  });
+
+  it("rings a pin you'd notice on site, and says how in its label", async () => {
+    events = [anEvent("dig", { noticeable: ["noise", "blocked"] }), anEvent("quiet", APART)];
+    renderApp("/?at=60.17000,24.95000");
+
+    const dig = await screen.findByRole("button", { name: "Works dig, Drivers, minor, noisy, blocks the way" });
+    expect(dig).toHaveClass("outline-2");
+    expect(screen.getByRole("button", { name: "Works quiet, Drivers, minor" })).not.toHaveClass("outline-2");
+  });
+
+  it("counts region-wide notices in a chip above the map, lists them, and opens a card from there", async () => {
+    const vague = { geometry: { type: "Point" as const, coordinates: [24.9, 60.2] }, precision: "vague" as const };
+    events = [anEvent("here"), anEvent("metro", { where: vague, title: { en: "Metro: no service" } }), anEvent("bridge", { where: vague, title: { en: "Bridge closed" } })];
+    const history = renderApp("/?at=60.17000,24.95000");
+
+    const chip = await screen.findByRole("button", { name: "2 region-wide notices" });
+    expect(chip).toHaveAttribute("aria-expanded", "false");
+    await userEvent.click(chip);
+    const list = screen.getByRole("list", { name: "Region-wide notices" });
+    await userEvent.click(within(list).getByRole("button", { name: /^Metro: no service/ }));
+
+    await waitFor(() => expect(history.location.search).toContain("event=metro"));
+    expect(screen.getByRole("heading", { name: "Metro: no service" })).toHaveFocus();
+    expect(screen.queryByTestId("popup")).not.toBeInTheDocument();
+
+    await userEvent.click(screen.getByRole("button", { name: "Close" }));
+    await waitFor(() => expect(history.location.search).not.toContain("event="));
+  });
+
+  it("draws pins at one spot as one group, and opens a chooser from it", async () => {
+    const stop = { geometry: { type: "Point" as const, coordinates: [24.95, 60.171] }, precision: "exact" as const };
+    events = [anEvent("a", { where: stop }), anEvent("b", { where: stop, severity: "major" }), anEvent("elsewhere", { where: { ...stop, geometry: { type: "Point", coordinates: [24.96, 60.172] } } })];
+    const history = renderApp("/?at=60.17000,24.95000");
+
+    const group = await screen.findByRole("button", { name: "2 things at this spot" });
+    expect(group).toHaveTextContent("2");
+    expect(group).toHaveClass("bg-red-600");
+    expect(screen.getByRole("button", { name: "Works elsewhere, Drivers, minor" })).toBeInTheDocument();
+
+    await userEvent.click(group);
+    expect(group).toHaveAttribute("aria-expanded", "true");
+    await userEvent.click(screen.getByRole("button", { name: "Works b" }));
+
+    await waitFor(() => expect(history.location.search).toContain("event=b"));
+    // The chosen one stands apart, with its card.
+    expect(await screen.findByRole("button", { name: "Works b, Drivers, major" })).toHaveAttribute("aria-pressed", "true");
+  });
+
+  it("opens an Event's card from a tap on its area or line, and draws that shape bold", async () => {
+    events = [anEvent("dig"), anEvent("road", APART)];
+    const history = renderApp("/?at=60.17000,24.95000");
+
+    await userEvent.click(await screen.findByRole("button", { name: "tap the shape of road" }));
+
+    await waitFor(() => expect(history.location.search).toContain("event=road"));
+    expect(within(screen.getByTestId("popup")).getByRole("heading", { name: "Works road" })).toBeInTheDocument();
+    expect(screen.getByTestId("map")).toHaveAttribute("data-emphasised", "road");
+  });
+
+  it("explains its marks behind ⓘ, and closes it on Escape", async () => {
+    renderApp("/?at=60.17000,24.95000");
+
+    await userEvent.click(await screen.findByRole("button", { name: "What the map shows" }));
+    const legend = screen.getByRole("region", { name: "What the map shows" });
+    expect(legend).toHaveTextContent("Amber: worth considering");
+    expect(legend).toHaveTextContent("Dark ring: you'd notice it on site");
+    expect(legend).toHaveTextContent("Shaded area: where the works, closure or event is");
+    expect(legend).toHaveTextContent("Dashed circle: how far the map looks around the place, 1 km.");
+
+    await userEvent.keyboard("{Escape}");
+    expect(screen.queryByRole("region", { name: "What the map shows" })).not.toBeInTheDocument();
   });
 
   it("shows on each pin who it affects, or else what kind of Event it is", async () => {
-    events = [anEvent("a"), anEvent("b", { mainlyAffected: "unknown" })];
+    events = [anEvent("a"), anEvent("b", { mainlyAffected: "unknown", ...APART })];
     renderApp("/?at=60.17000,24.95000");
 
     const drivers = await screen.findByRole("button", { name: "Works a, Drivers, minor" });
@@ -368,7 +471,7 @@ describe("the Event card", () => {
   });
 
   it("moves to another pin when that one is tapped", async () => {
-    events = [anEvent("a"), anEvent("b")];
+    events = [anEvent("a"), anEvent("b", APART)];
     renderApp("/?at=60.17000,24.95000");
 
     await userEvent.click(await screen.findByRole("button", { name: "Works a, Drivers, minor" }));
@@ -477,6 +580,30 @@ describe("the list of Events, in the panel on wide screens", () => {
     expect(history.location.search).toContain("event=b");
     expect(row).toHaveAttribute("aria-current", "true");
     expect((await list()).getByRole("button", { name: /^Works a/ })).not.toHaveAttribute("aria-current");
+  });
+
+  it("points out an Event's shape on the map while it's hovered or focused in the list", async () => {
+    events = [at("a", 60.171), at("b", 60.172)];
+    renderApp("/?at=60.17000,24.95000");
+    const row = await (await list()).findByRole("button", { name: /^Works b/ });
+    const map = screen.getByTestId("map");
+
+    await userEvent.hover(row);
+    expect(map).toHaveAttribute("data-emphasised", "b");
+    await userEvent.unhover(row);
+    expect(map).toHaveAttribute("data-emphasised", "");
+
+    act(() => row.focus());
+    expect(map).toHaveAttribute("data-emphasised", "b");
+  });
+
+  it("marks in the list an Event chosen on the map", async () => {
+    events = [at("a", 60.171), at("b", 60.172)];
+    renderApp("/?at=60.17000,24.95000");
+
+    await userEvent.click(await screen.findByRole("button", { name: "tap the shape of b" }));
+
+    await waitFor(async () => expect((await list()).getByRole("button", { name: /^Works b/ })).toHaveAttribute("aria-current", "true"));
   });
 });
 

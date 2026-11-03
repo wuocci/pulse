@@ -1,4 +1,5 @@
 import type { Event } from "@pulse/client";
+import { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { whenText } from "./EventCard.tsx";
 import { type Pin, textIn, toneOf, whenOf } from "./events.ts";
@@ -15,10 +16,18 @@ export interface EventListProps {
   languages: readonly string[];
   timeZone: string;
   onSelect: (id: string) => void;
+  // The Event pointed at (hovered or focused), so the map can show which shape is its; undefined when none.
+  onHighlight?: (id: string | undefined) => void;
 }
 
-export function EventList({ label, pins, selectedId, languages, timeZone, onSelect }: EventListProps) {
+export function EventList({ label, pins, selectedId, languages, timeZone, onSelect, onHighlight }: EventListProps) {
   const { t, i18n } = useTranslation();
+  // Chosen on the map: brought into view here.
+  const selected = useRef<HTMLButtonElement>(null);
+  useEffect(() => {
+    // Not returned: newer browsers give a Promise back, and React would take it for a cleanup.
+    void selected.current?.scrollIntoView?.({ block: "nearest" });
+  }, [selectedId]);
   const seen = new Set<string>();
   const nearest = pins.filter(({ event }) => !seen.has(event.id) && seen.add(event.id));
   const now = new Date();
@@ -29,8 +38,13 @@ export function EventList({ label, pins, selectedId, languages, timeZone, onSele
         <li key={event.id}>
           <button
             type="button"
+            ref={event.id === selectedId ? selected : undefined}
             aria-current={event.id === selectedId ? true : undefined}
             onClick={() => onSelect(event.id)}
+            onPointerEnter={() => onHighlight?.(event.id)}
+            onPointerLeave={() => onHighlight?.(undefined)}
+            onFocus={() => onHighlight?.(event.id)}
+            onBlur={() => onHighlight?.(undefined)}
             className={`flex w-full items-center gap-3 rounded-lg p-2 text-left outline-none hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring aria-current:bg-muted ${event.status === "resolved" ? "opacity-60" : ""}`}
           >
             <span className={`grid size-9 shrink-0 place-items-center rounded-full border-2 ${TONE_CLASSES[toneOf(event)]}`}>

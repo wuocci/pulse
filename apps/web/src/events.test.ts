@@ -1,6 +1,6 @@
 import type { Event } from "@pulse/client";
 import { describe, expect, it } from "vitest";
-import { nearestFirst, pinsFor, statusOf, textIn, toneOf, whenOf } from "./events.ts";
+import { circleAround, groupNear, nearestFirst, outlineOf, pinsFor, regionWide, sameSpot, statusOf, textIn, toneOf, whenOf } from "./events.ts";
 
 const base: Event = {
   id: "src:1",
@@ -141,5 +141,46 @@ describe("when an Event is, in plain words", () => {
     expect(when({ start, dailyHours: { from: "10:00", to: "14:00", days: ["sat", "sun"] } })).toMatchObject({
       hours: { key: "hoursDays", days: "Sat, Sun", from: "10:00", to: "14:00" },
     });
+  });
+});
+
+describe("what the map draws besides pins", () => {
+  const dig = event({ where: { geometry: { type: "Polygon", coordinates: [[[24.95, 60.18], [24.952, 60.18], [24.952, 60.181], [24.95, 60.18]]] }, precision: "area" } });
+  const county = event({ where: { geometry: { type: "Polygon", coordinates: [[[24, 60], [25.5, 60], [25.5, 60.6], [24, 60]]] }, precision: "area" } });
+  const road = event({ where: { geometry: { type: "LineString", coordinates: [[24.95, 60.18], [24.96, 60.18]] }, precision: "segment" } });
+  const alert = event({ where: { geometry: county.where.geometry, precision: "vague" } });
+
+  it("outlines a works area and a road, not a point, a vague Event or a county-wide warning", () => {
+    expect(outlineOf(dig)).toEqual(dig.where.geometry);
+    expect(outlineOf(road)).toEqual(road.where.geometry);
+    expect(outlineOf(base)).toBeUndefined();
+    expect(outlineOf(alert)).toBeUndefined();
+    expect(outlineOf(county)).toBeUndefined();
+  });
+
+  it("counts what's region-wide apart: vague Events have no pin", () => {
+    expect(regionWide([dig, alert, base])).toEqual([alert]);
+  });
+
+  it("draws how far the map looks as a closed ring the radius away", () => {
+    const ring = circleAround(here, 500);
+    const [lon, lat] = ring[16]!;
+
+    expect(ring[0]).toEqual(ring.at(-1));
+    expect((lat - here.lat) * 111_320).toBeCloseTo(500, 0);
+    expect(lon).toBeCloseTo(here.lon, 6);
+  });
+});
+
+describe("grouping pins that overlap", () => {
+  it("groups what's closer than the distance on screen, around the nearest one", () => {
+    const points = [{ id: "a", x: 0, y: 0 }, { id: "far", x: 100, y: 0 }, { id: "b", x: 20, y: 10 }, { id: "c", x: 110, y: 5 }];
+
+    expect(groupNear(points, 40).map((g) => g.map((p) => p.id))).toEqual([["a", "b"], ["far", "c"]]);
+  });
+
+  it("tells pins at one spot from pins that zooming in would part", () => {
+    expect(sameSpot([{ lngLat: [24.95, 60.18] }, { lngLat: [24.95, 60.18] }])).toBe(true);
+    expect(sameSpot([{ lngLat: [24.95, 60.18] }, { lngLat: [24.951, 60.18] }])).toBe(false);
   });
 });
