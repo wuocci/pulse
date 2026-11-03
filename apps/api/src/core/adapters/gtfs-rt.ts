@@ -101,6 +101,7 @@ export function idsToLook(alerts: ServiceAlert[], source: GtfsRtSource): { stops
 export function toEvents(alerts: ServiceAlert[], directory: Directory, { source, region, now }: AlertContext): Event[] {
   return alerts.map((alert) => {
     const stops = alert.stopIds.map((id) => prefixed(source, id));
+    const lines = alert.routeIds.map((id) => prefixed(source, id));
     const located = stops.flatMap((id) => {
       const stop = directory.stops.get(id);
       return stop ? [[stop.lon, stop.lat]] : [];
@@ -118,8 +119,10 @@ export function toEvents(alerts: ServiceAlert[], directory: Directory, { source,
       where: {
         geometry: located.length ? points(located) : bboxPolygon(region.bbox),
         precision: located.length ? "exact" : "vague",
-        ...(alert.routeIds.length ? { lines: alert.routeIds.map((id) => prefixed(source, id)) } : {}),
+        ...(lines.length ? { lines } : {}),
         ...(stops.length ? { stops } : {}),
+        ...named("lineNames", lines.map((id) => directory.routes.get(id)?.shortName)),
+        ...named("stopNames", stops.map((id) => directory.stops.get(id)?.name)),
       },
       when: { start, ...(end ? { end } : {}) },
       severity: SEVERITY[alert.severity] ?? "minor",
@@ -143,6 +146,12 @@ export function toEvents(alerts: ServiceAlert[], directory: Directory, { source,
 }
 
 const prefixed = (source: GtfsRtSource, id: string) => `${source.feedId}:${id}`;
+
+// The names the directory knows, each once; left out when it knows none.
+function named<K extends string>(key: K, names: (string | undefined)[]): Partial<Record<K, string[]>> {
+  const known = unique(names.filter((name): name is string => Boolean(name)));
+  return known.length ? ({ [key]: known } as Record<K, string[]>) : {};
+}
 
 // From the earliest start to the latest end. A period without a start began before the feed says; one without
 // an end leaves the Event open.

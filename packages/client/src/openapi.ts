@@ -359,6 +359,20 @@ export interface components {
                 precision: components["schemas"]["Precision"];
                 lines?: string[];
                 stops?: string[];
+                /**
+                 * @description The lines' names as riders know them ("805"), where the Source's directory knows them
+                 * @example [
+                 *       "805"
+                 *     ]
+                 */
+                lineNames?: string[];
+                /**
+                 * @description The stops' names, each once (stops on both sides of a street share one)
+                 * @example [
+                 *       "Puotilantie"
+                 *     ]
+                 */
+                stopNames?: string[];
             };
             when: {
                 /** Format: date-time */

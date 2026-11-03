@@ -1,9 +1,13 @@
 import type { Event, Schema } from "@pulse/client";
 import {
   Ban,
+  BusFront,
+  ChevronDown,
   CircleOff,
   Clock,
+  ExternalLink,
   type LucideIcon,
+  MapPin,
   Plane,
   Siren,
   Users,
@@ -11,7 +15,7 @@ import {
   Wrench,
   X,
 } from "lucide-react";
-import { type ReactNode, useEffect, useId, useRef } from "react";
+import { type ReactNode, useEffect, useId, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { textIn, toneOf, type When, whenOf } from "./events.ts";
@@ -38,8 +42,13 @@ export interface EventCardProps {
   onClose: () => void;
 }
 
-export function EventCard({ event, languages, timeZone, onClose }: EventCardProps) {
-  const { t } = useTranslation();
+export function EventCard({ event, languages: preferred, timeZone, onClose }: EventCardProps) {
+  const { t, i18n } = useTranslation();
+  // A language picked under Debug, for this Event only.
+  const [picked, setPicked] = useState<{ id: string; language: string }>();
+  const language = picked?.id === event.id ? picked.language : undefined;
+  const languages = language ? [language, ...preferred] : preferred;
+  const [moreFor, setMoreFor] = useState<string>();
   const titleId = useId();
   const heading = useRef<HTMLHeadingElement>(null);
   const Who = WHO_ICONS[event.mainlyAffected];
@@ -87,6 +96,18 @@ export function EventCard({ event, languages, timeZone, onClose }: EventCardProp
         </Row>
       </ul>
 
+      {(event.where.lineNames || event.where.stopNames || event.where.precision === "vague") && (
+        <ul className="space-y-2 text-sm">
+          {event.where.lineNames && (
+            <Row icon={<BusFront aria-hidden className="size-4" />}>{t("lines", { count: event.where.lineNames.length, names: listOf(event.where.lineNames, i18n.language) })}</Row>
+          )}
+          {event.where.stopNames && (
+            <Row icon={<MapPin aria-hidden className="size-4" />}>{t("stops", { count: event.where.stopNames.length, names: listOf(event.where.stopNames, i18n.language) })}</Row>
+          )}
+          {event.where.precision === "vague" && <li className="text-muted-foreground">{t("placedRoughly")}</li>}
+        </ul>
+      )}
+
       {event.noticeable.length > 0 && (
         <ul className="flex flex-wrap gap-1.5" aria-label={t("howNoticeable")}>
           {event.noticeable.map((n) => {
@@ -100,8 +121,131 @@ export function EventCard({ event, languages, timeZone, onClose }: EventCardProp
           })}
         </ul>
       )}
+
+      <Disclosure label={t("more")} open={moreFor === event.id} onToggle={(open) => setMoreFor(open ? event.id : undefined)}>
+        <More event={event} languages={languages} timeZone={timeZone} onLanguage={(l) => setPicked({ id: event.id, language: l })} />
+      </Disclosure>
     </article>
   );
+}
+
+// A button that shows what's under it, and says whether it does.
+function Disclosure({ label, open, onToggle, children }: { label: string; open: boolean; onToggle: (open: boolean) => void; children: ReactNode }) {
+  const id = useId();
+  return (
+    <div>
+      <button
+        type="button"
+        aria-expanded={open}
+        aria-controls={id}
+        onClick={() => onToggle(!open)}
+        className="-mx-1 flex items-center gap-1 rounded px-1 py-1 text-sm font-medium text-muted-foreground outline-none hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
+      >
+        <ChevronDown aria-hidden className={`size-4 transition-transform ${open ? "rotate-180" : ""}`} />
+        {label}
+      </button>
+      {open && (
+        <div id={id} className="space-y-3 pt-2">
+          {children}
+        </div>
+      )}
+    </div>
+  );
+}
+
+interface MoreProps {
+  event: Event;
+  languages: readonly string[];
+  timeZone: string;
+  onLanguage: (language: string) => void;
+}
+
+// Where it comes from: the Source's own text and the Sources. Under it, Debug: what the pipeline made of it.
+function More({ event, languages, timeZone, onLanguage }: MoreProps) {
+  const { t, i18n } = useTranslation();
+  const [debug, setDebug] = useState(false);
+  const updated = new Intl.DateTimeFormat(i18n.language, { dateStyle: "medium", timeStyle: "short", timeZone });
+  const day = new Intl.DateTimeFormat(i18n.language, { dateStyle: "medium", timeZone: "UTC" });
+  const names = new Intl.DisplayNames(i18n.language, { type: "language" });
+  const conflict = event.when.endConflict;
+  // Every language the Event's texts come in; the one they're shown in first.
+  const available = [...new Set([...Object.keys(event.title), ...Object.keys(event.originalText ?? {})])];
+  const shown = languages.find((l) => event.title[l]) ?? available[0];
+
+  return (
+    <div className="max-h-[40dvh] space-y-3 overflow-y-auto text-sm">
+      {event.originalText && (
+        <section>
+          <h4 className="text-xs font-semibold text-muted-foreground uppercase">{t("originalText")}</h4>
+          <p className="whitespace-pre-line">{textIn(event.originalText, languages)}</p>
+        </section>
+      )}
+      <section>
+        <h4 className="text-xs font-semibold text-muted-foreground uppercase">{t("sources")}</h4>
+        <ul className="space-y-1">
+          {event.sources.map((source) => (
+            <li key={`${source.name}:${source.id}`}>
+              <p>
+                {source.name} · {source.license}
+                {source.attribution ? ` · ${source.attribution}` : ""}
+              </p>
+              <p className="text-xs text-muted-foreground">{t("sourceUpdated", { at: updated.format(new Date(source.updatedAt)) })}</p>
+              {source.url && (
+                <a href={source.url} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 underline underline-offset-2">
+                  {t("sourceAt", { name: source.name })}
+                  <ExternalLink aria-hidden className="size-3.5" />
+                </a>
+              )}
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <Disclosure label={t("debug")} open={debug} onToggle={setDebug}>
+        <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1">
+          <dt className="text-muted-foreground">{t("confidence")}</dt>
+          <dd>{event.confidence ? new Intl.NumberFormat(i18n.language, { style: "percent" }).format(event.confidence) : t("confidenceNone")}</dd>
+          {conflict && (
+            <>
+              <dt className="text-muted-foreground">{t("endConflict")}</dt>
+              <dd>{t("endConflictText", { field: day.format(new Date(conflict.field)), text: day.format(new Date(conflict.text)) })}</dd>
+            </>
+          )}
+          <dt className="text-muted-foreground">{t("layers")}</dt>
+          <dd>{event.layers.map((layer) => t(`layer_${layer}`)).join(", ")}</dd>
+          {event.workType && (
+            <>
+              <dt className="text-muted-foreground">{t("workType")}</dt>
+              <dd>{t(`work_${event.workType}`)}</dd>
+            </>
+          )}
+          <dt className="text-muted-foreground">{t("precision")}</dt>
+          <dd>{t(`precision_${event.where.precision}`)}</dd>
+        </dl>
+        {available.length > 1 && (
+          <div role="group" aria-label={t("language")} className="flex flex-wrap gap-1.5">
+            {available.map((l) => (
+              <button
+                key={l}
+                type="button"
+                lang={l}
+                aria-pressed={l === shown}
+                onClick={() => onLanguage(l)}
+                className="rounded-full border px-2.5 py-1 text-sm outline-none aria-pressed:bg-foreground aria-pressed:text-background focus-visible:ring-2 focus-visible:ring-ring"
+              >
+                {names.of(l) ?? l}
+              </button>
+            ))}
+          </div>
+        )}
+      </Disclosure>
+    </div>
+  );
+}
+
+// "805, 95 and 96": in the app's language.
+function listOf(names: string[], locale: string) {
+  return new Intl.ListFormat(locale, { style: "long", type: "conjunction" }).format(names);
 }
 
 function Row({ icon, children }: { icon: ReactNode; children: ReactNode }) {

@@ -96,6 +96,14 @@ export const EventSchema = z
       precision: PrecisionSchema,
       lines: z.array(z.string()).optional(),
       stops: z.array(z.string()).optional(),
+      lineNames: z.array(z.string()).optional().openapi({
+        description: "The lines' names as riders know them (\"805\"), where the Source's directory knows them",
+        example: ["805"],
+      }),
+      stopNames: z.array(z.string()).optional().openapi({
+        description: "The stops' names, each once (stops on both sides of a street share one)",
+        example: ["Puotilantie"],
+      }),
     }),
     when: z.object({
       start: z.iso.datetime({ offset: true }),
