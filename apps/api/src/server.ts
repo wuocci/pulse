@@ -13,6 +13,7 @@ import { PgAnswerCache } from "./core/classifier/cache.ts";
 import { Classification } from "./core/classifier/enrich.ts";
 import { createJevClassifier } from "./core/classifier/jev.ts";
 import { InMemoryEventStore } from "./core/events/store.ts";
+import { InMemorySourceHealthLog } from "./core/ingest/health.ts";
 import { startIngest } from "./core/ingest/scheduler.ts";
 import { type GtfsRtSource, type Region, regions } from "./core/regions/index.ts";
 import { runMigrations } from "./db.ts";
@@ -109,7 +110,8 @@ const parkingFor = (region: Region): ParkingFinder | undefined => {
   return finder;
 };
 
-const stopIngest = startIngest(regions, events, { classification, ...(stopDirectory ? { stopDirectory } : {}) });
+const sourceHealth = new InMemorySourceHealthLog();
+const stopIngest = startIngest(regions, events, { classification, health: sourceHealth, ...(stopDirectory ? { stopDirectory } : {}) });
 
 const app = createApp({
   db: {
@@ -120,6 +122,7 @@ const app = createApp({
   },
   events,
   regions,
+  sourceHealth,
   ...(geocoderFor ? { geocoderFor } : {}),
   ...(routerFor ? { routerFor } : {}),
   parkingFor,

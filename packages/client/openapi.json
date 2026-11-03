@@ -1246,6 +1246,132 @@
           "cost",
           "disc"
         ]
+      },
+      "SourceHealth": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "hsl-service-alerts"
+          },
+          "region": {
+            "type": "string",
+            "example": "fi-capital-region"
+          },
+          "publisher": {
+            "type": "string",
+            "example": "HSL"
+          },
+          "status": {
+            "$ref": "#/components/schemas/SourceStatus"
+          },
+          "refreshMinutes": {
+            "type": "integer",
+            "description": "How often it's expected to update"
+          },
+          "lastSuccessAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "lastError": {
+            "type": "object",
+            "properties": {
+              "at": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "message": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "at",
+              "message"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "region",
+          "publisher",
+          "status",
+          "refreshMinutes"
+        ]
+      },
+      "SourceStatus": {
+        "type": "string",
+        "enum": [
+          "ok",
+          "delayed",
+          "down"
+        ],
+        "description": "`delayed`: no successful fetch for longer than its refresh interval (or none yet); `down`: its last fetches all failed"
+      },
+      "Coverage": {
+        "type": "object",
+        "properties": {
+          "region": {
+            "type": "string",
+            "description": "The Region's id; absent outside every Region",
+            "example": "fi-capital-region"
+          },
+          "layers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Layer"
+            }
+          },
+          "sources": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "publisher": {
+                  "type": "string"
+                },
+                "license": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id",
+                "publisher",
+                "license"
+              ]
+            }
+          },
+          "unavailable": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "name": {
+                  "$ref": "#/components/schemas/LocalizedText"
+                },
+                "reason": {
+                  "$ref": "#/components/schemas/LocalizedText"
+                }
+              },
+              "required": [
+                "id",
+                "name",
+                "reason"
+              ]
+            },
+            "description": "What the Region has no Source for, so its absence isn't read as nothing going on"
+          }
+        },
+        "required": [
+          "layers",
+          "sources",
+          "unavailable"
+        ]
       }
     },
     "parameters": {}
@@ -1604,6 +1730,61 @@
                   "required": [
                     "message"
                   ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/sources/health": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "Each Source of each Region: when it last updated, its last error, and whether it keeps up",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "sources": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/SourceHealth"
+                      }
+                    }
+                  },
+                  "required": [
+                    "sources"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/coverage": {
+      "get": {
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^-?\\d+(\\.\\d+)?,-?\\d+(\\.\\d+)?$",
+              "example": "60.1699,24.9384"
+            },
+            "required": true,
+            "name": "near",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The Layers and Sources at the point, from Region config; none outside every Region",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Coverage"
                 }
               }
             }

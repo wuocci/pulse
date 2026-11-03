@@ -1,4 +1,4 @@
-import type { DailyHours, Event, EventKind, MainlyAffected, Region as PublicRegion } from "@pulse/schema";
+import type { DailyHours, Event, EventKind, LocalizedText, MainlyAffected, Region as PublicRegion } from "@pulse/schema";
 import { fiCapitalRegion } from "./fi-capital-region.ts";
 
 // A Region exists only as configuration (CONTEXT.md). Place names belong here, never in code or file names.
@@ -14,6 +14,8 @@ export interface Region extends PublicRegion {
   router?: { kind: "digitransit"; url: string };
   // Street parking around a Trip's destination (car parks come from the router). Credited by publisher and licence.
   streetParking?: { kind: "helsinki-wfs"; url: string; layer: string; zonesLayer?: string; publisher: string; license: string };
+  // What there's no Source for here, said in Coverage so that nothing listed isn't read as nothing going on.
+  unavailable?: { id: string; name: LocalizedText; reason: LocalizedText }[];
 }
 
 // One entry per feed a Source publishes. `adapter` picks the code that reads its format (ADR 0002).
@@ -27,6 +29,8 @@ interface BaseSource {
   refreshMinutes: number;
   // For feeds that drop what's over: a vanished Event stays this long as resolved. Without it, it just goes.
   keepVanishedHours?: number;
+  // Where in the Region it publishes for, as MultiPolygon coordinates ([lon, lat]); the whole Region when absent.
+  covers?: number[][][][];
 }
 
 export interface LandUsePermitSource extends BaseSource {
@@ -78,6 +82,21 @@ export interface GtfsRtSource extends BaseSource {
 }
 
 export const regions: Region[] = [fiCapitalRegion];
+
+// The Sources of a Region that publish for the point.
+export function sourcesAt(region: Region, lat: number, lon: number): SourceConfig[] {
+  return region.sources.filter(({ covers }) => !covers || covers.some(([outer, ...holes]) => inside(lon, lat, outer) && !holes.some((hole) => inside(lon, lat, hole))));
+}
+
+function inside(x: number, y: number, ring: number[][] = []): boolean {
+  let within = false;
+  for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+    const [xi = 0, yi = 0] = ring[i]!;
+    const [xj = 0, yj = 0] = ring[j]!;
+    if (yi > y !== yj > y && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi) within = !within;
+  }
+  return within;
+}
 
 // The Region whose bounding box holds the point.
 export function regionAt(regions: Region[], lat: number, lon: number): Region | undefined {
