@@ -1,6 +1,10 @@
+import { readFileSync } from "node:fs";
 import type { Event, Leg } from "@pulse/schema";
 import { describe, expect, it } from "vitest";
+import { readFeed, toEvents } from "../adapters/cap.ts";
 import type { RoutedItinerary } from "../adapters/digitransit-routing.ts";
+import { fiCapitalRegion } from "../regions/fi-capital-region.ts";
+import type { CapSource } from "../regions/index.ts";
 import { impactOf, impactOfMatch, matchItinerary } from "./match.ts";
 
 // A leg along latitude 60.17 from 24.93 to 24.94 (about 555 m). 0.00018° of latitude is about 20 m.
@@ -234,5 +238,67 @@ describe("Impact", () => {
     expect(impact(itinerary(leg(), TRAM), event("a", { mainlyAffected: "drivers" }), alert("b", { lines: ["HSL:1005T"] }, { severity: "major" }))).toBe(
       "major",
     );
+  });
+});
+
+describe("weather warnings", () => {
+  // Real FMI warnings (fixtures/cap): orange slippery roads over the south of Finland, 26 Feb 00–24, for drivers;
+  // yellow slippery pavements over the west including Uusimaa, 26 Feb 16–24, for pedestrians.
+  const fmi = fiCapitalRegion.sources.find((s): s is CapSource => s.adapter === "cap")!;
+  const archive = readFeed(readFileSync(new URL("../adapters/fixtures/cap/fmi-archive-2026.xml", import.meta.url), "utf8")).alerts;
+  const [orangeRoads, pavements] = toEvents(archive.slice(4), { source: fmi, region: fiCapitalRegion, now: new Date("2026-02-26T15:00:00Z") }) as [Event, Event];
+  const evening = { start: "2026-02-26T19:00:00+02:00", end: "2026-02-26T19:10:00+02:00" };
+  const onTheEvening = (...legs: Leg[]): RoutedItinerary => ({ ...itinerary(...legs), ...evening, durationS: 600 });
+  const inHelsinki = (mode: Leg["mode"]) => onTheEvening(leg({ mode, ...evening }));
+  const inOulu = onTheEvening(
+    leg({ mode: "car", ...evening, geometry: { type: "LineString", coordinates: [[25.46, 65.01], [25.47, 65.01]] }, from: { name: "A", lat: 65.01, lon: 25.46 }, to: { name: "B", lat: 65.01, lon: 25.47 } }),
+  );
+
+  it("are on a route that runs inside the warning area, not on one outside it", () => {
+    expect(orangeRoads.severity).toBe("major");
+    expect(matchedIds(inHelsinki("car"), [orangeRoads])).toEqual([orangeRoads.id]);
+    expect(matchedIds(inOulu, [orangeRoads, pavements])).toEqual([]);
+  });
+
+  it("are major at orange for those they're for, consider at yellow, minor for the rest", () => {
+    const impact = (it: RoutedItinerary, warning: Event) => impactOf(matchItinerary(it, [warning]));
+
+    expect(impact(inHelsinki("car"), orangeRoads)).toBe("major");
+    expect(impact(inHelsinki("walk"), orangeRoads)).toBe("minor");
+    expect(impact(inHelsinki("walk"), pavements)).toBe("consider");
+    expect(impact(inHelsinki("car"), pavements)).toBe("minor");
+  });
+
+  it("leave out what's in nobody's way (sea warnings)", () => {
+    expect(matchedIds(inHelsinki("walk"), [{ ...pavements, mainlyAffected: "nobody" }])).toEqual([]);
+  });
+
+  it("are on the whole way when the trip starts and ends in the area, not when it only runs into it", () => {
+    const toOulu = onTheEvening(leg({ mode: "car", ...evening, geometry: { type: "LineString", coordinates: [[24.93, LAT], [25.46, 65.01]] }, to: { name: "B", lat: 65.01, lon: 25.46 } }));
+
+    expect(matchItinerary(inHelsinki("car"), [orangeRoads])[0]).toMatchObject({ wholeWay: true });
+    expect(matchItinerary(toOulu, [orangeRoads])[0]).toMatchObject({ wholeWay: false });
+    expect(matchItinerary(inHelsinki("car"), [event("dig", { when: { start: "2026-02-01T00:00:00+02:00" } })])[0]).toMatchObject({ wholeWay: false });
+  });
+
+  it("are placed on the first part of the trip they're for", () => {
+    const walkThenDrive = onTheEvening(leg({ mode: "walk", ...evening }), leg({ mode: "car", ...evening }));
+
+    expect(matchItinerary(walkThenDrive, [orangeRoads])[0]).toMatchObject({ leg: 1 });
+    expect(matchItinerary(walkThenDrive, [pavements])[0]).toMatchObject({ leg: 0 });
+  });
+
+  it("reach a train, metro or ferry when they're for those riding", () => {
+    const ferry = onTheEvening(leg({ mode: "ferry", line: { id: "HSL:1019", name: "Suomenlinna" }, ...evening }));
+    const storm = { ...pavements, id: "fmi:storm", mainlyAffected: "everyone" as const };
+
+    expect(matchedIds(ferry, [storm, pavements, orangeRoads])).toEqual(["fmi:storm"]);
+    expect(impactOf(matchItinerary(ferry, [storm]))).toBe("consider");
+  });
+
+  it("are minor for those they're not for, whatever else they say", () => {
+    const blocking = { ...orangeRoads, mainlyAffected: "pedestrians" as const, noticeable: ["blocked" as const] };
+
+    expect(impactOf(matchItinerary(inHelsinki("car"), [blocking]))).toBe("minor");
   });
 });

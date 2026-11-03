@@ -365,17 +365,24 @@ export interface OnTheWayProps {
 }
 
 // What's in the chosen way, in the order the trip meets it, under the part of the trip it's on: "Driving",
-// "Tram 9"…
+// "Tram 9"… What's on the whole way (a weather warning over the area) comes first, once: it's not one part's.
+type Group = { part: "wholeWay"; pins: PinT[] } | { part: "leg"; leg: number; pins: PinT[] };
+
 export function OnTheWay({ legs, pins: inTheWay, selectedId, languages, timeZone, onSelect }: OnTheWayProps) {
   const { t } = useTranslation();
-  const groups = inTheWay.reduce<{ leg: number; pins: PinT[] }[]>((all, pin) => {
-    const last = all.at(-1);
-    if (last && last.leg === pin.trip?.leg) last.pins.push(pin);
-    else all.push({ leg: pin.trip?.leg ?? 0, pins: [pin] });
-    return all;
-  }, []);
-  const heading = (index: number) => {
-    const leg = legs[index];
+  const wholeWay = inTheWay.filter((pin) => pin.trip?.wholeWay);
+  const byPart = inTheWay
+    .filter((pin) => !pin.trip?.wholeWay)
+    .reduce<Group[]>((all, pin) => {
+      const last = all.at(-1);
+      if (last?.part === "leg" && last.leg === pin.trip?.leg) last.pins.push(pin);
+      else all.push({ part: "leg", leg: pin.trip?.leg ?? 0, pins: [pin] });
+      return all;
+    }, []);
+  const groups: Group[] = wholeWay.length ? [{ part: "wholeWay", pins: wholeWay }, ...byPart] : byPart;
+  const heading = (group: Group) => {
+    if (group.part === "wholeWay") return t("wholeWay");
+    const leg = legs[group.leg];
     if (!leg) return t("onTheWay");
     if (leg.line) return `${t(`leg_${leg.mode}`).replace(/^./, (c) => c.toUpperCase())} ${leg.line.name}`;
     return leg.mode === "walk" || leg.mode === "bike" || leg.mode === "car" ? t(`group_${leg.mode}`) : t(`leg_${leg.mode}`);
@@ -383,10 +390,10 @@ export function OnTheWay({ legs, pins: inTheWay, selectedId, languages, timeZone
   if (!inTheWay.length) return null;
   return (
     <section aria-label={t("onTheWay")} className="space-y-3">
-      {groups.map(({ leg, pins }, i) => (
+      {groups.map((group, i) => (
         <div key={i}>
-          <h3 className="mb-1 text-xs font-semibold text-muted-foreground uppercase">{heading(leg)}</h3>
-          <EventList label={heading(leg)} pins={pins} selectedId={selectedId} languages={languages} timeZone={timeZone} onSelect={onSelect} />
+          <h3 className="mb-1 text-xs font-semibold text-muted-foreground uppercase">{heading(group)}</h3>
+          <EventList label={heading(group)} pins={group.pins} selectedId={selectedId} languages={languages} timeZone={timeZone} onSelect={onSelect} />
         </div>
       ))}
     </section>

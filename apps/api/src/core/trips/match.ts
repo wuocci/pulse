@@ -10,16 +10,20 @@ export const CORRIDOR_M = 30;
 // A motorway's two carriageways are drawn apart, and road works are drawn on either: a car leg looks wider.
 export const CAR_CORRIDOR_M = 50;
 
-// Off the street: works beside the track or the fairway don't touch the ride, only its own line and stops do.
+// Off the street: works beside the track or the fairway don't touch the ride, only its own line and stops do. An area
+// the ride runs through does when it's for those riding: a storm warning for everyone can stop the ferries.
 const OFF_STREET = new Set<LegMode>(["rail", "subway", "ferry"]);
 
 export interface Match {
   event: Event;
   legs: { leg: Leg; by: "line" | "stop" | "corridor" }[];
-  // Where the trip meets it: on the first leg it's on, the point of the route nearest it, and how far into the trip.
+  // Where the trip meets it: on the first leg it's on (the first it's for, if any), the point of the route nearest
+  // it, and how far into the trip.
   leg: number;
   at: [number, number];
   minutes: number;
+  // An area the trip starts and ends in: it's on the whole way, not one part of it, and there's no going round it.
+  wholeWay: boolean;
 }
 
 export interface MatchOptions {
@@ -37,6 +41,9 @@ export function matchItinerary(itinerary: RoutedItinerary, events: Event[], { ti
   const moments = window ? undefined : momentsOf(start, end, timeZone);
   const project = projectionAt(itinerary.legs[0]?.from.lat ?? 0);
   const legs = itinerary.legs.map((leg) => ({ leg, shape: shapeOf(project, [leg.geometry.coordinates]) }));
+  const from = itinerary.legs[0]?.from;
+  const to = itinerary.legs.at(-1)?.to;
+  const ends = { from: [from?.lon ?? 0, from?.lat ?? 0], to: [to?.lon ?? 0, to?.lat ?? 0] };
 
   return events.flatMap((event) => {
     // Its Source says it's in nobody's way.
@@ -49,10 +56,11 @@ export function matchItinerary(itinerary: RoutedItinerary, events: Event[], { ti
       if (event.where.lines?.length) return [];
       if (leg.stops.some((stop) => event.where.stops?.includes(stop))) return [{ leg, by: "stop", index }];
       const width = leg.mode === "car" ? Math.max(corridorM, CAR_CORRIDOR_M) : corridorM;
-      if (shape && !OFF_STREET.has(leg.mode) && distanceM(shape, route) <= width) return [{ leg, by: "corridor", index }];
+      const reaches = !OFF_STREET.has(leg.mode) || (!!shape?.rings.length && fitsLeg(event, leg));
+      if (shape && reaches && distanceM(shape, route) <= width) return [{ leg, by: "corridor", index }];
       return [];
     });
-    const first = matched[0];
+    const first = matched.find(({ leg }) => fitsLeg(event, leg)) ?? matched[0];
     if (!first) return [];
     // A line's or stop's alert is met where that leg begins: its stops' places aren't known here.
     const { at, fraction } = first.by === "corridor" && shape ? meeting(shape, first.leg, project) : { at: first.leg.geometry.coordinates[0] ?? [first.leg.from.lon, first.leg.from.lat], fraction: 0 };
@@ -65,6 +73,7 @@ export function matchItinerary(itinerary: RoutedItinerary, events: Event[], { ti
         leg: first.index,
         at: [at[0] ?? 0, at[1] ?? 0],
         minutes: Math.round((reached - start) / 60_000),
+        wholeWay: !!shape?.rings.length && [ends.from, ends.to].every((p) => shape.rings.some((ring) => inside(project(p), ring))),
       },
     ];
   });
@@ -97,10 +106,12 @@ const FITS: Partial<Record<LegMode, MainlyAffected[]>> = {
   car: ["drivers", "everyone"],
 };
 const TRANSIT_FITS: MainlyAffected[] = ["transit", "everyone"];
+const fitsLeg = (event: Event, leg: Leg) => (leg.line ? TRANSIT_FITS : (FITS[leg.mode] ?? [])).includes(event.mainlyAffected);
 
-// The worst of the matched Events. No delay data yet, so: `major` when a line or stop used is badly disrupted, or
-// a road driven is closed; `consider` when it's in the way of those travelling that part (drivers on a drive…)
-// and it matters (worth considering itself, or blocking the way); `minor` otherwise — nearby, not in the way.
+// The worst of the matched Events. No delay data yet, so: `major` when a line or stop used is badly disrupted, a
+// road driven is closed, or an orange weather warning is for them; `consider` when it's in the way of those
+// travelling that part (drivers on a drive…) and it matters (worth considering itself, or blocking the way); `minor`
+// otherwise — nearby, not in the way.
 // A block that doesn't say whom it blocks (most street digs) is taken as the pavement's: in the way on foot or
 // by bike only.
 export function impactOf(matches: Match[]): Impact {
@@ -111,6 +122,9 @@ export function impactOf(matches: Match[]): Impact {
 }
 
 export function impactOfMatch({ event, legs }: Pick<Match, "event" | "legs">): Impact {
+  const fits = legs.some(({ leg }) => fitsLeg(event, leg));
+  // A weather warning by its Severity, for those it's for (PLAN.md, Impact thresholds: orange or above is major).
+  if (event.kind === "weather") return fits && (event.severity === "major" || event.severity === "consider") ? event.severity : "minor";
   const blocks = event.noticeable.includes("blocked");
   const byLineOrStop = legs.some((l) => l.by !== "corridor");
   if (byLineOrStop && (event.severity === "major" || event.noticeable.includes("outage"))) return "major";
@@ -118,7 +132,6 @@ export function impactOfMatch({ event, legs }: Pick<Match, "event" | "legs">): I
   const onCarLeg = legs.some(({ leg }) => leg.mode === "car");
   if (onCarLeg && event.severity === "major" && blocks && event.mainlyAffected !== "unknown") return "major";
   const matters = event.severity === "consider" || event.severity === "major" || blocks;
-  const fits = legs.some(({ leg }) => (leg.line ? TRANSIT_FITS : (FITS[leg.mode] ?? [])).includes(event.mainlyAffected));
   const blocksPavement = blocks && event.mainlyAffected === "unknown" && legs.some(({ leg }) => leg.mode === "walk" || leg.mode === "bike");
   return (fits && matters) || blocksPavement ? "consider" : "minor";
 }

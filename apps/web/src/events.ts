@@ -64,8 +64,9 @@ export interface Pin {
   event: Event;
   lngLat: Position;
   distanceM: number;
-  // On a Trip: where the trip meets it — which leg, how many minutes in — and how much it matters for the trip.
-  trip?: { leg: number; minutes: number; impact: Impact };
+  // On a Trip: where the trip meets it — which leg, how many minutes in, or the whole way — and how much it matters
+  // for the trip.
+  trip?: { leg: number; minutes: number; impact: Impact; wholeWay?: boolean };
 }
 
 const EARTH_RADIUS_M = 6_371_000;
@@ -88,9 +89,9 @@ export function nearestFirst(events: Event[], here: LatLon): Pin[] {
 // only nearby isn't shown: it doesn't get in the way.
 export function tripPins(onTheWay: (Omit<Schema<"OnTheWay">, "at"> & { at: number[] })[], events: Event[]): Pin[] {
   const byId = new Map(events.map((e) => [e.id, e]));
-  const pins = onTheWay.flatMap(({ eventId, at, leg, minutes, impact }): Pin[] => {
+  const pins = onTheWay.flatMap(({ eventId, at, leg, minutes, impact, wholeWay }): Pin[] => {
     const event = byId.get(eventId);
-    return event ? [{ key: `${eventId}#trip`, event, lngLat: [at[0] ?? 0, at[1] ?? 0], distanceM: 0, trip: { leg, minutes, impact } }] : [];
+    return event ? [{ key: `${eventId}#trip`, event, lngLat: [at[0] ?? 0, at[1] ?? 0], distanceM: 0, trip: { leg, minutes, impact, wholeWay } }] : [];
   });
   return pins.filter((pin) => pin.trip?.impact === "consider" || pin.trip?.impact === "major");
 }

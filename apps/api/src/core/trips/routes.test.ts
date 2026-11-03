@@ -163,6 +163,35 @@ describe("GET /v0/trips", () => {
     expect(body.recommended).toEqual({ mode: "car", index: 1 });
   });
 
+  it("doesn't try to drive round what's on the whole way", async () => {
+    const slippery: Event = {
+      ...works,
+      id: "fmi:slippery",
+      kind: "weather",
+      severity: "major",
+      mainlyAffected: "drivers",
+      noticeable: [],
+      where: { geometry: { type: "Polygon", coordinates: [[[24.5, 60], [25.2, 60], [25.2, 60.4], [24.5, 60.4], [24.5, 60]]] }, precision: "area" },
+    };
+    const events = new InMemoryEventStore();
+    await events.replaceSource("fmi", [slippery]);
+    const asked: TripRequest[] = [];
+    const router: Router = {
+      async plan(trip) {
+        asked.push(trip);
+        return [route("car")];
+      },
+    };
+    const app = createApp({ db: { ping: async () => true }, events, regions, clock: () => NOW, routerFor: () => router });
+
+    const body = (await (await get(app, `${AB}&modes=car`)).json()) as Trip;
+
+    expect(body.plans[0]!.itineraries).toHaveLength(1);
+    expect(body.plans[0]!.itineraries[0]).toMatchObject({ impact: "major", onTheWay: [{ eventId: "fmi:slippery", impact: "major", wholeWay: true }] });
+    // Only the trip itself was planned: no drive to a waypoint off to the side.
+    expect(asked.every((t) => t.from.lon === 24.93 && t.to.lon === 24.94)).toBe(true);
+  });
+
   it("steers round the next thing in the way when there's no way round the first", async () => {
     const at = (lon: number): Event => ({ ...works, id: `src:roadworks-${lon}`, mainlyAffected: "drivers", severity: "consider", noticeable: ["blocked"], where: { ...works.where, geometry: { type: "Point", coordinates: [lon, LAT + 0.0001] } } });
     const events = new InMemoryEventStore();

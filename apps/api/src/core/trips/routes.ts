@@ -111,6 +111,7 @@ export function tripRoutes(
       leg: match.leg,
       at: match.at,
       minutes: match.minutes,
+      ...(match.wholeWay ? { wholeWay: true } : {}),
     });
     const withEvents = (itinerary: RoutedItinerary) => {
       const matches = matchesOf(itinerary);
@@ -130,7 +131,10 @@ export function tripRoutes(
     // Something in the drive's way: steer round it — the first spot, else the next — and offer that as better today.
     const car = plans.find((p) => p.mode === "car");
     const first = car?.itineraries[0];
-    const spots = first?.legs.every((leg) => leg.mode === "car") ? first.onTheWay.filter((m) => RANK[m.impact] >= RANK.consider).slice(0, DETOUR_SPOTS) : [];
+    // Not what's on the whole way: there's no going round it.
+    const spots = first?.legs.every((leg) => leg.mode === "car")
+      ? first.onTheWay.filter((m) => RANK[m.impact] >= RANK.consider && !m.wholeWay).slice(0, DETOUR_SPOTS)
+      : [];
     const assess = (itinerary: RoutedItinerary) => {
       const matches = matchesOf(itinerary);
       return { impact: impactOf(matches), inTheWay: matches.filter((m) => RANK[impactOfMatch(m)] >= RANK.consider).length };
