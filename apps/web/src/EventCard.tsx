@@ -46,7 +46,9 @@ export function EventCard({ event, languages, timeZone, onClose }: EventCardProp
   const known = event.mainlyAffected !== "unknown";
 
   // Focus moves into the card, so a keyboard or screen reader follows it; Escape closes it from anywhere.
-  useEffect(() => heading.current?.focus(), [event.id]);
+  useEffect(() => {
+    heading.current?.focus();
+  }, [event.id]);
   const onCloseRef = useRef(onClose);
   useEffect(() => {
     onCloseRef.current = onClose;

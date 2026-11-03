@@ -25,6 +25,8 @@ export interface DeviceLocation {
   current(): Promise<LatLon>;
   // Calls back on every new fix until the returned function is called.
   watch(onFix: (point: LatLon) => void, onError: (error: LocationError) => void): () => void;
+  // Whether location is already allowed, without asking for it.
+  allowed(): Promise<boolean>;
 }
 
 // Small values kept on the device. Async, because Capacitor's Preferences is.
@@ -65,6 +67,11 @@ export const webPlatform: Platform = {
       );
       return () => navigator.geolocation.clearWatch(id);
     },
+    allowed: () =>
+      navigator.permissions
+        ?.query({ name: "geolocation" })
+        .then((status) => status.state === "granted")
+        .catch(() => false) ?? Promise.resolve(false),
   },
   // Storage can be unavailable (private mode, blocked site data): then nothing is remembered.
   storage: {

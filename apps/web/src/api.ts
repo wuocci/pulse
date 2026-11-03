@@ -29,8 +29,8 @@ const DAY_MS = 86_400_000;
 // Right now is refreshed while the app is open: things start and stop.
 const NOW_REFRESH_MS = 60_000;
 
-// How far around the point both settings of the time switch look.
-const RADIUS_M = 1000;
+// How far around the point the map looks, for both settings of the time switch: a walk around the block.
+export const RADIUS_M = 1000;
 
 // The Events around a point. Now: the Right now Layer. 14 days: from now to two weeks ahead, including resolved
 // ones (e.g. an alert's all-clear).
