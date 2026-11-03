@@ -96,7 +96,9 @@ export const fiCapitalRegion: Region = {
       attribution: "Finnish Meteorological Institute, CC BY 4.0",
       refreshMinutes: 10,
       keepVanishedHours: 6,
-      // Event codes from FMI's CAP profile (https://alerts.fmi.fi/cap/profile/v1.1.0/). Sea warnings are for boats.
+      // Event codes from FMI's CAP profile (https://alerts.fmi.fi/cap/profile/v1.1.0/); codes not listed are for
+      // everyone (rain, thunderstorm, wind). Sea warnings are for boats; UV, forest fire, heat and cold aren't in the
+      // way of getting around.
       mainlyAffected: {
         trafficWeather: "drivers",
         pedestrianSafety: "pedestrians",
@@ -104,7 +106,11 @@ export const fiCapitalRegion: Region = {
         seaWaveHeight: "nobody",
         seaIcing: "nobody",
         seaThunderstorm: "nobody",
-        shallowWater: "nobody",
+        seaWaterHeight: "nobody",
+        uvNote: "nobody",
+        forestFireWeather: "nobody",
+        hotWeather: "nobody",
+        coldWeather: "nobody",
       },
     },
     {
