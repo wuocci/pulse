@@ -144,18 +144,16 @@ describe("outdoor events → Events", () => {
     for (const event of events) expect(event.noticeable).toEqual(["crowd", "noise"]);
   });
 
-  it("spans build-up to teardown, with the event's own dates in the title", () => {
+  it("spans the event's own days, not its build-up and teardown", () => {
+    // Build-up from 9.11., the market 27.11.–22.12., teardown to 30.12.
     expect(byId.TP2500373).toMatchObject({
-      when: { start: "2026-11-09T00:00:00+02:00", end: "2026-12-30T23:59:59+02:00" },
-      title: {
-        en: "Tuomaan markkinat 2026 · Senaatintori · 27 Nov – 22 Dec",
-        fi: "Tuomaan markkinat 2026 · Senaatintori · 27.11.–22.12.",
-      },
+      when: { start: "2026-11-27T00:00:00+02:00", end: "2026-12-22T23:59:59+02:00" },
+      title: { en: "Tuomaan markkinat 2026 · Senaatintori", fi: "Tuomaan markkinat 2026 · Senaatintori" },
     });
     expect(byId.TP2500373!.where.geometry.coordinates).toHaveLength(2);
   });
 
-  it("leaves dates out of the title when the event has no build-up or teardown", () => {
+  it("spans the event's day when it has no build-up or teardown", () => {
     expect(byId.TP2601020).toMatchObject({
       when: { start: "2026-11-15T00:00:00+02:00", end: "2026-11-15T23:59:59+02:00" },
       title: { en: "Kurvin talkoot · Vaasanpuistikko" },

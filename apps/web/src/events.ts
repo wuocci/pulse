@@ -96,6 +96,13 @@ export function tripPins(onTheWay: (Omit<Schema<"OnTheWay">, "at"> & { at: numbe
   return pins.filter((pin) => pin.trip?.impact === "consider" || pin.trip?.impact === "major");
 }
 
+// Whether an Event is for My area. A line's alert placed nowhere isn't: it names lines but no stop the map can
+// place (HSL's Majvik stop, in Sipoo, only in its text), so it is about those lines and is for Trips, not for
+// everyone in the Region. An alert that names no line or stop, like a strike, is region-wide.
+export function inMyArea({ where }: Event): boolean {
+  return where.precision !== "vague" || !(where.lines?.length || where.stops?.length);
+}
+
 // What isn't anywhere in particular (e.g. an HSL alert for the whole Region): no pin, but the chip above the map
 // counts it, so it isn't missed.
 export function regionWide(events: Event[]): Event[] {

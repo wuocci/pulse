@@ -42,12 +42,8 @@ export interface EventCardProps {
   onClose: () => void;
 }
 
-export function EventCard({ event, languages: preferred, timeZone, onClose }: EventCardProps) {
+export function EventCard({ event, languages, timeZone, onClose }: EventCardProps) {
   const { t, i18n } = useTranslation();
-  // A language picked under Debug, for this Event only.
-  const [picked, setPicked] = useState<{ id: string; language: string }>();
-  const language = picked?.id === event.id ? picked.language : undefined;
-  const languages = language ? [language, ...preferred] : preferred;
   const [moreFor, setMoreFor] = useState<string>();
   const titleId = useId();
   const heading = useRef<HTMLHeadingElement>(null);
@@ -123,7 +119,7 @@ export function EventCard({ event, languages: preferred, timeZone, onClose }: Ev
       )}
 
       <Disclosure label={t("more")} open={moreFor === event.id} onToggle={(open) => setMoreFor(open ? event.id : undefined)}>
-        <More event={event} languages={languages} timeZone={timeZone} onLanguage={(l) => setPicked({ id: event.id, language: l })} />
+        <More event={event} languages={languages} timeZone={timeZone} />
       </Disclosure>
     </article>
   );
@@ -157,21 +153,12 @@ interface MoreProps {
   event: Event;
   languages: readonly string[];
   timeZone: string;
-  onLanguage: (language: string) => void;
 }
 
-// Where it comes from: the Source's own text and the Sources. Under it, Debug: what the pipeline made of it.
-function More({ event, languages, timeZone, onLanguage }: MoreProps) {
+// Where it comes from: the Source's own text and the Sources.
+function More({ event, languages, timeZone }: MoreProps) {
   const { t, i18n } = useTranslation();
-  const [debug, setDebug] = useState(false);
   const updated = new Intl.DateTimeFormat(i18n.language, { dateStyle: "medium", timeStyle: "short", timeZone });
-  const day = new Intl.DateTimeFormat(i18n.language, { dateStyle: "medium", timeZone: "UTC" });
-  const names = new Intl.DisplayNames(i18n.language, { type: "language" });
-  const conflict = event.when.endConflict;
-  // Every language the Event's texts come in; the one they're shown in first.
-  const available = [...new Set([...Object.keys(event.title), ...Object.keys(event.originalText ?? {})])];
-  const shown = languages.find((l) => event.title[l]) ?? available[0];
-
   return (
     <div className="max-h-[40dvh] space-y-3 overflow-y-auto text-sm">
       {event.originalText && (
@@ -200,45 +187,6 @@ function More({ event, languages, timeZone, onLanguage }: MoreProps) {
           ))}
         </ul>
       </section>
-
-      <Disclosure label={t("debug")} open={debug} onToggle={setDebug}>
-        <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1">
-          <dt className="text-muted-foreground">{t("confidence")}</dt>
-          <dd>{event.confidence ? new Intl.NumberFormat(i18n.language, { style: "percent" }).format(event.confidence) : t("confidenceNone")}</dd>
-          {conflict && (
-            <>
-              <dt className="text-muted-foreground">{t("endConflict")}</dt>
-              <dd>{t("endConflictText", { field: day.format(new Date(conflict.field)), text: day.format(new Date(conflict.text)) })}</dd>
-            </>
-          )}
-          <dt className="text-muted-foreground">{t("layers")}</dt>
-          <dd>{event.layers.map((layer) => t(`layer_${layer}`)).join(", ")}</dd>
-          {event.workType && (
-            <>
-              <dt className="text-muted-foreground">{t("workType")}</dt>
-              <dd>{t(`work_${event.workType}`)}</dd>
-            </>
-          )}
-          <dt className="text-muted-foreground">{t("precision")}</dt>
-          <dd>{t(`precision_${event.where.precision}`)}</dd>
-        </dl>
-        {available.length > 1 && (
-          <div role="group" aria-label={t("language")} className="flex flex-wrap gap-1.5">
-            {available.map((l) => (
-              <button
-                key={l}
-                type="button"
-                lang={l}
-                aria-pressed={l === shown}
-                onClick={() => onLanguage(l)}
-                className="rounded-full border px-2.5 py-1 text-sm outline-none aria-pressed:bg-foreground aria-pressed:text-background focus-visible:ring-2 focus-visible:ring-ring"
-              >
-                {names.of(l) ?? l}
-              </button>
-            ))}
-          </div>
-        )}
-      </Disclosure>
     </div>
   );
 }

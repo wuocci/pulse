@@ -117,6 +117,10 @@ export const EventSchema = z
     mainlyAffected: MainlyAffectedSchema,
     workType: WorkTypeSchema.optional().openapi({ description: "Kind of work, for works Events" }),
     noticeable: z.array(NoticeableSchema).openapi({ description: "May be empty: nothing to sense on site" }),
+    crowdSize: z.number().int().positive().optional().openapi({
+      description: "How many people the venue holds, where the Source says: a rough size of the crowd, not a count",
+      example: 13000,
+    }),
     deviation: DeviationSchema.optional(),
     status: EventStatusSchema,
     clusterId: z.string().optional().openapi({

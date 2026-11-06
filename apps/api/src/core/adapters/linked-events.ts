@@ -3,8 +3,8 @@ import type { LinkedEventsSource, Region } from "../regions/index.ts";
 import { statusAt } from "./land-use-permits.ts";
 
 // Linked Events Adapter (ADR 0002): an open event calendar (JSON API). Only big events come through: those at a
-// venue that holds a crowd, as Public events with crowd. Pulse isn't a culture calendar. The structure is in the
-// calendar (times, place, capacity), so no Classifier (ADR 0003).
+// venue that holds a crowd, as Public events with crowd. Pulse isn't a culture calendar. Times and place are in the
+// calendar's structure; how many actually come isn't, so the Classifier judges that (ADR 0003, calendarSubject).
 
 // As far ahead as My area looks.
 const WINDOW_DAYS = 14;
@@ -71,7 +71,8 @@ export function toEvents(events: LinkedEvent[], { source, region, now }: Calenda
     const { start_time: start, location } = event;
     // Postponed: no new date yet. Online events sit at a stand-in point in the city centre.
     if (event.event_status === "EventPostponed" || !start || !location?.position || location.id.endsWith(":internet")) return [];
-    if ((event.maximum_attendee_capacity ?? 0) < region.crowd.area) return [];
+    const capacity = event.maximum_attendee_capacity ?? 0;
+    if (capacity < region.crowd.area) return [];
     // Split into an entry per day or per show: those entries are published, not the event that holds them.
     if (event.super_event_type && event.sub_events.length) return [];
     // Over a day with no entry per day: an exhibition or a season, not a crowd at any one time. Judged by the
@@ -94,9 +95,11 @@ export function toEvents(events: LinkedEvent[], { source, region, now }: Calenda
         where: { geometry: { type: "Point", coordinates: location.position.coordinates }, precision: "exact" },
         // Its own hours, so Right now doesn't take the usual ones for public events instead.
         when: { start, end, dailyHours: { from: clockAt(start, region.timeZone), to: clockAt(end, region.timeZone) } },
-        severity: "minor",
+        // Until the Classifier says how many come: a venue that big is worth considering whatever is on.
+        severity: capacity >= region.crowd.trips ? "consider" : "minor",
         mainlyAffected: "everyone",
         noticeable: ["crowd"],
+        crowdSize: capacity,
         // Cancelled: resolved, so that "tonight's match is off" reaches people.
         status: event.event_status === "EventCancelled" ? "resolved" : statusAt(now, start, end),
         sources: [
@@ -108,7 +111,7 @@ export function toEvents(events: LinkedEvent[], { source, region, now }: Calenda
             license: source.license,
           },
         ],
-        // The calendar's own structure, not a Classifier's guess.
+        // Times and place are the calendar's own; the Classifier's answer sets this when it counts.
         confidence: 1,
         updatedAt: now.toISOString(),
       } satisfies Event,

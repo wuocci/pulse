@@ -1,10 +1,9 @@
 import type { Event } from "@pulse/schema";
-import { type PermitItem, statusAt } from "../adapters/land-use-permits.ts";
+import { statusAt } from "../adapters/land-use-permits.ts";
 import type { EventStore } from "../events/store.ts";
-import type { LandUsePermitSource } from "../regions/index.ts";
 import { type AnswerCache, type CacheKey, cacheKey } from "./cache.ts";
 import { type Answers, type ApplyOptions, applyAnswers, type Classifier, type ClassifierState, type Questions } from "./classifier.ts";
-import { QUESTION_VERSION, subjectFor } from "./questions.ts";
+import { QUESTION_VERSION, type Subject } from "./questions.ts";
 
 // The Classifier step of a refresh (ADR 0003): data never waits on the Classifier.
 // Cached texts get their answers at once. The rest are published unclassified and asked in the background;
@@ -20,6 +19,12 @@ export interface ClassificationDeps {
   // The most Classifier requests at once, across all Sources.
   concurrency?: number;
   clock?: () => Date;
+}
+
+// An Event as its Adapter made it, and what to ask about it (null: nothing to ask).
+export interface Classifiable {
+  event: Event;
+  subject: Subject | null;
 }
 
 interface Pending {
@@ -45,16 +50,13 @@ export class Classification {
 
   // The Events to publish now, and a function that classifies the rest once they are stored.
   async prepare(
-    source: LandUsePermitSource,
-    items: PermitItem[],
-    { timeZone, now }: { timeZone: string; now: Date },
+    sourceId: string,
+    items: Classifiable[],
+    { timeZone, now, ruleEndDays }: { timeZone: string; now: Date; ruleEndDays?: string[] | undefined },
   ): Promise<{ events: Event[]; classifyRest: () => Promise<void> }> {
     const { classifier, cache, threshold } = this.deps;
-    const apply: ApplyOptions = { threshold, timeZone, ruleEndDays: source.ruleEndDays };
-    const subjects = items.map((item) => {
-      const subject = subjectFor(item, source.permitType);
-      return subject && { ...subject, key: cacheKey(subject.state, classifier.model) };
-    });
+    const apply: ApplyOptions = { threshold, timeZone, ...(ruleEndDays ? { ruleEndDays } : {}) };
+    const subjects = items.map(({ subject }) => subject && { ...subject, key: cacheKey(subject.state, classifier.model) });
     const hashes = [...new Set(subjects.flatMap((s) => (s ? [s.key.stateHash] : [])))];
     const cached = await cache.getMany(hashes, QUESTION_VERSION, classifier.model);
 
@@ -67,7 +69,7 @@ export class Classification {
       pending.push({ event, ...subject });
       return event;
     });
-    return { events, classifyRest: () => this.classifyAll(source.id, pending, apply) };
+    return { events, classifyRest: () => this.classifyAll(sourceId, pending, apply) };
   }
 
   // Never rejects: it runs in the background, and failures only mean the next refresh tries again.

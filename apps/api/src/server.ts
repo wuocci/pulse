@@ -25,7 +25,9 @@ const pool = createPool();
 const migrated = await runMigrations(pool).then(
   () => true,
   (error: unknown) => {
-    console.error("Database migrations failed:", error instanceof Error ? error.message : error);
+    // The failed query alone doesn't say why: the cause does ("getaddrinfo ENOTFOUND db").
+    const cause = error instanceof Error && error.cause instanceof Error ? ` (${error.cause.message})` : "";
+    console.error("Database migrations failed:", error instanceof Error ? `${error.message}${cause}` : error);
     return false;
   },
 );

@@ -71,10 +71,10 @@ describe("subjectFor", () => {
   const digs = itemsOf(excavations, "excavation");
   const dig = (id: string) => digs.find((i) => i.event.sources[0]!.id === id)!;
 
-  it("asks digs the kind of work, the current end date and who is mainly affected, never Severity", () => {
+  it("asks digs the kind of work, the current end date, whether it's loud and who is mainly affected, never Severity", () => {
     const subject = subjectFor(dig("KP2602791-2"), "excavation")!;
 
-    expect(Object.keys(subject.questions).sort()).toEqual(["endDate", "mainlyAffected", "workType"]);
+    expect(Object.keys(subject.questions).sort()).toEqual(["endDate", "loud", "mainlyAffected", "workType"]);
     expect(subject.state.text).toMatch(/^Sadevesiviemärin korjaus/);
   });
 
@@ -95,7 +95,7 @@ describe("subjectFor", () => {
     const subject = subjectFor(dig("KP2602966"), "excavation")!;
 
     expect(subject.questions).not.toHaveProperty("endDate");
-    expect(Object.keys(subject.questions).sort()).toEqual(["mainlyAffected", "workType"]);
+    expect(Object.keys(subject.questions).sort()).toEqual(["loud", "mainlyAffected", "workType"]);
   });
 
   it("has nothing to ask about a dig without text", () => {
@@ -105,16 +105,16 @@ describe("subjectFor", () => {
     expect(subjectFor({ ...item, event: withoutText }, "excavation")).toBeNull();
   });
 
-  it("asks traffic arrangements and outdoor events Severity and who is mainly affected", () => {
+  it("asks traffic arrangements Severity, outdoor events how many come, and both who is mainly affected", () => {
     const arrangement = itemsOf(trafficArrangements, "traffic-arrangement")[0]!;
     const outdoorEvent = itemsOf(outdoorEvents, "outdoor-event")[0]!;
 
-    for (const [item, permitType] of [
-      [arrangement, "traffic-arrangement"],
-      [outdoorEvent, "outdoor-event"],
+    for (const [item, permitType, asked] of [
+      [arrangement, "traffic-arrangement", ["mainlyAffected", "severity"]],
+      [outdoorEvent, "outdoor-event", ["crowd", "mainlyAffected"]],
     ] as const) {
       const subject = subjectFor(item, permitType)!;
-      expect(Object.keys(subject.questions).sort()).toEqual(["mainlyAffected", "severity"]);
+      expect(Object.keys(subject.questions).sort()).toEqual(asked);
       expect(subject.state.title).toBe(item.event.title.fi);
     }
   });
