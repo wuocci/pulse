@@ -49,6 +49,13 @@ export const OnTheWaySchema = z
     at: z.tuple([z.number(), z.number()]).openapi({ description: "[lon, lat] on the route where the trip meets it" }),
     minutes: z.number().int().openapi({ description: "Minutes from the itinerary's start to `at`" }),
     wholeWay: z.boolean().optional().openapi({ description: "An area the itinerary starts and ends in: on the whole way, not one part of it" }),
+    crowd: z
+      .object({
+        at: z.enum(["start", "end"]).openapi({ description: "The crowd arriving as the event starts, or leaving as it ends" }),
+        time: z.iso.datetime({ offset: true }).openapi({ description: "When it starts or ends; an end is often estimated" }),
+      })
+      .optional()
+      .openapi({ description: "Met in a big event's crowd as it starts or ends: worth considering" }),
   })
   .openapi("OnTheWay");
 

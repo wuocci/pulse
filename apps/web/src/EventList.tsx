@@ -53,7 +53,7 @@ export function EventList({ label, pins, selectedId, languages, timeZone, onSele
             <span className="min-w-0 flex-1">
               <span className="line-clamp-2 block text-sm leading-snug font-medium">{textIn(event.title, languages)}</span>
               <span className="block truncate text-xs text-muted-foreground">
-                {subtitle(event, timeZone, now, t)}
+                {subtitle(event, timeZone, now, t, trip?.crowd)}
               </span>
             </span>
             <span className="shrink-0 text-xs text-muted-foreground tabular-nums">
@@ -68,10 +68,19 @@ export function EventList({ label, pins, selectedId, languages, timeZone, onSele
 
 type T = ReturnType<typeof useTranslation>["t"];
 
-function subtitle(event: Event, timeZone: string, now: Date, t: T): string {
-  const when = whenText(whenOf(event, timeZone, now), t);
+// On a Trip, a big event's crowd says when it starts or ends: that's when the crowd is there, not the event's day.
+function subtitle(event: Event, timeZone: string, now: Date, t: T, crowd?: NonNullable<Pin["trip"]>["crowd"]): string {
+  const when = crowd ? capitalised(crowdText(crowd, timeZone, t)) : whenText(whenOf(event, timeZone, now), t);
   return event.mainlyAffected === "unknown" ? when : `${t(`who_${event.mainlyAffected}`)} · ${when}`;
 }
+
+// "starts 19:00", "ends about 21:30".
+export function crowdText({ at, time }: NonNullable<NonNullable<Pin["trip"]>["crowd"]>, timeZone: string, t: T): string {
+  const clock = new Intl.DateTimeFormat("en-GB", { hour: "2-digit", minute: "2-digit", hourCycle: "h23", timeZone }).format(new Date(time));
+  return t(at === "start" ? "crowdStart" : "crowdEnd", { time: clock });
+}
+
+const capitalised = (text: string) => text.replace(/^./, (c) => c.toUpperCase());
 
 // "110 m" to the nearest ten metres, "2.2 km" from a kilometre.
 function distance(m: number, language: string): string {

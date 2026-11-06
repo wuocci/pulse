@@ -5,7 +5,7 @@ import type { EventStore } from "../events/store.ts";
 import { type Region, regionAt } from "../regions/index.ts";
 import { detour } from "./detour.ts";
 import { planCar } from "./drive.ts";
-import { impactOf, impactOfMatch, matchItinerary, RANK } from "./match.ts";
+import { CROWD_ARRIVING_MS, CROWD_LEAVING_MS, impactOf, impactOfMatch, matchItinerary, RANK } from "./match.ts";
 import { recommend } from "./recommend.ts";
 
 const MODES = TravelModeSchema.options;
@@ -94,13 +94,18 @@ export function tripRoutes(
       return c.json({ message: "Trip planning failed" }, 502);
     }
 
-    // What's going on from departure until the last itinerary arrives (and a detour's few minutes more); the matcher
+    // What's going on from departure until the last itinerary arrives (and a detour's few minutes more), and the big
+    // events whose crowd is arriving or leaving then: one over is resolved, and its crowd is still there. The matcher
     // keeps what's on each one.
     const ends = planned.flatMap((p) => p.itineraries.map((i) => Date.parse(i.end)));
     const candidates = ends.length
-      ? await store.query({ from: new Date(departAt), to: new Date(Math.max(...ends) + DETOUR_ROOM_MS), statuses: ["active", "upcoming"] })
+      ? await store.query({
+          from: new Date(Date.parse(departAt) - CROWD_LEAVING_MS.after),
+          to: new Date(Math.max(...ends) + Math.max(DETOUR_ROOM_MS, CROWD_ARRIVING_MS.before)),
+          statuses: ["active", "upcoming", "resolved"],
+        })
       : [];
-    const matchesOf = (itinerary: RoutedItinerary) => matchItinerary(itinerary, candidates, { timeZone: region.timeZone });
+    const matchesOf = (itinerary: RoutedItinerary) => matchItinerary(itinerary, candidates, { timeZone: region.timeZone, crowdAtLeast: region.crowd.trips });
     // What starts on the way later, for a heads-up.
     const aheadUntil = Date.parse(departAt) + COMING_UP_MS;
     const ahead = await store.query({ from: new Date(departAt), to: new Date(aheadUntil), statuses: ["upcoming"] });
@@ -112,6 +117,7 @@ export function tripRoutes(
       at: match.at,
       minutes: match.minutes,
       ...(match.wholeWay ? { wholeWay: true } : {}),
+      ...(match.crowd ? { crowd: match.crowd } : {}),
     });
     const withEvents = (itinerary: RoutedItinerary) => {
       const matches = matchesOf(itinerary);
