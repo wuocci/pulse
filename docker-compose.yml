@@ -8,7 +8,8 @@ services:
       POSTGRES_PASSWORD: pulse
       POSTGRES_DB: pulse
     ports:
-      - "5432:5432"
+      # 5433 on the host: 5432 is often taken by another project's Postgres, and then this one gets no network.
+      - "5433:5432"
     volumes:
       - db-data:/home/postgres/pgdata
     healthcheck:

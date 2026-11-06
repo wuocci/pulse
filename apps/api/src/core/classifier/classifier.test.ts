@@ -2,12 +2,14 @@ import { EventSchema, type Event } from "@pulse/schema";
 import { describe, expect, it } from "vitest";
 import excavations from "../adapters/fixtures/land-use-permits/excavations.json" with { type: "json" };
 import outdoorEvents from "../adapters/fixtures/land-use-permits/outdoor-events.json" with { type: "json" };
+import calendar from "../adapters/fixtures/linked-events/events.json" with { type: "json" };
 import trafficArrangements from "../adapters/fixtures/land-use-permits/traffic-arrangements.json" with { type: "json" };
 import { type PermitCollection, type PermitItem, toPermitItems } from "../adapters/land-use-permits.ts";
+import { type LinkedEvent, toEvents as toCalendarEvents } from "../adapters/linked-events.ts";
 import { fiCapitalRegion } from "../regions/fi-capital-region.ts";
-import { isPermitSource, type LandUsePermitSource } from "../regions/index.ts";
+import { isPermitSource, type LandUsePermitSource, type LinkedEventsSource } from "../regions/index.ts";
 import { type Answers, applyAnswers, type Classifier, DEFAULT_THRESHOLD, NOT_STATED } from "./classifier.ts";
-import { subjectFor } from "./questions.ts";
+import { calendarSubject, subjectFor } from "./questions.ts";
 
 type PermitType = LandUsePermitSource["permitType"];
 
@@ -55,11 +57,11 @@ describe("enriching Events per layer", () => {
     mainlyAffected: sure("drivers", 0.8),
   };
 
-  it("gives a dig its kind of work and who is mainly affected, keeping the default Severity", async () => {
+  it("gives a dig its kind of work and who is mainly affected, never taking a Severity answer", async () => {
     const classifier = fakeClassifier(everything);
     const event = await classify(eventOf("excavation", "KP2602791-2"), "excavation", classifier);
 
-    expect(classifier.asked).toEqual([["workType", "endDate", "mainlyAffected"]]);
+    expect(classifier.asked).toEqual([["workType", "endDate", "loud", "mainlyAffected"]]);
     expect(event).toMatchObject({ workType: "water_sewer", mainlyAffected: "drivers", severity: "minor" });
     expect(EventSchema.safeParse(event).success).toBe(true);
   });
@@ -72,15 +74,80 @@ describe("enriching Events per layer", () => {
     expect(EventSchema.safeParse(event).success).toBe(true);
   });
 
-  it("gives an outdoor event its Severity and who is mainly affected", async () => {
+  it("makes an outdoor event worth considering when 1,000 or more are there at once, and says who is mainly affected", async () => {
     const event = await classify(
       eventOf("outdoor-event", "TP2500373"),
       "outdoor-event",
-      fakeClassifier({ severity: sure("consider"), mainlyAffected: sure("pedestrians") }),
+      fakeClassifier({ crowd: sure("1000_or_more"), mainlyAffected: sure("pedestrians") }),
     );
 
     expect(event).toMatchObject({ severity: "consider", mainlyAffected: "pedestrians" });
     expect(EventSchema.safeParse(event).success).toBe(true);
+  });
+
+  it("keeps an outdoor event of fewer than 1,000 minor", async () => {
+    const event = await classify(eventOf("outdoor-event", "TP2500373"), "outdoor-event", fakeClassifier({ crowd: sure("under_1000") }));
+
+    expect(event.severity).toBe("minor");
+  });
+});
+
+describe("a big event from the calendar", () => {
+  const source = fiCapitalRegion.sources.find((s): s is LinkedEventsSource => s.adapter === "linked-events")!;
+  const [hifk] = toCalendarEvents(
+    (calendar.data as LinkedEvent[]).filter((e) => e.id === "helsinki:agprytxiiy"),
+    { source, region: fiCapitalRegion, now },
+  );
+  const withCrowd = (choice: string, confidence = 0.9) => {
+    const { questions } = calendarSubject(hifk!, timeZone)!;
+    return applyAnswers(hifk!, questions, { crowd: { choice, confidence } }, { threshold: DEFAULT_THRESHOLD, timeZone });
+  };
+
+  it("is asked only how many come, with the venue's capacity as a fact", () => {
+    const subject = calendarSubject(hifk!, timeZone)!;
+
+    expect(Object.keys(subject.questions)).toEqual(["crowd"]);
+    expect(subject.state).toMatchObject({ title: "HIFK - Jokerit, jääkiekkoa · Helsingin jäähalli", venueCapacity: 8200, starts: "Wednesday 18:30", hours: 2 });
+  });
+
+  it("stays worth considering when 1,000 or more come, and becomes minor when fewer do, whatever the venue holds", () => {
+    expect(hifk!.severity).toBe("consider");
+    expect(withCrowd("1000_or_more").severity).toBe("consider");
+    expect(withCrowd("under_1000").severity).toBe("minor");
+  });
+
+  it("keeps the venue's rule when the Classifier isn't sure", () => {
+    expect(withCrowd("under_1000", 0.4).severity).toBe("consider");
+  });
+});
+
+describe("how loud a dig is", () => {
+  it("makes a loud dig worth considering, though it blocks no more street", async () => {
+    const event = await classify(eventOf("excavation", "KP2602791-2"), "excavation", fakeClassifier({ loud: sure("loud") }));
+
+    expect(event.severity).toBe("consider");
+  });
+
+  it("keeps an ordinary dig minor, and an unsure answer leaves it so", async () => {
+    for (const answer of [sure("ordinary"), sure("loud", 0.4)]) {
+      const event = await classify(eventOf("excavation", "KP2602791-2"), "excavation", fakeClassifier({ loud: answer }));
+      expect(event.severity).toBe("minor");
+    }
+  });
+});
+
+describe("a dig in nobody's way", () => {
+  it("doesn't block anything, though it may still be heard", async () => {
+    const event = await classify(eventOf("excavation", "KP2602791-2"), "excavation", fakeClassifier({ mainlyAffected: sure("nobody") }));
+
+    expect(event.mainlyAffected).toBe("nobody");
+    expect(event.noticeable).toEqual(["noise"]);
+  });
+
+  it("keeps blocking when the answer is unsure", async () => {
+    const event = await classify(eventOf("excavation", "KP2602791-2"), "excavation", fakeClassifier({ mainlyAffected: sure("nobody", 0.3) }));
+
+    expect(event.noticeable).toEqual(["noise", "blocked"]);
   });
 });
 

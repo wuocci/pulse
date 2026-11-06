@@ -27,14 +27,14 @@ describe("Jev against the answer key", () => {
     }
   });
 
-  it("grades labelled answers from all three layers", () => {
-    const layers = new Set(graded.filter((g) => g.label !== null).map((g) => subjects.find((s) => s.id === g.id)!.permitType));
+  it("grades labelled answers from all three permit layers and the calendar", () => {
+    const layers = new Set(graded.filter((g) => g.label !== null).map((g) => subjects.find((s) => s.id === g.id)!.layer));
 
-    expect([...layers].sort()).toEqual(["excavation", "outdoor-event", "traffic-arrangement"]);
+    expect([...layers].sort()).toEqual(["calendar", "excavation", "outdoor-event", "traffic-arrangement"]);
   });
 
   // The rule the threshold rests on: answers that reach it, and so land on the Event, are nearly always right.
-  it.each(["workType", "endDate", "severity", "mainlyAffected"] as const)(
+  it.each(["workType", "endDate", "severity", "crowd", "loud", "mainlyAffected"] as const)(
     "%s: at least 85%% of the answers reaching the threshold are right",
     (question) => {
       const s = score(graded, DEFAULT_THRESHOLD)[question]!;

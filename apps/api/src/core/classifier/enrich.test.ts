@@ -68,7 +68,8 @@ function setup(classifier = fakeClassifier(), concurrency?: number) {
   const classification = new Classification({ classifier, cache, store, threshold: 0.6, concurrency, clock: () => later });
   // One refresh, as the scheduler runs it: prepare, store, then classify the rest in the background.
   const refresh = async (items = itemsAt(now), at = now) => {
-    const { events, classifyRest } = await classification.prepare(source, items, { timeZone, now: at });
+    const classifiable = items.map((item) => ({ event: item.event, subject: subjectFor(item, source.permitType) }));
+    const { events, classifyRest } = await classification.prepare(source.id, classifiable, { timeZone, now: at, ruleEndDays: source.ruleEndDays });
     await store.replaceSource(source.id, events);
     return { events, done: classifyRest() };
   };

@@ -387,6 +387,11 @@ export interface components {
             workType?: components["schemas"]["WorkType"];
             /** @description May be empty: nothing to sense on site */
             noticeable: components["schemas"]["Noticeable"][];
+            /**
+             * @description How many people the venue holds, where the Source says: a rough size of the crowd, not a count
+             * @example 13000
+             */
+            crowdSize?: number;
             deviation?: components["schemas"]["Deviation"];
             status: components["schemas"]["EventStatus"];
             /** @description Set when this Event shares a real-world cause with Events from other Sources */

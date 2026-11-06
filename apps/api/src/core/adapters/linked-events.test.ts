@@ -30,8 +30,15 @@ describe("Linked Events → Events", () => {
     expect(events.map((e) => e.sources[0]!.id).sort()).toEqual([CANCELLED, HECTOR, HIFK, RASKASTA_JOULUA, ...TENNIS_DAYS].sort());
     for (const event of events) {
       expect(EventSchema.safeParse(event).success, event.id).toBe(true);
-      expect(event).toMatchObject({ kind: "public_event", layers: ["area", "now"], severity: "minor", mainlyAffected: "everyone", noticeable: ["crowd"] });
+      expect(event).toMatchObject({ kind: "public_event", layers: ["area", "now"], mainlyAffected: "everyone", noticeable: ["crowd"] });
     }
+  });
+
+  // Until the Classifier says how many come (calendarSubject).
+  it("makes a venue for 5,000 or more worth considering, and a smaller one minor", () => {
+    expect(byId(HIFK)?.severity).toBe("consider"); // 8,200
+    expect(byId(RASKASTA_JOULUA)?.severity).toBe("consider"); // 8,000
+    expect(byId(CANCELLED)?.severity).toBe("minor"); // 1,500
   });
 
   it("maps a HIFK match at the ice hall, with its own times and hours", () => {
@@ -39,6 +46,7 @@ describe("Linked Events → Events", () => {
       id: `${source.id}:${HIFK}`,
       title: { fi: "HIFK - Jokerit, jääkiekkoa · Helsingin jäähalli", en: "HIFK - Jokerit, ice hockey · Helsingin jäähalli" },
       where: { geometry: { type: "Point", coordinates: [24.922352, 60.18929] }, precision: "exact" },
+      crowdSize: 8200,
       when: { start: "2026-11-11T16:30:00Z", end: "2026-11-11T18:30:00Z", dailyHours: { from: "18:30", to: "20:30" } },
       status: "upcoming",
       sources: [{ name: "City of Helsinki", id: HIFK, url: "https://hifk.fi/", license: "CC BY 4.0" }],
@@ -90,7 +98,7 @@ describe("Linked Events → Events", () => {
   });
 
   it("leaves out events at venues under the Region's crowd size", () => {
-    expect(recordedEvent(SMALL).maximum_attendee_capacity).toBeLessThan(500);
+    expect(recordedEvent(SMALL).maximum_attendee_capacity).toBeLessThan(1000);
     expect(byId(SMALL)).toBeUndefined();
   });
 
@@ -120,7 +128,7 @@ describe("fetching Linked Events", () => {
       start: "2026-11-03T12:00:00.000Z",
       end: "2026-11-17T12:00:00.000Z",
       bbox: "24.4,60,25.3,60.45",
-      maximum_attendee_capacity_gte: "500",
+      maximum_attendee_capacity_gte: "1000",
       include: "location",
       page_size: "100",
     });

@@ -8,7 +8,7 @@ import { AddressSearch } from "./AddressSearch.tsx";
 import { RADIUS_M, useEvents, useRegions, useTrip } from "./api.ts";
 import { EventCard } from "./EventCard.tsx";
 import { EventList } from "./EventList.tsx";
-import { nearestFirst, regionWide, statusOf, textIn, type Time, tripPins } from "./events.ts";
+import { inMyArea, nearestFirst, regionWide, statusOf, textIn, type Time, tripPins } from "./events.ts";
 import { EventPin, PinGroup } from "./map/EventPin.tsx";
 import { Legend, RegionWide } from "./MapOverlays.tsx";
 import { PointMap } from "./map/PointMap.tsx";
@@ -40,6 +40,13 @@ export function Home() {
   const time: Time = search.time ?? (locationAllowed ? "now" : "14d");
   const navigate = useNavigate({ from: "/" });
   const events = useEvents(point, time);
+  // Only what gets in the way, or may: worth considering or major, and in somebody's way (a sea warning isn't).
+  // Minor and info are the place's normal.
+  const shown = useMemo(
+    () => events.data?.filter((e) => (e.severity === "consider" || e.severity === "major") && e.mainlyAffected !== "nobody" && inMyArea(e)),
+    [events.data],
+  );
+  const ordinary = shown !== undefined && shown.length < (events.data?.length ?? 0);
   // Trip mode: from the point unless From was changed.
   const tripFrom = parseAt(search.from) ?? point;
   const tripTo = parseAt(search.to);
@@ -144,12 +151,12 @@ export function Home() {
     () => (search.trip ? tripPins(itinerary?.onTheWay ?? [], trip.data?.events ?? []) : undefined),
     [search.trip, itinerary, trip.data],
   );
-  const around = useMemo(() => (!search.trip && point && events.data ? nearestFirst(events.data, point) : []), [search.trip, point, events.data]);
+  const around = useMemo(() => (!search.trip && point && shown ? nearestFirst(shown, point) : []), [search.trip, point, shown]);
   const pins = onTrip ?? around;
   const selectedPin = pins.find((p) => p.event.id === selectedId);
   const selected = selectedPin?.event;
   // What's region-wide has no pin: its card opens under the chip instead.
-  const notices = useMemo(() => (!search.trip && events.data ? regionWide(events.data) : []), [search.trip, events.data]);
+  const notices = useMemo(() => (!search.trip && shown ? regionWide(shown) : []), [search.trip, shown]);
   const selectedNotice = selectedPin ? undefined : notices.find((e) => e.id === selectedId);
   const titleOf = (id: string) => {
     const event = trip.data?.events.find((e) => e.id === id);
@@ -175,9 +182,9 @@ export function Home() {
       return count ? { text: t("statusTrip", { count }), clear: false } : { text: t("statusTripClear"), clear: true };
     }
     if (events.isError) return { text: t("statusError"), clear: false };
-    if (!events.data) return null;
-    const s = statusOf(events.data, time);
-    if (!("count" in s)) return { text: t(s.key), clear: true };
+    if (!shown) return null;
+    const s = statusOf(shown, time);
+    if (!("count" in s)) return { text: t(ordinary ? (time === "now" ? "statusOrdinaryNow" : "statusOrdinarySoon") : s.key), clear: true };
     const counted = t(s.key, { count: s.count });
     return { text: s.major ? t("statusMajor", { status: counted, major: s.major }) : counted, clear: false };
   })();

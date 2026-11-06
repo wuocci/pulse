@@ -49,8 +49,8 @@ export const fiCapitalRegion: Region = {
     works: { from: "07:00", to: "18:00", days: ["mon", "tue", "wed", "thu", "fri"] },
     public_event: { from: "10:00", to: "22:00" },
   },
-  // Anything over 500 is loud enough to notice; 5,000 fills the trams and roads around the venue.
-  crowd: { area: 500, trips: 5000 },
+  // A venue under 1,000 can't hold a crowd that gets in anyone's way; 5,000 fills the trams and roads around it.
+  crowd: { area: 1000, trips: 5000 },
   usualEventHours: 3,
   sources: [
     {
