@@ -332,3 +332,95 @@ describe("weather warnings", () => {
     }
   });
 });
+
+describe("crowds around a big event as it starts or ends (#49)", () => {
+  // The legs end at 24.94: a venue about 220 m north of that end. 0.002° of latitude is about 220 m.
+  const VENUE: [number, number] = [24.94, LAT + 0.002];
+  const crowds = { crowdAtLeast: fiCapitalRegion.crowd.trips };
+  const bigEvent = (id: string, patch: Partial<Event> = {}) =>
+    event(id, {
+      kind: "public_event",
+      where: { geometry: { type: "Point", coordinates: VENUE }, precision: "exact" },
+      // Starts 20 min after the tram reaches B: within the hour before it.
+      when: { start: "2026-10-31T12:30:00+02:00", end: "2026-10-31T15:00:00+02:00" },
+      severity: "consider",
+      mainlyAffected: "everyone",
+      noticeable: ["crowd"],
+      crowdSize: 13000,
+      status: "upcoming",
+      ...patch,
+    });
+  // A tram from A to B, then a walk on from B.
+  const toVenue = itinerary(
+    TRAM,
+    leg({ from: { name: "B", lat: LAT, lon: 24.94 }, to: { name: "C", lat: LAT, lon: 24.95 }, start: "2026-10-31T12:10:00+02:00", end: "2026-10-31T12:20:00+02:00", geometry: { type: "LineString", coordinates: [[24.94, LAT], [24.95, LAT]] } }),
+  );
+  const crowdMatches = (it: RoutedItinerary, events: Event[], options: Parameters<typeof matchItinerary>[2] = crowds) => matchItinerary(it, events, options);
+
+  it("are worth considering when the trip gets off near the venue in the hour before the start, and say when it starts", () => {
+    const [match] = crowdMatches(toVenue, [bigEvent("match")]);
+
+    expect(match?.event.id).toBe("match");
+    expect(match?.crowd).toEqual({ at: "start", time: "2026-10-31T12:30:00+02:00" });
+    expect(match?.leg).toBe(0);
+    expect(match?.minutes).toBe(10);
+    expect(impactOf(crowdMatches(toVenue, [bigEvent("match")]))).toBe("consider");
+  });
+
+  it("are worth considering when the trip boards near the venue as the crowd leaves, and say when it ends", () => {
+    const leaving = bigEvent("concert", { when: { start: "2026-10-31T09:00:00+02:00", end: "2026-10-31T12:20:00+02:00" }, status: "active" });
+    const fromVenue = itinerary(leg({ ...TRAM, from: { name: "B", lat: LAT, lon: 24.94 }, to: { name: "C", lat: LAT, lon: 24.95 }, start: "2026-10-31T12:30:00+02:00", end: "2026-10-31T12:40:00+02:00", geometry: { type: "LineString", coordinates: [[24.94, LAT], [24.95, LAT]] } }));
+
+    expect(crowdMatches(fromVenue, [leaving])[0]?.crowd).toEqual({ at: "end", time: "2026-10-31T12:20:00+02:00" });
+  });
+
+  it("don't count for a tram that only rides past the venue without stopping near it", () => {
+    const past = leg({ ...TRAM, from: { name: "A", lat: LAT, lon: 24.92 }, to: { name: "C", lat: LAT, lon: 24.96 }, geometry: { type: "LineString", coordinates: [[24.92, LAT], [24.96, LAT]] } });
+    const midway = bigEvent("midway", { where: { geometry: { type: "Point", coordinates: [24.94, LAT + 0.002] }, precision: "exact" } });
+
+    expect(crowdMatches(itinerary(past), [midway])).toEqual([]);
+  });
+
+  it("count at the destination in a window, not outside both", () => {
+    const walkThere = itinerary(leg({ to: { name: "B", lat: LAT, lon: 24.94 } }));
+
+    expect(crowdMatches(walkThere, [bigEvent("on")]).map((m) => m.event.id)).toEqual(["on"]);
+    // Starts 15:00 and ends 18:00: the trip arrives at 12:10, in neither window.
+    expect(crowdMatches(walkThere, [bigEvent("later", { when: { start: "2026-10-31T15:00:00+02:00", end: "2026-10-31T18:00:00+02:00" } })])).toEqual([]);
+  });
+
+  it("count on a drive passing within about 400 m in a window", () => {
+    const drive = (to: number) => itinerary(leg({ mode: "car", to: { name: "C", lat: LAT, lon: to }, geometry: { type: "LineString", coordinates: [[24.93, LAT], [to, LAT]] } }));
+    // The drive goes past the venue's longitude and on to 24.96: the venue is 220 m off the road, not at the end.
+    const passing = bigEvent("passing", { where: { geometry: { type: "Point", coordinates: [24.945, LAT + 0.002] }, precision: "exact" } });
+
+    expect(crowdMatches(drive(24.96), [passing]).map((m) => m.event.id)).toEqual(["passing"]);
+    // 0.005° of latitude is about 560 m.
+    const further = bigEvent("further", { where: { geometry: { type: "Point", coordinates: [24.945, LAT + 0.005] }, precision: "exact" } });
+    expect(crowdMatches(drive(24.96), [further])).toEqual([]);
+  });
+
+  it("don't count for an event under the Region's Trips crowd, one Jev says draws fewer than a thousand, or one over a day", () => {
+    expect(crowdMatches(toVenue, [bigEvent("small", { crowdSize: 4000 })])).toEqual([]);
+    expect(crowdMatches(toVenue, [bigEvent("quiet", { severity: "minor" })])).toEqual([]);
+    expect(crowdMatches(toVenue, [bigEvent("long", { when: { start: "2026-10-31T12:30:00+02:00", end: "2026-11-02T12:30:00+02:00" } })])).toEqual([]);
+  });
+
+  it("are never major, even for a major event", () => {
+    expect(impactOf(crowdMatches(toVenue, [bigEvent("final", { severity: "major" })]))).toBe("consider");
+  });
+
+  it("count as the crowd leaves an event that's over, not one that was cancelled", () => {
+    const over = { when: { start: "2026-10-31T09:00:00+02:00", end: "2026-10-31T12:00:00+02:00" }, status: "resolved" as const };
+    // Resolved by the next refresh after its end; a cancelled one was resolved before its end.
+    const ended = bigEvent("ended", { ...over, updatedAt: "2026-10-31T12:05:00+02:00" });
+    const cancelled = bigEvent("cancelled", { ...over, updatedAt: "2026-10-30T08:00:00+02:00" });
+
+    expect(crowdMatches(toVenue, [ended, cancelled]).map((m) => m.event.id)).toEqual(["ended"]);
+  });
+
+  it("don't count in a heads-up for what's coming up, nor without the Region's crowd size", () => {
+    expect(crowdMatches(toVenue, [bigEvent("match")], { ...crowds, window: { start: Date.parse("2026-10-31T12:20:00+02:00"), end: Date.parse("2026-11-07T12:20:00+02:00") } })).toEqual([]);
+    expect(crowdMatches(toVenue, [bigEvent("match")], {})).toEqual([]);
+  });
+});

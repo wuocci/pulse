@@ -677,6 +677,19 @@ export interface components {
             minutes: number;
             /** @description An area the itinerary starts and ends in: on the whole way, not one part of it */
             wholeWay?: boolean;
+            /** @description Met in a big event's crowd as it starts or ends: worth considering */
+            crowd?: {
+                /**
+                 * @description The crowd arriving as the event starts, or leaving as it ends
+                 * @enum {string}
+                 */
+                at: "start" | "end";
+                /**
+                 * Format: date-time
+                 * @description When it starts or ends; an end is often estimated
+                 */
+                time: string;
+            };
         };
         /**
          * @description How much this Event matters for this itinerary

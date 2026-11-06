@@ -14,9 +14,16 @@ export const CAR_CORRIDOR_M = 50;
 // the ride runs through does when it's for those riding: a storm warning for everyone can stop the ferries.
 const OFF_STREET = new Set<LegMode>(["rail", "subway", "ferry"]);
 
+// A crowd around a big event (#49): from an hour before it starts until 15 minutes in, and from 15 minutes before
+// it ends until 45 minutes after, within CROWD_M of a stop the trip gets on or off at, its destination, or a drive.
+export const CROWD_M = 400;
+export const CROWD_ARRIVING_MS = { before: 60 * 60_000, after: 15 * 60_000 };
+export const CROWD_LEAVING_MS = { before: 15 * 60_000, after: 45 * 60_000 };
+const DAY_MS = 86_400_000;
+
 export interface Match {
   event: Event;
-  legs: { leg: Leg; by: "line" | "stop" | "corridor" }[];
+  legs: { leg: Leg; by: "line" | "stop" | "corridor" | "crowd" }[];
   // Where the trip meets it: on the first leg it's on (the first it's for, if any), the point of the route nearest
   // it, and how far into the trip.
   leg: number;
@@ -24,6 +31,8 @@ export interface Match {
   minutes: number;
   // An area the trip starts and ends in: it's on the whole way, not one part of it, and there's no going round it.
   wholeWay: boolean;
+  // Met in a big event's crowd: as it starts or as it ends, and when that is.
+  crowd?: { at: "start" | "end"; time: string };
 }
 
 export interface MatchOptions {
@@ -33,9 +42,11 @@ export interface MatchOptions {
   // What's going on in this window instead of during the trip (ms since the epoch): what's coming up on the route.
   // Daily hours aren't read: it's a heads-up, not the trip's own minutes.
   window?: { start: number; end: number };
+  // The Region's Trips crowd size: a big event's crowd as it starts or ends counts from it. No crowds when absent.
+  crowdAtLeast?: number;
 }
 
-export function matchItinerary(itinerary: RoutedItinerary, events: Event[], { timeZone = "UTC", corridorM = CORRIDOR_M, window }: MatchOptions = {}): Match[] {
+export function matchItinerary(itinerary: RoutedItinerary, events: Event[], { timeZone = "UTC", corridorM = CORRIDOR_M, window, crowdAtLeast }: MatchOptions = {}): Match[] {
   const start = window?.start ?? Date.parse(itinerary.start);
   const end = window?.end ?? Date.parse(itinerary.end);
   const moments = window ? undefined : momentsOf(start, end, timeZone);
@@ -45,9 +56,20 @@ export function matchItinerary(itinerary: RoutedItinerary, events: Event[], { ti
   const to = itinerary.legs.at(-1)?.to;
   const ends = { from: [from?.lon ?? 0, from?.lat ?? 0], to: [to?.lon ?? 0, to?.lat ?? 0] };
 
-  return events.flatMap((event) => {
+  // Where the trip is among people, and when: getting on or off a line, arriving, or driving. A heads-up looks at
+  // what's coming up later, not at crowds.
+  const crowdSpots = window || crowdAtLeast === undefined ? undefined : spotsOf(legs, start);
+
+  return events.flatMap((event): Match[] => {
+    const crowd = crowdSpots && crowdAtLeast !== undefined && isBigCrowd(event, crowdAtLeast) ? inCrowd(event, crowdSpots, project) : undefined;
+    const matched = matchOne(event);
+    if (!matched) return crowd ? [crowd] : [];
+    return [crowd ? { ...matched, legs: [...matched.legs, ...crowd.legs], crowd: crowd.crowd } : matched];
+  });
+
+  function matchOne(event: Event): Match | undefined {
     // Its Source says it's in nobody's way.
-    if (event.mainlyAffected === "nobody" || !goingOn(event, start, end, moments)) return [];
+    if (event.mainlyAffected === "nobody" || !goingOn(event, start, end, moments)) return undefined;
     // An area or line is placed where it is; a vague Event only by the lines and stops it names.
     const shape = event.where.precision === "vague" ? undefined : eventShape(event, project);
     const matched = legs.flatMap(({ leg, shape: route }, index): (Match["legs"][number] & { index: number })[] => {
@@ -61,22 +83,89 @@ export function matchItinerary(itinerary: RoutedItinerary, events: Event[], { ti
       return [];
     });
     const first = matched.find(({ leg }) => fitsLeg(event, leg)) ?? matched[0];
-    if (!first) return [];
+    if (!first) return undefined;
     // A line's or stop's alert is met where that leg begins: its stops' places aren't known here.
     const { at, fraction } = first.by === "corridor" && shape ? meeting(shape, first.leg, project) : { at: first.leg.geometry.coordinates[0] ?? [first.leg.from.lon, first.leg.from.lat], fraction: 0 };
     const legStart = Date.parse(first.leg.start);
     const reached = legStart + fraction * (Date.parse(first.leg.end) - legStart);
+    return {
+      event,
+      legs: matched.map(({ leg, by }) => ({ leg, by })),
+      leg: first.index,
+      at: [at[0] ?? 0, at[1] ?? 0],
+      minutes: Math.round((reached - start) / 60_000),
+      wholeWay: !!shape?.rings.length && [ends.from, ends.to].every((p) => shape.rings.some((ring) => inside(project(p), ring))),
+    };
+  }
+}
+
+// Somewhere the trip is among a crowd: a point (a stop, the destination) at a moment, or a drive along its route.
+type Spot = { index: number; leg: Leg; startMs: number } & ({ point: number[]; at: number } | { route: Shape });
+
+function spotsOf(legs: { leg: Leg; shape: Shape }[], startMs: number): Spot[] {
+  const spots = legs.flatMap(({ leg, shape }, index): Spot[] => {
+    if (leg.mode === "car") return [{ index, leg, startMs, route: shape }];
+    // Getting on and off: riding through a stop isn't being among the crowd at it.
+    if (!leg.line) return [];
     return [
-      {
-        event,
-        legs: matched.map(({ leg, by }) => ({ leg, by })),
-        leg: first.index,
-        at: [at[0] ?? 0, at[1] ?? 0],
-        minutes: Math.round((reached - start) / 60_000),
-        wholeWay: !!shape?.rings.length && [ends.from, ends.to].every((p) => shape.rings.some((ring) => inside(project(p), ring))),
-      },
+      { index, leg, startMs, point: [leg.from.lon, leg.from.lat], at: Date.parse(leg.start) },
+      { index, leg, startMs, point: [leg.to.lon, leg.to.lat], at: Date.parse(leg.end) },
     ];
   });
+  const last = legs.at(-1);
+  if (last) spots.push({ index: legs.length - 1, leg: last.leg, startMs, point: [last.leg.to.lon, last.leg.to.lat], at: Date.parse(last.leg.end) });
+  return spots;
+}
+
+// A crowd that fills the trams and roads around it: as big as the Region's Trips crowd, with the Classifier's
+// answer that a thousand or more are there (worth considering), and not an exhibition or a season over days.
+function isBigCrowd(event: Event, crowdAtLeast: number): boolean {
+  const { when, noticeable, crowdSize = 0, severity } = event;
+  if (!noticeable.includes("crowd") || crowdSize < crowdAtLeast || (severity !== "consider" && severity !== "major")) return false;
+  return !!when.end && Date.parse(when.end) - Date.parse(when.start) <= DAY_MS;
+}
+
+// The first spot near the venue while a crowd arrives or leaves, as a Match.
+function inCrowd(event: Event, spots: Spot[], project: Projection): Match | undefined {
+  const start = Date.parse(event.when.start);
+  const end = Date.parse(event.when.end ?? event.when.start);
+  // Resolved: cancelled, or over. Only an event over (resolved once it ended) still has a crowd leaving it.
+  const over = event.status === "resolved";
+  if (over && Date.parse(event.updatedAt) < end) return undefined;
+  const windows = [
+    ...(over ? [] : [{ at: "start" as const, from: start - CROWD_ARRIVING_MS.before, to: start + CROWD_ARRIVING_MS.after }]),
+    { at: "end" as const, from: end - CROWD_LEAVING_MS.before, to: end + CROWD_LEAVING_MS.after },
+  ];
+  const venue = eventShape(event, project);
+  const found = spots.flatMap((spot) => {
+    let point: number[];
+    let time: number;
+    if ("route" in spot) {
+      if (distanceM(venue, spot.route, CROWD_M) > CROWD_M) return [];
+      const { at, fraction } = meeting(venue, spot.leg, project);
+      const legStart = Date.parse(spot.leg.start);
+      point = at;
+      time = legStart + fraction * (Date.parse(spot.leg.end) - legStart);
+    } else {
+      if (distanceM(venue, shapeOf(project, [[spot.point]]), CROWD_M) > CROWD_M) return [];
+      point = spot.point;
+      time = spot.at;
+    }
+    const window = windows.find((w) => time >= w.from && time <= w.to);
+    return window ? [{ spot, point, time, window }] : [];
+  });
+  const first = found.sort((a, b) => a.time - b.time)[0];
+  if (!first) return undefined;
+  const { spot, point, time, window } = first;
+  return {
+    event,
+    legs: [{ leg: spot.leg, by: "crowd" }],
+    leg: spot.index,
+    at: [point[0] ?? 0, point[1] ?? 0],
+    minutes: Math.round((time - spot.startMs) / 60_000),
+    wholeWay: false,
+    crowd: { at: window.at, time: window.at === "start" ? event.when.start : (event.when.end ?? event.when.start) },
+  };
 }
 
 const SAMPLE_MS = 5 * 60_000;
@@ -124,7 +213,12 @@ export function impactOf(matches: Match[]): Impact {
   }, "none");
 }
 
-export function impactOfMatch({ event, legs }: Pick<Match, "event" | "legs">): Impact {
+export function impactOfMatch({ event, legs, crowd }: Pick<Match, "event" | "legs" | "crowd">): Impact {
+  // A crowd is worth considering, never more: the way is still open. What else the event is on the way may be more.
+  if (crowd) {
+    const rest = impactOfMatch({ event, legs: legs.filter(({ by }) => by !== "crowd") });
+    return RANK[rest] > RANK.consider ? rest : "consider";
+  }
   const fits = legs.some(({ leg }) => fitsLeg(event, leg));
   // A weather warning by its Severity, for those it's for (PLAN.md, Impact thresholds: orange or above is major).
   if (event.kind === "weather") return fits && (event.severity === "major" || event.severity === "consider") ? event.severity : "minor";
@@ -188,11 +282,12 @@ function eventShape({ where: { geometry: g } }: Event, project: Projection): Sha
 }
 
 // 0 when they touch or the route runs inside an area; otherwise the shortest gap between them.
-function distanceM(a: Shape, route: Shape): number {
+// `within`: how near matters. Further than that, the gap between their bounding boxes is close enough.
+function distanceM(a: Shape, route: Shape, within = CORRIDOR_M * 10): number {
   const [ax0, ay0, ax1, ay1] = a.bbox;
   const [bx0, by0, bx1, by1] = route.bbox;
   const gap = Math.max(ax0 - bx1, bx0 - ax1, ay0 - by1, by0 - ay1, 0);
-  if (gap > CORRIDOR_M * 10) return gap;
+  if (gap > within) return gap;
 
   if (route.points.some((p) => a.rings.some((ring) => inside(p, ring)))) return 0;
   if (a.segments.some(([p, q]) => route.segments.some(([r, s]) => crosses(p, q, r, s)))) return 0;

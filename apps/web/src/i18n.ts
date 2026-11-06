@@ -88,6 +88,9 @@ export const en = {
   atMinute_one: "at {{count}} min",
   atMinute_other: "at {{count}} min",
   atStart: "at the start",
+  // A big event's crowd on a Trip: when it starts, or about when it ends (often estimated).
+  crowdStart: "starts {{time}}",
+  crowdEnd: "ends about {{time}}",
   headsUp: "Heads up",
   fromDay: "From {{day}}",
   onLeg: "on the {{leg}}",

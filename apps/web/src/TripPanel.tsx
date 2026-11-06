@@ -3,7 +3,7 @@ import { BadgeCheck, Bike, Bus, CalendarClock, Car, Footprints, type LucideIcon,
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { AddressSearch } from "./AddressSearch.tsx";
-import { EventList } from "./EventList.tsx";
+import { crowdText, EventList } from "./EventList.tsx";
 import type { Pin as PinT } from "./events.ts";
 import type { LatLon } from "./platform.tsx";
 import { LEG_STYLE } from "./transit.ts";
@@ -120,7 +120,7 @@ function ImpactMark({ impact }: { impact: Extract<Impact, "consider" | "major"> 
 }
 
 type Itinerary = Pick<Schema<"Itinerary">, "start" | "end" | "durationS" | "impact"> & {
-  onTheWay: Pick<Schema<"OnTheWay">, "eventId" | "impact" | "minutes">[];
+  onTheWay: Pick<Schema<"OnTheWay">, "eventId" | "impact" | "minutes" | "crowd">[];
   legs: (Pick<Schema<"Leg">, "mode" | "line" | "start" | "end" | "distanceM"> & { to?: { parking?: string } })[];
 };
 
@@ -164,7 +164,9 @@ export function Itineraries({ itineraries, chosen, better, titleOf, timeZone, on
         // What's in the way, and the worst of it: the most that matters, the first met.
         const inWay = itinerary.onTheWay.filter((m) => m.impact === "consider" || m.impact === "major");
         const worst = [...inWay].sort((a, b) => IMPACT_RANK[b.impact] - IMPACT_RANK[a.impact] || a.minutes - b.minutes)[0];
-        const worstTitle = worst && titleOf(worst.eventId);
+        // A big event's crowd: when it's there too, "Concert at the arena, ends about 21:30".
+        const worstName = worst && titleOf(worst.eventId);
+        const worstTitle = worstName && worst.crowd ? `${worstName}, ${crowdText(worst.crowd, timeZone, t)}` : worstName;
         const inTheWay = worstTitle ? t("inTheWay", { count: inWay.length, what: worstTitle }) : undefined;
         const isBetter = better?.index === i;
         const why = isBetter ? [t("betterToday"), ...(better?.avoids ? [t("avoids", { what: better.avoids })] : [])].join(", ") : undefined;

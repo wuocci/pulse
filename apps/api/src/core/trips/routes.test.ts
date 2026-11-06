@@ -290,3 +290,36 @@ describe("GET /v0/trips", () => {
     expect((await get(app, `${AB}&modes=boat`)).status).toBe(400);
   });
 });
+
+describe("GET /v0/trips around a big event (#49)", () => {
+  // A concert at B that ended ten minutes before departure: resolved, its crowd still leaving as the trip arrives.
+  const concert: Event = {
+    ...works,
+    id: "cal:concert",
+    kind: "public_event",
+    title: { en: "Concert at the arena" },
+    where: { geometry: { type: "Point", coordinates: [24.94, LAT + 0.002] }, precision: "exact" },
+    when: { start: "2026-10-31T09:00:00+02:00", end: "2026-10-31T11:50:00+02:00" },
+    severity: "consider",
+    mainlyAffected: "everyone",
+    noticeable: ["crowd"],
+    crowdSize: 13000,
+    status: "resolved",
+    updatedAt: "2026-10-31T11:55:00+02:00",
+  };
+
+  it("puts the crowd leaving a concert that's just over on the way, worth considering, with when it ended", async () => {
+    const events = new InMemoryEventStore();
+    await events.replaceSource("cal", [concert]);
+    const { router } = fakeRouter();
+    const app = createApp({ db: { ping: async () => true }, events, regions, clock: () => NOW, routerFor: () => router });
+
+    const body = (await (await get(app, AB)).json()) as Trip;
+    const bike = body.plans.find((p) => p.mode === "bike")?.itineraries[0];
+
+    expect(bike?.impact).toBe("consider");
+    expect(bike?.onTheWay).toEqual([
+      { eventId: "cal:concert", impact: "consider", leg: 0, minutes: 10, at: [24.94, LAT], crowd: { at: "end", time: "2026-10-31T11:50:00+02:00" } },
+    ]);
+  });
+});

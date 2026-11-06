@@ -983,6 +983,47 @@ describe("a Trip on the map", () => {
     expect(screen.queryByRole("button", { name: /^Works beside the way/ })).not.toBeInTheDocument();
   });
 
+  it("names a big event's crowd on the way and when it ends, in the list and on the itinerary", async () => {
+    const concert = anEvent("concert", {
+      kind: "public_event",
+      title: { en: "Concert at the arena" },
+      when: { start: "2026-10-31T09:00:00+02:00", end: "2026-10-31T12:00:00+02:00" },
+      severity: "consider",
+      mainlyAffected: "everyone",
+      noticeable: ["crowd"],
+    });
+    trip = {
+      events: [concert],
+      plans: [
+        {
+          mode: "transit",
+          itineraries: [
+            {
+              ...ride(["concert"], leg("walk"), leg("tram", "9"), leg("walk")),
+              onTheWay: [
+                {
+                  eventId: "concert",
+                  impact: "consider" as const,
+                  leg: 1,
+                  at: [24.945, 60.18] as [number, number],
+                  minutes: 6,
+                  crowd: { at: "end" as const, time: "2026-10-31T12:00:00+02:00" },
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    };
+    renderApp(TO);
+
+    const list = within(await screen.findByRole("region", { name: "On the way" }));
+    expect(within(list.getByRole("list", { name: "Tram 9" })).getByRole("button", { name: /^Concert at the arena/ })).toHaveTextContent("Everyone · Ends about 12:00");
+    expect((await within(await screen.findByRole("group", { name: "Routes" })).findAllByRole("radio"))[0]).toHaveAccessibleName(
+      /1 in the way: Concert at the arena, ends about 12:00$/,
+    );
+  });
+
   it("lists what's on the whole way once, above the parts of the trip; a warning the trip runs into stays with its part", async () => {
     const slippery = anEvent("slippery", { kind: "weather", title: { en: "Orange slippery pavements" }, severity: "major", mainlyAffected: "pedestrians" });
     const storm = anEvent("storm", { kind: "weather", title: { en: "Yellow wind warning" }, severity: "consider", mainlyAffected: "everyone" });
