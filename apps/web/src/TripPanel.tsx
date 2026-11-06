@@ -121,7 +121,7 @@ function ImpactMark({ impact }: { impact: Extract<Impact, "consider" | "major"> 
 
 type Itinerary = Pick<Schema<"Itinerary">, "start" | "end" | "durationS" | "impact"> & {
   onTheWay: Pick<Schema<"OnTheWay">, "eventId" | "impact" | "minutes" | "crowd">[];
-  legs: (Pick<Schema<"Leg">, "mode" | "line" | "start" | "end" | "distanceM"> & { to?: { parking?: string } })[];
+  legs: (Pick<Schema<"Leg">, "mode" | "line" | "start" | "end" | "distanceM"> & { to?: Pick<Schema<"Leg">["to"], "parking" | "parkingSpaces" | "parkingFree"> })[];
 };
 
 const IMPACT_RANK: Record<Impact, number> = { none: 0, minor: 1, consider: 2, major: 3 };
@@ -144,6 +144,7 @@ export function Itineraries({ itineraries, chosen, better, titleOf, timeZone, on
   const legSize = (leg: Itinerary["legs"][number]) => String(Math.round((Date.parse(leg.end) - Date.parse(leg.start)) / 60_000));
   const clock = new Intl.DateTimeFormat("en-GB", { hour: "2-digit", minute: "2-digit", hourCycle: "h23", timeZone });
   const minutes = (from: string, to: string) => t("minutes", { count: Math.round((Date.parse(to) - Date.parse(from)) / 60_000) });
+  const count = (n: number) => new Intl.NumberFormat(i18n.language).format(n);
 
   return (
     <fieldset className="min-w-0 space-y-1">
@@ -153,7 +154,9 @@ export function Itineraries({ itineraries, chosen, better, titleOf, timeZone, on
           .map((leg) => {
             const size = leg.line ? leg.line.name : minutes(leg.start, leg.end);
             const what = `${t(`leg_${leg.mode}`)} ${size}`;
-            return leg.to?.parking ? `${what} ${t("toParking", { name: leg.to.parking })}` : what;
+            if (!leg.to?.parking) return what;
+            const free = leg.to.parkingFree && freeText({ free: leg.to.parkingFree, spaces: leg.to.parkingSpaces }, count, t);
+            return [`${what} ${t("toParking", { name: leg.to.parking })}`, free].filter(Boolean).join(", ");
           })
           .join(", ");
         const times = `${clock.format(new Date(itinerary.start))}–${clock.format(new Date(itinerary.end))}`;
@@ -168,9 +171,12 @@ export function Itineraries({ itineraries, chosen, better, titleOf, timeZone, on
         const worstName = worst && titleOf(worst.eventId);
         const worstTitle = worstName && worst.crowd ? `${worstName}, ${crowdText(worst.crowd, timeZone, t)}` : worstName;
         const inTheWay = worstTitle ? t("inTheWay", { count: inWay.length, what: worstTitle }) : undefined;
+        // A park-and-ride way that parks at an almost full car park: why it's worth considering.
+        const full = itinerary.legs.find((leg) => leg.mode === "car" && leg.to?.parkingFree?.almostFull)?.to;
+        const fullText = full?.parking && full.parkingFree ? t("parkingAlmostFull", { name: full.parking, free: count(full.parkingFree.spaces) }) : undefined;
         const isBetter = better?.index === i;
         const why = isBetter ? [t("betterToday"), ...(better?.avoids ? [t("avoids", { what: better.avoids })] : [])].join(", ") : undefined;
-        const label = `${legs.charAt(0).toUpperCase()}${legs.slice(1)}. ${[times, minutes(itinerary.start, itinerary.end), length, impact && t(`impact_${impact}`), inTheWay, why].filter(Boolean).join(", ")}`;
+        const label = `${legs.charAt(0).toUpperCase()}${legs.slice(1)}. ${[times, minutes(itinerary.start, itinerary.end), length, impact && t(`impact_${impact}`), inTheWay, fullText, why].filter(Boolean).join(", ")}`;
         return (
           <label
             key={i}
@@ -183,6 +189,11 @@ export function Itineraries({ itineraries, chosen, better, titleOf, timeZone, on
                 const parkAt = leg.to?.parking && (
                   <span key={`${j}-p`} className="flex items-center gap-1 rounded bg-blue-600 px-1.5 py-0.5 text-xs font-semibold text-white">
                     P<span className="font-normal">{leg.to.parking}</span>
+                    {leg.to.parkingFree && (
+                      <span className={`font-normal ${leg.to.parkingFree.almostFull ? "rounded bg-amber-300 px-1 text-amber-950" : "opacity-80"}`}>
+                        · {t("freeShort", { free: count(leg.to.parkingFree.spaces) })}
+                      </span>
+                    )}
                   </span>
                 );
                 if (parkAt) {
@@ -215,10 +226,12 @@ export function Itineraries({ itineraries, chosen, better, titleOf, timeZone, on
             {impact && (
               <span aria-hidden className="flex min-w-0 items-center gap-1 text-xs text-muted-foreground">
                 <ImpactMark impact={impact} />
-                {worstTitle && (
+                {worstTitle ? (
                   <span className="truncate">
                     <span className="font-medium text-foreground tabular-nums">{inWay.length}</span> · {worstTitle}
                   </span>
+                ) : (
+                  fullText && <span className="truncate">{fullText}</span>
                 )}
               </span>
             )}
@@ -245,9 +258,11 @@ export interface ParkingNearProps {
 export type ParkingPick = NonNullable<Schema<"Trip">["parking"]>["picks"][number];
 
 // Where to leave the car at B: the closest spot, the cheapest and the car park with the most spaces, numbered as on
-// the map; then what street parking there is around. Static data: not whether any space is free now. Credited.
+// the map; then what street parking there is around. Street parking is static data: not whether any space is free
+// now. A car park that reports its free spaces says how many. Credited.
 export function ParkingNear({ parking: { street, picks, sources }, place, onPick }: ParkingNearProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const count = (n: number) => new Intl.NumberFormat(i18n.language).format(n);
   const kinds = street
     ? [
         street.paid && t("parkingPaid", { count: street.paid }),
@@ -280,7 +295,9 @@ export function ParkingNear({ parking: { street, picks, sources }, place, onPick
                   <span className="block font-medium">
                     {[...pick.reasons.map((r) => t(`pick_${r}`)), pick.name ?? t("streetParking")].join(" · ")}
                   </span>
-                  <span className="block text-muted-foreground">{[t("metres", { count: pick.distanceM }), parkingDetails(pick, t)].join(" · ")}</span>
+                  <span className="block text-muted-foreground">
+                    {[t("metres", { count: pick.distanceM }), pick.free ? freeText({ free: pick.free, spaces: pick.spaces }, count, t) : parkingDetails(pick, t)].join(" · ")}
+                  </span>
                 </span>
               </button>
             </li>
@@ -298,6 +315,12 @@ export function ParkingNear({ parking: { street, picks, sources }, place, onPick
 }
 
 type T = ReturnType<typeof useTranslation>["t"];
+
+// "541 free of 2,049", "almost full: 6 free of 300"; without the capacity, "6 free".
+function freeText({ free, spaces }: { free: NonNullable<ParkingPick["free"]>; spaces?: number }, count: (n: number) => string, t: T): string {
+  if (!spaces) return t("freeShort", { free: count(free.spaces) });
+  return t(free.almostFull ? "almostFullFreeOf" : "freeOf", { free: count(free.spaces), spaces: count(spaces) });
+}
 
 type Spot = Pick<ParkingPick, "spaces" | "perHour" | "paidUntil" | "freeUntil" | "maxStayMin" | "disc"> & {
   cost?: ParkingPick["cost"];

@@ -323,3 +323,27 @@ describe("GET /v0/trips around a big event (#49)", () => {
     ]);
   });
 });
+
+describe("GET /v0/trips with a park-and-ride way (#15)", () => {
+  // Drive to a car park, then the tram on: the car park's free spaces as the plan was answered.
+  const parkAndRide = (free: { spaces: number; almostFull: boolean }): RoutedItinerary => ({
+    ...route("car"),
+    legs: [
+      { ...walk, mode: "car", to: { ...walk.to, parking: "Matinkylän asema", parkingSpaces: 350, parkingFree: { ...free, readAt: NOW.toISOString() } } },
+      { ...walk, mode: "tram", line: { id: "HSL:1009", name: "9" }, stops: ["HSL:1"], geometry: { type: "LineString", coordinates: [[24.95, LAT + 0.01], [24.96, LAT + 0.01]] } },
+    ],
+  });
+  const appWithWays = async (...ways: RoutedItinerary[]) => {
+    const router: Router = { plan: async (trip) => (trip.mode === "car" ? ways : []) };
+    return createApp({ db: { ping: async () => true }, events: new InMemoryEventStore(), regions, clock: () => NOW, routerFor: () => router });
+  };
+  const carWays = async (...ways: RoutedItinerary[]) =>
+    ((await (await get(await appWithWays(...ways), `${AB}&modes=car`)).json()) as Trip).plans[0]!.itineraries;
+
+  it("is worth considering when it parks at an almost full car park, and not when there's room", async () => {
+    const drive = { ...route("car"), legs: [{ ...walk, mode: "car" as const }] };
+
+    expect((await carWays(drive, parkAndRide({ spaces: 6, almostFull: true })))[1]?.impact).toBe("consider");
+    expect((await carWays(drive, parkAndRide({ spaces: 172, almostFull: false })))[1]?.impact).toBe("none");
+  });
+});

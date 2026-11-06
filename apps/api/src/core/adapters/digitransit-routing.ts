@@ -1,4 +1,5 @@
 import type { Itinerary, Leg, LegMode, TravelMode } from "@pulse/schema";
+import { freeSpaces } from "./digitransit-parking.ts";
 import { distanceM } from "./street-parking.ts";
 
 // Trip planning from Digitransit's routing API (OpenTripPlanner 2, GraphQL `planConnection`), for Regions it covers.
@@ -11,6 +12,8 @@ export interface RouterOptions {
   apiKey: string;
   fetchFn?: typeof fetch;
   timeoutMs?: number;
+  // When a car park's free spaces are read: as the plan is answered.
+  clock?: () => Date;
 }
 
 export interface TripRequest {
@@ -41,7 +44,7 @@ const QUERY = `query($o: PlanLabeledLocationInput!, $d: PlanLabeledLocationInput
     edges { node { start end duration
       legs { mode
         start { scheduledTime estimated { time } } end { scheduledTime estimated { time } }
-        from { name lat lon stop { gtfsId } vehicleParking { name } } to { name lat lon stop { gtfsId } vehicleParking { name capacity { carSpaces } } }
+        from { name lat lon stop { gtfsId } vehicleParking { name } } to { name lat lon stop { gtfsId } vehicleParking { name capacity { carSpaces } realtime availability { carSpaces } } }
         route { gtfsId shortName }
         intermediatePlaces { stop { gtfsId } }
         legGeometry { points } } } }
@@ -57,7 +60,12 @@ interface Place {
   lat: number;
   lon: number;
   stop: { gtfsId: string } | null;
-  vehicleParking?: { name: string; capacity?: { carSpaces: number | null } | null } | null;
+  vehicleParking?: {
+    name: string;
+    capacity?: { carSpaces: number | null } | null;
+    realtime?: boolean | null;
+    availability?: { carSpaces: number | null } | null;
+  } | null;
 }
 interface Answer {
   data?: {
@@ -85,7 +93,7 @@ interface Answer {
   errors?: { message: string }[];
 }
 
-export function digitransitRouter({ url, apiKey, fetchFn = fetch, timeoutMs = TIMEOUT_MS }: RouterOptions): Router {
+export function digitransitRouter({ url, apiKey, fetchFn = fetch, timeoutMs = TIMEOUT_MS, clock = () => new Date() }: RouterOptions): Router {
   type Ways = { modes: object; first: number };
   async function ask({ from, to, departAt }: TripRequest, ways: Ways): Promise<Answer> {
     const location = ({ lat, lon }: TripRequest["from"]) => ({ location: { coordinate: { latitude: lat, longitude: lon } } });
@@ -108,7 +116,8 @@ export function digitransitRouter({ url, apiKey, fetchFn = fetch, timeoutMs = TI
   async function planned(trip: TripRequest, ways: Ways): Promise<RoutedItinerary[]> {
     let answer = await ask(trip, ways).catch(() => ask(trip, ways));
     if (!routed(answer).length) answer = await ask(trip, ways);
-    return routed(answer).map(toItinerary);
+    const readAt = clock();
+    return routed(answer).map((edge) => toItinerary(edge, readAt));
   }
 
   return {
@@ -130,7 +139,7 @@ export function digitransitRouter({ url, apiKey, fetchFn = fetch, timeoutMs = TI
 // Driving to a car park first: Digitransit also offers walking all the way.
 const parksFirst = ({ legs }: RoutedItinerary) => legs[0]?.mode === "car" && !!legs[0].to.parking;
 
-function toItinerary({ node }: NonNullable<Answer["data"]>["planConnection"]["edges"][number]): RoutedItinerary {
+function toItinerary({ node }: NonNullable<Answer["data"]>["planConnection"]["edges"][number], readAt: Date): RoutedItinerary {
   return {
     start: node.start,
     end: node.end,
@@ -139,8 +148,8 @@ function toItinerary({ node }: NonNullable<Answer["data"]>["planConnection"]["ed
       (leg): Leg => ({
         mode: legMode(leg.mode),
         ...(leg.route ? { line: { id: leg.route.gtfsId, name: leg.route.shortName } } : {}),
-        from: place(leg.from),
-        to: place(leg.to),
+        from: place(leg.from, readAt),
+        to: place(leg.to, readAt),
         start: leg.start.estimated?.time ?? leg.start.scheduledTime,
         end: leg.end.estimated?.time ?? leg.end.scheduledTime,
         // A walk that ends at a stop doesn't pass it: only a line's legs have stops.
@@ -156,8 +165,10 @@ function toItinerary({ node }: NonNullable<Answer["data"]>["planConnection"]["ed
 const LEG_MODES: Record<string, LegMode> = { WALK: "walk", BICYCLE: "bike", CAR: "car", BUS: "bus", TRAM: "tram", RAIL: "rail", SUBWAY: "subway", FERRY: "ferry" };
 const legMode = (mode: string): LegMode => LEG_MODES[mode] ?? "other";
 
-function place({ name, lat, lon, stop, vehicleParking }: Place) {
+// A car park's free spaces only where it reports them live: the rest give their capacity alone.
+function place({ name, lat, lon, stop, vehicleParking }: Place, readAt: Date) {
   const spaces = vehicleParking?.capacity?.carSpaces;
+  const free = vehicleParking?.realtime ? vehicleParking.availability?.carSpaces : undefined;
   return {
     name,
     lat,
@@ -165,6 +176,7 @@ function place({ name, lat, lon, stop, vehicleParking }: Place) {
     ...(stop ? { stop: stop.gtfsId } : {}),
     ...(vehicleParking ? { parking: vehicleParking.name } : {}),
     ...(spaces ? { parkingSpaces: spaces } : {}),
+    ...(typeof free === "number" ? { parkingFree: freeSpaces(free, spaces ?? undefined, readAt) } : {}),
   };
 }
 

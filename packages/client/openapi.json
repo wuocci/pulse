@@ -720,7 +720,7 @@
               "sources",
               "picks"
             ],
-            "description": "Parking around B on arrival by car: static, not whether spaces are free now"
+            "description": "Parking around B on arrival by car: street parking's rules, and car parks' free spaces where they report them"
           },
           "recommended": {
             "type": "object",
@@ -896,6 +896,9 @@
               "parkingSpaces": {
                 "type": "integer",
                 "description": "The car park's spaces for cars, when known"
+              },
+              "parkingFree": {
+                "$ref": "#/components/schemas/FreeSpaces"
               }
             },
             "required": [
@@ -930,6 +933,9 @@
               "parkingSpaces": {
                 "type": "integer",
                 "description": "The car park's spaces for cars, when known"
+              },
+              "parkingFree": {
+                "$ref": "#/components/schemas/FreeSpaces"
               }
             },
             "required": [
@@ -1011,6 +1017,30 @@
           "ferry",
           "other"
         ]
+      },
+      "FreeSpaces": {
+        "type": "object",
+        "properties": {
+          "spaces": {
+            "type": "integer",
+            "example": 541
+          },
+          "readAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When Pulse read the count"
+          },
+          "almostFull": {
+            "type": "boolean",
+            "description": "10 or fewer free, or under 5% of its spaces"
+          }
+        },
+        "required": [
+          "spaces",
+          "readAt",
+          "almostFull"
+        ],
+        "description": "The car park's free spaces, when it reports them"
       },
       "OnTheWay": {
         "type": "object",
@@ -1205,6 +1235,16 @@
           "distanceM": {
             "type": "integer",
             "description": "As the crow flies from the destination"
+          },
+          "free": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/FreeSpaces"
+              },
+              {
+                "description": "Free spaces now, when the car park reports them"
+              }
+            ]
           }
         },
         "required": [
@@ -1283,6 +1323,16 @@
           "disc": {
             "type": "boolean",
             "description": "A parking disc is needed"
+          },
+          "free": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/FreeSpaces"
+              },
+              {
+                "description": "A car park's free spaces now, when it reports them"
+              }
+            ]
           }
         },
         "required": [

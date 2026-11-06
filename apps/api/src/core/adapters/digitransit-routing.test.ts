@@ -126,6 +126,28 @@ describe("the Digitransit router", () => {
       expect(ways[1]!.legs[0]!.to).toMatchObject({ parking: "Niittykumpu", parkingSpaces: 340 });
     });
 
+    it("tells how many spaces are free, as the plan is answered, where the car park reports it live", async () => {
+      const at = (vehicleParking: object) =>
+        parkride.data.planConnection.edges.map(({ node }) => ({
+          node: { ...node, legs: [{ ...node.legs[0]!, to: { ...node.legs[0]!.to, vehicleParking } }, ...node.legs.slice(1)] },
+        }));
+      const now = new Date("2026-11-01T17:50:00Z");
+      const planWith = (vehicleParking: object) =>
+        digitransitRouter({
+          url: URL_,
+          apiKey: "k",
+          clock: () => now,
+          fetchFn: fakeDigitransit(driveUntil("2026-11-01T18:15:00+02:00"), { data: { planConnection: { routingErrors: [], edges: at(vehicleParking) } } }).fetchFn,
+        }).plan(carTrip());
+
+      const live = await planWith({ name: "Niittykumpu", capacity: { carSpaces: 100 }, realtime: true, availability: { carSpaces: 6 } });
+      expect(live[1]!.legs[0]!.to.parkingFree).toEqual({ spaces: 6, readAt: now.toISOString(), almostFull: true });
+
+      // Not live: a count from a static source isn't what's free now.
+      const statics = await planWith({ name: "Niittykumpu", capacity: { carSpaces: 100 }, realtime: false, availability: { carSpaces: 100 } });
+      expect(statics[1]!.legs[0]!.to).not.toHaveProperty("parkingFree");
+    });
+
     it("leaves out a way that doesn't drive: Digitransit adds walking all the way", async () => {
       const walkOnly = transit.data.planConnection.edges[0]!;
       const answer = { data: { planConnection: { routingErrors: [], edges: [walkOnly, ...parkride.data.planConnection.edges] } } };
