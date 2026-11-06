@@ -35,8 +35,6 @@ interface PermitType {
   // The dates the notice occupies the street, as YYYY-MM-DD
   occupies(p: PermitNotice): { start: Field; end: Field };
   label(p: PermitNotice): { en: string; fi: string };
-  // Extra title part, e.g. an event's own dates when they differ from the occupied period
-  detail?(p: PermitNotice): { en: string; fi: string } | undefined;
   text?(p: PermitNotice): Field;
   // What else the Classifier reads about a notice, beyond the Event. Internal: never on the Event or in the API.
   facts(p: PermitNotice): Record<string, Field | number | undefined>;
@@ -73,20 +71,16 @@ const PERMIT_TYPES: Record<LandUsePermitSource["permitType"], PermitType> = {
     kind: "public_event",
     severity: "minor",
     noticeable: ["crowd", "noise"],
-    // Build-up and teardown occupy the area too, so the Event spans them.
+    // The event's own days, when the crowd is there; build-up and teardown only when the notice gives no event days.
     occupies: (p) => ({
-      start: field(p, "rakentaminen_alkaa") ?? field(p, "tapahtuma_alkaa"),
-      end: field(p, "purkaminen_paattyy") ?? field(p, "tapahtuma_paattyy"),
+      start: field(p, "tapahtuma_alkaa") ?? field(p, "rakentaminen_alkaa"),
+      end: field(p, "tapahtuma_paattyy") ?? field(p, "purkaminen_paattyy"),
     }),
     // Promotions are all named just "Promootio"; real events keep their own name in every language.
     label: (p) => {
       const name = field(p, "nimi");
       return field(p, "hakemuksen_laji") === "Promootio" || !name ? { en: "Promotion", fi: "Promootio" } : { en: name, fi: name };
     },
-    detail: (p) =>
-      field(p, "rakentaminen_alkaa") || field(p, "purkaminen_paattyy")
-        ? dateRange(field(p, "tapahtuma_alkaa"), field(p, "tapahtuma_paattyy"))
-        : undefined,
     facts: (p) => {
       const [buildUp, start, end, teardown] = ["rakentaminen_alkaa", "tapahtuma_alkaa", "tapahtuma_paattyy", "purkaminen_paattyy"].map(
         (name) => field(p, name),
@@ -140,7 +134,7 @@ export function toPermitItems(collection: PermitCollection, { source, timeZone, 
       id: `${source.id}:${notice.hakemustunnus}`,
       kind: type.kind,
       layers: ["area"],
-      title: titles(type.label(notice), place(notice), type.detail?.(notice)),
+      title: titles(type.label(notice), place(notice)),
       ...(text ? { originalText: { fi: text } } : {}),
       where: { geometry, precision: "area" },
       when: { start, ...(end ? { end } : {}) },
@@ -203,27 +197,9 @@ function place(notice: PermitNotice): string {
 }
 
 // Moves to a shared title module that writes every Region language (Q15 in the plan).
-function titles(
-  label: { en: string; fi: string },
-  place: string,
-  detail: { en: string; fi: string } | undefined,
-): Record<string, string> {
-  const join = (lang: "en" | "fi") => [label[lang], place, detail?.[lang]].filter(Boolean).join(" · ");
+function titles(label: { en: string; fi: string }, place: string): Record<string, string> {
+  const join = (lang: "en" | "fi") => [label[lang], place].filter(Boolean).join(" · ");
   return { en: join("en"), fi: join("fi") };
-}
-
-function dateRange(startDate: Field, endDate: Field): { en: string; fi: string } | undefined {
-  if (!startDate) return undefined;
-  const s = dateParts(startDate);
-  if (!endDate || endDate === startDate) return { en: `${s.day} ${s.short}`, fi: `${s.day}.${s.month}.` };
-  const e = dateParts(endDate);
-  return { en: `${s.day} ${s.short} – ${e.day} ${e.short}`, fi: `${s.day}.${s.month}.–${e.day}.${e.month}.` };
-}
-
-function dateParts(date: string) {
-  const [year, month, day] = date.slice(0, 10).split("-").map(Number) as [number, number, number];
-  const short = new Date(Date.UTC(year, month - 1, day)).toLocaleDateString("en-GB", { month: "short", timeZone: "UTC" });
-  return { day, month, short };
 }
 
 export function statusAt(now: Date, start: string, end: string | undefined): Event["status"] {

@@ -1,0 +1,401 @@
+{
+  "_recorded": {
+    "at": "2026-11-04",
+    "note": "Events from the live Linked Events API (event/<id>/?include=location) for the answer key, with the same fields kept as the Adapter fixture."
+  },
+  "data": [
+    {
+      "@id": "https://api.hel.fi/linkedevents/v1/event/helsinki:agpe43lrvm/",
+      "@type": "Event/LinkedEvent",
+      "id": "helsinki:agpe43lrvm",
+      "name": {
+        "fi": "NHL Global Series",
+        "sv": "NHL Global Series",
+        "en": "NHL Global Series"
+      },
+      "short_description": {
+        "fi": "NHL Global Series: Seattle Kraken – Carolina Hurricanes",
+        "sv": "NHL Global Series: Seattle Kraken – Carolina Hurricanes",
+        "en": "NHL Global Series: Seattle Kraken – Carolina Hurricanes"
+      },
+      "info_url": {
+        "fi": "https://www.livenation.fi/nhl-global-series-tickets-adp1110927",
+        "sv": "https://www.livenation.fi/nhl-global-series-tickets-adp1110927",
+        "en": "https://www.livenation.fi/nhl-global-series-tickets-adp1110927"
+      },
+      "start_time": "2026-11-12T17:00:00Z",
+      "end_time": "2026-11-12T19:00:00Z",
+      "event_status": "EventScheduled",
+      "super_event": {
+        "@id": "https://api.hel.fi/linkedevents/v1/event/helsinki:agpe43l3pm/"
+      },
+      "super_event_type": null,
+      "sub_events": [],
+      "maximum_attendee_capacity": 13000,
+      "last_modified_time": "2026-07-01T07:24:14.927894Z",
+      "data_source": "helsinki",
+      "publisher": "ytj:0586977-6",
+      "location": {
+        "@id": "https://api.hel.fi/linkedevents/v1/place/tprek:21283/",
+        "id": "tprek:21283",
+        "name": {
+          "fi": "Veikkaus Arena",
+          "sv": "Veikkaus Arena",
+          "en": "Veikkaus Arena"
+        },
+        "position": {
+          "type": "Point",
+          "coordinates": [
+            24.929045,
+            60.20557
+          ]
+        },
+        "street_address": {
+          "fi": "Areenankuja 1",
+          "sv": "Arenagränden 1",
+          "en": "Areenankuja 1"
+        },
+        "address_locality": {
+          "fi": "Helsinki",
+          "sv": "Helsingfors",
+          "en": "Helsinki"
+        }
+      }
+    },
+    {
+      "@id": "https://api.hel.fi/linkedevents/v1/event/helsinki:agqkv5ygra/",
+      "@type": "Event/LinkedEvent",
+      "id": "helsinki:agqkv5ygra",
+      "name": {
+        "fi": "UEFA Nations League: Suomi–San Marino",
+        "sv": "UEFA Nations League: Finland–San Marino",
+        "en": "UEFA Nations League: Finland–San Marino"
+      },
+      "short_description": {
+        "fi": "Sukupolvien unelman 7-vuotispäivää vietetään Bolt Arenan sunnuntai-illassa, kun Huuhkajien Nations League -syksy huipentuu San Marinoa vastaan. Tervetuloa!",
+        "sv": "Finlands herrlandslag i fotboll spelar UEFA Nations League-match mot San Marino i november.",
+        "en": "The 7th anniversary of the \"dream of generations\" will be celebrated on Sunday evening at Bolt Arena, when the Huuhkajat takes on Marino in the Nations League."
+      },
+      "info_url": {
+        "fi": "https://www.palloliitto.fi/liput?tab=huuhkajat",
+        "sv": "https://www.palloliitto.fi/liput?tab=huuhkajat",
+        "en": "https://www.palloliitto.fi/liput?tab=huuhkajat"
+      },
+      "start_time": "2026-11-15T17:00:00Z",
+      "end_time": "2026-11-15T19:00:00Z",
+      "event_status": "EventScheduled",
+      "super_event": null,
+      "super_event_type": null,
+      "sub_events": [],
+      "maximum_attendee_capacity": 10700,
+      "last_modified_time": "2026-09-17T06:41:30.980524Z",
+      "data_source": "helsinki",
+      "publisher": "others",
+      "location": {
+        "@id": "https://api.hel.fi/linkedevents/v1/place/tprek:20999/",
+        "id": "tprek:20999",
+        "name": {
+          "fi": "Bolt Arena",
+          "sv": "Bolt Arena",
+          "en": "Bolt Arena"
+        },
+        "position": {
+          "type": "Point",
+          "coordinates": [
+            24.92188,
+            60.187332
+          ]
+        },
+        "street_address": {
+          "fi": "Urheilukatu 5",
+          "sv": "Idrottsgatan 5",
+          "en": "Urheilukatu 5"
+        },
+        "address_locality": {
+          "fi": "Helsinki",
+          "sv": "Helsingfors",
+          "en": "Helsinki"
+        }
+      }
+    },
+    {
+      "@id": "https://api.hel.fi/linkedevents/v1/event/helsinki:agp5v7666i/",
+      "@type": "Event/LinkedEvent",
+      "id": "helsinki:agp5v7666i",
+      "name": {
+        "fi": "Treffiperjantai",
+        "en": "Date Friday"
+      },
+      "short_description": {
+        "fi": "Tule tutustumaan uusiin ihmisiin luontevan tekemisen merkeissä. Joka kuukauden toinen perjantai on Kiasmassa treffiperjantai!",
+        "en": "At Kiasma, the second Friday of every month is Date Friday!\n"
+      },
+      "info_url": {
+        "fi": "https://kiasma.fi/muut-tapahtumat/treffiperjantai/",
+        "en": "https://kiasma.fi/en/events/date-friday/"
+      },
+      "start_time": "2026-11-13T15:00:00Z",
+      "end_time": "2026-11-13T18:00:00Z",
+      "event_status": "EventScheduled",
+      "super_event": {
+        "@id": "https://api.hel.fi/linkedevents/v1/event/helsinki:agp5v77him/"
+      },
+      "super_event_type": null,
+      "sub_events": [],
+      "maximum_attendee_capacity": 5000,
+      "last_modified_time": "2026-08-07T06:53:49.695915Z",
+      "data_source": "helsinki",
+      "publisher": "fng:kiasma",
+      "location": {
+        "@id": "https://api.hel.fi/linkedevents/v1/place/tprek:20861/",
+        "id": "tprek:20861",
+        "name": {
+          "fi": "Nykytaiteen museo Kiasma",
+          "sv": "Museet för nutidskonst Kiasma",
+          "en": "Museum of Contemporary Art Kiasma"
+        },
+        "position": {
+          "type": "Point",
+          "coordinates": [
+            24.936619,
+            60.172062
+          ]
+        },
+        "street_address": {
+          "fi": "Mannerheiminaukio 2",
+          "sv": "Mannerheimplatsen 2",
+          "en": "Mannerheiminaukio 2"
+        },
+        "address_locality": {
+          "fi": "Helsinki",
+          "sv": "Helsingfors",
+          "en": "Helsinki"
+        }
+      }
+    },
+    {
+      "@id": "https://api.hel.fi/linkedevents/v1/event/helsinki:agnntmcsby/",
+      "@type": "Event/LinkedEvent",
+      "id": "helsinki:agnntmcsby",
+      "name": {
+        "fi": "Kiasman ilmaispäivä",
+        "sv": "Gratisdag",
+        "en": "Free Admission Day"
+      },
+      "short_description": {
+        "fi": "Kiasman ilmaispäivä järjestetään joka kuukauden ensimmäisenä perjantaina. Ilmaispäivänä näyttelyihin on vapaa pääsy.",
+        "sv": "Under Kiasmas gratisdagar är det fritt inträde till utställningarna.",
+        "en": "Free admission to the exhibitions on the first Friday of the month."
+      },
+      "info_url": {
+        "fi": "https://kiasma.fi/muut-tapahtumat/ilmaispaiva/",
+        "sv": "https://kiasma.fi/sv/evenemang/gratisdag/",
+        "en": "https://kiasma.fi/en/events/free-admission-day/"
+      },
+      "start_time": "2026-11-06T08:00:00Z",
+      "end_time": "2026-11-06T18:00:00Z",
+      "event_status": "EventScheduled",
+      "super_event": {
+        "@id": "https://api.hel.fi/linkedevents/v1/event/helsinki:agjzbwznbi/"
+      },
+      "super_event_type": null,
+      "sub_events": [],
+      "maximum_attendee_capacity": 3000,
+      "last_modified_time": "2025-12-01T11:33:22.592570Z",
+      "data_source": "helsinki",
+      "publisher": "fng:kiasma",
+      "location": {
+        "@id": "https://api.hel.fi/linkedevents/v1/place/tprek:20861/",
+        "id": "tprek:20861",
+        "name": {
+          "fi": "Nykytaiteen museo Kiasma",
+          "sv": "Museet för nutidskonst Kiasma",
+          "en": "Museum of Contemporary Art Kiasma"
+        },
+        "position": {
+          "type": "Point",
+          "coordinates": [
+            24.936619,
+            60.172062
+          ]
+        },
+        "street_address": {
+          "fi": "Mannerheiminaukio 2",
+          "sv": "Mannerheimplatsen 2",
+          "en": "Mannerheiminaukio 2"
+        },
+        "address_locality": {
+          "fi": "Helsinki",
+          "sv": "Helsingfors",
+          "en": "Helsinki"
+        }
+      }
+    },
+    {
+      "@id": "https://api.hel.fi/linkedevents/v1/event/helsinki:agqvzyxumu/",
+      "@type": "Event/LinkedEvent",
+      "id": "helsinki:agqvzyxumu",
+      "name": {
+        "fi": "Nanna Susi: piano piano - maalauksia 2026",
+        "sv": "Nanna Susi: piano piano - målningar 2026",
+        "en": "Nanna Susi: piano piano - paintings 2026"
+      },
+      "short_description": {
+        "fi": "Nanna Susi: \"Matka on tärkeämpää kuin päämäärä. Maalaamisjaksoni sisältävät erilaisia aikakausia ja ihmisenä olemisen matkoja. \"",
+        "sv": "Nanna Susis målningsperioder rymmer olika epoker och resor genom människans existens.",
+        "en": "The journey is more important than the destination.  Nanna Susi's painting cycles span different eras and journeys through life. "
+      },
+      "info_url": {
+        "fi": "https://www.nannasusi.fi/nyt/",
+        "sv": "https://www.nannasusi.fi/en/",
+        "en": "https://www.nannasusi.fi/en/"
+      },
+      "start_time": "2026-11-04T10:00:00Z",
+      "end_time": "2026-11-04T16:00:00Z",
+      "event_status": "EventScheduled",
+      "super_event": {
+        "@id": "https://api.hel.fi/linkedevents/v1/event/helsinki:agqvzyyqke/"
+      },
+      "super_event_type": null,
+      "sub_events": [],
+      "maximum_attendee_capacity": 2000,
+      "last_modified_time": "2026-10-21T06:26:12.222748Z",
+      "data_source": "helsinki",
+      "publisher": "others",
+      "location": {
+        "@id": "https://api.hel.fi/linkedevents/v1/place/tprek:63140/",
+        "id": "tprek:63140",
+        "name": {
+          "fi": "nanna susi studio",
+          "sv": "nanna susi studio",
+          "en": "nanna susi studio"
+        },
+        "position": {
+          "type": "Point",
+          "coordinates": [
+            24.952719,
+            60.18508
+          ]
+        },
+        "street_address": {
+          "fi": "Fleminginkatu 6",
+          "sv": "Flemingsgatan 6",
+          "en": "Fleminginkatu 6"
+        },
+        "address_locality": {
+          "fi": "Helsinki",
+          "sv": "Helsingfors",
+          "en": "Helsinki"
+        }
+      }
+    },
+    {
+      "@id": "https://api.hel.fi/linkedevents/v1/event/helsinki:agq2clfzfm/",
+      "@type": "Event/LinkedEvent",
+      "id": "helsinki:agq2clfzfm",
+      "name": {
+        "fi": "Play it again -retropelitapahtuma",
+        "sv": "Play it again -retrospelevenemang",
+        "en": "Play It Again Retro Gaming Event"
+      },
+      "short_description": {
+        "fi": "Tule mukaan pelaamaan kasarilta, ysäriltä ja nollarilta tuttuja, legendaarisia pelejä!",
+        "sv": "Kom och spela legendariska spel från 80-, 90- och 00-talet!",
+        "en": "Come and play legendary games from the 80s, 90s and 2000s!"
+      },
+      "info_url": {
+        "fi": "https://museoleikki.fi/play-it-again-retropelitapahtuma/",
+        "sv": "https://museoleikki.fi/sv/play-it-again-retrospelsevenemang-26/",
+        "en": "https://museoleikki.fi/en/play-it-again-retro-gaming-event-26/"
+      },
+      "start_time": "2026-11-14T08:00:00Z",
+      "end_time": "2026-11-14T15:00:00Z",
+      "event_status": "EventScheduled",
+      "super_event": {
+        "@id": "https://api.hel.fi/linkedevents/v1/event/helsinki:agq2clgcie/"
+      },
+      "super_event_type": null,
+      "sub_events": [],
+      "maximum_attendee_capacity": 1000,
+      "last_modified_time": "2026-11-03T12:09:21.609659Z",
+      "data_source": "helsinki",
+      "publisher": "others",
+      "location": {
+        "@id": "https://api.hel.fi/linkedevents/v1/place/tprek:20407/",
+        "id": "tprek:20407",
+        "name": {
+          "fi": "Museo Leikki",
+          "sv": "Leikki - Lekmuseet",
+          "en": "Leikki - the Museum of Play"
+        },
+        "position": {
+          "type": "Point",
+          "coordinates": [
+            24.796572,
+            60.178833
+          ]
+        },
+        "street_address": {
+          "fi": "Ahertajantie 3",
+          "sv": "Flitarvägen 3",
+          "en": "Ahertajantie 3"
+        },
+        "address_locality": {
+          "fi": "Espoo",
+          "sv": "Esbo",
+          "en": "Espoo"
+        }
+      }
+    },
+    {
+      "@id": "https://api.hel.fi/linkedevents/v1/event/helsinki:agpafcxbx4/",
+      "@type": "Event/LinkedEvent",
+      "id": "helsinki:agpafcxbx4",
+      "name": {
+        "fi": "Urkusatu BUU: Kertun ja Hukkasen seikkailut"
+      },
+      "short_description": {
+        "fi": "Kirjailija Kari Hotakaisen ja säveltäjä Jouni Hirvelän urkusadussa suuri tuuli pyyhkäisee maailman halki, ja Kerttu lennähtää eroon perheestään."
+      },
+      "info_url": {
+        "fi": "https://musiikkitalonurut.fi/tapahtumakalenteri/kerttu-ja-hukkanen/"
+      },
+      "start_time": "2026-11-14T10:00:00Z",
+      "end_time": "2026-11-14T11:00:00Z",
+      "event_status": "EventScheduled",
+      "super_event": null,
+      "super_event_type": null,
+      "sub_events": [],
+      "maximum_attendee_capacity": 1000,
+      "last_modified_time": "2026-05-11T09:44:21.341958Z",
+      "data_source": "helsinki",
+      "publisher": "others",
+      "location": {
+        "@id": "https://api.hel.fi/linkedevents/v1/place/tprek:20633/",
+        "id": "tprek:20633",
+        "name": {
+          "fi": "Musiikkitalo",
+          "sv": "Musikhuset",
+          "en": "Musiikkitalo - Helsinki Music Centre"
+        },
+        "position": {
+          "type": "Point",
+          "coordinates": [
+            24.935074,
+            60.1737
+          ]
+        },
+        "street_address": {
+          "fi": "Mannerheimintie 13a",
+          "sv": "Mannerheimvägen 13a",
+          "en": "Mannerheimintie 13a"
+        },
+        "address_locality": {
+          "fi": "Helsinki",
+          "sv": "Helsingfors",
+          "en": "Helsinki"
+        }
+      }
+    }
+  ]
+}

@@ -3,7 +3,7 @@
   "at": "2026-10-26",
   "url": "https://kartta.hel.fi/ws/geoserver/avoindata/wfs",
   "query": "service=WFS&version=2.0.0&request=GetFeature&typeName=<layer>&outputFormat=application/json&srsName=EPSG:4326",
-  "note": "Raw features from the live WFS, unmodified, filtered to the notices listed in answer-key.json. A notice can span several features (one per polygon)."
+  "note": "Raw features from the live WFS, unmodified, filtered to the notices listed in answer-key.json. A notice can span several features (one per polygon). KP2302652-6, KP2102753-23 and KP2602098-5 were added on 2026-11-04, as loud and ordinary digs near Gunillantie."
  },
  "layers": {
   "avoindata:Tapahtumat_alue": {
@@ -15726,6 +15726,630 @@
       "geometrytype": "ST_Polygon",
       "tyo_alkaa_txt": "02.11.2026",
       "tyo_paattyy_txt": "13.11.2026",
+      "toiminnallinen_kunto_txt": null
+     }
+    },
+    {
+     "type": "Feature",
+     "id": "Kaivuilmoitus_alue.9",
+     "geometry": {
+      "type": "MultiPolygon",
+      "coordinates": [
+       [
+        [
+         [
+          25.021062,
+          60.16859903
+         ],
+         [
+          25.021557,
+          60.16847803
+         ],
+         [
+          25.021485,
+          60.16841903
+         ],
+         [
+          25.021359,
+          60.16828903
+         ],
+         [
+          25.020926,
+          60.16782303
+         ],
+         [
+          25.020367,
+          60.16725703
+         ],
+         [
+          25.020223,
+          60.16710903
+         ],
+         [
+          25.020124,
+          60.16700603
+         ],
+         [
+          25.020178,
+          60.16692503
+         ],
+         [
+          25.020367,
+          60.16666003
+         ],
+         [
+          25.020376,
+          60.16652103
+         ],
+         [
+          25.020331,
+          60.16641403
+         ],
+         [
+          25.020078,
+          60.16624803
+         ],
+         [
+          25.019403,
+          60.16600103
+         ],
+         [
+          25.018394,
+          60.16559303
+         ],
+         [
+          25.018025,
+          60.16551603
+         ],
+         [
+          25.017358,
+          60.16528303
+         ],
+         [
+          25.017268,
+          60.16522003
+         ],
+         [
+          25.017106,
+          60.16503603
+         ],
+         [
+          25.016347,
+          60.16405903
+         ],
+         [
+          25.01636,
+          60.16401003
+         ],
+         [
+          25.016414,
+          60.16397603
+         ],
+         [
+          25.016275,
+          60.16383003
+         ],
+         [
+          25.01622,
+          60.16382603
+         ],
+         [
+          25.01616,
+          60.16380703
+         ],
+         [
+          25.015943,
+          60.16353303
+         ],
+         [
+          25.015826,
+          60.16335803
+         ],
+         [
+          25.015331,
+          60.16276603
+         ],
+         [
+          25.015403,
+          60.16268903
+         ],
+         [
+          25.016483,
+          60.16248303
+         ],
+         [
+          25.016627,
+          60.16252303
+         ],
+         [
+          25.016889,
+          60.16274303
+         ],
+         [
+          25.017078,
+          60.16293603
+         ],
+         [
+          25.017591,
+          60.16336203
+         ],
+         [
+          25.017618,
+          60.16348403
+         ],
+         [
+          25.017519,
+          60.16354203
+         ],
+         [
+          25.016313,
+          60.16382503
+         ],
+         [
+          25.016439,
+          60.16395903
+         ],
+         [
+          25.017835,
+          60.16362703
+         ],
+         [
+          25.017952,
+          60.16364103
+         ],
+         [
+          25.018096,
+          60.16374403
+         ],
+         [
+          25.018186,
+          60.16353703
+         ],
+         [
+          25.016843,
+          60.16230303
+         ],
+         [
+          25.017131,
+          60.16225403
+         ],
+         [
+          25.016843,
+          60.16212803
+         ],
+         [
+          25.015051,
+          60.16249203
+         ],
+         [
+          25.014898,
+          60.16226803
+         ],
+         [
+          25.014565,
+          60.16233503
+         ],
+         [
+          25.014655,
+          60.16244303
+         ],
+         [
+          25.01525,
+          60.16321503
+         ],
+         [
+          25.015466,
+          60.16348803
+         ],
+         [
+          25.015791,
+          60.16388803
+         ],
+         [
+          25.015935,
+          60.16406303
+         ],
+         [
+          25.01634,
+          60.16460603
+         ],
+         [
+          25.016475,
+          60.16476703
+         ],
+         [
+          25.016755,
+          60.16517103
+         ],
+         [
+          25.016926,
+          60.16533303
+         ],
+         [
+          25.017034,
+          60.16535503
+         ],
+         [
+          25.017737,
+          60.16562403
+         ],
+         [
+          25.01798,
+          60.16577203
+         ],
+         [
+          25.01807,
+          60.16581703
+         ],
+         [
+          25.01889,
+          60.16613103
+         ],
+         [
+          25.019835,
+          60.16649003
+         ],
+         [
+          25.01988,
+          60.16654403
+         ],
+         [
+          25.019557,
+          60.16703303
+         ],
+         [
+          25.019912,
+          60.16736303
+         ],
+         [
+          25.020503,
+          60.16797503
+         ],
+         [
+          25.020674,
+          60.16814603
+         ],
+         [
+          25.020926,
+          60.16839703
+         ],
+         [
+          25.021125,
+          60.16855003
+         ],
+         [
+          25.021062,
+          60.16859903
+         ]
+        ]
+       ]
+      ]
+     },
+     "geometry_name": "singlegeom",
+     "properties": {
+      "id": 9,
+      "hakemus": "Kaivuilmoitus",
+      "hakemustunnus": "KP2102753-23",
+      "tyo_alkaa": "2022-03-01",
+      "tyo_paattyy": "2027-11-30",
+      "toiminnallinen_kunto": null,
+      "tyon_tarkoitus": "Raitiotien rakentaminen.\n\nMUUTOS 23.3.2022: uudet liikennejärjestelysuunnitelmat.\nLISÄYS 16.8.2022: liikennejärjestelysuunnitelma päivitetty vaihe 3 Haakoninlahti.\nLISÄYS 28.9.2022: päivitetty liikennejärjestelysuunnitelma vaihe 4.\nLISÄYS 3.10.2022: uusi liikennejärjestelysuunnitelma Koirasaarentie alkaen 5.10.2022.\nLISÄYS 12.10.2022: uudet liikennejärjestelysuunnitelmat (2 kpl).\nLISÄYS 28.10.2022: uusi liikennejärjestelysuunnitelma käyttöön 27.10.2022 alkaen, kesto viikolle 46 saakka.\nLISÄYS 16.5.2023: liikennejärjestelysuunnitelmia päivitetty, päätöksensaajan yhteyshenkilö vaihtunut.\nLISÄYS 18.8.2023: liikennejärjestelysuunnitelma päivitetty valaistuksen pylväskaapeloinnit.\nLISÄYS 13. ja 27.9.2023: päivitetyt liikennejärjestelysuunnitelmat.\nMUUTOS 16.5.2024: YIT Housingin vastuuhenkilö vaihtunut 20.5.2024 alkaen.\nLISÄYS 6.8.2024: uusi liikennejärjestelysuunnitelma.\nLISÄYS 8.8.2024: uusi liikennejärjestelysuunnitelma.\nLISÄYS 1.11.2024: uusi liikennejärjestelysuunnitelma.\nLISÄYS 29.11.2024: uusi liikennejärjestelysuunnitelma.\nLISÄYS 27.5.2025: uusi liikennejärjestelysuunnitelma.\nLISÄYS 10.2.2026: työn suorittaja ja sen yhteyshenkilö vaihtuneet.\nMUUTOS 12.2.2026: lisäaikaa 31.7.2026 asti.\nLISÄYS 4.3.2026: uudet liikennejärjestelysuunnitelmat (2).\nLISÄYS 3.6.2026: uusi liikennejärjestelysuunnitelma Haakoninlahdenkatu vkot 21-22\nLISÄYS 11.6.2026: uusi liikennejärjestelysuunnitelma Haakoninlahdenkatu 16.6. - 17.6.2026. Liitteisiin lisätty yhteensovituksen yhteystiedot.\nLISÄYS 20.8.2026: lisäaika 1.8.–30.11.2027.",
+      "osoite": "Haakoninlahdenkatu, Stansvikin rantakatu, Mirandankatu, Haakoninsilta, Laivakoiransilta",
+      "kaupunginosa": "49 LAAJASALO",
+      "status": "Käynnissä",
+      "hakija": "",
+      "tyon_suorittaja": "",
+      "geometrytype": "ST_Polygon",
+      "tyo_alkaa_txt": "01.03.2022",
+      "tyo_paattyy_txt": "30.11.2027",
+      "toiminnallinen_kunto_txt": null
+     }
+    },
+    {
+     "type": "Feature",
+     "id": "Kaivuilmoitus_alue.20",
+     "geometry": {
+      "type": "MultiPolygon",
+      "coordinates": [
+       [
+        [
+         [
+          25.022553,
+          60.16521603
+         ],
+         [
+          25.022166,
+          60.16515103
+         ],
+         [
+          25.021789,
+          60.16571103
+         ],
+         [
+          25.02001,
+          60.16542903
+         ],
+         [
+          25.019191,
+          60.16590003
+         ],
+         [
+          25.01956,
+          60.16604303
+         ],
+         [
+          25.020227,
+          60.16560103
+         ],
+         [
+          25.021708,
+          60.16584803
+         ],
+         [
+          25.021021,
+          60.16690903
+         ],
+         [
+          25.019855,
+          60.16726503
+         ],
+         [
+          25.019967,
+          60.16738703
+         ],
+         [
+          25.02118,
+          60.16703203
+         ],
+         [
+          25.021893,
+          60.16748903
+         ],
+         [
+          25.020933,
+          60.16780103
+         ],
+         [
+          25.021096,
+          60.16796803
+         ],
+         [
+          25.022089,
+          60.16759903
+         ],
+         [
+          25.02248,
+          60.16787503
+         ],
+         [
+          25.02222,
+          60.16839303
+         ],
+         [
+          25.022513,
+          60.16842503
+         ],
+         [
+          25.02269,
+          60.16800903
+         ],
+         [
+          25.024143,
+          60.16786703
+         ],
+         [
+          25.024825,
+          60.16831003
+         ],
+         [
+          25.024713,
+          60.16885603
+         ],
+         [
+          25.024969,
+          60.16890503
+         ],
+         [
+          25.025146,
+          60.16861303
+         ],
+         [
+          25.025094,
+          60.16835503
+         ],
+         [
+          25.025019,
+          60.16824603
+         ],
+         [
+          25.024278,
+          60.16782303
+         ],
+         [
+          25.024478,
+          60.16722203
+         ],
+         [
+          25.023943,
+          60.16713803
+         ],
+         [
+          25.023845,
+          60.16728703
+         ],
+         [
+          25.024204,
+          60.16732003
+         ],
+         [
+          25.024004,
+          60.16772403
+         ],
+         [
+          25.022788,
+          60.16785403
+         ],
+         [
+          25.022307,
+          60.16754003
+         ],
+         [
+          25.022461,
+          60.16745903
+         ],
+         [
+          25.022275,
+          60.16735503
+         ],
+         [
+          25.022084,
+          60.16740303
+         ],
+         [
+          25.021454,
+          60.16697903
+         ],
+         [
+          25.021426,
+          60.16688603
+         ],
+         [
+          25.022553,
+          60.16521603
+         ]
+        ]
+       ]
+      ]
+     },
+     "geometry_name": "singlegeom",
+     "properties": {
+      "id": 20,
+      "hakemus": "Kaivuilmoitus",
+      "hakemustunnus": "KP2302652-6",
+      "tyo_alkaa": "2023-10-02",
+      "tyo_paattyy": "2027-10-29",
+      "toiminnallinen_kunto": null,
+      "tyon_tarkoitus": "Uusien katujen ja kunnallistekniikan rakentaminen, louhintaa.\n\nMUUTOS 14.5.2025: pinta-alamuutos (Stansvikin rantakatu jää kokonaan pois ja työalue laajenee Varisluodonkadulta Haakoninlahdenkadulle ja Kaivoskallionpolulta Koirasaarentielle), uusi johtoselvitys; Haakoninlahdenkadulla ja Koirasaarentiellä kaukolämpöjen kytkentää 5.5.-30.6.; lisäaika 15.5.2025-29.10.2027.\nLISÄYS 2.6.2025: uusi liikennejärjestelysuunnitelma.\nLISÄYS 19.6.2025: uusi liikennejärjestelysuunnitelma, lisätty ilmoituksen käsittely- ja työn valvontamaksu.\nLISÄYS 4.7.2025: lisätty aluevaraus Pitkäluodonkatu.\nLISÄYS 12.1.2026: uusi liikennejärjestelysuunnitelma.",
+      "osoite": "Varisluodonkatu, Haakoninlahdenkatu, Pitkäluodonkatu, Stansvikinkallionkatu, Stansvikinkallionkuja, Stansvikinkallionpolku, Kaivoskallionpolku, Koirasaarentie",
+      "kaupunginosa": "49 LAAJASALO",
+      "status": "Käynnissä",
+      "hakija": "",
+      "tyon_suorittaja": "",
+      "geometrytype": "ST_Polygon",
+      "tyo_alkaa_txt": "02.10.2023",
+      "tyo_paattyy_txt": "29.10.2027",
+      "toiminnallinen_kunto_txt": null
+     }
+    },
+    {
+     "type": "Feature",
+     "id": "Kaivuilmoitus_alue.1682",
+     "geometry": {
+      "type": "MultiPolygon",
+      "coordinates": [
+       [
+        [
+         [
+          25.02321435,
+          60.17298903
+         ],
+         [
+          25.02347482,
+          60.17288617
+         ],
+         [
+          25.02362533,
+          60.17281111
+         ],
+         [
+          25.02374064,
+          60.17272435
+         ],
+         [
+          25.02379342,
+          60.17271167
+         ],
+         [
+          25.02387158,
+          60.17263857
+         ],
+         [
+          25.02384614,
+          60.17260251
+         ],
+         [
+          25.02385278,
+          60.17257302
+         ],
+         [
+          25.02387507,
+          60.17253878
+         ],
+         [
+          25.02367933,
+          60.17252941
+         ],
+         [
+          25.02365703,
+          60.17256621
+         ],
+         [
+          25.02379096,
+          60.17257046
+         ],
+         [
+          25.02377553,
+          60.17260127
+         ],
+         [
+          25.02379445,
+          60.17263892
+         ],
+         [
+          25.0237361,
+          60.17268942
+         ],
+         [
+          25.02365069,
+          60.17272729
+         ],
+         [
+          25.02352171,
+          60.1728199
+         ],
+         [
+          25.02341028,
+          60.17286962
+         ],
+         [
+          25.02317313,
+          60.17296165
+         ],
+         [
+          25.02321435,
+          60.17298903
+         ]
+        ]
+       ]
+      ]
+     },
+     "geometry_name": "singlegeom",
+     "properties": {
+      "id": 1682,
+      "hakemus": "Kaivuilmoitus",
+      "hakemustunnus": "KP2602098-5",
+      "tyo_alkaa": "2026-08-26",
+      "tyo_paattyy": "2026-11-15",
+      "toiminnallinen_kunto": null,
+      "tyon_tarkoitus": "Tietoliikenne: valokuituliittymä.\n\nMUUTOS 26.8.2026: aloituspäivä 10.8.2026 –> 26.8.2026.\nLISÄYS 17.9.2026: lisäaika 1.–15.10.2026.\nLISÄYS 13.10.2026: lisäaika 16.–31.10.2026.\nLISÄYS 19.10.2026: lisäaika 1.–15.11.2026.",
+      "osoite": "Hopeakaivoksentie 2-6-13",
+      "kaupunginosa": "49 LAAJASALO",
+      "status": "Käynnissä",
+      "hakija": "",
+      "tyon_suorittaja": "",
+      "geometrytype": "ST_Polygon",
+      "tyo_alkaa_txt": "26.08.2026",
+      "tyo_paattyy_txt": "15.11.2026",
       "toiminnallinen_kunto_txt": null
      }
     }

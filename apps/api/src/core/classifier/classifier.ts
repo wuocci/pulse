@@ -1,4 +1,4 @@
-import { type Event, MainlyAffectedSchema, SeveritySchema, WorkTypeSchema } from "@pulse/schema";
+import { type Event, MainlyAffectedSchema, type Severity, SeveritySchema, WorkTypeSchema } from "@pulse/schema";
 import { localTime } from "../adapters/land-use-permits.ts";
 
 // The Classifier (CONTEXT.md, ADR 0003): typed choices about a Source's free text, once per text, at ingest.
@@ -8,7 +8,7 @@ import { localTime } from "../adapters/land-use-permits.ts";
 // What the Classifier reads about one Event, as named fields.
 export type ClassifierState = Record<string, string | number>;
 
-export const QUESTION_IDS = ["workType", "endDate", "severity", "mainlyAffected"] as const;
+export const QUESTION_IDS = ["workType", "endDate", "severity", "crowd", "loud", "mainlyAffected"] as const;
 export type QuestionId = (typeof QUESTION_IDS)[number];
 
 // One typed choice. The keys of `choices` are the only valid answers; values describe them, or are null.
@@ -41,6 +41,14 @@ export const DEFAULT_THRESHOLD = 0.6;
 // The answer to the end date question when the text gives no end date.
 export const NOT_STATED = "not_stated";
 
+// The crowd question's answers, and the Severity each gives: a thousand people at once fill the streets and trams
+// around them; fewer are the place's normal.
+export const CROWD_SEVERITY = { under_1000: "minor", "1000_or_more": "consider" } as const satisfies Record<string, Severity>;
+
+// The loud question's answers for a dig, and the Severity each gives: blasting or a tramline being built next door is
+// worth considering even when it blocks no street; a cable trench isn't.
+export const LOUD_SEVERITY = { loud: "consider", ordinary: "minor" } as const satisfies Record<string, Severity>;
+
 export interface ApplyOptions {
   threshold: number;
   // The Region's time zone, for an end date taken from the text.
@@ -67,6 +75,8 @@ export function applyAnswers(event: Event, questions: Questions, answers: Answer
   const next: Event = { ...event, when: { ...event.when } };
   for (const { id, choice } of counted) {
     if (id === "severity") next.severity = SeveritySchema.parse(choice);
+    if (id === "crowd") next.severity = CROWD_SEVERITY[choice as keyof typeof CROWD_SEVERITY];
+    if (id === "loud") next.severity = LOUD_SEVERITY[choice as keyof typeof LOUD_SEVERITY];
     if (id === "mainlyAffected") next.mainlyAffected = MainlyAffectedSchema.parse(choice);
     if (id === "workType") next.workType = WorkTypeSchema.parse(choice);
     if (id === "endDate") {
@@ -78,6 +88,9 @@ export function applyAnswers(event: Event, questions: Questions, answers: Answer
       else if (choice !== field && !ruleEndDays.includes(field.slice(5))) next.when.endConflict = { field, text: choice };
     }
   }
+
+  // In nobody's way: whatever it is, it doesn't block anything.
+  if (next.mainlyAffected === "nobody") next.noticeable = next.noticeable.filter((n) => n !== "blocked");
 
   const confidences = (counted.length ? counted : valid).map((a) => a.confidence);
   next.confidence = counted.length ? Math.min(...confidences) : Math.max(0, ...confidences);

@@ -1,15 +1,16 @@
 import type { Event, MainlyAffected, Severity, WorkType } from "@pulse/schema";
 import type { PermitItem } from "../adapters/land-use-permits.ts";
 import type { LandUsePermitSource } from "../regions/index.ts";
-import { type ChoiceQuestion, type ClassifierState, NOT_STATED, type Questions } from "./classifier.ts";
+import { type ChoiceQuestion, type ClassifierState, type CROWD_SEVERITY, type LOUD_SEVERITY, NOT_STATED, type Questions } from "./classifier.ts";
 
-// The questions the Classifier is asked, per permit-system layer. Findings behind them:
+// The questions the Classifier is asked, per permit-system layer and for the event calendar. Findings behind them:
 // docs/research/jev-probe-2026-10-23.md and jev-ranking-probe-2026-10-24.md.
-// Only questions the text can answer: digs aren't asked Severity (the text can't tell how much street a dig takes).
+// Only questions the text can answer: digs aren't asked Severity (the text can't tell how much street a dig takes),
+// only whether the work is loud.
 
 // Part of the cache key. Bump it whenever a question, its choices or the state sent changes,
-// which deliberately invalidates every cached answer.
-export const QUESTION_VERSION = 2;
+// which deliberately invalidates every cached answer. Never reuse one: 3 was a dropped experiment's, still cached.
+export const QUESTION_VERSION = 5;
 
 type PermitType = LandUsePermitSource["permitType"];
 
@@ -34,6 +35,34 @@ const severity: ChoiceQuestion = {
       "or crowds filling the streets nearby",
     major: "Rare: streets closed or transit diverted across a district, or crowds of tens of thousands",
   } satisfies Record<Severity, string>,
+};
+
+// Two choices on purpose: offered bands (under 100 … over 20,000), Jev split its confidence between the big ones
+// and stayed under the threshold even on Tuomaan markkinat. The line that matters is the one asked.
+const crowd: ChoiceQuestion = {
+  prompt:
+    "At its busiest moment, about how many people are there at the same time? Not over the whole day or season: at once. " +
+    "Count the audience along a route or around a stage, not only those taking part. " +
+    "A venue's capacity is only the most it holds; most events don't fill it.",
+  choices: {
+    under_1000:
+      "Fewer than 1,000 at once: a stall or stand, a collection point, a private party, a museum evening, a club night, " +
+      "a gallery, a neighbourhood fair, a small run, march or vigil",
+    "1000_or_more":
+      "1,000 or more at once: a big concert, a league match, a full arena or stadium, a well-known market or festival " +
+      "filling a city square, a city tradition people come to watch, the city's big celebrations and parades",
+  } satisfies Record<keyof typeof CROWD_SEVERITY, string>,
+};
+
+// For digs, in place of Severity: the text can't tell how much street a dig takes, but it names the kind of work.
+const loud: ChoiceQuestion = {
+  prompt: "Is this work loud enough to hear from inside nearby homes, day after day? Judge by the kind of work the text names.",
+  choices: {
+    loud: "Loud: rock blasting or breaking (louhinta), piling, demolition, or building a street, tramline or bridge with heavy machinery",
+    ordinary:
+      "Ordinary: a cable, fibre or pipe trench, a connection to a building, a repair, resurfacing, finishing or landscaping work, " +
+      "or space reserved for a site",
+  } satisfies Record<keyof typeof LOUD_SEVERITY, string>,
 };
 
 const mainlyAffected: ChoiceQuestion = {
@@ -90,7 +119,7 @@ export function subjectFor({ event, facts }: PermitItem, permitType: PermitType)
     const dates = candidateDates(text);
     return {
       state: { notice: NOTICE[permitType], ...facts, text },
-      questions: { workType, ...(dates.length ? { endDate: endDate(dates) } : {}), mainlyAffected },
+      questions: { workType, ...(dates.length ? { endDate: endDate(dates) } : {}), loud, mainlyAffected },
     };
   }
 
@@ -105,7 +134,29 @@ export function subjectFor({ event, facts }: PermitItem, permitType: PermitType)
       ...(text ? { text } : {}),
       ...(days ? { durationDays: days } : {}),
     },
-    questions: { severity, mainlyAffected },
+    // An event's Severity is its crowd; an arrangement's, the street it takes.
+    questions: permitType === "outdoor-event" ? { crowd, mainlyAffected } : { severity, mainlyAffected },
+  };
+}
+
+// A big event from the event calendar: how many come, judged from what it is. The venue's capacity is what the
+// organiser typed in, often the whole building (a museum's date night says 5,000). Who it's in the way of is
+// everyone, by rule.
+export function calendarSubject(event: Event, timeZone: string): Subject | null {
+  const title = event.title.fi ?? event.title.en;
+  if (!title) return null;
+  const text = event.originalText?.fi ?? event.originalText?.en;
+  const starts = new Intl.DateTimeFormat("en-GB", { timeZone, weekday: "long", hour: "2-digit", minute: "2-digit", hourCycle: "h23" });
+  return {
+    state: {
+      notice: "Event in the city's open event calendar",
+      title,
+      ...(text ? { text } : {}),
+      ...(event.crowdSize ? { venueCapacity: event.crowdSize } : {}),
+      starts: starts.format(new Date(event.when.start)),
+      ...(event.when.end ? { hours: Math.round((Date.parse(event.when.end) - Date.parse(event.when.start)) / 3_600_000) } : {}),
+    },
+    questions: { crowd },
   };
 }
 

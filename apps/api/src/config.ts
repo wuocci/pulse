@@ -34,7 +34,7 @@ export function digitransitApiKey(env: Env = process.env): string | null {
 // without a listener they would crash the process. The pool replaces broken clients on the next query.
 export function createPool(env: Env = process.env): pg.Pool {
   const pool = new pg.Pool({
-    connectionString: env.DATABASE_URL ?? "postgres://pulse:pulse@localhost:5432/pulse",
+    connectionString: env.DATABASE_URL ?? "postgres://pulse:pulse@localhost:5433/pulse",
     connectionTimeoutMillis: 2_000,
   });
   pool.on("error", (error) => console.error("Postgres client error:", error.message));

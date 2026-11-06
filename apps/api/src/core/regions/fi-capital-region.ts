@@ -49,6 +49,9 @@ export const fiCapitalRegion: Region = {
     works: { from: "07:00", to: "18:00", days: ["mon", "tue", "wed", "thu", "fri"] },
     public_event: { from: "10:00", to: "22:00" },
   },
+  // A venue under 1,000 can't hold a crowd that gets in anyone's way; 5,000 fills the trams and roads around it.
+  crowd: { area: 1000, trips: 5000 },
+  usualEventHours: 3,
   sources: [
     {
       ...permitSystem,
@@ -112,6 +115,17 @@ export const fiCapitalRegion: Region = {
         hotWeather: "nobody",
         coldWeather: "nobody",
       },
+    },
+    {
+      adapter: "linked-events",
+      id: "hel-linked-events",
+      // Helsinki's event calendar, with Espoo's, Vantaa's and Kauniainen's events in it too.
+      url: "https://api.hel.fi/linkedevents/v1/event/",
+      publisher: "City of Helsinki",
+      license: "CC BY 4.0",
+      refreshMinutes: 60,
+      // An event that's over leaves the calendar's window: resolved, shown for a while.
+      keepVanishedHours: 3,
     },
     {
       adapter: "hand-kept",

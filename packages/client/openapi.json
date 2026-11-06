@@ -148,6 +148,12 @@
             },
             "description": "May be empty: nothing to sense on site"
           },
+          "crowdSize": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "description": "How many people the venue holds, where the Source says: a rough size of the crowd, not a count",
+            "example": 13000
+          },
           "deviation": {
             "$ref": "#/components/schemas/Deviation"
           },

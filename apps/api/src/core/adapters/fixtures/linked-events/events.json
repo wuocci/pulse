@@ -1,0 +1,695 @@
+{
+  "meta": {
+    "count": 12,
+    "next": null,
+    "previous": null
+  },
+  "data": [
+    {
+      "@id": "https://api.hel.fi/linkedevents/v1/event/helsinki:agopwe3ph4/",
+      "@type": "Event/LinkedEvent",
+      "id": "helsinki:agopwe3ph4",
+      "name": {
+        "fi": "Hector",
+        "sv": "Hector",
+        "en": "Hector"
+      },
+      "short_description": {
+        "fi": "Hector juhlistaa 60-vuotista uraansa Veikkaus Arenan juhlakonsertilla.",
+        "sv": "Hector, en långvarig trendsättare inom finländsk populärmusik, firar sin 60-åriga karriär med en stor jubileumskonsert på Veikkaus Arena.",
+        "en": "Hector, a living legend of Finnish popular music, celebrates his 60-year career with a grand anniversary concert at Veikkaus Arena."
+      },
+      "info_url": {
+        "fi": "https://www.livenation.fi/hector-tickets-adp306782",
+        "sv": "https://www.livenation.fi/hector-tickets-adp306782",
+        "en": "https://www.livenation.fi/hector-tickets-adp306782"
+      },
+      "location": {
+        "@id": "https://api.hel.fi/linkedevents/v1/place/tprek:21283/",
+        "id": "tprek:21283",
+        "name": {
+          "fi": "Veikkaus Arena",
+          "sv": "Veikkaus Arena",
+          "en": "Veikkaus Arena"
+        },
+        "position": {
+          "type": "Point",
+          "coordinates": [
+            24.929045,
+            60.20557
+          ]
+        },
+        "street_address": {
+          "fi": "Areenankuja 1",
+          "sv": "Arenagränden 1",
+          "en": "Areenankuja 1"
+        },
+        "address_locality": {
+          "fi": "Helsinki",
+          "sv": "Helsingfors",
+          "en": "Helsinki"
+        }
+      },
+      "start_time": "2026-12-05T16:30:00Z",
+      "end_time": "2026-12-05T21:59:00Z",
+      "event_status": "EventRescheduled",
+      "super_event": null,
+      "super_event_type": null,
+      "sub_events": [],
+      "maximum_attendee_capacity": 13000,
+      "last_modified_time": "2026-07-08T10:37:24.450692Z",
+      "data_source": "helsinki",
+      "publisher": "ytj:0586977-6"
+    },
+    {
+      "@id": "https://api.hel.fi/linkedevents/v1/event/helsinki:agpr2ctpee/",
+      "@type": "Event/LinkedEvent",
+      "id": "helsinki:agpr2ctpee",
+      "name": {
+        "fi": "Raskasta Joulua",
+        "sv": "Raskasta Joulua",
+        "en": "Raskasta Joulua"
+      },
+      "short_description": {
+        "fi": "Raskasta Joulua -kiertueen tunnelman takaavat tänäkin vuonna valovoimaiset ja upeat artistit, joiden äänet ovat tulleet osaksi suomalaista joulunviettoa.",
+        "sv": "Raskasta Joulua -turnen kommer till Helsingfors ishallen. Konserten erbjuder julsånger för hard rock fans.",
+        "en": "Raskasta Joulua Tour arrives to Helsinki Ice Hall in December. The concert offers Christmas concert for hard rock lovers."
+      },
+      "info_url": {
+        "fi": "https://raskastajoulua.com/",
+        "sv": "https://raskastajoulua.com/",
+        "en": "https://raskastajoulua.com/"
+      },
+      "location": {
+        "@id": "https://api.hel.fi/linkedevents/v1/place/tprek:21283/",
+        "id": "tprek:21283",
+        "name": {
+          "fi": "Veikkaus Arena",
+          "sv": "Veikkaus Arena",
+          "en": "Veikkaus Arena"
+        },
+        "position": {
+          "type": "Point",
+          "coordinates": [
+            24.929045,
+            60.20557
+          ]
+        },
+        "street_address": {
+          "fi": "Areenankuja 1",
+          "sv": "Arenagränden 1",
+          "en": "Areenankuja 1"
+        },
+        "address_locality": {
+          "fi": "Helsinki",
+          "sv": "Helsingfors",
+          "en": "Helsinki"
+        }
+      },
+      "start_time": "2026-12-18T18:00:00Z",
+      "end_time": "2026-12-18T20:00:00Z",
+      "event_status": "EventScheduled",
+      "super_event": null,
+      "super_event_type": null,
+      "sub_events": [],
+      "maximum_attendee_capacity": 8000,
+      "last_modified_time": "2026-07-01T09:37:30.976370Z",
+      "data_source": "helsinki",
+      "publisher": "ytj:0586977-6"
+    },
+    {
+      "@id": "https://api.hel.fi/linkedevents/v1/event/helsinki:agprytxiiy/",
+      "@type": "Event/LinkedEvent",
+      "id": "helsinki:agprytxiiy",
+      "name": {
+        "fi": "HIFK - Jokerit, jääkiekkoa",
+        "sv": "HIFK - Jokerit, ishockey",
+        "en": "HIFK - Jokerit, ice hockey"
+      },
+      "short_description": {
+        "fi": "HIFK:n jääkiekkojoukkue on vanhin pääkaupunkiseudulla toimivista joukkueista ja se on myös yksi Suomen menestyneimmistä ja tunnetuimmista jääkiekkoseuroista. ",
+        "sv": "HIFK:s ishockeylag är det äldsta laget i huvudstadsregionen, och det är också en av Finlands mest framgångsrika och välkända ishockeyföreningar.",
+        "en": "HIFK's ice hockey team is the oldest team in the Helsinki metropolitan area, and it is also one of Finland's most successful and best-known ice hockey clubs."
+      },
+      "info_url": {
+        "fi": "https://hifk.fi/",
+        "sv": "https://hifk.fi/",
+        "en": "https://hifk.fi/"
+      },
+      "location": {
+        "@id": "https://api.hel.fi/linkedevents/v1/place/tprek:41176/",
+        "id": "tprek:41176",
+        "name": {
+          "fi": "Helsingin jäähalli",
+          "sv": "Helsingfors ishall"
+        },
+        "position": {
+          "type": "Point",
+          "coordinates": [
+            24.922352,
+            60.18929
+          ]
+        },
+        "street_address": {
+          "fi": "Nordenskiöldinkatu 11-13",
+          "sv": "Nordenskiöldsgatan 11-13",
+          "en": "Nordenskiöldinkatu 11-13"
+        },
+        "address_locality": {
+          "fi": "Helsinki",
+          "sv": "Helsingfors",
+          "en": "Helsinki"
+        }
+      },
+      "start_time": "2026-11-11T16:30:00Z",
+      "end_time": "2026-11-11T18:30:00Z",
+      "event_status": "EventScheduled",
+      "super_event": null,
+      "super_event_type": null,
+      "sub_events": [],
+      "maximum_attendee_capacity": 8200,
+      "last_modified_time": "2026-07-01T06:12:41.170482Z",
+      "data_source": "helsinki",
+      "publisher": "ytj:0586977-6"
+    },
+    {
+      "@id": "https://api.hel.fi/linkedevents/v1/event/helsinki:agqypswney/",
+      "@type": "Event/LinkedEvent",
+      "id": "helsinki:agqypswney",
+      "name": {
+        "fi": "HPP Open 2026 – Helsinki Tennis Week",
+        "sv": "HPP Open 2026 – Helsinki Tennis Week",
+        "en": "HPP Open 2026 – Helsinki Tennis Week"
+      },
+      "short_description": {
+        "fi": "HPP Open tuo kansainvälisen huipputenniksen marraskuussa Helsinkiin. ATP Challenger -turnaus pelataan Talin Tenniskeskuksessa.",
+        "sv": "HPP Open – Helsinki Tennis Week bjuder på internationell topptennis i Helsingfors i november. Turneringen är en del av herrarnas ATP Challenger Tour.",
+        "en": "HPP Open brings international professional tennis to Helsinki in November. The ATP Challenger tournament takes place at Tali Tennis Center."
+      },
+      "info_url": {
+        "fi": "https://hppopen.fi/",
+        "sv": "https://hppopen.fi/",
+        "en": "https://hppopen.fi/"
+      },
+      "location": {
+        "@id": "https://api.hel.fi/linkedevents/v1/place/tprek:80639/",
+        "id": "tprek:80639",
+        "name": {
+          "fi": "Talin Tenniskeskus",
+          "sv": "Tali Tenniscenter",
+          "en": "Tali Tennis Center"
+        },
+        "position": {
+          "type": "Point",
+          "coordinates": [
+            24.87439,
+            60.213264
+          ]
+        },
+        "street_address": {
+          "fi": "Kutomokuja 4",
+          "sv": "Väverigränden 4",
+          "en": "Kutomokuja 4"
+        },
+        "address_locality": {
+          "fi": "Helsinki",
+          "sv": "Helsingfors",
+          "en": "Helsinki"
+        }
+      },
+      "start_time": "2026-11-15T09:00:00Z",
+      "end_time": "2026-11-22T17:00:00Z",
+      "event_status": "EventScheduled",
+      "super_event": null,
+      "super_event_type": "recurring",
+      "sub_events": [
+        {
+          "@id": "https://api.hel.fi/linkedevents/v1/event/helsinki:agqypsv6fa/"
+        },
+        {
+          "@id": "https://api.hel.fi/linkedevents/v1/event/helsinki:agqypsv7ee/"
+        },
+        {
+          "@id": "https://api.hel.fi/linkedevents/v1/event/helsinki:agqypswahi/"
+        },
+        {
+          "@id": "https://api.hel.fi/linkedevents/v1/event/helsinki:agqypswbce/"
+        },
+        {
+          "@id": "https://api.hel.fi/linkedevents/v1/event/helsinki:agqypswb5e/"
+        },
+        {
+          "@id": "https://api.hel.fi/linkedevents/v1/event/helsinki:agqypswc4q/"
+        },
+        {
+          "@id": "https://api.hel.fi/linkedevents/v1/event/helsinki:agqypswdvq/"
+        },
+        {
+          "@id": "https://api.hel.fi/linkedevents/v1/event/helsinki:agqypsweo4/"
+        }
+      ],
+      "maximum_attendee_capacity": 1200,
+      "last_modified_time": "2026-10-30T08:45:57.750833Z",
+      "data_source": "helsinki",
+      "publisher": "others"
+    },
+    {
+      "@id": "https://api.hel.fi/linkedevents/v1/event/helsinki:agqypsv6fa/",
+      "@type": "Event/LinkedEvent",
+      "id": "helsinki:agqypsv6fa",
+      "name": {
+        "fi": "HPP Open 2026 – Helsinki Tennis Week",
+        "sv": "HPP Open 2026 – Helsinki Tennis Week",
+        "en": "HPP Open 2026 – Helsinki Tennis Week"
+      },
+      "short_description": {
+        "fi": "HPP Open tuo kansainvälisen huipputenniksen marraskuussa Helsinkiin. ATP Challenger -turnaus pelataan Talin Tenniskeskuksessa.",
+        "sv": "HPP Open – Helsinki Tennis Week bjuder på internationell topptennis i Helsingfors i november. Turneringen är en del av herrarnas ATP Challenger Tour.",
+        "en": "HPP Open brings international professional tennis to Helsinki in November. The ATP Challenger tournament takes place at Tali Tennis Center."
+      },
+      "info_url": {
+        "fi": "https://hppopen.fi/",
+        "sv": "https://hppopen.fi/",
+        "en": "https://hppopen.fi/"
+      },
+      "location": {
+        "@id": "https://api.hel.fi/linkedevents/v1/place/tprek:80639/",
+        "id": "tprek:80639",
+        "name": {
+          "fi": "Talin Tenniskeskus",
+          "sv": "Tali Tenniscenter",
+          "en": "Tali Tennis Center"
+        },
+        "position": {
+          "type": "Point",
+          "coordinates": [
+            24.87439,
+            60.213264
+          ]
+        },
+        "street_address": {
+          "fi": "Kutomokuja 4",
+          "sv": "Väverigränden 4",
+          "en": "Kutomokuja 4"
+        },
+        "address_locality": {
+          "fi": "Helsinki",
+          "sv": "Helsingfors",
+          "en": "Helsinki"
+        }
+      },
+      "start_time": "2026-11-15T09:00:00Z",
+      "end_time": "2026-11-15T17:00:00Z",
+      "event_status": "EventScheduled",
+      "super_event": {
+        "@id": "https://api.hel.fi/linkedevents/v1/event/helsinki:agqypswney/"
+      },
+      "super_event_type": null,
+      "sub_events": [],
+      "maximum_attendee_capacity": 1200,
+      "last_modified_time": "2026-10-30T08:45:54.500768Z",
+      "data_source": "helsinki",
+      "publisher": "others"
+    },
+    {
+      "@id": "https://api.hel.fi/linkedevents/v1/event/helsinki:agqypsv7ee/",
+      "@type": "Event/LinkedEvent",
+      "id": "helsinki:agqypsv7ee",
+      "name": {
+        "fi": "HPP Open 2026 – Helsinki Tennis Week",
+        "sv": "HPP Open 2026 – Helsinki Tennis Week",
+        "en": "HPP Open 2026 – Helsinki Tennis Week"
+      },
+      "short_description": {
+        "fi": "HPP Open tuo kansainvälisen huipputenniksen marraskuussa Helsinkiin. ATP Challenger -turnaus pelataan Talin Tenniskeskuksessa.",
+        "sv": "HPP Open – Helsinki Tennis Week bjuder på internationell topptennis i Helsingfors i november. Turneringen är en del av herrarnas ATP Challenger Tour.",
+        "en": "HPP Open brings international professional tennis to Helsinki in November. The ATP Challenger tournament takes place at Tali Tennis Center."
+      },
+      "info_url": {
+        "fi": "https://hppopen.fi/",
+        "sv": "https://hppopen.fi/",
+        "en": "https://hppopen.fi/"
+      },
+      "location": {
+        "@id": "https://api.hel.fi/linkedevents/v1/place/tprek:80639/",
+        "id": "tprek:80639",
+        "name": {
+          "fi": "Talin Tenniskeskus",
+          "sv": "Tali Tenniscenter",
+          "en": "Tali Tennis Center"
+        },
+        "position": {
+          "type": "Point",
+          "coordinates": [
+            24.87439,
+            60.213264
+          ]
+        },
+        "street_address": {
+          "fi": "Kutomokuja 4",
+          "sv": "Väverigränden 4",
+          "en": "Kutomokuja 4"
+        },
+        "address_locality": {
+          "fi": "Helsinki",
+          "sv": "Helsingfors",
+          "en": "Helsinki"
+        }
+      },
+      "start_time": "2026-11-16T09:00:00Z",
+      "end_time": "2026-11-16T20:00:00Z",
+      "event_status": "EventScheduled",
+      "super_event": {
+        "@id": "https://api.hel.fi/linkedevents/v1/event/helsinki:agqypswney/"
+      },
+      "super_event_type": null,
+      "sub_events": [],
+      "maximum_attendee_capacity": 1200,
+      "last_modified_time": "2026-10-30T08:45:54.310879Z",
+      "data_source": "helsinki",
+      "publisher": "others"
+    },
+    {
+      "@id": "https://api.hel.fi/linkedevents/v1/event/helsinki:agqypswahi/",
+      "@type": "Event/LinkedEvent",
+      "id": "helsinki:agqypswahi",
+      "name": {
+        "fi": "HPP Open 2026 – Helsinki Tennis Week",
+        "sv": "HPP Open 2026 – Helsinki Tennis Week",
+        "en": "HPP Open 2026 – Helsinki Tennis Week"
+      },
+      "short_description": {
+        "fi": "HPP Open tuo kansainvälisen huipputenniksen marraskuussa Helsinkiin. ATP Challenger -turnaus pelataan Talin Tenniskeskuksessa.",
+        "sv": "HPP Open – Helsinki Tennis Week bjuder på internationell topptennis i Helsingfors i november. Turneringen är en del av herrarnas ATP Challenger Tour.",
+        "en": "HPP Open brings international professional tennis to Helsinki in November. The ATP Challenger tournament takes place at Tali Tennis Center."
+      },
+      "info_url": {
+        "fi": "https://hppopen.fi/",
+        "sv": "https://hppopen.fi/",
+        "en": "https://hppopen.fi/"
+      },
+      "location": {
+        "@id": "https://api.hel.fi/linkedevents/v1/place/tprek:80639/",
+        "id": "tprek:80639",
+        "name": {
+          "fi": "Talin Tenniskeskus",
+          "sv": "Tali Tenniscenter",
+          "en": "Tali Tennis Center"
+        },
+        "position": {
+          "type": "Point",
+          "coordinates": [
+            24.87439,
+            60.213264
+          ]
+        },
+        "street_address": {
+          "fi": "Kutomokuja 4",
+          "sv": "Väverigränden 4",
+          "en": "Kutomokuja 4"
+        },
+        "address_locality": {
+          "fi": "Helsinki",
+          "sv": "Helsingfors",
+          "en": "Helsinki"
+        }
+      },
+      "start_time": "2026-11-17T11:00:00Z",
+      "end_time": "2026-11-17T20:00:00Z",
+      "event_status": "EventScheduled",
+      "super_event": {
+        "@id": "https://api.hel.fi/linkedevents/v1/event/helsinki:agqypswney/"
+      },
+      "super_event_type": null,
+      "sub_events": [],
+      "maximum_attendee_capacity": 1200,
+      "last_modified_time": "2026-10-30T08:45:54.132563Z",
+      "data_source": "helsinki",
+      "publisher": "others"
+    },
+    {
+      "@id": "https://api.hel.fi/linkedevents/v1/event/helsinki:agqv4j26yq/",
+      "@type": "Event/LinkedEvent",
+      "id": "helsinki:agqv4j26yq",
+      "name": {
+        "fi": "Emma Ainala: Like a Prayer",
+        "en": "Emma Ainala: Like a Prayer"
+      },
+      "short_description": {
+        "fi": "Emma Ainala avaa öljyvärimaalauksissaan katsojan eteen viettelevän ja kaoottisen maailman.",
+        "en": "In her oil paintings, Emma Ainala opens up a seductive and chaotic world before the museum visitor. "
+      },
+      "info_url": {
+        "fi": "https://kiasma.fi/nayttelyt/emma-ainala/",
+        "en": "https://kiasma.fi/en/exhibitions/emma-ainala/"
+      },
+      "location": {
+        "@id": "https://api.hel.fi/linkedevents/v1/place/tprek:20861/",
+        "id": "tprek:20861",
+        "name": {
+          "fi": "Nykytaiteen museo Kiasma",
+          "sv": "Museet för nutidskonst Kiasma",
+          "en": "Museum of Contemporary Art Kiasma"
+        },
+        "position": {
+          "type": "Point",
+          "coordinates": [
+            24.936619,
+            60.172062
+          ]
+        },
+        "street_address": {
+          "fi": "Mannerheiminaukio 2",
+          "sv": "Mannerheimplatsen 2",
+          "en": "Mannerheiminaukio 2"
+        },
+        "address_locality": {
+          "fi": "Helsinki",
+          "sv": "Helsingfors",
+          "en": "Helsinki"
+        }
+      },
+      "start_time": "2026-10-09T07:00:00Z",
+      "end_time": "2027-02-14T15:00:00Z",
+      "event_status": "EventScheduled",
+      "super_event": null,
+      "super_event_type": null,
+      "sub_events": [],
+      "maximum_attendee_capacity": 150000,
+      "last_modified_time": "2026-10-21T11:10:00.964911Z",
+      "data_source": "helsinki",
+      "publisher": "fng:kiasma"
+    },
+    {
+      "@id": "https://api.hel.fi/linkedevents/v1/event/helsinki:af7avifqka/",
+      "@type": "Event/LinkedEvent",
+      "id": "helsinki:af7avifqka",
+      "name": {
+        "fi": "Siirtyy: Ehrlich Brothers",
+        "en": "Transferred: Ehrlich Brothers"
+      },
+      "short_description": {
+        "fi": "Saksalaiset supertähdet, taikuriveljekset Ehrlich Brothers tuovat syksyllä 2022 uuden ”Dream & Fly”-shownsa Helsinki Hallille. ",
+        "en": "German superstar magicians Ehrlich Brothers return to Helsinki Halli inSeptember 2022 with their new show \"Dream & Fly\"."
+      },
+      "info_url": {
+        "fi": "https://www.livenation.fi/show/1260187/ehrlich-brothers-dream-and-fly-/helsinki/2022-09-03/fi",
+        "en": "https://www.livenation.fi/show/1260187/ehrlich-brothers-dream-and-fly-/helsinki/2022-09-03/fi"
+      },
+      "location": {
+        "@id": "https://api.hel.fi/linkedevents/v1/place/tprek:21283/",
+        "id": "tprek:21283",
+        "name": {
+          "fi": "Veikkaus Arena",
+          "sv": "Veikkaus Arena",
+          "en": "Veikkaus Arena"
+        },
+        "position": {
+          "type": "Point",
+          "coordinates": [
+            24.929045,
+            60.20557
+          ]
+        },
+        "street_address": {
+          "fi": "Areenankuja 1",
+          "sv": "Arenagränden 1",
+          "en": "Areenankuja 1"
+        },
+        "address_locality": {
+          "fi": "Helsinki",
+          "sv": "Helsingfors",
+          "en": "Helsinki"
+        }
+      },
+      "start_time": null,
+      "end_time": null,
+      "event_status": "EventPostponed",
+      "super_event": null,
+      "super_event_type": null,
+      "sub_events": [],
+      "maximum_attendee_capacity": null,
+      "last_modified_time": "2022-03-21T07:24:10.521891Z",
+      "data_source": "helsinki",
+      "publisher": "ytj:0586977-6"
+    },
+    {
+      "@id": "https://api.hel.fi/linkedevents/v1/event/helsinki:agl6rme7we/",
+      "@type": "Event/LinkedEvent",
+      "id": "helsinki:agl6rme7we",
+      "name": {
+        "fi": "PERUTTU: The Cher Collection – The Shoop Shoop Show",
+        "en": "CANCELLED: The Cher Collection – The Shoop Shoop Show"
+      },
+      "short_description": {
+        "fi": "The Shoop Shoop Show sisältää musiikkia Cherin koko uralta, mukaan lukien hitit Believe, Strong Enough, If I Could Turn Back Time",
+        "en": "The Shoop Shoop Show features Cher’s biggest disco hits as well as her chart-topping pop-rock classics."
+      },
+      "info_url": {
+        "fi": "https://kulttuuritalo.fi/tapahtuma/the-cher-collection-kulttuuritalo-helsinki/",
+        "en": "https://kulttuuritalo.fi/tapahtuma/the-cher-collection-kulttuuritalo-helsinki/"
+      },
+      "location": {
+        "@id": "https://api.hel.fi/linkedevents/v1/place/tprek:53083/",
+        "id": "tprek:53083",
+        "name": {
+          "fi": "Kulttuuritalo",
+          "sv": "Kulturhuset",
+          "en": "House of Culture"
+        },
+        "position": {
+          "type": "Point",
+          "coordinates": [
+            24.944391,
+            60.18818
+          ]
+        },
+        "street_address": {
+          "fi": "Sturenkatu 4",
+          "sv": "Sturegatan 4",
+          "en": "Sturenkatu 4"
+        },
+        "address_locality": {
+          "fi": "Helsinki",
+          "sv": "Helsingfors",
+          "en": "Helsinki"
+        }
+      },
+      "start_time": "2026-04-28T16:00:00Z",
+      "end_time": "2026-04-28T18:30:00Z",
+      "event_status": "EventCancelled",
+      "super_event": null,
+      "super_event_type": null,
+      "sub_events": [],
+      "maximum_attendee_capacity": 1500,
+      "last_modified_time": "2026-02-27T08:55:24.868777Z",
+      "data_source": "helsinki",
+      "publisher": "ytj:0586977-6"
+    },
+    {
+      "@id": "https://api.hel.fi/linkedevents/v1/event/helsinki:agqyn5hfma/",
+      "@type": "Event/LinkedEvent",
+      "id": "helsinki:agqyn5hfma",
+      "name": {
+        "fi": "Helsingin kamarikuoro & Suomalainen barokkiorkesteri – Lähelle: Saksalais-tšekkiläisiä aikalaisia"
+      },
+      "short_description": {
+        "fi": "Suomalainen barokkiorkesteri ja Helsingin kamarikuoro esittävät maistiaisia Requiem-konsertin alla Bachilta, Mozartilta ja Zelenkalta. Vapaa pääsy, tervetuloa!"
+      },
+      "info_url": {
+        "fi": ""
+      },
+      "location": {
+        "@id": "https://api.hel.fi/linkedevents/v1/place/tprek:8154/",
+        "id": "tprek:8154",
+        "name": {
+          "fi": "Rikhardinkadun kirjasto",
+          "sv": "Richardsgatans bibliotek",
+          "en": "Rikhardinkatu Library"
+        },
+        "position": {
+          "type": "Point",
+          "coordinates": [
+            24.946783,
+            60.166336
+          ]
+        },
+        "street_address": {
+          "fi": "Rikhardinkatu 3",
+          "sv": "Richardsgatan 3",
+          "en": "Rikhardinkatu 3"
+        },
+        "address_locality": {
+          "fi": "Helsinki",
+          "sv": "Helsingfors",
+          "en": "Helsinki"
+        }
+      },
+      "start_time": "2026-11-07T09:00:00Z",
+      "end_time": "2026-11-07T09:30:00Z",
+      "event_status": "EventScheduled",
+      "super_event": null,
+      "super_event_type": null,
+      "sub_events": [],
+      "maximum_attendee_capacity": 48,
+      "last_modified_time": "2026-11-03T17:26:11.832910Z",
+      "data_source": "helsinki",
+      "publisher": "ahjo:u48040050"
+    },
+    {
+      "@id": "https://api.hel.fi/linkedevents/v1/event/helsinki:agky7xt45i/",
+      "@type": "Event/LinkedEvent",
+      "id": "helsinki:agky7xt45i",
+      "name": {
+        "fi": "Yrityksen perustaminen Suomessa -video",
+        "sv": "Att grunda ett företag i Finland – video",
+        "en": "Starting a Business Info Video"
+      },
+      "short_description": {
+        "fi": "Business Helsingin video yrityksen perustamisesta Suomessa.",
+        "sv": "Business Helsinkis video om att grunda ett företag i Finland.",
+        "en": "A video by Business Helsinki on the early stages of entrepreneurship in Finland."
+      },
+      "info_url": {
+        "fi": "https://www.helsinkikanava.fi/fi/video/details/399985101",
+        "sv": "https://www.helsinkikanava.fi/sv/video/details/417013291",
+        "en": "https://www.helsinkikanava.fi/en/video/details/308875904"
+      },
+      "location": {
+        "@id": "https://api.hel.fi/linkedevents/v1/place/helsinki:internet/",
+        "id": "helsinki:internet",
+        "name": {
+          "fi": "Internet",
+          "sv": "Internet",
+          "en": "Internet"
+        },
+        "position": {
+          "type": "Point",
+          "coordinates": [
+            24.941486,
+            60.170576
+          ]
+        },
+        "street_address": null,
+        "address_locality": {
+          "fi": "Helsinki",
+          "sv": "Helsingfors",
+          "en": "Helsinki",
+          "ru": "Helsinki",
+          "zh_hans": "Helsinki",
+          "ar": "Helsinki"
+        }
+      },
+      "start_time": "2025-03-14T07:00:00Z",
+      "end_time": "2026-12-31T19:00:00Z",
+      "event_status": "EventScheduled",
+      "super_event": null,
+      "super_event_type": null,
+      "sub_events": [],
+      "maximum_attendee_capacity": 25000,
+      "last_modified_time": "2026-09-24T11:12:14.507546Z",
+      "data_source": "helsinki",
+      "publisher": "ahjo:u021200"
+    }
+  ]
+}

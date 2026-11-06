@@ -4,7 +4,9 @@ import { type Directory, fetchAlerts, idsToLook, type StopDirectory, toEvents } 
 import { fetchMessages, toEvents as toRoadEvents } from "../adapters/digitraffic.ts";
 import { toEvents as toHandKeptEvents } from "../adapters/hand-kept.ts";
 import { fetchPermits, toPermitItems } from "../adapters/land-use-permits.ts";
+import { fetchEvents, toEvents as toCalendarEvents } from "../adapters/linked-events.ts";
 import type { Classification } from "../classifier/enrich.ts";
+import { calendarSubject, subjectFor } from "../classifier/questions.ts";
 import type { EventStore } from "../events/store.ts";
 import type { GtfsRtSource, Region, SourceConfig } from "../regions/index.ts";
 import type { SourceHealthLog } from "./health.ts";
@@ -12,7 +14,7 @@ import { keepVanished } from "./vanished.ts";
 
 export interface IngestOptions {
   fetchFn?: typeof fetch;
-  // Without it, permit Events are published as their Adapter made them.
+  // Without it, permit and calendar Events are published as their Adapter made them.
   classification?: Classification;
   // A GTFS-RT Source's stop directory. Without it, alerts are placed vaguely in the Region.
   stopDirectory?: (source: GtfsRtSource) => StopDirectory;
@@ -66,7 +68,8 @@ async function read(
     case "land-use-permits": {
       const items = toPermitItems(await fetchPermits(source, fetchFn), { source, timeZone: region.timeZone, now });
       if (!classification) return { events: items.map((item) => item.event) };
-      return classification.prepare(source, items, { timeZone: region.timeZone, now });
+      const classifiable = items.map((item) => ({ event: item.event, subject: subjectFor(item, source.permitType) }));
+      return classification.prepare(source.id, classifiable, { timeZone: region.timeZone, now, ruleEndDays: source.ruleEndDays });
     }
     case "gtfs-rt": {
       const alerts = await fetchAlerts(source, fetchFn);
@@ -79,5 +82,12 @@ async function read(
       return { events: toWeatherEvents(await fetchCapAlerts(source, fetchFn), { source, region, now, previous }) };
     case "hand-kept":
       return { events: toHandKeptEvents(source, now) };
+    case "linked-events": {
+      const context = { source, region, now };
+      const events = toCalendarEvents(await fetchEvents(context, fetchFn), context);
+      if (!classification) return { events };
+      const classifiable = events.map((event) => ({ event, subject: calendarSubject(event, region.timeZone) }));
+      return classification.prepare(source.id, classifiable, { timeZone: region.timeZone, now });
+    }
   }
 }
