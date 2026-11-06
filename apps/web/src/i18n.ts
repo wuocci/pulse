@@ -57,6 +57,11 @@ export const en = {
   minutesNoTraffic_one: "{{count}} min without traffic",
   minutesNoTraffic_other: "{{count}} min without traffic",
   toParking: "to P {{name}}",
+  // A car park's free spaces now, where it reports them; almost full: 10 or fewer, or under 5%.
+  freeOf: "{{free}} free of {{spaces}}",
+  almostFullFreeOf: "almost full: {{free}} free of {{spaces}}",
+  freeShort: "{{free}} free",
+  parkingAlmostFull: "P {{name}} almost full: {{free}} free",
   parkingNear: "Parking near {{place}}",
   parkingSpaces_one: "{{count}} space within {{radius}} m",
   parkingSpaces_other: "{{count}} spaces within {{radius}} m",

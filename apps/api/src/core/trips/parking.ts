@@ -5,8 +5,9 @@ import { localClock } from "../events/hours.ts";
 import type { ParkingFinder } from "./routes.ts";
 
 // Parking around B on arrival by car: what street parking there is, and where to park — the closest spot you may
-// use, the cheapest (free when it can be), and the car park with the most spaces. No data says what's free right
-// now: the biggest car park is the likeliest to have room, and it's named for its size, not for room.
+// use, the cheapest (free when it can be), and the car park with the most spaces. Street parking has no data on
+// what's free right now. The biggest car park is the likeliest to have room, and it's named for its size; where it
+// reports its free spaces, the pick says how many, and when it's almost full.
 
 type ParkingPick = NonNullable<Trip["parking"]>["picks"][number];
 
@@ -120,8 +121,8 @@ function pick(priced: Priced, reasons: ParkingPick["reasons"]): ParkingPick {
 function biggest(parks: NonNullable<Trip["parking"]>["carParks"]): ParkingPick[] {
   const most = parks.reduce<(typeof parks)[number] | undefined>((best, p) => (!best || p.carSpaces > best.carSpaces ? p : best), undefined);
   if (!most) return [];
-  const { name, lat, lon, distanceM, carSpaces } = most;
-  return [{ reasons: ["biggest"], kind: "carPark", name, lat, lon, distanceM, spaces: carSpaces, cost: "unknown", disc: false }];
+  const { name, lat, lon, distanceM, carSpaces, free } = most;
+  return [{ reasons: ["biggest"], kind: "carPark", name, lat, lon, distanceM, spaces: carSpaces, cost: "unknown", disc: false, ...(free ? { free } : {}) }];
 }
 
 function hoursOn(hours: WeekHours, { day }: Clock): [number, number] | undefined {

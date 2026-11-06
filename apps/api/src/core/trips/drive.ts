@@ -7,6 +7,8 @@ import type { ParkingFinder } from "./routes.ts";
 // off the roads), the drive goes as near as it can and walks the rest, as a driver would: to the best street
 // parking near B when there's any, else to where a car first gets on the way out of B. Without any drive there's
 // nothing to weigh park-and-ride against: none is offered.
+// Digitransit's planner parks at a full car park as readily as at an empty one (checked 2026-11-06: all five ways
+// from beside a full one parked there), so the ways that park where there's room come first.
 
 const PARK_AND_RIDE_LATER_MS = 10 * 60_000;
 // The way out of B: a walk this far towards A, tried for a car this far along it.
@@ -19,8 +21,12 @@ export async function planCar(router: Router, parking: ParkingFinder | undefined
   const ways = await router.plan(trip);
   const drive = ways.find(drivesAllTheWay) ?? (await driveAndWalk(router, parking, trip));
   if (!drive) return [];
-  return [drive, ...ways.filter((way) => !drivesAllTheWay(way) && worthIt(way, trip, drive))];
+  const parkAndRide = ways.filter((way) => !drivesAllTheWay(way) && worthIt(way, trip, drive));
+  return [drive, ...parkAndRide.filter((way) => !parksAlmostFull(way)), ...parkAndRide.filter(parksAlmostFull)];
 }
+
+// Parks at a car park that's almost full: the way may not work out (a full one breaks the trip).
+export const parksAlmostFull = ({ legs }: Pick<RoutedItinerary, "legs">) => legs.some((leg) => leg.mode === "car" && !!leg.to.parkingFree?.almostFull);
 
 function worthIt({ legs, end }: RoutedItinerary, { from, to }: TripRequest, drive: RoutedItinerary): boolean {
   const parking = legs[0]?.mode === "car" ? legs[0].to : undefined;

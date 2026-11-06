@@ -553,7 +553,7 @@ export interface components {
             /** @description Every Event on any itinerary, once */
             events: components["schemas"]["Event"][];
             plans: components["schemas"]["TripPlan"][];
-            /** @description Parking around B on arrival by car: static, not whether spaces are free now */
+            /** @description Parking around B on arrival by car: street parking's rules, and car parks' free spaces where they report them */
             parking?: {
                 street?: components["schemas"]["StreetParking"];
                 /** @description Nearest first, within a kilometre */
@@ -624,6 +624,7 @@ export interface components {
                 parking?: string;
                 /** @description The car park's spaces for cars, when known */
                 parkingSpaces?: number;
+                parkingFree?: components["schemas"]["FreeSpaces"];
             };
             to: {
                 /** @example Kamppi */
@@ -642,6 +643,7 @@ export interface components {
                 parking?: string;
                 /** @description The car park's spaces for cars, when known */
                 parkingSpaces?: number;
+                parkingFree?: components["schemas"]["FreeSpaces"];
             };
             /** Format: date-time */
             start: string;
@@ -663,6 +665,18 @@ export interface components {
         };
         /** @enum {string} */
         LegMode: "walk" | "bike" | "car" | "bus" | "tram" | "rail" | "subway" | "ferry" | "other";
+        /** @description The car park's free spaces, when it reports them */
+        FreeSpaces: {
+            /** @example 541 */
+            spaces: number;
+            /**
+             * Format: date-time
+             * @description When Pulse read the count
+             */
+            readAt: string;
+            /** @description 10 or fewer free, or under 5% of its spaces */
+            almostFull: boolean;
+        };
         OnTheWay: {
             eventId: string;
             impact: components["schemas"]["Impact"];
@@ -738,6 +752,7 @@ export interface components {
             carSpaces: number;
             /** @description As the crow flies from the destination */
             distanceM: number;
+            free?: components["schemas"]["FreeSpaces"] & unknown;
         };
         ParkingPick: {
             /** @description Why it's picked: one spot can be several */
@@ -771,6 +786,7 @@ export interface components {
             maxStayMin?: number;
             /** @description A parking disc is needed */
             disc: boolean;
+            free?: components["schemas"]["FreeSpaces"] & unknown;
         };
         SourceHealth: {
             /** @example hsl-service-alerts */

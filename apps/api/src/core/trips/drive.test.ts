@@ -13,7 +13,7 @@ const departAt = "2026-11-01T23:20:00+02:00";
 const trip: TripRequest = { from: A, to: B, mode: "car", departAt };
 
 const at = (minutes: number) => new Date(Date.parse(departAt) + minutes * 60_000).toISOString();
-const leg = (mode: Leg["mode"], from: { lat: number; lon: number }, to: { lat: number; lon: number; parking?: string }, start: number, end: number): Leg => ({
+const leg = (mode: Leg["mode"], from: { lat: number; lon: number }, to: { lat: number; lon: number } & Partial<Leg["to"]>, start: number, end: number): Leg => ({
   mode,
   from: { name: "", ...from },
   to: { name: "", ...to },
@@ -33,7 +33,7 @@ const DRIVE = way(leg("car", A, B, 0, 15));
 // Park-and-ride: the car park towards B, or back the way you came.
 const TOWARDS = { lat: 60.21, lon: 25.08, parking: "Itäkeskus" };
 const AWAY = { lat: 60.16, lon: 24.92, parking: "Ruoholahti" };
-const parkAndRide = (park: typeof TOWARDS, end: number) => way(leg("car", A, park, 0, 8), leg("walk", park, park, 8, 10), leg("subway", park, B, 10, end));
+const parkAndRide = (park: { lat: number; lon: number } & Partial<Leg["to"]>, end: number) => way(leg("car", A, park, 0, 8), leg("walk", park, park, 8, 10), leg("subway", park, B, 10, end));
 
 // Out of B on foot: south, a point every 50 m or so.
 const WAY_OUT = Array.from({ length: 21 }, (_, i): [number, number] => [B.lon, B.lat - (i * 50.5) / 111_320]);
@@ -98,6 +98,18 @@ describe("a car Trip", () => {
     expect(tried).toEqual([100, 250]);
     expect(drive!.legs.map((l) => l.mode)).toEqual(["car", "walk"]);
     expect(drive!.end).toBe(at(16));
+  });
+
+  it("puts the park-and-ride ways with space first, the ones parking at an almost full car park after", async () => {
+    const free = (spaces: number, almostFull: boolean) => ({ spaces, readAt: departAt, almostFull });
+    const full = parkAndRide({ ...TOWARDS, parking: "Itäkeskus", parkingFree: free(6, true) }, 18);
+    const room = parkAndRide({ ...TOWARDS, parking: "Kontula", parkingFree: free(120, false) }, 20);
+    const unknown = parkAndRide({ ...TOWARDS, parking: "Mellunmäki" }, 21);
+    const { router } = fakeRouter([DRIVE, full, room, unknown]);
+
+    const ways = await planCar(router, undefined, trip);
+
+    expect(ways.map((w) => w.legs[0]!.to.parking ?? "drive")).toEqual(["drive", "Kontula", "Mellunmäki", "Itäkeskus"]);
   });
 
   it("offers no park-and-ride ways alone: without a drive to weigh them against, they can't be told worth it", async () => {

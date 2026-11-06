@@ -1274,6 +1274,31 @@ describe("parking with a car Trip", () => {
     expect(map).toHaveAttribute("data-focus", "60.2,24.933");
   });
 
+  it("says how many spaces are free at a park-and-ride, and why a way that parks at an almost full one is worth considering", async () => {
+    const at = (name: string, free: number, almostFull: boolean, spaces: number) =>
+      leg("car", 12, { to: { name, lat: 60.17, lon: 24.76, parking: name, parkingSpaces: spaces, parkingFree: { spaces: free, readAt: "2026-11-01T09:58:00Z", almostFull } } });
+    const room = way(34, at("Tapiola Park", 541, false, 2049), leg("walk", 3), leg("subway", 15, { line: { id: "HSL:31M1", name: "M1" } }));
+    const full = { ...way(36, at("Matinkylän asema", 6, true, 350), leg("walk", 3), leg("subway", 15, { line: { id: "HSL:31M1", name: "M1" } })), impact: "consider" as const };
+    trip = { events: [], plans: [{ mode: "car", itineraries: [DRIVE, room, full] }] };
+    renderApp(`${TO}&mode=car`);
+
+    const rows = await within(await screen.findByRole("group", { name: "Routes" })).findAllByRole("radio");
+    expect(rows[1]).toHaveAccessibleName(/^Drive 12 min to P Tapiola Park, 541 free of 2,049, walk 3 min/);
+    expect(rows[1]!.closest("label")).toHaveTextContent("541 free");
+    expect(rows[2]).toHaveAccessibleName(/worth considering, P Matinkylän asema almost full: 6 free$/);
+    expect(rows[2]!.closest("label")).toHaveTextContent("P Matinkylän asema almost full: 6 free");
+  });
+
+  it("says how many spaces the car park picked on arrival has free, where it reports them", async () => {
+    const free = { spaces: 6, readAt: "2026-11-01T09:58:00Z", almostFull: true };
+    const picks = PARKING.picks.map((pick) => (pick.kind === "carPark" ? { ...pick, free } : pick));
+    trip = { events: [], plans: [{ mode: "car", itineraries: [DRIVE] }], parking: { ...PARKING, picks } };
+    renderApp(`${TO}&mode=car`);
+
+    const parking = await screen.findByRole("region", { name: "Parking near Pasila" });
+    expect(within(parking).getAllByRole("listitem")[2]).toHaveTextContent("3Most spaces · Postintaival600 m · almost full: 6 free of 47");
+  });
+
   it("doesn't show parking at the destination for a park-and-ride way: you park on the way", async () => {
     trip = { events: [], plans: [{ mode: "car", itineraries: [DRIVE, PARK_AND_RIDE] }], parking: PARKING };
     renderApp(`${TO}&mode=car&route=1`);

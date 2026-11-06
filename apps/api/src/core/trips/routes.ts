@@ -4,7 +4,7 @@ import type { RoutedItinerary, Router } from "../adapters/digitransit-routing.ts
 import type { EventStore } from "../events/store.ts";
 import { type Region, regionAt } from "../regions/index.ts";
 import { detour } from "./detour.ts";
-import { planCar } from "./drive.ts";
+import { parksAlmostFull, planCar } from "./drive.ts";
 import { CROWD_ARRIVING_MS, CROWD_LEAVING_MS, impactOf, impactOfMatch, matchItinerary, RANK } from "./match.ts";
 import { recommend } from "./recommend.ts";
 
@@ -130,7 +130,10 @@ export function tripRoutes(
       const comingUp = later
         .map((match) => ({ ...placed(match), startsAt: match.event.when.start }))
         .sort((a, b) => Date.parse(a.startsAt) - Date.parse(b.startsAt));
-      return { ...itinerary, eventIds: matches.map((m) => m.event.id), onTheWay, comingUp, impact: impactOf(matches) };
+      // An almost full car park is worth considering too: the car park on the way says why.
+      const impact = impactOf(matches);
+      const parking = parksAlmostFull(itinerary) && RANK[impact] < RANK.consider ? "consider" : impact;
+      return { ...itinerary, eventIds: matches.map((m) => m.event.id), onTheWay, comingUp, impact: parking };
     };
     const plans = planned.map(({ mode, itineraries }) => ({ mode, itineraries: itineraries.map(withEvents) }));
 

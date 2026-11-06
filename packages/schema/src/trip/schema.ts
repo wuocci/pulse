@@ -12,6 +12,16 @@ export const LegModeSchema = z.enum(["walk", "bike", "car", "bus", "tram", "rail
 // How much the Events on an itinerary matter for it (Impact in CONTEXT.md). `none`: nothing on the way.
 export const ImpactSchema = z.enum(["none", "minor", "consider", "major"]).openapi("Impact");
 
+// Free car spaces at a car park, as last read. Live only where the car park reports it (HSL's park-and-ride);
+// a count older than 30 minutes isn't given.
+export const FreeSpacesSchema = z
+  .object({
+    spaces: z.number().int().openapi({ example: 541 }),
+    readAt: z.iso.datetime({ offset: true }).openapi({ description: "When Pulse read the count" }),
+    almostFull: z.boolean().openapi({ description: "10 or fewer free, or under 5% of its spaces" }),
+  })
+  .openapi("FreeSpaces");
+
 const TripPlaceSchema = z.object({
   name: z.string().openapi({ example: "Kamppi" }),
   lat: z.number(),
@@ -19,6 +29,7 @@ const TripPlaceSchema = z.object({
   stop: z.string().optional().openapi({ description: "The stop's id, when the place is one", example: "HSL:1040601" }),
   parking: z.string().optional().openapi({ description: "The car park, when a car leg ends at one (park-and-ride)", example: "Niittykumpu" }),
   parkingSpaces: z.number().int().optional().openapi({ description: "The car park's spaces for cars, when known" }),
+  parkingFree: FreeSpacesSchema.optional().openapi({ description: "The car park's free spaces, when it reports them" }),
 });
 
 export const LegSchema = z
@@ -83,7 +94,7 @@ export const TripPlanSchema = z
   .object({ mode: TravelModeSchema, itineraries: z.array(ItinerarySchema).openapi({ description: "Best first; empty when there's no route" }) })
   .openapi("TripPlan");
 
-// A car park with spaces for cars (mostly park-and-ride), near a Trip's destination. Static: no live availability.
+// A car park with spaces for cars (mostly park-and-ride), near a Trip's destination, and what's free where it says.
 export const CarParkSchema = z
   .object({
     name: z.string().openapi({ example: "Matinkylän asema" }),
@@ -91,6 +102,7 @@ export const CarParkSchema = z
     lon: z.number(),
     carSpaces: z.number().int(),
     distanceM: z.number().int().openapi({ description: "As the crow flies from the destination" }),
+    free: FreeSpacesSchema.optional().openapi({ description: "Free spaces now, when the car park reports them" }),
   })
   .openapi("CarPark");
 
@@ -139,6 +151,7 @@ export const ParkingPickSchema = z
     freeUntil: z.string().optional().openapi({ description: "When the paid hours begin, if it's free on arrival but not all day", example: "09:00" }),
     maxStayMin: z.number().int().optional(),
     disc: z.boolean().openapi({ description: "A parking disc is needed" }),
+    free: FreeSpacesSchema.optional().openapi({ description: "A car park's free spaces now, when it reports them" }),
   })
   .openapi("ParkingPick");
 
@@ -156,7 +169,7 @@ export const TripSchema = z
           .openapi({ description: "Where to park on arrival: the closest spot, the cheapest, and the car park with the most spaces" }),
       })
       .optional()
-      .openapi({ description: "Parking around B on arrival by car: static, not whether spaces are free now" }),
+      .openapi({ description: "Parking around B on arrival by car: street parking's rules, and car parks' free spaces where they report them" }),
     recommended: z
       .object({ mode: TravelModeSchema, index: z.number().int().openapi({ description: "Into that mode's itineraries" }) })
       .optional()

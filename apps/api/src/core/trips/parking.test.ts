@@ -84,6 +84,14 @@ describe("where to park on arrival", () => {
     expect(picks[1]).toEqual(expect.objectContaining({ reasons: ["biggest"], kind: "carPark", name: "REDI", spaces: 300, distanceM: 700, cost: "unknown" }));
   });
 
+  it("says how many spaces the car park has free, and when it's almost full, where it reports them", async () => {
+    const free = { spaces: 6, readAt: "2026-11-02T10:00:00.000Z", almostFull: true };
+    const picks = await picksAt(MONDAY_AT("12:00"), [], [{ ...park("REDI", 300, 700), free }]);
+
+    expect(picks[0]).toMatchObject({ reasons: ["biggest"], name: "REDI", spaces: 300, free });
+    expect((await picksAt(MONDAY_AT("12:00"), [], [park("REDI", 300, 700)]))[0]).not.toHaveProperty("free");
+  });
+
   it("doesn't call a spot cheapest without knowing its price", async () => {
     expect((await picksAt(MONDAY_AT("12:00"), [spot(80)])).map((p) => p.reasons)).toEqual([["closest"]]);
   });
