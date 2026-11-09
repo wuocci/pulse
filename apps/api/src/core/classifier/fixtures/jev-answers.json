@@ -1,32 +1,50 @@
 {
   "_recorded": {
-    "at": "2026-11-04",
+    "at": "2026-11-09",
     "model": "jev-latest",
-    "questionVersion": 5
+    "questionVersion": 6
   },
   "answers": {
-    "KP2601407-2": {
+    "KP2601081-2": {
       "workType": {
-        "choice": "building_site",
-        "confidence": 0.95
+        "choice": "other",
+        "confidence": 0.81
       },
       "endDate": {
-        "choice": "not_stated",
-        "confidence": 0.9
+        "choice": "2027-08-29",
+        "confidence": 1
       },
       "loud": {
         "choice": "ordinary",
-        "confidence": 0.04
+        "confidence": 0.76
       },
       "mainlyAffected": {
-        "choice": "nobody",
-        "confidence": 0.29
+        "choice": "parking",
+        "confidence": 0.93
+      }
+    },
+    "KP2601407-2": {
+      "workType": {
+        "choice": "building_site",
+        "confidence": 0.96
+      },
+      "endDate": {
+        "choice": "not_stated",
+        "confidence": 0.88
+      },
+      "loud": {
+        "choice": "loud",
+        "confidence": 0.1
+      },
+      "mainlyAffected": {
+        "choice": "drivers",
+        "confidence": 0.36
       }
     },
     "KP2402551-3": {
       "workType": {
         "choice": "other",
-        "confidence": 0.49
+        "confidence": 0.52
       },
       "endDate": {
         "choice": "2025-07-31",
@@ -37,44 +55,26 @@
         "confidence": 0.92
       },
       "mainlyAffected": {
-        "choice": "nobody",
-        "confidence": 0.56
+        "choice": "pedestrians",
+        "confidence": 0.78
       }
     },
     "KP2601020-2": {
       "workType": {
         "choice": "water_sewer",
-        "confidence": 0.88
+        "confidence": 0.91
       },
       "endDate": {
         "choice": "2027-05-14",
-        "confidence": 0.97
+        "confidence": 0.98
       },
       "loud": {
         "choice": "ordinary",
         "confidence": 0.98
       },
       "mainlyAffected": {
-        "choice": "nobody",
-        "confidence": 0.26
-      }
-    },
-    "KP2601081-2": {
-      "workType": {
-        "choice": "other",
-        "confidence": 0.77
-      },
-      "endDate": {
-        "choice": "2027-08-29",
-        "confidence": 1
-      },
-      "loud": {
-        "choice": "ordinary",
-        "confidence": 0.82
-      },
-      "mainlyAffected": {
-        "choice": "parking",
-        "confidence": 0.71
+        "choice": "drivers",
+        "confidence": 0.76
       }
     },
     "KP2601881-3": {
@@ -84,33 +84,15 @@
       },
       "endDate": {
         "choice": "2026-11-30",
-        "confidence": 0.95
+        "confidence": 0.98
       },
       "loud": {
         "choice": "loud",
-        "confidence": 0.86
+        "confidence": 0.84
       },
       "mainlyAffected": {
         "choice": "drivers",
-        "confidence": 0.67
-      }
-    },
-    "KP2602273": {
-      "workType": {
-        "choice": "district_heating",
-        "confidence": 1
-      },
-      "endDate": {
-        "choice": "not_stated",
-        "confidence": 0.64
-      },
-      "loud": {
-        "choice": "ordinary",
-        "confidence": 0.9
-      },
-      "mainlyAffected": {
-        "choice": "drivers",
-        "confidence": 0.7
+        "confidence": 0.77
       }
     },
     "KP2601442-2": {
@@ -127,8 +109,26 @@
         "confidence": 1
       },
       "mainlyAffected": {
-        "choice": "nobody",
+        "choice": "drivers",
+        "confidence": 0.79
+      }
+    },
+    "KP2602273": {
+      "workType": {
+        "choice": "district_heating",
+        "confidence": 1
+      },
+      "endDate": {
+        "choice": "not_stated",
         "confidence": 0.4
+      },
+      "loud": {
+        "choice": "ordinary",
+        "confidence": 0.92
+      },
+      "mainlyAffected": {
+        "choice": "drivers",
+        "confidence": 0.93
       }
     },
     "KP2602400-3": {
@@ -138,53 +138,21 @@
       },
       "endDate": {
         "choice": "not_stated",
-        "confidence": 0.72
-      },
-      "loud": {
-        "choice": "ordinary",
-        "confidence": 0.94
-      },
-      "mainlyAffected": {
-        "choice": "drivers",
-        "confidence": 0.74
-      }
-    },
-    "KP2602519-4": {
-      "workType": {
-        "choice": "electricity_telecom",
-        "confidence": 1
-      },
-      "endDate": {
-        "choice": "2026-10-26",
-        "confidence": 0.98
-      },
-      "loud": {
-        "choice": "ordinary",
-        "confidence": 1
-      },
-      "mainlyAffected": {
-        "choice": "drivers",
-        "confidence": 0.5
-      }
-    },
-    "KP2602979": {
-      "workType": {
-        "choice": "district_heating",
-        "confidence": 1
+        "confidence": 0.69
       },
       "loud": {
         "choice": "ordinary",
         "confidence": 0.96
       },
       "mainlyAffected": {
-        "choice": "nobody",
-        "confidence": 0.39
+        "choice": "drivers",
+        "confidence": 0.89
       }
     },
-    "KP2602904": {
+    "KP2602979": {
       "workType": {
-        "choice": "paving",
-        "confidence": 1
+        "choice": "district_heating",
+        "confidence": 0.99
       },
       "loud": {
         "choice": "ordinary",
@@ -192,7 +160,7 @@
       },
       "mainlyAffected": {
         "choice": "drivers",
-        "confidence": 0.72
+        "confidence": 0.81
       }
     },
     "KP2602791-2": {
@@ -209,8 +177,58 @@
         "confidence": 0.98
       },
       "mainlyAffected": {
-        "choice": "nobody",
-        "confidence": 0.32
+        "choice": "drivers",
+        "confidence": 0.87
+      }
+    },
+    "KP2602904": {
+      "workType": {
+        "choice": "paving",
+        "confidence": 1
+      },
+      "loud": {
+        "choice": "ordinary",
+        "confidence": 0.94
+      },
+      "mainlyAffected": {
+        "choice": "drivers",
+        "confidence": 0.86
+      }
+    },
+    "KP2602519-4": {
+      "workType": {
+        "choice": "electricity_telecom",
+        "confidence": 1
+      },
+      "endDate": {
+        "choice": "2026-10-26",
+        "confidence": 0.96
+      },
+      "loud": {
+        "choice": "ordinary",
+        "confidence": 1
+      },
+      "mainlyAffected": {
+        "choice": "drivers",
+        "confidence": 0.94
+      }
+    },
+    "KP2102753-23": {
+      "workType": {
+        "choice": "street_construction",
+        "confidence": 0.76
+      },
+      "endDate": {
+        "choice": "2027-11-30",
+        "confidence": 1
+      },
+      "loud": {
+        "choice": "loud",
+        "confidence": 1
+      },
+      "mainlyAffected": {
+        "choice": "drivers",
+        "confidence": 0.39
       }
     },
     "KP2603026": {
@@ -224,16 +242,16 @@
       },
       "mainlyAffected": {
         "choice": "drivers",
-        "confidence": 0.54
+        "confidence": 0.89
       }
     },
-    "KP2102753-23": {
+    "KP2302652-6": {
       "workType": {
         "choice": "street_construction",
-        "confidence": 0.72
+        "confidence": 0.91
       },
       "endDate": {
-        "choice": "2027-11-30",
+        "choice": "2027-10-29",
         "confidence": 1
       },
       "loud": {
@@ -259,96 +277,48 @@
         "confidence": 1
       },
       "mainlyAffected": {
-        "choice": "nobody",
-        "confidence": 0.42
-      }
-    },
-    "KP2302652-6": {
-      "workType": {
-        "choice": "street_construction",
-        "confidence": 0.93
-      },
-      "endDate": {
-        "choice": "2027-10-29",
-        "confidence": 1
-      },
-      "loud": {
-        "choice": "loud",
-        "confidence": 1
-      },
-      "mainlyAffected": {
         "choice": "drivers",
-        "confidence": 0.65
+        "confidence": 0.82
       }
     },
     "LJ2400057-2": {
       "severity": {
         "choice": "consider",
-        "confidence": 0.44
+        "confidence": 0.45
       },
       "mainlyAffected": {
         "choice": "drivers",
-        "confidence": 0.57
-      }
-    },
-    "LJ2500128": {
-      "severity": {
-        "choice": "consider",
-        "confidence": 0.65
-      },
-      "mainlyAffected": {
-        "choice": "drivers",
-        "confidence": 0.49
+        "confidence": 0.5
       }
     },
     "LJ2200014": {
       "severity": {
         "choice": "minor",
-        "confidence": 0.85
+        "confidence": 0.84
       },
       "mainlyAffected": {
         "choice": "parking",
         "confidence": 1
       }
     },
-    "LJ2400138": {
-      "severity": {
-        "choice": "minor",
-        "confidence": 0.48
-      },
-      "mainlyAffected": {
-        "choice": "parking",
-        "confidence": 0.99
-      }
-    },
-    "LJ2600028": {
+    "LJ2500128": {
       "severity": {
         "choice": "consider",
-        "confidence": 0.64
+        "confidence": 0.61
       },
       "mainlyAffected": {
         "choice": "drivers",
-        "confidence": 0.93
+        "confidence": 0.54
       }
     },
-    "LJ2600097-2": {
+    "LJ2400138": {
       "severity": {
-        "choice": "major",
+        "choice": "minor",
         "confidence": 0.36
       },
       "mainlyAffected": {
-        "choice": "everyone",
-        "confidence": 0.39
-      }
-    },
-    "LJ2600038-2": {
-      "severity": {
-        "choice": "consider",
-        "confidence": 0.84
-      },
-      "mainlyAffected": {
-        "choice": "transit",
-        "confidence": 0.5
+        "choice": "parking",
+        "confidence": 1
       }
     },
     "LJ2600093": {
@@ -358,37 +328,37 @@
       },
       "mainlyAffected": {
         "choice": "drivers",
-        "confidence": 0.48
+        "confidence": 0.42
       }
     },
-    "LJ2600148": {
+    "LJ2600028": {
       "severity": {
         "choice": "consider",
-        "confidence": 0.44
+        "confidence": 0.65
+      },
+      "mainlyAffected": {
+        "choice": "drivers",
+        "confidence": 0.82
+      }
+    },
+    "LJ2600038-2": {
+      "severity": {
+        "choice": "consider",
+        "confidence": 0.81
+      },
+      "mainlyAffected": {
+        "choice": "transit",
+        "confidence": 0.63
+      }
+    },
+    "LJ2600097-2": {
+      "severity": {
+        "choice": "major",
+        "confidence": 0.39
       },
       "mainlyAffected": {
         "choice": "everyone",
-        "confidence": 0.38
-      }
-    },
-    "LJ2600150": {
-      "severity": {
-        "choice": "consider",
-        "confidence": 0.8
-      },
-      "mainlyAffected": {
-        "choice": "everyone",
-        "confidence": 0.34
-      }
-    },
-    "TP2300454": {
-      "crowd": {
-        "choice": "1000_or_more",
-        "confidence": 0.66
-      },
-      "mainlyAffected": {
-        "choice": "nobody",
-        "confidence": 0.43
+        "confidence": 0.32
       }
     },
     "LJ2600106-2": {
@@ -401,24 +371,44 @@
         "confidence": 0.95
       }
     },
-    "TP2600203": {
+    "TP2300454": {
       "crowd": {
-        "choice": "under_1000",
-        "confidence": 0.98
+        "choice": "1000_or_more",
+        "confidence": 0.66
       },
       "mainlyAffected": {
         "choice": "pedestrians",
-        "confidence": 0.68
+        "confidence": 0.66
       }
     },
-    "TP2500373": {
-      "crowd": {
-        "choice": "1000_or_more",
-        "confidence": 0.9
+    "LJ2600150": {
+      "severity": {
+        "choice": "consider",
+        "confidence": 0.81
       },
       "mainlyAffected": {
-        "choice": "parking",
-        "confidence": 0.25
+        "choice": "everyone",
+        "confidence": 0.21
+      }
+    },
+    "LJ2600148": {
+      "severity": {
+        "choice": "consider",
+        "confidence": 0.4
+      },
+      "mainlyAffected": {
+        "choice": "drivers",
+        "confidence": 0.35
+      }
+    },
+    "TP2600853": {
+      "crowd": {
+        "choice": "under_1000",
+        "confidence": 0.54
+      },
+      "mainlyAffected": {
+        "choice": "pedestrians",
+        "confidence": 0.6
       }
     },
     "TP2600811": {
@@ -427,18 +417,58 @@
         "confidence": 0.8
       },
       "mainlyAffected": {
-        "choice": "everyone",
-        "confidence": 0.46
+        "choice": "pedestrians",
+        "confidence": 0.31
       }
     },
-    "TP2600853": {
+    "TP2500373": {
+      "crowd": {
+        "choice": "1000_or_more",
+        "confidence": 0.92
+      },
+      "mainlyAffected": {
+        "choice": "parking",
+        "confidence": 0.29
+      }
+    },
+    "TP2600203": {
       "crowd": {
         "choice": "under_1000",
-        "confidence": 0.48
+        "confidence": 0.98
       },
       "mainlyAffected": {
         "choice": "pedestrians",
-        "confidence": 0.66
+        "confidence": 0.73
+      }
+    },
+    "TP2600887": {
+      "crowd": {
+        "choice": "under_1000",
+        "confidence": 0.96
+      },
+      "mainlyAffected": {
+        "choice": "pedestrians",
+        "confidence": 0.8
+      }
+    },
+    "TP2600879": {
+      "crowd": {
+        "choice": "1000_or_more",
+        "confidence": 0.96
+      },
+      "mainlyAffected": {
+        "choice": "transit",
+        "confidence": 0.19
+      }
+    },
+    "TP2600921": {
+      "crowd": {
+        "choice": "1000_or_more",
+        "confidence": 0.82
+      },
+      "mainlyAffected": {
+        "choice": "everyone",
+        "confidence": 0.8
       }
     },
     "TP2600996": {
@@ -448,37 +478,33 @@
       },
       "mainlyAffected": {
         "choice": "nobody",
-        "confidence": 0.58
+        "confidence": 0.5
       }
     },
-    "TP2600921": {
-      "crowd": {
-        "choice": "1000_or_more",
-        "confidence": 0.84
-      },
-      "mainlyAffected": {
-        "choice": "pedestrians",
-        "confidence": 0.3
-      }
-    },
-    "TP2600887": {
+    "TP2601063": {
       "crowd": {
         "choice": "under_1000",
-        "confidence": 0.98
+        "confidence": 0.12
       },
       "mainlyAffected": {
         "choice": "pedestrians",
-        "confidence": 0.68
+        "confidence": 0.95
       }
     },
-    "TP2600879": {
+    "helsinki:agpr2ctpee": {
       "crowd": {
         "choice": "1000_or_more",
-        "confidence": 0.94
+        "confidence": 0.96
+      }
+    },
+    "TP2601071": {
+      "crowd": {
+        "choice": "under_1000",
+        "confidence": 0.52
       },
       "mainlyAffected": {
-        "choice": "everyone",
-        "confidence": 0.6
+        "choice": "pedestrians",
+        "confidence": 0.4
       }
     },
     "helsinki:agprytxiiy": {
@@ -487,36 +513,10 @@
         "confidence": 0.98
       }
     },
-    "helsinki:agpr2ctpee": {
-      "crowd": {
-        "choice": "1000_or_more",
-        "confidence": 0.98
-      }
-    },
-    "TP2601071": {
+    "helsinki:agp5v7666i": {
       "crowd": {
         "choice": "under_1000",
-        "confidence": 0.5
-      },
-      "mainlyAffected": {
-        "choice": "pedestrians",
-        "confidence": 0.5
-      }
-    },
-    "TP2601063": {
-      "crowd": {
-        "choice": "under_1000",
-        "confidence": 0.04
-      },
-      "mainlyAffected": {
-        "choice": "pedestrians",
-        "confidence": 0.36
-      }
-    },
-    "helsinki:agqkv5ygra": {
-      "crowd": {
-        "choice": "1000_or_more",
-        "confidence": 0.98
+        "confidence": 0.96
       }
     },
     "helsinki:agpe43lrvm": {
@@ -525,34 +525,34 @@
         "confidence": 1
       }
     },
-    "helsinki:agp5v7666i": {
+    "helsinki:agqkv5ygra": {
       "crowd": {
-        "choice": "under_1000",
+        "choice": "1000_or_more",
         "confidence": 0.96
       }
     },
     "helsinki:agnntmcsby": {
       "crowd": {
         "choice": "under_1000",
-        "confidence": 0.4
+        "confidence": 0.52
       }
     },
     "helsinki:agqvzyxumu": {
       "crowd": {
         "choice": "under_1000",
-        "confidence": 0.84
+        "confidence": 0.82
       }
     },
     "helsinki:agq2clfzfm": {
       "crowd": {
         "choice": "under_1000",
-        "confidence": 0.86
+        "confidence": 0.84
       }
     },
     "helsinki:agpafcxbx4": {
       "crowd": {
         "choice": "under_1000",
-        "confidence": 0.48
+        "confidence": 0.46
       }
     }
   }

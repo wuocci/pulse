@@ -10,7 +10,7 @@ import { type ChoiceQuestion, type ClassifierState, type CROWD_SEVERITY, type LO
 
 // Part of the cache key. Bump it whenever a question, its choices or the state sent changes,
 // which deliberately invalidates every cached answer. Never reuse one: 3 was a dropped experiment's, still cached.
-export const QUESTION_VERSION = 5;
+export const QUESTION_VERSION = 6;
 
 type PermitType = LandUsePermitSource["permitType"];
 
@@ -65,17 +65,27 @@ const loud: ChoiceQuestion = {
   } satisfies Record<keyof typeof LOUD_SEVERITY, string>,
 };
 
+// Jev answered "nobody" for digs at a building's address (a connection, a repair), and stayed unsure for most:
+// every permit here is for space in a public street or park, so the choices say whose space a kind of work takes.
 const mainlyAffected: ChoiceQuestion = {
-  prompt: "Which one group loses the most because of this? Pick everyone only when no single group stands out.",
+  prompt:
+    "Which one group loses the most because of this? Every permit here reserves space in a public street, square or park, " +
+    "so someone loses space. Pick the group whose space it takes; everyone only when no single group stands out.",
   // "unknown" is the fallback when no answer counts, never a choice.
   choices: {
-    drivers: "People driving: closed or narrowed lanes, detours, slower traffic. Most street works in the roadway",
-    cyclists: "People cycling: closed bike lanes or paths",
-    pedestrians: "People walking: closed sidewalks or paths, crowds on foot",
-    transit: "Public transport: moved stops, diverted routes",
-    parking: "People parking: reserved or banned parking spaces",
-    everyone: "Several groups equally: streets closed to all traffic and crowds at once",
-    nobody: "Hardly anyone: the work stays off the street",
+    drivers:
+      "People driving: a lane closed or narrowed, a detour, slower traffic. Most digs: a pipe, cable or district heating " +
+      "trench, a connection to a building, a repair or resurfacing, even at one address",
+    cyclists: "People cycling: a closed bike lane or path",
+    pedestrians:
+      "People walking: a closed or narrowed sidewalk or path, a site fence, scaffolding or a building site on the sidewalk, " +
+      "crowds on foot, a walk or run on park paths",
+    transit: "Public transport: moved or temporary stops, diverted routes, a procession along tram and bus streets",
+    parking: "People parking: reserved or banned parking spaces, parking arrangements",
+    everyone:
+      "Several groups equally: an area shut to all traffic and people on foot at once, like a festival site. " +
+      "For the traffic arrangements around an event, pick whose space they take instead",
+    nobody: "Nobody outside: a closed private event, or work that takes no street space at all. Never a dig in a street",
   } satisfies Record<Exclude<MainlyAffected, "unknown">, string>,
 };
 

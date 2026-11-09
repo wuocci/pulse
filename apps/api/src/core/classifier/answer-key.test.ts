@@ -44,6 +44,14 @@ describe("Jev against the answer key", () => {
     },
   );
 
+  // Right but unsure counts for nothing: an answer under the threshold leaves the Event "not sure yet who this affects".
+  // Was 11 of 31 at question version 5, with digs at a building's address answered "nobody".
+  it("mainlyAffected: at least half the labelled answers reach the threshold", () => {
+    const s = score(graded, DEFAULT_THRESHOLD).mainlyAffected!;
+
+    expect(s.accepted / s.labelled).toBeGreaterThanOrEqual(0.5);
+  });
+
   it("is right at least 90% of the time over all questions at the threshold", () => {
     const all = Object.values(score(graded, DEFAULT_THRESHOLD));
     const accepted = all.reduce((n, s) => n + s.accepted, 0);
