@@ -6,7 +6,8 @@ import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { AddressSearch } from "./AddressSearch.tsx";
 import { RADIUS_M, useEvents, useRegions, useTrip } from "./api.ts";
-import { EventCard } from "./EventCard.tsx";
+import { CARD_VARIANT_NAMES, CARD_VARIANTS, PrototypeEventCard as EventCard } from "./EventCard.prototype.tsx";
+import { PrototypeSwitcher } from "./PrototypeSwitcher.tsx";
 import { EventList } from "./EventList.tsx";
 import { inMyArea, nearestFirst, regionWide, statusOf, textIn, type Time, tripPins } from "./events.ts";
 import { EventPin, PinGroup } from "./map/EventPin.tsx";
@@ -213,7 +214,7 @@ export function Home() {
             ? {
                 popup: {
                   pinKey: selectedPin.key,
-                  content: <EventCard event={selected} languages={languages} timeZone={timeZone} onClose={closeCard} />,
+                  content: <EventCard variant={search.variant} event={selected} languages={languages} timeZone={timeZone} onClose={closeCard} />,
                 },
               }
             : {})}
@@ -243,7 +244,7 @@ export function Home() {
             languages={languages}
             timeZone={timeZone}
             onSelect={select}
-            card={selectedNotice ? <EventCard event={selectedNotice} languages={languages} timeZone={timeZone} onClose={closeCard} /> : null}
+            card={selectedNotice ? <EventCard variant={search.variant} event={selectedNotice} languages={languages} timeZone={timeZone} onClose={closeCard} /> : null}
           />
           {regions.isError && (
             <p role="alert" className="pointer-events-auto rounded-md bg-background px-3 py-2 text-sm shadow">
@@ -374,6 +375,7 @@ export function Home() {
           </>
         )}
       </Sheet>
+      <PrototypeSwitcher variants={CARD_VARIANTS} names={CARD_VARIANT_NAMES} current={search.variant ?? "A"} />
     </main>
   );
 }

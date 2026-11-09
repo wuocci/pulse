@@ -20,6 +20,8 @@ const SearchSchema = z.object({
   mode: z.enum(["transit", "walk", "bike", "car"]).optional().catch(undefined),
   // Which of that mode's itineraries; the recommended one, else the first, when absent.
   route: z.number().int().min(0).optional().catch(undefined),
+  // PROTOTYPE: Event card variant (EventCard.prototype.tsx).
+  variant: z.string().optional().catch(undefined),
 });
 
 const rootRoute = createRootRoute({ component: Outlet });
