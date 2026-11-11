@@ -3,6 +3,19 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" content="#f1f4f7" />
+    <script>
+      // Paper or Dusk before the first paint, as src/theme.ts decides it: the device's choice, else the phone's.
+      try {
+        var choice = localStorage.getItem("theme");
+        var dark = choice === "dark" || (choice !== "light" && matchMedia("(prefers-color-scheme: dark)").matches);
+        if (dark) {
+          document.documentElement.classList.add("dark");
+          document.querySelector('meta[name="theme-color"]').setAttribute("content", "#252c38");
+        }
+      } catch (e) {}
+    </script>
     <title>Pulse</title>
   </head>
   <body>

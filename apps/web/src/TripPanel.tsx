@@ -1,5 +1,5 @@
 import type { GeocodeResult, Impact, Schema, TravelMode } from "@pulse/client";
-import { BadgeCheck, Bike, Bus, CalendarClock, Car, Footprints, type LucideIcon, OctagonAlert, TriangleAlert, X } from "lucide-react";
+import { ArrowLeft, BadgeCheck, Bike, Bus, CalendarClock, Car, Footprints, type LucideIcon, OctagonAlert, TriangleAlert } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { AddressSearch } from "./AddressSearch.tsx";
@@ -28,6 +28,9 @@ export function TripForm({ point, lang, fromName, toName, onFrom, onTo, onClose 
   const { t } = useTranslation();
   return (
     <div className="flex items-start gap-2">
+      <Button variant="secondary" size="icon" className="size-11 shrink-0 rounded-full" aria-label={t("closeRoute")} onClick={onClose}>
+        <ArrowLeft aria-hidden />
+      </Button>
       {/* From and To marked as on the map — a ring where you start, a dark dot where you're going — and joined. */}
       <div className="relative min-w-0 flex-1 space-y-2">
         <span aria-hidden className="pointer-events-none absolute top-8 left-[1.1875rem] z-10 h-7 border-l-2 border-dotted border-muted-foreground/50" />
@@ -51,9 +54,6 @@ export function TripForm({ point, lang, fromName, toName, onFrom, onTo, onClose 
           leading={<span className="block size-3 rounded-full bg-slate-900 ring-2 ring-background dark:bg-slate-100" />}
         />
       </div>
-      <Button variant="ghost" size="icon" className="size-11 shrink-0" aria-label={t("closeRoute")} onClick={onClose}>
-        <X aria-hidden />
-      </Button>
     </div>
   );
 }
@@ -70,7 +70,7 @@ export interface TravelModesProps {
 export function TravelModes({ trip, mode, shownIndex, onMode }: TravelModesProps) {
   const { t } = useTranslation();
   return (
-    <fieldset className="flex min-w-0 flex-1 gap-1 rounded-lg bg-muted p-1">
+    <fieldset className="flex min-w-0 flex-1 gap-1 rounded-3xl border bg-card p-1.5">
       <legend className="sr-only">{t("travelMode")}</legend>
       {TRAVEL_MODES.map((option) => {
         const Icon = MODE_ICONS[option];
@@ -88,7 +88,7 @@ export function TravelModes({ trip, mode, shownIndex, onMode }: TravelModesProps
           <label
             key={option}
             // Stacked — icon, name, time — so four fit a phone's sheet and the docked panel alike; marks in the corner.
-            className="relative flex min-h-14 min-w-0 flex-1 cursor-pointer flex-col items-center justify-center rounded-md px-1 py-1.5 text-muted-foreground outline-none has-checked:bg-background has-checked:text-foreground has-checked:shadow-sm has-checked:ring-1 has-checked:ring-border has-focus-visible:ring-2 has-focus-visible:ring-ring"
+            className="relative flex min-h-14 min-w-0 flex-1 cursor-pointer flex-col items-center justify-center rounded-2xl px-1 py-1.5 text-muted-foreground outline-none has-checked:bg-muted has-checked:text-brand has-focus-visible:ring-2 has-focus-visible:ring-ring"
           >
             <input type="radio" name="mode" className="sr-only" aria-label={label} checked={mode === option} onChange={() => onMode(option)} />
             {(impact || better) && (
@@ -147,7 +147,7 @@ export function Itineraries({ itineraries, chosen, better, titleOf, timeZone, on
   const count = (n: number) => new Intl.NumberFormat(i18n.language).format(n);
 
   return (
-    <fieldset className="min-w-0 space-y-1">
+    <fieldset className="min-w-0 space-y-2">
       <legend className="sr-only">{t("routes")}</legend>
       {itineraries.map((itinerary, i) => {
         const legs = itinerary.legs
@@ -180,7 +180,7 @@ export function Itineraries({ itineraries, chosen, better, titleOf, timeZone, on
         return (
           <label
             key={i}
-            className="flex min-w-0 cursor-pointer flex-col gap-1.5 rounded-lg p-2 has-checked:bg-muted has-focus-visible:ring-2 has-focus-visible:ring-ring"
+            className="flex min-w-0 cursor-pointer flex-col gap-1.5 rounded-3xl border bg-card p-3 has-checked:border-brand has-focus-visible:ring-2 has-focus-visible:ring-ring"
           >
             <input type="radio" name="route" className="sr-only" aria-label={label} checked={chosen === i} onChange={() => onChoose(i)} />
             <span aria-hidden className="flex flex-wrap items-center gap-1">
@@ -224,19 +224,19 @@ export function Itineraries({ itineraries, chosen, better, titleOf, timeZone, on
               {length && <span className="text-muted-foreground">· {length}</span>}
             </span>
             {impact && (
-              <span aria-hidden className="flex min-w-0 items-center gap-1 text-xs text-muted-foreground">
+              <span aria-hidden className="flex min-w-0 items-start gap-1 text-xs text-muted-foreground">
                 <ImpactMark impact={impact} />
                 {worstTitle ? (
-                  <span className="truncate">
+                  <span className="line-clamp-2">
                     <span className="font-medium text-foreground tabular-nums">{inWay.length}</span> · {worstTitle}
                   </span>
                 ) : (
-                  fullText && <span className="truncate">{fullText}</span>
+                  fullText && <span className="line-clamp-2">{fullText}</span>
                 )}
               </span>
             )}
             {why && (
-              <span aria-hidden className="flex items-center gap-1 text-xs font-medium text-emerald-700">
+              <span aria-hidden className="flex items-center gap-1 text-xs font-medium text-emerald-700 dark:text-emerald-400">
                 <BadgeCheck className="size-3.5 shrink-0" />
                 {why}
               </span>
@@ -353,10 +353,10 @@ export interface HeadsUpProps {
   timeZone: string;
 }
 
-// A heads-up: what will be in this way soon, but isn't yet — "From Thu 5 Nov · Bridge closed (on the drive)".
+// A heads-up: what will be in this way soon, but isn't yet — "From 5.11.2026 · Bridge closed (on the drive)".
 export function HeadsUp({ comingUp, titleOf, legs, timeZone }: HeadsUpProps) {
   const { t } = useTranslation();
-  const day = new Intl.DateTimeFormat("en-GB", { weekday: "short", day: "numeric", month: "short", timeZone });
+  const day = new Intl.DateTimeFormat("fi-FI", { day: "numeric", month: "numeric", year: "numeric", timeZone });
   if (!comingUp.length) return null;
   return (
     <section aria-label={t("headsUp")} className="space-y-1.5 rounded-lg bg-amber-50 p-3 text-sm dark:bg-amber-950/40">
@@ -370,7 +370,7 @@ export function HeadsUp({ comingUp, titleOf, legs, timeZone }: HeadsUpProps) {
           const on = part && (part.line ? `${t(`leg_${part.mode}`)} ${part.line.name}` : t(`leg_${part.mode}`));
           return (
             <li key={eventId}>
-              <span className="font-medium">{t("fromDay", { day: day.format(new Date(startsAt)).replace(",", "") })}</span> · {titleOf(eventId)}
+              <span className="font-medium">{t("fromDay", { day: day.format(new Date(startsAt)) })}</span> · {titleOf(eventId)}
               {on && <span className="text-muted-foreground"> ({t("onLeg", { leg: on })})</span>}
             </li>
           );
@@ -387,13 +387,15 @@ export interface OnTheWayProps {
   languages: readonly string[];
   timeZone: string;
   onSelect: (id: string) => void;
+  // The Event pointed at in the list, so the map can show it; undefined when none.
+  onHighlight?: (id: string | undefined) => void;
 }
 
 // What's in the chosen way, in the order the trip meets it, under the part of the trip it's on: "Driving",
 // "Tram 9"… What's on the whole way (a weather warning over the area) comes first, once: it's not one part's.
 type Group = { part: "wholeWay"; pins: PinT[] } | { part: "leg"; leg: number; pins: PinT[] };
 
-export function OnTheWay({ legs, pins: inTheWay, selectedId, languages, timeZone, onSelect }: OnTheWayProps) {
+export function OnTheWay({ legs, pins: inTheWay, selectedId, languages, timeZone, onSelect, onHighlight }: OnTheWayProps) {
   const { t } = useTranslation();
   const wholeWay = inTheWay.filter((pin) => pin.trip?.wholeWay);
   const byPart = inTheWay
@@ -418,7 +420,7 @@ export function OnTheWay({ legs, pins: inTheWay, selectedId, languages, timeZone
       {groups.map((group, i) => (
         <div key={i}>
           <h3 className="mb-1 text-xs font-semibold text-muted-foreground uppercase">{heading(group)}</h3>
-          <EventList label={heading(group)} pins={group.pins} selectedId={selectedId} languages={languages} timeZone={timeZone} onSelect={onSelect} />
+          <EventList label={heading(group)} pins={group.pins} selectedId={selectedId} languages={languages} timeZone={timeZone} onSelect={onSelect} {...(onHighlight ? { onHighlight } : {})} />
         </div>
       ))}
     </section>

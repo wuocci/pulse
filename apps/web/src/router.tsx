@@ -7,7 +7,8 @@ import { Home } from "./Home.tsx";
 const SearchSchema = z.object({
   at: z.string().optional().catch(undefined),
   // The time switch; Now when absent.
-  time: z.enum(["now", "14d"]).optional().catch(undefined),
+  // "now", or a picked time on the device's clock, as a datetime-local input gives it.
+  time: z.union([z.literal("now"), z.string().regex(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/)]).optional().catch(undefined),
   // The selected Event's id.
   event: z.string().optional().catch(undefined),
   // Trip mode, and the Trip: To (and From, else the point) as lat,lon with the name the search gave.
