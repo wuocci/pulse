@@ -1,5 +1,5 @@
 import type { Event } from "@pulse/client";
-import { Info, TriangleAlert, X } from "lucide-react";
+import { Info, PartyPopper, TriangleAlert, X } from "lucide-react";
 import { type ReactNode, useEffect, useId, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
@@ -137,6 +137,12 @@ export function Legend({ radiusM }: { radiusM?: number | undefined }) {
                 3
               </span>
               <span>{t("legendGroup")}</span>
+            </li>
+            <li className={row}>
+              <span aria-hidden className={`${swatch} ${TONE_CLASSES.quiet}`}>
+                <PartyPopper className="size-4" />
+              </span>
+              <span>{t("legendPublicEvent")}</span>
             </li>
             <li className="text-muted-foreground">{t("legendIcon")}</li>
           </ul>

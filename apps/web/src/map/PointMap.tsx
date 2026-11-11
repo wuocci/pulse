@@ -6,15 +6,25 @@ import { useTranslation } from "react-i18next";
 import type { Schema } from "@pulse/client";
 import { circleAround, groupNear, outlineOf, type Pin, sameSpot, type Tone, toneOf } from "../events.ts";
 import type { LatLon } from "../platform.tsx";
-import { DOCKED_MEDIA, PANEL_PX, PEEK_PX } from "../Sheet.tsx";
+import { useTheme } from "../theme.ts";
 import { LEG_STYLE } from "../transit.ts";
 import { longPress } from "./long-press.ts";
 
-// OpenFreeMap: free vector tiles, no key. Positron is muted, so Events drawn on top stand out.
-const STYLE = "https://tiles.openfreemap.org/styles/positron";
+// OpenFreeMap: free vector tiles, no key. Muted, so Events drawn on top stand out: Positron for Paper, and Fiord, a
+// blue-grey, for Dusk.
+const STYLE = { light: "https://tiles.openfreemap.org/styles/positron", dark: "https://tiles.openfreemap.org/styles/fiord" };
+
+// A new base style keeps what Pulse drew on the old one: its own sources (not the base's) and the layers on them.
+const keepOurs: maplibregl.TransformStyleFunction = (previous, next) => {
+  if (!previous) return next;
+  const ours = Object.keys(previous.sources).filter((id) => !(id in next.sources));
+  return {
+    ...next,
+    sources: { ...next.sources, ...Object.fromEntries(ours.map((id) => [id, previous.sources[id]!])) },
+    layers: [...next.layers, ...previous.layers.filter((layer) => "source" in layer && ours.includes(layer.source))],
+  };
+};
 const ZOOM = 15;
-// How far below the middle a pin with an open card sits, so the card above it is in view.
-const POPUP_ROOM_PX = 120;
 // Pins closer than this on screen are drawn as one group.
 const GROUP_PX = 36;
 const OUTLINE_LAYERS = ["outline-lines", "outline-areas"];
@@ -40,9 +50,16 @@ export interface PointMapProps {
   radiusM?: number;
   // A tap on an Event's area or line: the same as tapping its pin.
   onShapeClick?: (eventId: string) => void;
-  // Events whose areas and lines stand out: the one selected, and one pointed at in the list.
+  // The pointer moved onto an Event's area or line, or off it (undefined): the same as pointing at its pin, the
+  // Event's one nearest the pointer.
+  onShapeHover?: (hover: { eventId: string; pinKey: string } | undefined) => void;
+  // Events whose areas and lines stand out, and whose pins stand alone instead of in a group: the one selected,
+  // and one pointed at in the list.
   emphasised?: string[];
-  // A card popping up from one of the pins.
+  // An Event pointed at in the list: brought into view when none of its pins is, after a moment, so running the
+  // pointer down the list doesn't swing the map about.
+  reveal?: string;
+  // A card popping up from one of the pins. The map stays where it is.
   popup?: { pinKey: string; content: ReactNode };
   // A Trip's route, leg by leg: each ride in its mode's colour with its line at the boarding point, walks dotted;
   // fitted into view.
@@ -52,12 +69,9 @@ export interface PointMapProps {
   // Parking at B: the picks, numbered as in the panel, and every street parking spot around as a small dot that
   // tells, when tapped, what it offers (`label`).
   parking?: { picks: { lat: number; lon: number }[]; places: { lat: number; lon: number; kind: "paid" | "free" | "other"; label: string }[] };
-  // A place to zoom in on, e.g. a parking pick chosen in the panel; a new `key` zooms again.
-  focus?: LatLon & { key: number };
-  // How much of the map the sheet covers: its bottom on phones, its left side when docked as a panel (0 while the
-  // panel is hidden). The map centres in the rest.
-  bottomInset?: number;
-  leftInset?: number;
+  // A place to zoom in on, e.g. a parking pick chosen in the panel; a new `key` zooms again. With `remember`, the
+  // view before it is kept (once, across several), and `{ back: true }` goes back to that view, e.g. as a card closes.
+  focus?: { key: number } & ((LatLon & { remember?: boolean }) | { back: true });
 }
 
 // What one marker on the map holds: a pin, or a group of pins that overlap.
@@ -68,6 +82,8 @@ type Slot =
 const reducedMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 const ROUTE_ROOM_PX = 48;
+// How long a row is pointed at before the map moves to show its Event.
+const REVEAL_DELAY_MS = 300;
 
 export function PointMap({
   point,
@@ -79,16 +95,19 @@ export function PointMap({
   renderGroup,
   radiusM,
   onShapeClick,
+  onShapeHover,
   emphasised = [],
+  reveal,
   popup,
   route,
   destination,
   parking,
   focus,
-  bottomInset = PEEK_PX,
-  leftInset = PANEL_PX,
 }: PointMapProps) {
   const { t } = useTranslation();
+  const { dark } = useTheme();
+  const style = STYLE[dark ? "dark" : "light"];
+  const styleRef = useRef(style);
   const container = useRef<HTMLDivElement>(null);
   const map = useRef<maplibregl.Map | null>(null);
   const marker = useRef<maplibregl.Marker | null>(null);
@@ -102,20 +121,22 @@ export function PointMap({
   const onPanRef = useRef(onPan);
   const onMapClickRef = useRef(onMapClick);
   const onShapeClickRef = useRef(onShapeClick);
+  const onShapeHoverRef = useRef(onShapeHover);
   const pinsRef = useRef(pins);
   useEffect(() => {
     onLongPressRef.current = onLongPress;
     onPanRef.current = onPan;
     onMapClickRef.current = onMapClick;
     onShapeClickRef.current = onShapeClick;
+    onShapeHoverRef.current = onShapeHover;
     pinsRef.current = pins;
-  }, [onLongPress, onPan, onMapClick, pins]);
+  }, [onLongPress, onPan, onMapClick, onShapeClick, onShapeHover, pins]);
   const mapPopup = useRef<maplibregl.Popup | null>(null);
   const [popupElement] = useState(() => document.createElement("div"));
 
   useEffect(() => {
     if (!container.current) return;
-    const m = new maplibregl.Map({ container: container.current, style: STYLE, zoom: ZOOM, center: [0, 0], attributionControl: { compact: true } });
+    const m = new maplibregl.Map({ container: container.current, style: styleRef.current, zoom: ZOOM, center: [0, 0], attributionControl: { compact: true } });
     const choose = ({ lat, lng }: maplibregl.LngLat) => onLongPressRef.current({ lat, lon: lng });
     const press = longPress({ onLongPress: ({ x, y }) => choose(m.unproject([x, y])) });
 
@@ -145,12 +166,25 @@ export function PointMap({
       if (id && onShapeClickRef.current) onShapeClickRef.current(id);
       else onMapClickRef.current();
     });
-    let overShape = false;
+    let overShape: string | undefined;
+    const hoverShape = (id: string | undefined, at?: maplibregl.Point) => {
+      if (id === overShape) return;
+      m.getCanvas().style.cursor = id ? "pointer" : "";
+      overShape = id;
+      const own = id && at ? pinsRef.current.filter((pin) => pin.event.id === id) : [];
+      const nearest = own.length ? own.reduce((a, b) => (m.project(a.lngLat).dist(at!) <= m.project(b.lngLat).dist(at!) ? a : b)) : undefined;
+      onShapeHoverRef.current?.(id && nearest ? { eventId: id, pinKey: nearest.key } : undefined);
+    };
     m.on("mousemove", (e) => {
-      const over = shapeAt(e.point) !== undefined;
-      if (over !== overShape) m.getCanvas().style.cursor = over ? "pointer" : "";
-      overShape = over;
+      // Over a pin, the pin's own hover counts, not the shape under it: forget the shape without saying so.
+      if (onOverlay(e)) {
+        overShape = undefined;
+        m.getCanvas().style.cursor = "";
+        return;
+      }
+      hoverShape(shapeAt(e.point), e.point);
     });
+    m.on("mouseout", () => hoverShape(undefined));
     m.on("zoomend", () => setZoom(m.getZoom()));
     m.on("contextmenu", (e) => {
       if (onOverlay(e) || (e.originalEvent instanceof PointerEvent && e.originalEvent.pointerType === "touch")) return;
@@ -167,23 +201,6 @@ export function PointMap({
       pinMarkers.current.clear();
     };
   }, []);
-
-  // The sheet covers part of the map: centre in the part that shows. When that part changes (the panel hides, the
-  // peek grows) the map stays where it is: the new centre is the place already under it.
-  useEffect(() => {
-    const m = map.current;
-    if (!m) return;
-    const docked = window.matchMedia(DOCKED_MEDIA);
-    const pad = () => {
-      const next = { top: 0, right: 0, left: docked.matches ? leftInset : 0, bottom: docked.matches ? 0 : bottomInset };
-      const { clientWidth: width, clientHeight: height } = m.getContainer();
-      const centre = m.unproject([(width + next.left - next.right) / 2, (height + next.top - next.bottom) / 2]);
-      m.jumpTo({ center: centre, padding: next });
-    };
-    pad();
-    docked.addEventListener("change", pad);
-    return () => docked.removeEventListener("change", pad);
-  }, [bottomInset, leftInset]);
 
   // Redrawn when the parking changes, not on every render.
   const parkingRef = useRef(parking);
@@ -341,14 +358,34 @@ export function PointMap({
     return () => void marker.remove();
   }, [destinationKey]);
 
+  // The theme changed: the other base map, under the same pins, shapes and route.
+  useEffect(() => {
+    const m = map.current;
+    if (!m || styleRef.current === style) return;
+    styleRef.current = style;
+    m.setStyle(style, { transformStyle: keepOurs });
+  }, [style]);
+
+  // Where the map was before pointing at the list moved it: it goes back there once nothing is pointed at.
+  const viewBeforeReveal = useRef<maplibregl.LngLat | null>(null);
   const focusKey = focus?.key;
   const focusRef = useRef(focus);
   focusRef.current = focus;
+  const viewBefore = useRef<{ center: maplibregl.LngLat; zoom: number } | null>(null);
   useEffect(() => {
     const m = map.current;
     const at = focusRef.current;
     if (!m || !at || focusKey === undefined) return;
-    m.easeTo({ center: [at.lon, at.lat], zoom: Math.max(m.getZoom(), 17), duration: reducedMotion() ? 0 : 600 });
+    viewBeforeReveal.current = null;
+    const duration = reducedMotion() ? 0 : 600;
+    if ("back" in at) {
+      if (viewBefore.current) m.easeTo({ ...viewBefore.current, duration });
+      viewBefore.current = null;
+      return;
+    }
+    if (!at.remember) viewBefore.current = null;
+    else viewBefore.current ??= { center: m.getCenter(), zoom: m.getZoom() };
+    m.easeTo({ center: [at.lon, at.lat], zoom: Math.max(m.getZoom(), 17), duration });
   }, [focusKey]);
 
   // The pins' areas and lines, lightly, under them. Redrawn when what's outlined changes.
@@ -424,7 +461,7 @@ export function PointMap({
     return () => void m.off("idle", draw);
   }, [radiusKey]);
 
-  // The popup follows its pin; the map pans so the pin sits low enough for the card to fit above it.
+  // The popup follows its pin, on whichever side of it there's room.
   const popupKey = popup?.pinKey;
   // Whether to group at all: a new renderGroup each render doesn't regroup.
   const grouping = renderGroup !== undefined;
@@ -435,9 +472,11 @@ export function PointMap({
     const markers = pinMarkers.current;
     // Pins that overlap on screen become one group; the one with its card open always stands alone.
     const items = pins.map((pin) => ({ pin, ...m.project(pin.lngLat) }));
-    const grouped = grouping ? groupNear(items.filter(({ pin }) => pin.key !== popupKey), GROUP_PX) : items.map((item) => [item]);
+    const alone = new Set(emphasisedKey ? emphasisedKey.split(",") : []);
+    const standsAlone = ({ pin }: (typeof items)[number]) => pin.key === popupKey || alone.has(pin.event.id);
+    const grouped = grouping ? groupNear(items.filter((item) => !standsAlone(item)), GROUP_PX) : items.map((item) => [item]);
     const order = (group: typeof items) => pins.indexOf(group[0]!.pin);
-    const groups = [...grouped, ...items.filter(({ pin }) => grouping && pin.key === popupKey).map((item) => [item])].sort((a, b) => order(a) - order(b));
+    const groups = [...grouped, ...items.filter((item) => grouping && standsAlone(item)).map((item) => [item])].sort((a, b) => order(a) - order(b));
     const wanted: Slot[] = groups.map((group) => {
       const [{ pin }] = group as [(typeof items)[number]];
       if (group.length === 1) return { kind: "pin", key: pin.key, pin, element: undefined! };
@@ -472,7 +511,36 @@ export function PointMap({
       return { ...slot, element };
     });
     setSlots(next);
-  }, [pins, zoom, popupKey, grouping]);
+  }, [pins, zoom, popupKey, grouping, emphasisedKey]);
+
+  useEffect(() => {
+    const m = map.current;
+    if (!m) return;
+    const duration = reducedMotion() ? 0 : 500;
+    const timer = setTimeout(() => {
+      if (!reveal) {
+        if (viewBeforeReveal.current) m.easeTo({ center: viewBeforeReveal.current, duration });
+        viewBeforeReveal.current = null;
+        return;
+      }
+      const at = pinsRef.current.filter((p) => p.event.id === reveal).map(({ lngLat: [lng = 0, lat = 0] }) => new maplibregl.LngLat(lng, lat));
+      const bounds = m.getBounds();
+      if (!at.length || at.some((lngLat) => bounds.contains(lngLat))) return;
+      const centre = m.getCenter();
+      viewBeforeReveal.current ??= centre;
+      const nearest = at.reduce((a, b) => (centre.distanceTo(a) <= centre.distanceTo(b) ? a : b));
+      m.easeTo({ center: nearest, duration });
+    }, REVEAL_DELAY_MS);
+    return () => clearTimeout(timer);
+  }, [reveal]);
+  // Dragging the map, or a card centring it, makes that the view to keep.
+  useEffect(() => {
+    const m = map.current;
+    if (!m) return;
+    const forget = () => void (viewBeforeReveal.current = null);
+    m.on("dragstart", forget);
+    return () => void m.off("dragstart", forget);
+  }, []);
 
   useEffect(() => {
     const m = map.current;
@@ -485,7 +553,6 @@ export function PointMap({
         .addTo(m);
     }
     mapPopup.current.setLngLat(pin.lngLat);
-    m.easeTo({ center: pin.lngLat, offset: [0, POPUP_ROOM_PX], duration: reducedMotion() ? 0 : 400 });
     return () => {
       mapPopup.current?.remove();
       mapPopup.current = null;
@@ -513,7 +580,7 @@ export function PointMap({
   // The popup's own frame is replaced by the card's (`!`: MapLibre's unlayered CSS beats Tailwind otherwise).
   return (
     <div
-      className="absolute inset-0 [&_.maplibregl-ctrl-bottom-right]:mb-38 lg:[&_.maplibregl-ctrl-bottom-right]:mb-0 [&_.maplibregl-popup-content]:rounded-xl! [&_.maplibregl-popup-content]:p-0! [&_.maplibregl-popup-content]:shadow-xl!"
+      className="absolute inset-0 [&_.maplibregl-ctrl-bottom-right]:mb-38 lg:[&_.maplibregl-ctrl-bottom-right]:mb-0 [&_.maplibregl-popup-content]:rounded-3xl! [&_.maplibregl-popup-content]:border [&_.maplibregl-popup-content]:bg-card! [&_.maplibregl-popup-content]:p-0! [&_.maplibregl-popup-content]:shadow-xl! [&_.maplibregl-popup-tip]:hidden!"
       role="region"
       aria-label={t("map")}
     >

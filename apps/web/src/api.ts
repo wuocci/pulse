@@ -1,6 +1,5 @@
 import { createClient } from "@pulse/client";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
-import type { Time } from "./events.ts";
 import type { LatLon } from "./platform.tsx";
 
 // The API's origin. In development it's the Vite dev server, which proxies /v0; a wrapped native app sets
@@ -28,34 +27,49 @@ export function useRegions() {
 const DAY_MS = 86_400_000;
 // Right now is refreshed while the app is open: things start and stop.
 const NOW_REFRESH_MS = 60_000;
+const SOON_DAYS = 14;
 
-// How far around the point the map looks, for both settings of the time switch: a walk around the block.
+// How far around the point Home looks: a walk around the block.
 export const RADIUS_M = 1000;
 
-// The Events around a point. Now: the Right now Layer. 14 days: from now to two weeks ahead, including resolved
-// ones (e.g. an alert's all-clear).
-export function useEvents(point: LatLon | undefined, time: Time) {
+// What's going on near the point at one moment: right now (the Right now Layer, kept fresh), or at `at`, a picked
+// time on the device's clock ("2026-12-12T18:00").
+export function useEvents(point: LatLon | undefined, at?: string) {
   return useQuery({
-    queryKey: ["events", point?.lat, point?.lon, time],
+    queryKey: ["events", point?.lat, point?.lon, at ?? "now"],
     enabled: point !== undefined,
     queryFn: async () => {
       const near = `${point!.lat},${point!.lon},${RADIUS_M}`;
-      const now = Date.now();
-      const query =
-        time === "now"
-          ? { near, layer: "now" as const }
-          : {
-              near,
-              from: new Date(now).toISOString(),
-              to: new Date(now + 14 * DAY_MS).toISOString(),
-              status: "active,upcoming,resolved",
-            };
+      const moment = at && new Date(at).toISOString();
+      const query = moment ? { near, from: moment, to: moment, status: "active,upcoming" } : { near, layer: "now" as const };
       const { data, response } = await client.GET("/events", { params: { query } });
       if (!data) throw new Error(`GET /events responded ${response.status}`);
       return data.events;
     },
-    refetchInterval: time === "now" ? NOW_REFRESH_MS : false,
+    refetchInterval: at ? false : NOW_REFRESH_MS,
     // Keep the old pins while the point moves, instead of blinking the map empty.
+    placeholderData: keepPreviousData,
+  });
+}
+
+// What starts near the point in the next two weeks, from now: Home's Coming up.
+export function useComingUp(point: LatLon | undefined) {
+  return useQuery({
+    queryKey: ["coming-up", point?.lat, point?.lon],
+    enabled: point !== undefined,
+    queryFn: async () => {
+      const now = Date.now();
+      const query = {
+        near: `${point!.lat},${point!.lon},${RADIUS_M}`,
+        from: new Date(now).toISOString(),
+        to: new Date(now + SOON_DAYS * DAY_MS).toISOString(),
+        status: "upcoming",
+      };
+      const { data, response } = await client.GET("/events", { params: { query } });
+      if (!data) throw new Error(`GET /events responded ${response.status}`);
+      return data.events;
+    },
+    staleTime: 5 * 60_000,
     placeholderData: keepPreviousData,
   });
 }
@@ -88,14 +102,14 @@ export function useGeocode(text: string, point: LatLon | undefined, lang: string
   });
 }
 
-// Every mode's itineraries from A to B, departing now, with the Events on each.
-export function useTrip(from: LatLon | undefined, to: LatLon | undefined) {
+// Every mode's itineraries from A to B, departing now or at `at` (a time on the device's clock), with the Events on each.
+export function useTrip(from: LatLon | undefined, to: LatLon | undefined, at?: string) {
   return useQuery({
-    queryKey: ["trip", from?.lat, from?.lon, to?.lat, to?.lon],
+    queryKey: ["trip", from?.lat, from?.lon, to?.lat, to?.lon, at ?? "now"],
     enabled: from !== undefined && to !== undefined,
     queryFn: async () => {
       const { data, response } = await client.GET("/trips", {
-        params: { query: { from: `${from!.lat},${from!.lon}`, to: `${to!.lat},${to!.lon}` } },
+        params: { query: { from: `${from!.lat},${from!.lon}`, to: `${to!.lat},${to!.lon}`, ...(at ? { departAt: new Date(at).toISOString() } : {}) } },
       });
       if (!data) throw new Error(`GET /trips responded ${response.status}`);
       return data;
