@@ -21,6 +21,8 @@ export interface StreetSpot {
   lon: number;
   distanceM: number;
   spaces: number;
+  // The spaces are worked out (from a street's length), not counted.
+  estimated?: boolean;
   // other: only for some cars (`type`).
   kind: "paid" | "free" | "other";
   type?: "ev" | "accessible";
@@ -33,6 +35,8 @@ export interface StreetSpot {
   noParkingHours?: WeekHours;
   zone?: string;
   perHour?: number;
+  // Who to credit, when not the Region's own street parking Source.
+  credit?: string;
 }
 
 export interface StreetParkingSource {
@@ -40,6 +44,22 @@ export interface StreetParkingSource {
 }
 
 const RADIUS_M = 500;
+// A filler spot this close to one of the main Source's is the same parking: left out.
+const SAME_M = 50;
+
+// The main Source's spots, and the filler's where the main one has none nearby: the city's own data first, OSM for
+// the streets it leaves out. Either one failing leaves the other's; both failing fails.
+export function withFiller(main: StreetParkingSource, filler: StreetParkingSource): StreetParkingSource {
+  return {
+    async around(point, radiusM) {
+      const [first, second] = await Promise.allSettled([main.around(point, radiusM), filler.around(point, radiusM)]);
+      if (first.status === "rejected" && second.status === "rejected") throw first.reason;
+      const ours = first.status === "fulfilled" ? first.value : [];
+      const more = second.status === "fulfilled" ? second.value : [];
+      return [...ours, ...more.filter((spot) => !ours.some((own) => distanceM(own, spot) <= SAME_M))];
+    },
+  };
+}
 const M_PER_DEG = 111_320;
 const SPECIAL: Record<string, StreetSpot["type"]> = { Sähköauto: "ev", Inva: "accessible" };
 const NOT_FOR_CARS = new Set(["Pysäköintikielto", "Pysäyttämiskielto", "Taxi", "Kuormauspaikka", "CD"]);

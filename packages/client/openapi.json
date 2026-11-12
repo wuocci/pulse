@@ -1141,6 +1141,10 @@
           "radiusM": {
             "type": "integer"
           },
+          "estimated": {
+            "type": "boolean",
+            "description": "Some of the spaces are worked out from streets' length, not counted"
+          },
           "places": {
             "type": "array",
             "items": {
@@ -1154,6 +1158,10 @@
                 },
                 "spaces": {
                   "type": "integer"
+                },
+                "estimated": {
+                  "type": "boolean",
+                  "description": "The spaces are worked out from the street's length (OpenStreetMap), not counted"
                 },
                 "kind": {
                   "type": "string",
@@ -1293,6 +1301,10 @@
           },
           "spaces": {
             "type": "integer"
+          },
+          "estimated": {
+            "type": "boolean",
+            "description": "The spaces are worked out from the street's length (OpenStreetMap), not counted"
           },
           "cost": {
             "type": "string",

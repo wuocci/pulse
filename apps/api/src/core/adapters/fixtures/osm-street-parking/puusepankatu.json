@@ -1,0 +1,1846 @@
+{
+ "version": 0.6,
+ "elements": [
+  {
+   "type": "way",
+   "id": 4261967,
+   "tags": {
+    "highway": "residential",
+    "name": "Insinöörinkatu",
+    "parking:condition:both": "free",
+    "parking:lane:both": "parallel"
+   },
+   "geometry": [
+    {
+     "lat": 60.196109,
+     "lon": 25.0368812
+    },
+    {
+     "lat": 60.1960484,
+     "lon": 25.0368121
+    },
+    {
+     "lat": 60.1956491,
+     "lon": 25.0363508
+    },
+    {
+     "lat": 60.1952916,
+     "lon": 25.0359286
+    },
+    {
+     "lat": 60.1952693,
+     "lon": 25.0359022
+    },
+    {
+     "lat": 60.1951938,
+     "lon": 25.0358121
+    }
+   ]
+  },
+  {
+   "type": "way",
+   "id": 4261968,
+   "tags": {
+    "highway": "tertiary",
+    "name": "Suunnittelijankatu",
+    "parking:condition:both:reason": "junction",
+    "parking:lane:both": "no_stopping"
+   },
+   "geometry": [
+    {
+     "lat": 60.1947172,
+     "lon": 25.037243
+    },
+    {
+     "lat": 60.1946775,
+     "lon": 25.0374234
+    },
+    {
+     "lat": 60.1946383,
+     "lon": 25.037588
+    }
+   ]
+  },
+  {
+   "type": "way",
+   "id": 4261995,
+   "tags": {
+    "highway": "unclassified",
+    "name": "Puusepänkatu",
+    "parking:both": "no",
+    "parking:both:restriction": "no_stopping",
+    "parking:condition:both:reason": "junction"
+   },
+   "geometry": [
+    {
+     "lat": 60.1947067,
+     "lon": 25.047117
+    },
+    {
+     "lat": 60.1947105,
+     "lon": 25.0469944
+    }
+   ]
+  },
+  {
+   "type": "way",
+   "id": 4262064,
+   "tags": {
+    "highway": "secondary",
+    "name": "Sahaajankatu",
+    "parking:lane:both": "no_stopping"
+   },
+   "geometry": [
+    {
+     "lat": 60.1934905,
+     "lon": 25.0471533
+    },
+    {
+     "lat": 60.1935532,
+     "lon": 25.047164
+    }
+   ]
+  },
+  {
+   "type": "way",
+   "id": 4262065,
+   "tags": {
+    "highway": "unclassified",
+    "name": "Sorvaajankatu"
+   },
+   "geometry": [
+    {
+     "lat": 60.1924725,
+     "lon": 25.0425268
+    },
+    {
+     "lat": 60.1925726,
+     "lon": 25.0425203
+    }
+   ]
+  },
+  {
+   "type": "way",
+   "id": 28902514,
+   "tags": {
+    "highway": "secondary",
+    "name": "Sahaajankatu",
+    "parking:condition:left:reason": "turning_lane",
+    "parking:left": "no",
+    "parking:left:restriction": "no_stopping",
+    "parking:right": "no",
+    "parking:right:restriction": "no_parking"
+   },
+   "geometry": [
+    {
+     "lat": 60.193781,
+     "lon": 25.0470801
+    },
+    {
+     "lat": 60.1939084,
+     "lon": 25.0470517
+    },
+    {
+     "lat": 60.1939656,
+     "lon": 25.0470546
+    }
+   ]
+  },
+  {
+   "type": "way",
+   "id": 28902515,
+   "tags": {
+    "highway": "secondary",
+    "name": "Sahaajankatu",
+    "parking:condition:left:reason": "dual_carriage",
+    "parking:condition:right:reason": "turning_lane",
+    "parking:lane:both": "no_stopping"
+   },
+   "geometry": [
+    {
+     "lat": 60.193781,
+     "lon": 25.0470801
+    },
+    {
+     "lat": 60.1936765,
+     "lon": 25.0470153
+    },
+    {
+     "lat": 60.1936253,
+     "lon": 25.0470086
+    },
+    {
+     "lat": 60.1935171,
+     "lon": 25.0470032
+    }
+   ]
+  },
+  {
+   "type": "way",
+   "id": 28902579,
+   "tags": {
+    "highway": "unclassified",
+    "name": "Insinöörinkatu",
+    "parking:lane:both": "no_stopping"
+   },
+   "geometry": [
+    {
+     "lat": 60.1934999,
+     "lon": 25.0340328
+    },
+    {
+     "lat": 60.1936417,
+     "lon": 25.0341208
+    }
+   ]
+  },
+  {
+   "type": "way",
+   "id": 34142408,
+   "tags": {
+    "highway": "unclassified",
+    "name": "Sorvaajankatu",
+    "parking:both": "lane",
+    "parking:both:fee": "no",
+    "parking:both:orientation": "parallel"
+   },
+   "geometry": [
+    {
+     "lat": 60.1925726,
+     "lon": 25.0425203
+    },
+    {
+     "lat": 60.1926458,
+     "lon": 25.0425322
+    },
+    {
+     "lat": 60.1926639,
+     "lon": 25.0425351
+    }
+   ]
+  },
+  {
+   "type": "way",
+   "id": 34142410,
+   "tags": {
+    "highway": "secondary",
+    "name": "Sahaajankatu",
+    "parking:condition:both:reason": "junction",
+    "parking:lane:both": "no_stopping"
+   },
+   "geometry": [
+    {
+     "lat": 60.1983609,
+     "lon": 25.0473544
+    },
+    {
+     "lat": 60.1984163,
+     "lon": 25.0473573
+    }
+   ]
+  },
+  {
+   "type": "way",
+   "id": 34587682,
+   "tags": {
+    "highway": "unclassified",
+    "name": "Puusepänkatu",
+    "parking:both": "lane",
+    "parking:both:orientation": "parallel",
+    "parking:condition:both": "free"
+   },
+   "geometry": [
+    {
+     "lat": 60.1944531,
+     "lon": 25.0383864
+    },
+    {
+     "lat": 60.1944115,
+     "lon": 25.0383477
+    },
+    {
+     "lat": 60.1943581,
+     "lon": 25.038295
+    },
+    {
+     "lat": 60.1940464,
+     "lon": 25.0379958
+    },
+    {
+     "lat": 60.1939438,
+     "lon": 25.0378957
+    },
+    {
+     "lat": 60.1938007,
+     "lon": 25.0377561
+    },
+    {
+     "lat": 60.1931968,
+     "lon": 25.037173
+    },
+    {
+     "lat": 60.1931304,
+     "lon": 25.0370192
+    }
+   ]
+  },
+  {
+   "type": "way",
+   "id": 38861227,
+   "tags": {
+    "highway": "unclassified",
+    "name": "Insinöörinkatu",
+    "parking:lane:both": "no_stopping"
+   },
+   "geometry": [
+    {
+     "lat": 60.1938232,
+     "lon": 25.0342491
+    },
+    {
+     "lat": 60.1937938,
+     "lon": 25.0341254
+    },
+    {
+     "lat": 60.1937691,
+     "lon": 25.0340951
+    },
+    {
+     "lat": 60.1937404,
+     "lon": 25.0340441
+    }
+   ]
+  },
+  {
+   "type": "way",
+   "id": 40026399,
+   "tags": {
+    "highway": "secondary",
+    "name": "Sahaajankatu",
+    "parking:both": "no",
+    "parking:both:restriction": "no_stopping",
+    "parking:condition:both:reason": "junction"
+   },
+   "geometry": [
+    {
+     "lat": 60.1947067,
+     "lon": 25.047117
+    },
+    {
+     "lat": 60.1947638,
+     "lon": 25.0471202
+    }
+   ]
+  },
+  {
+   "type": "way",
+   "id": 58169039,
+   "tags": {
+    "highway": "unclassified",
+    "name": "Insinöörinkatu",
+    "parking:condition:both": "disc",
+    "parking:condition:both:default": "free",
+    "parking:condition:both:maxstay": "2 h",
+    "parking:condition:both:time_interval": "Mo-Sa 07:00-21:00",
+    "parking:lane:both": "parallel"
+   },
+   "geometry": [
+    {
+     "lat": 60.1947941,
+     "lon": 25.0353567
+    },
+    {
+     "lat": 60.1947445,
+     "lon": 25.0353006
+    },
+    {
+     "lat": 60.1946731,
+     "lon": 25.0352197
+    },
+    {
+     "lat": 60.1944857,
+     "lon": 25.0350051
+    },
+    {
+     "lat": 60.1940131,
+     "lon": 25.0344641
+    }
+   ]
+  },
+  {
+   "type": "way",
+   "id": 107356075,
+   "tags": {
+    "highway": "unclassified",
+    "name": "Puusepänkatu",
+    "parking:both": "lane",
+    "parking:both:orientation": "parallel",
+    "parking:condition:both": "free"
+   },
+   "geometry": [
+    {
+     "lat": 60.1947512,
+     "lon": 25.0461789
+    },
+    {
+     "lat": 60.1948036,
+     "lon": 25.0452406
+    }
+   ]
+  },
+  {
+   "type": "way",
+   "id": 107356084,
+   "tags": {
+    "highway": "unclassified",
+    "name": "Puusepänkatu",
+    "parking:left": "no",
+    "parking:left:restriction": "no_parking",
+    "parking:right": "no",
+    "parking:right:restriction": "no_parking"
+   },
+   "geometry": [
+    {
+     "lat": 60.1948826,
+     "lon": 25.0437284
+    },
+    {
+     "lat": 60.1949086,
+     "lon": 25.0432159
+    }
+   ]
+  },
+  {
+   "type": "way",
+   "id": 107356085,
+   "tags": {
+    "highway": "unclassified",
+    "name": "Puusepänkatu",
+    "parking:condition:left": "free",
+    "parking:lane:left:parallel": "on_street",
+    "parking:left": "yes",
+    "parking:left:orientation": "parallel",
+    "parking:right": "no",
+    "parking:right:restriction": "no_parking"
+   },
+   "geometry": [
+    {
+     "lat": 60.1949265,
+     "lon": 25.0428603
+    },
+    {
+     "lat": 60.1949298,
+     "lon": 25.0427784
+    },
+    {
+     "lat": 60.1949582,
+     "lon": 25.0422714
+    }
+   ]
+  },
+  {
+   "type": "way",
+   "id": 107356086,
+   "tags": {
+    "highway": "unclassified",
+    "name": "Puusepänkatu",
+    "parking:both": "no",
+    "parking:both:restriction": "no_stopping",
+    "parking:condition:reason": "junction"
+   },
+   "geometry": [
+    {
+     "lat": 60.1949086,
+     "lon": 25.0432159
+    },
+    {
+     "lat": 60.1949118,
+     "lon": 25.043154
+    },
+    {
+     "lat": 60.1949206,
+     "lon": 25.0430096
+    },
+    {
+     "lat": 60.1949265,
+     "lon": 25.0428603
+    }
+   ]
+  },
+  {
+   "type": "way",
+   "id": 107681118,
+   "tags": {
+    "highway": "unclassified",
+    "name": "Sorvaajankatu",
+    "parking:lane:left": "no_parking"
+   },
+   "geometry": [
+    {
+     "lat": 60.1965379,
+     "lon": 25.043325
+    },
+    {
+     "lat": 60.1967932,
+     "lon": 25.0433778
+    },
+    {
+     "lat": 60.1972231,
+     "lon": 25.0434668
+    }
+   ]
+  },
+  {
+   "type": "way",
+   "id": 107681119,
+   "tags": {
+    "highway": "unclassified",
+    "name": "Sorvaajankatu",
+    "parking:both": "no",
+    "parking:both:restriction": "no_stopping",
+    "parking:condition:reason": "junction"
+   },
+   "geometry": [
+    {
+     "lat": 60.1948588,
+     "lon": 25.0429929
+    },
+    {
+     "lat": 60.1949206,
+     "lon": 25.0430096
+    },
+    {
+     "lat": 60.1949776,
+     "lon": 25.0430203
+    }
+   ]
+  },
+  {
+   "type": "way",
+   "id": 107681121,
+   "tags": {
+    "highway": "unclassified",
+    "name": "Sorvaajankatu",
+    "parking:condition:left": "free",
+    "parking:lane:left": "parallel",
+    "parking:lane:left:parallel": "on_street",
+    "parking:lane:right": "no_parking"
+   },
+   "geometry": [
+    {
+     "lat": 60.1973332,
+     "lon": 25.0434869
+    },
+    {
+     "lat": 60.1973479,
+     "lon": 25.04349
+    },
+    {
+     "lat": 60.1974201,
+     "lon": 25.0435052
+    },
+    {
+     "lat": 60.1976514,
+     "lon": 25.043555
+    },
+    {
+     "lat": 60.1976881,
+     "lon": 25.0435754
+    },
+    {
+     "lat": 60.1977279,
+     "lon": 25.0436291
+    },
+    {
+     "lat": 60.1982979,
+     "lon": 25.0447092
+    }
+   ]
+  },
+  {
+   "type": "way",
+   "id": 107681125,
+   "tags": {
+    "highway": "unclassified",
+    "name": "Sorvaajankatu"
+   },
+   "geometry": [
+    {
+     "lat": 60.1951906,
+     "lon": 25.0430599
+    },
+    {
+     "lat": 60.1952547,
+     "lon": 25.043072
+    },
+    {
+     "lat": 60.1952951,
+     "lon": 25.04308
+    },
+    {
+     "lat": 60.1960814,
+     "lon": 25.043235
+    },
+    {
+     "lat": 60.1962155,
+     "lon": 25.0432581
+    },
+    {
+     "lat": 60.1964873,
+     "lon": 25.043315
+    },
+    {
+     "lat": 60.1965167,
+     "lon": 25.0433208
+    },
+    {
+     "lat": 60.1965379,
+     "lon": 25.043325
+    }
+   ]
+  },
+  {
+   "type": "way",
+   "id": 107681126,
+   "tags": {
+    "highway": "tertiary",
+    "name": "Hitsaajankatu",
+    "parking:both": "yes",
+    "parking:both:orientation": "parallel",
+    "parking:condition:both": "disc",
+    "parking:condition:both:default": "free",
+    "parking:condition:both:maxstay": "2h",
+    "parking:condition:both:time_interval": "Mo-Fr 08:00-20:00"
+   },
+   "geometry": [
+    {
+     "lat": 60.1929274,
+     "lon": 25.032443
+    },
+    {
+     "lat": 60.1928964,
+     "lon": 25.0325696
+    },
+    {
+     "lat": 60.192714,
+     "lon": 25.0333143
+    },
+    {
+     "lat": 60.1926682,
+     "lon": 25.033501
+    },
+    {
+     "lat": 60.1923548,
+     "lon": 25.0347806
+    },
+    {
+     "lat": 60.1923407,
+     "lon": 25.0348382
+    }
+   ]
+  },
+  {
+   "type": "way",
+   "id": 107681127,
+   "tags": {
+    "highway": "tertiary",
+    "name": "Hitsaajankatu",
+    "parking:lane:both": "no_stopping"
+   },
+   "geometry": [
+    {
+     "lat": 60.1923407,
+     "lon": 25.0348382
+    },
+    {
+     "lat": 60.1923064,
+     "lon": 25.035023
+    },
+    {
+     "lat": 60.1922735,
+     "lon": 25.0352418
+    }
+   ]
+  },
+  {
+   "type": "way",
+   "id": 107681129,
+   "tags": {
+    "highway": "unclassified",
+    "name": "Sorvaajankatu",
+    "parking:lane:both": "no_parking"
+   },
+   "geometry": [
+    {
+     "lat": 60.1972231,
+     "lon": 25.0434668
+    },
+    {
+     "lat": 60.1973332,
+     "lon": 25.0434869
+    }
+   ]
+  },
+  {
+   "type": "way",
+   "id": 107747661,
+   "tags": {
+    "highway": "secondary",
+    "name": "Sahaajankatu",
+    "parking:both": "no",
+    "parking:both:restriction": "no_parking"
+   },
+   "geometry": [
+    {
+     "lat": 60.1939656,
+     "lon": 25.0470546
+    },
+    {
+     "lat": 60.1947067,
+     "lon": 25.047117
+    }
+   ]
+  },
+  {
+   "type": "way",
+   "id": 116761612,
+   "tags": {
+    "highway": "unclassified",
+    "name": "Insinöörinkatu",
+    "parking:condition:both": "disc",
+    "parking:condition:both:default": "free",
+    "parking:condition:both:maxstay": "2 h",
+    "parking:condition:both:time_interval": "Mo-Sa 07:00-21:00",
+    "parking:lane:both": "parallel"
+   },
+   "geometry": [
+    {
+     "lat": 60.1950926,
+     "lon": 25.0357053
+    },
+    {
+     "lat": 60.1949961,
+     "lon": 25.0355929
+    },
+    {
+     "lat": 60.1949587,
+     "lon": 25.0355492
+    },
+    {
+     "lat": 60.1948387,
+     "lon": 25.0354088
+    },
+    {
+     "lat": 60.1947941,
+     "lon": 25.0353567
+    }
+   ]
+  },
+  {
+   "type": "way",
+   "id": 116761613,
+   "tags": {
+    "highway": "unclassified",
+    "name": "Insinöörinkatu",
+    "parking:lane:both": "no_stopping"
+   },
+   "geometry": [
+    {
+     "lat": 60.1939311,
+     "lon": 25.0343713
+    },
+    {
+     "lat": 60.1938232,
+     "lon": 25.0342491
+    }
+   ]
+  },
+  {
+   "type": "way",
+   "id": 117617094,
+   "tags": {
+    "highway": "tertiary",
+    "name": "Suunnittelijankatu",
+    "parking:condition:both": "free",
+    "parking:condition:right": "disc",
+    "parking:condition:right:maxstay": "4 h",
+    "parking:condition:right:time_interval": "Mo-Fr 06:00-24:00",
+    "parking:lane:both": "parallel"
+   },
+   "geometry": [
+    {
+     "lat": 60.1950055,
+     "lon": 25.0360579
+    },
+    {
+     "lat": 60.1949214,
+     "lon": 25.0364052
+    }
+   ]
+  },
+  {
+   "type": "way",
+   "id": 117617100,
+   "tags": {
+    "highway": "tertiary",
+    "name": "Suunnittelijankatu",
+    "parking:lane:both": "no_parking"
+   },
+   "geometry": [
+    {
+     "lat": 60.1947922,
+     "lon": 25.036934
+    },
+    {
+     "lat": 60.1947465,
+     "lon": 25.0371254
+    },
+    {
+     "lat": 60.1947172,
+     "lon": 25.037243
+    }
+   ]
+  },
+  {
+   "type": "way",
+   "id": 117934839,
+   "tags": {
+    "highway": "unclassified",
+    "name": "Insinöörinkatu",
+    "parking:condition:left": "disc",
+    "parking:condition:left:default": "free",
+    "parking:condition:left:maxstay": "2 h",
+    "parking:condition:left:time_interval": "Mo-Sa 07:00-21:00",
+    "parking:lane:both": "parallel",
+    "parking:lane:left": "parallel",
+    "parking:lane:right": "no_stopping"
+   },
+   "geometry": [
+    {
+     "lat": 60.1940131,
+     "lon": 25.0344641
+    },
+    {
+     "lat": 60.1939311,
+     "lon": 25.0343713
+    }
+   ]
+  },
+  {
+   "type": "way",
+   "id": 121595309,
+   "tags": {
+    "highway": "unclassified",
+    "name": "Puusepänkatu",
+    "parking:condition:right": "free",
+    "parking:left": "no",
+    "parking:left:restriction": "no_parking",
+    "parking:right": "yes",
+    "parking:right:orientation": "parallel"
+   },
+   "geometry": [
+    {
+     "lat": 60.1947105,
+     "lon": 25.0469944
+    },
+    {
+     "lat": 60.1947143,
+     "lon": 25.0468857
+    },
+    {
+     "lat": 60.1947351,
+     "lon": 25.0464623
+    },
+    {
+     "lat": 60.1947512,
+     "lon": 25.0461789
+    }
+   ]
+  },
+  {
+   "type": "way",
+   "id": 126501353,
+   "tags": {
+    "highway": "unclassified",
+    "name": "Puusepänkatu",
+    "parking:both": "no",
+    "parking:both:restriction": "no_stopping",
+    "parking:condition:reason": "junction"
+   },
+   "geometry": [
+    {
+     "lat": 60.1950309,
+     "lon": 25.0407822
+    },
+    {
+     "lat": 60.1950428,
+     "lon": 25.0405646
+    },
+    {
+     "lat": 60.1950454,
+     "lon": 25.0405164
+    }
+   ]
+  },
+  {
+   "type": "way",
+   "id": 126852894,
+   "tags": {
+    "highway": "secondary",
+    "name": "Sahaajankatu",
+    "parking:condition:both": "free",
+    "parking:lane:both": "parallel"
+   },
+   "geometry": [
+    {
+     "lat": 60.1984163,
+     "lon": 25.0473573
+    },
+    {
+     "lat": 60.1984614,
+     "lon": 25.0473592
+    },
+    {
+     "lat": 60.1994571,
+     "lon": 25.0474267
+    }
+   ]
+  },
+  {
+   "type": "way",
+   "id": 126852899,
+   "tags": {
+    "highway": "secondary",
+    "name": "Sahaajankatu",
+    "parking:condition:both:reason": "junction",
+    "parking:condition:right": "free",
+    "parking:lane:both": "no_stopping",
+    "parking:lane:right": "parallel"
+   },
+   "geometry": [
+    {
+     "lat": 60.198291,
+     "lon": 25.0473515
+    },
+    {
+     "lat": 60.1983609,
+     "lon": 25.0473544
+    }
+   ]
+  },
+  {
+   "type": "way",
+   "id": 126852901,
+   "tags": {
+    "highway": "secondary",
+    "name": "Sahaajankatu",
+    "parking:condition:both": "free",
+    "parking:lane:both": "parallel"
+   },
+   "geometry": [
+    {
+     "lat": 60.1947638,
+     "lon": 25.0471202
+    },
+    {
+     "lat": 60.1952772,
+     "lon": 25.0471538
+    },
+    {
+     "lat": 60.1959831,
+     "lon": 25.0472001
+    },
+    {
+     "lat": 60.1967113,
+     "lon": 25.0472479
+    },
+    {
+     "lat": 60.196924,
+     "lon": 25.0472619
+    },
+    {
+     "lat": 60.1974424,
+     "lon": 25.0472959
+    },
+    {
+     "lat": 60.1975595,
+     "lon": 25.0473036
+    },
+    {
+     "lat": 60.1978259,
+     "lon": 25.047321
+    },
+    {
+     "lat": 60.1982545,
+     "lon": 25.0473491
+    },
+    {
+     "lat": 60.198291,
+     "lon": 25.0473515
+    }
+   ]
+  },
+  {
+   "type": "way",
+   "id": 131698852,
+   "tags": {
+    "highway": "secondary",
+    "name": "Sahaajankatu",
+    "parking:both": "no",
+    "parking:both:restriction": "no_stopping",
+    "parking:condition:left:reason": "dual_carriage",
+    "parking:condition:right:reason": "narrow"
+   },
+   "geometry": [
+    {
+     "lat": 60.1935532,
+     "lon": 25.047164
+    },
+    {
+     "lat": 60.1936483,
+     "lon": 25.047168
+    },
+    {
+     "lat": 60.1936845,
+     "lon": 25.047159
+    },
+    {
+     "lat": 60.193781,
+     "lon": 25.0470801
+    }
+   ]
+  },
+  {
+   "type": "way",
+   "id": 132463328,
+   "tags": {
+    "highway": "unclassified",
+    "name": "Insinöörinkatu",
+    "parking:lane:both": "no_stopping"
+   },
+   "geometry": [
+    {
+     "lat": 60.1936417,
+     "lon": 25.0341208
+    },
+    {
+     "lat": 60.1936987,
+     "lon": 25.0341725
+    }
+   ]
+  },
+  {
+   "type": "way",
+   "id": 160203277,
+   "tags": {
+    "highway": "unclassified",
+    "name": "Puusepänkatu",
+    "parking:both": "lane",
+    "parking:both:orientation": "parallel",
+    "parking:condition:both": "disc",
+    "parking:condition:both:default": "free",
+    "parking:condition:both:maxstay": "10 h",
+    "parking:condition:both:time_interval": "Mo-Fr 00:00-24:00"
+   },
+   "geometry": [
+    {
+     "lat": 60.1948328,
+     "lon": 25.0387564
+    },
+    {
+     "lat": 60.1945984,
+     "lon": 25.038532
+    }
+   ]
+  },
+  {
+   "type": "way",
+   "id": 209845131,
+   "tags": {
+    "highway": "unclassified",
+    "name": "Sorvaajankatu",
+    "parking:condition:left": "free",
+    "parking:lane:left": "parallel",
+    "parking:lane:left:parallel": "on_street",
+    "parking:lane:right": "no_parking"
+   },
+   "geometry": [
+    {
+     "lat": 60.1982979,
+     "lon": 25.0447092
+    },
+    {
+     "lat": 60.1983325,
+     "lon": 25.0447711
+    },
+    {
+     "lat": 60.1983831,
+     "lon": 25.044832
+    },
+    {
+     "lat": 60.1984081,
+     "lon": 25.0448644
+    },
+    {
+     "lat": 60.19847,
+     "lon": 25.0449392
+    }
+   ]
+  },
+  {
+   "type": "way",
+   "id": 219831562,
+   "tags": {
+    "highway": "unclassified",
+    "name": "Puusepänkatu",
+    "parking:both": "no",
+    "parking:both:restriction": "no_parking"
+   },
+   "geometry": [
+    {
+     "lat": 60.1948057,
+     "lon": 25.0452034
+    },
+    {
+     "lat": 60.1948126,
+     "lon": 25.0450721
+    },
+    {
+     "lat": 60.1948202,
+     "lon": 25.0449294
+    },
+    {
+     "lat": 60.1948352,
+     "lon": 25.0446464
+    },
+    {
+     "lat": 60.1948403,
+     "lon": 25.0445491
+    }
+   ]
+  },
+  {
+   "type": "way",
+   "id": 219831563,
+   "tags": {
+    "highway": "unclassified",
+    "name": "Puusepänkatu",
+    "parking:both": "lane",
+    "parking:both:orientation": "parallel",
+    "parking:condition:both": "free"
+   },
+   "geometry": [
+    {
+     "lat": 60.1948403,
+     "lon": 25.0445491
+    },
+    {
+     "lat": 60.1948826,
+     "lon": 25.0437284
+    }
+   ]
+  },
+  {
+   "type": "way",
+   "id": 219831564,
+   "tags": {
+    "highway": "unclassified",
+    "name": "Puusepänkatu",
+    "parking:condition:left": "free",
+    "parking:lane:left:parallel": "on_street",
+    "parking:left": "yes",
+    "parking:left:orientation": "parallel",
+    "parking:right": "no",
+    "parking:right:restriction": "no_parking"
+   },
+   "geometry": [
+    {
+     "lat": 60.1948036,
+     "lon": 25.0452406
+    },
+    {
+     "lat": 60.1948057,
+     "lon": 25.0452034
+    }
+   ]
+  },
+  {
+   "type": "way",
+   "id": 226362357,
+   "tags": {
+    "highway": "tertiary",
+    "name": "Suunnittelijankatu"
+   },
+   "geometry": [
+    {
+     "lat": 60.1948169,
+     "lon": 25.0373357
+    },
+    {
+     "lat": 60.1949878,
+     "lon": 25.0366498
+    }
+   ]
+  },
+  {
+   "type": "way",
+   "id": 242400518,
+   "tags": {
+    "highway": "unclassified",
+    "name": "Sorvaajankatu",
+    "parking:both": "lane",
+    "parking:both:fee": "no",
+    "parking:both:orientation": "parallel"
+   },
+   "geometry": [
+    {
+     "lat": 60.1929413,
+     "lon": 25.042591
+    },
+    {
+     "lat": 60.1929958,
+     "lon": 25.0426025
+    },
+    {
+     "lat": 60.1932157,
+     "lon": 25.042649
+    },
+    {
+     "lat": 60.1937604,
+     "lon": 25.0427642
+    },
+    {
+     "lat": 60.1943054,
+     "lon": 25.0428795
+    },
+    {
+     "lat": 60.194452,
+     "lon": 25.0429105
+    }
+   ]
+  },
+  {
+   "type": "way",
+   "id": 265764200,
+   "tags": {
+    "highway": "unclassified",
+    "name": "Sorvaajankatu",
+    "parking:both": "lane",
+    "parking:both:fee": "no",
+    "parking:both:orientation": "parallel"
+   },
+   "geometry": [
+    {
+     "lat": 60.1926639,
+     "lon": 25.0425351
+    },
+    {
+     "lat": 60.1927359,
+     "lon": 25.0425496
+    },
+    {
+     "lat": 60.1929413,
+     "lon": 25.042591
+    }
+   ]
+  },
+  {
+   "type": "way",
+   "id": 296377142,
+   "tags": {
+    "highway": "tertiary",
+    "name": "Suunnittelijankatu",
+    "parking:condition:left": "disc",
+    "parking:condition:left:maxstay": "4 h",
+    "parking:condition:left:time_interval": "Mo-Fr 06:00-24:00",
+    "parking:lane:left": "parallel",
+    "parking:lane:right": "no_parking"
+   },
+   "geometry": [
+    {
+     "lat": 60.1949214,
+     "lon": 25.0364052
+    },
+    {
+     "lat": 60.1947922,
+     "lon": 25.036934
+    }
+   ]
+  },
+  {
+   "type": "way",
+   "id": 296377143,
+   "tags": {
+    "highway": "tertiary",
+    "name": "Suunnittelijankatu",
+    "parking:condition:reason": "junction;crossing",
+    "parking:lane:both": "no_stopping"
+   },
+   "geometry": [
+    {
+     "lat": 60.1950926,
+     "lon": 25.0357053
+    },
+    {
+     "lat": 60.1950494,
+     "lon": 25.0358799
+    }
+   ]
+  },
+  {
+   "type": "way",
+   "id": 297142503,
+   "tags": {
+    "highway": "unclassified",
+    "name": "Insinöörinkatu",
+    "parking:condition:reason": "junction;crossing",
+    "parking:lane:both": "no_stopping"
+   },
+   "geometry": [
+    {
+     "lat": 60.1951938,
+     "lon": 25.0358121
+    },
+    {
+     "lat": 60.1950926,
+     "lon": 25.0357053
+    }
+   ]
+  },
+  {
+   "type": "way",
+   "id": 301192510,
+   "tags": {
+    "highway": "unclassified",
+    "name": "Insinöörinkatu",
+    "parking:lane:both": "no_stopping"
+   },
+   "geometry": [
+    {
+     "lat": 60.1937404,
+     "lon": 25.0340441
+    },
+    {
+     "lat": 60.1937171,
+     "lon": 25.0339555
+    },
+    {
+     "lat": 60.1937057,
+     "lon": 25.0338686
+    }
+   ]
+  },
+  {
+   "type": "way",
+   "id": 301192512,
+   "tags": {
+    "highway": "unclassified",
+    "name": "Insinöörinkatu",
+    "parking:lane:both": "no_stopping"
+   },
+   "geometry": [
+    {
+     "lat": 60.1936987,
+     "lon": 25.0341725
+    },
+    {
+     "lat": 60.193739,
+     "lon": 25.0342092
+    },
+    {
+     "lat": 60.1937733,
+     "lon": 25.0342327
+    },
+    {
+     "lat": 60.1938232,
+     "lon": 25.0342491
+    }
+   ]
+  },
+  {
+   "type": "way",
+   "id": 324466720,
+   "tags": {
+    "highway": "unclassified",
+    "name": "Puusepänkatu",
+    "parking:both": "lane",
+    "parking:both:orientation": "parallel",
+    "parking:condition:both": "disc",
+    "parking:condition:both:default": "free",
+    "parking:condition:both:maxstay": "10 h",
+    "parking:condition:both:time_interval": "Mo-Fr 00:00-24:00"
+   },
+   "geometry": [
+    {
+     "lat": 60.1950454,
+     "lon": 25.0405164
+    },
+    {
+     "lat": 60.1950707,
+     "lon": 25.0400405
+    }
+   ]
+  },
+  {
+   "type": "way",
+   "id": 324466721,
+   "tags": {
+    "highway": "unclassified",
+    "name": "Puusepänkatu",
+    "parking:condition:left": "disc",
+    "parking:condition:left:default": "free",
+    "parking:condition:left:maxstay": "10 h",
+    "parking:condition:left:time_interval": "Mo-Fr 00:00-24:00",
+    "parking:lane:left:parallel": "on_street",
+    "parking:left": "yes",
+    "parking:left:orientation": "parallel",
+    "parking:right": "no",
+    "parking:right:restriction": "no_parking"
+   },
+   "geometry": [
+    {
+     "lat": 60.1950707,
+     "lon": 25.0400405
+    },
+    {
+     "lat": 60.1950877,
+     "lon": 25.039717
+    },
+    {
+     "lat": 60.1950943,
+     "lon": 25.0395653
+    }
+   ]
+  },
+  {
+   "type": "way",
+   "id": 324466722,
+   "tags": {
+    "highway": "unclassified",
+    "name": "Puusepänkatu",
+    "parking:both": "no",
+    "parking:both:restriction": "no_stopping",
+    "parking:condition:reason": "junction"
+   },
+   "geometry": [
+    {
+     "lat": 60.1950209,
+     "lon": 25.0409809
+    },
+    {
+     "lat": 60.1950309,
+     "lon": 25.0407822
+    }
+   ]
+  },
+  {
+   "type": "way",
+   "id": 324466723,
+   "tags": {
+    "highway": "unclassified",
+    "name": "Puusepänkatu",
+    "parking:both": "no",
+    "parking:both:restriction": "no_stopping",
+    "parking:condition:reason": "junction"
+   },
+   "geometry": [
+    {
+     "lat": 60.1945984,
+     "lon": 25.038532
+    },
+    {
+     "lat": 60.1945839,
+     "lon": 25.0385182
+    },
+    {
+     "lat": 60.1945451,
+     "lon": 25.0384725
+    },
+    {
+     "lat": 60.1944531,
+     "lon": 25.0383864
+    }
+   ]
+  },
+  {
+   "type": "way",
+   "id": 324466724,
+   "tags": {
+    "highway": "unclassified",
+    "name": "Puusepänkatu",
+    "parking:both": "lane",
+    "parking:both:orientation": "parallel",
+    "parking:condition:both": "free"
+   },
+   "geometry": [
+    {
+     "lat": 60.1949582,
+     "lon": 25.0422714
+    },
+    {
+     "lat": 60.1949598,
+     "lon": 25.0422203
+    },
+    {
+     "lat": 60.1950209,
+     "lon": 25.0409809
+    }
+   ]
+  },
+  {
+   "type": "way",
+   "id": 324466725,
+   "tags": {
+    "highway": "unclassified",
+    "name": "Puusepänkatu",
+    "parking:both": "lane",
+    "parking:both:orientation": "parallel",
+    "parking:condition:both": "disc",
+    "parking:condition:both:default": "free",
+    "parking:condition:both:maxstay": "10 h",
+    "parking:condition:both:time_interval": "Mo-Fr 00:00-24:00"
+   },
+   "geometry": [
+    {
+     "lat": 60.1950943,
+     "lon": 25.0395653
+    },
+    {
+     "lat": 60.1951143,
+     "lon": 25.0391108
+    },
+    {
+     "lat": 60.1950995,
+     "lon": 25.0390505
+    },
+    {
+     "lat": 60.1950721,
+     "lon": 25.0389941
+    },
+    {
+     "lat": 60.1950109,
+     "lon": 25.0389313
+    },
+    {
+     "lat": 60.1949668,
+     "lon": 25.038888
+    },
+    {
+     "lat": 60.1948328,
+     "lon": 25.0387564
+    }
+   ]
+  },
+  {
+   "type": "way",
+   "id": 324466726,
+   "tags": {
+    "highway": "unclassified",
+    "name": "Sorvaajankatu",
+    "parking:condition:left": "free",
+    "parking:lane:left": "parallel",
+    "parking:lane:left:parallel": "on_street"
+   },
+   "geometry": [
+    {
+     "lat": 60.194452,
+     "lon": 25.0429105
+    },
+    {
+     "lat": 60.194557,
+     "lon": 25.0429327
+    }
+   ]
+  },
+  {
+   "type": "way",
+   "id": 324466727,
+   "tags": {
+    "highway": "unclassified",
+    "name": "Sorvaajankatu",
+    "parking:lane:both": "no_parking"
+   },
+   "geometry": [
+    {
+     "lat": 60.194557,
+     "lon": 25.0429327
+    },
+    {
+     "lat": 60.1948588,
+     "lon": 25.0429929
+    }
+   ]
+  },
+  {
+   "type": "way",
+   "id": 324466728,
+   "tags": {
+    "highway": "unclassified",
+    "name": "Sorvaajankatu",
+    "parking:lane:both": "no_parking"
+   },
+   "geometry": [
+    {
+     "lat": 60.1949776,
+     "lon": 25.0430203
+    },
+    {
+     "lat": 60.1951906,
+     "lon": 25.0430599
+    }
+   ]
+  },
+  {
+   "type": "way",
+   "id": 351506702,
+   "tags": {
+    "highway": "service",
+    "name": "Insinöörinkatu"
+   },
+   "geometry": [
+    {
+     "lat": 60.196109,
+     "lon": 25.0368812
+    },
+    {
+     "lat": 60.1961797,
+     "lon": 25.0369536
+    },
+    {
+     "lat": 60.1965532,
+     "lon": 25.0373839
+    },
+    {
+     "lat": 60.1971632,
+     "lon": 25.038075
+    },
+    {
+     "lat": 60.1982226,
+     "lon": 25.0393369
+    },
+    {
+     "lat": 60.1985271,
+     "lon": 25.0396838
+    },
+    {
+     "lat": 60.1985765,
+     "lon": 25.0397415
+    }
+   ]
+  },
+  {
+   "type": "way",
+   "id": 630027934,
+   "tags": {
+    "highway": "tertiary",
+    "name": "Suunnittelijankatu"
+   },
+   "geometry": [
+    {
+     "lat": 60.19561,
+     "lon": 25.0335443
+    },
+    {
+     "lat": 60.1955911,
+     "lon": 25.0336307
+    },
+    {
+     "lat": 60.1955429,
+     "lon": 25.0338476
+    },
+    {
+     "lat": 60.1953076,
+     "lon": 25.0348227
+    }
+   ]
+  },
+  {
+   "type": "way",
+   "id": 1000746449,
+   "tags": {
+    "highway": "tertiary",
+    "name": "Suunnittelijankatu"
+   },
+   "geometry": [
+    {
+     "lat": 60.1953076,
+     "lon": 25.0348227
+    },
+    {
+     "lat": 60.1951511,
+     "lon": 25.0354722
+    },
+    {
+     "lat": 60.1951351,
+     "lon": 25.035538
+    }
+   ]
+  },
+  {
+   "type": "way",
+   "id": 1000746450,
+   "tags": {
+    "highway": "tertiary",
+    "name": "Suunnittelijankatu"
+   },
+   "geometry": [
+    {
+     "lat": 60.1954338,
+     "lon": 25.0348188
+    },
+    {
+     "lat": 60.1955948,
+     "lon": 25.034094
+    },
+    {
+     "lat": 60.1956337,
+     "lon": 25.0339273
+    },
+    {
+     "lat": 60.1956729,
+     "lon": 25.033741
+    },
+    {
+     "lat": 60.1956937,
+     "lon": 25.0336395
+    }
+   ]
+  },
+  {
+   "type": "way",
+   "id": 1000746451,
+   "tags": {
+    "highway": "tertiary",
+    "name": "Suunnittelijankatu"
+   },
+   "geometry": [
+    {
+     "lat": 60.1952349,
+     "lon": 25.0356351
+    },
+    {
+     "lat": 60.1954338,
+     "lon": 25.0348188
+    }
+   ]
+  },
+  {
+   "type": "way",
+   "id": 1000746452,
+   "tags": {
+    "highway": "tertiary",
+    "name": "Suunnittelijankatu"
+   },
+   "geometry": [
+    {
+     "lat": 60.1949878,
+     "lon": 25.0366498
+    },
+    {
+     "lat": 60.1951228,
+     "lon": 25.0360959
+    },
+    {
+     "lat": 60.1951522,
+     "lon": 25.0359762
+    }
+   ]
+  },
+  {
+   "type": "way",
+   "id": 1006110995,
+   "tags": {
+    "highway": "tertiary",
+    "name": "Suunnittelijankatu"
+   },
+   "geometry": [
+    {
+     "lat": 60.1947251,
+     "lon": 25.0377388
+    },
+    {
+     "lat": 60.1947683,
+     "lon": 25.037553
+    },
+    {
+     "lat": 60.1948169,
+     "lon": 25.0373357
+    }
+   ]
+  },
+  {
+   "type": "way",
+   "id": 1033312860,
+   "tags": {
+    "highway": "tertiary",
+    "name": "Suunnittelijankatu"
+   },
+   "geometry": [
+    {
+     "lat": 60.1951938,
+     "lon": 25.0358121
+    },
+    {
+     "lat": 60.1952349,
+     "lon": 25.0356351
+    }
+   ]
+  },
+  {
+   "type": "way",
+   "id": 1033312861,
+   "tags": {
+    "highway": "tertiary",
+    "name": "Suunnittelijankatu"
+   },
+   "geometry": [
+    {
+     "lat": 60.1951351,
+     "lon": 25.035538
+    },
+    {
+     "lat": 60.1950926,
+     "lon": 25.0357053
+    }
+   ]
+  },
+  {
+   "type": "way",
+   "id": 1033312862,
+   "tags": {
+    "highway": "tertiary",
+    "name": "Suunnittelijankatu",
+    "parking:condition:reason": "junction;crossing",
+    "parking:lane:both": "no_stopping"
+   },
+   "geometry": [
+    {
+     "lat": 60.1950494,
+     "lon": 25.0358799
+    },
+    {
+     "lat": 60.1950055,
+     "lon": 25.0360579
+    }
+   ]
+  },
+  {
+   "type": "way",
+   "id": 1033312863,
+   "tags": {
+    "highway": "tertiary",
+    "name": "Suunnittelijankatu"
+   },
+   "geometry": [
+    {
+     "lat": 60.1951522,
+     "lon": 25.0359762
+    },
+    {
+     "lat": 60.1951938,
+     "lon": 25.0358121
+    }
+   ]
+  }
+ ]
+}

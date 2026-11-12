@@ -720,11 +720,15 @@ export interface components {
             /** @description For disabled parking permits */
             accessible: number;
             radiusM: number;
+            /** @description Some of the spaces are worked out from streets' length, not counted */
+            estimated?: boolean;
             /** @description Each parking area's centre and what it costs on arrival, for the map */
             places: {
                 lat: number;
                 lon: number;
                 spaces: number;
+                /** @description The spaces are worked out from the street's length (OpenStreetMap), not counted */
+                estimated?: boolean;
                 /**
                  * @description other: only for some cars (`type`)
                  * @enum {string}
@@ -766,6 +770,8 @@ export interface components {
             /** @description As the crow flies from the destination */
             distanceM: number;
             spaces: number;
+            /** @description The spaces are worked out from the street's length (OpenStreetMap), not counted */
+            estimated?: boolean;
             /**
              * @description On arrival: free also when it's outside the paid hours
              * @enum {string}

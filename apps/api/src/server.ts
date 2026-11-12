@@ -5,7 +5,8 @@ import { digitransitDirectory } from "./core/adapters/digitransit.ts";
 import { digitransitGeocoder, type Geocoder } from "./core/adapters/digitransit-geocoding.ts";
 import { digitransitCarParks } from "./core/adapters/digitransit-parking.ts";
 import { digitransitRouter, type Router } from "./core/adapters/digitransit-routing.ts";
-import { helsinkiStreetParking } from "./core/adapters/street-parking.ts";
+import { osmStreetParking } from "./core/adapters/osm-street-parking.ts";
+import { helsinkiStreetParking, withFiller } from "./core/adapters/street-parking.ts";
 import { parkingFinder } from "./core/trips/parking.ts";
 import type { ParkingFinder } from "./core/trips/routes.ts";
 import type { StopDirectory } from "./core/adapters/gtfs-rt.ts";
@@ -99,7 +100,9 @@ const parkingFinders = new Map<string, ParkingFinder>();
 const parkingFor = (region: Region): ParkingFinder | undefined => {
   let finder = parkingFinders.get(region.id);
   if (finder) return finder;
-  const street = region.streetParking && helsinkiStreetParking(region.streetParking);
+  const city = region.streetParking && helsinkiStreetParking(region.streetParking);
+  const osm = region.osmStreetParking && osmStreetParking({ url: region.osmStreetParking.url, credit: "© OpenStreetMap contributors (ODbL)" });
+  const street = city && osm ? withFiller(city, osm) : (city ?? osm);
   const carParks = digitransitKey && region.router ? digitransitCarParks({ url: region.router.url, apiKey: digitransitKey }) : undefined;
   if (!street && !carParks) return undefined;
   finder = parkingFinder({

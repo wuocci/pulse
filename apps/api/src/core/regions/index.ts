@@ -19,6 +19,8 @@ export interface Region extends PublicRegion {
   router?: { kind: "digitransit"; url: string };
   // Street parking around a Trip's destination (car parks come from the router). Credited by publisher and licence.
   streetParking?: { kind: "helsinki-wfs"; url: string; layer: string; zonesLayer?: string; publisher: string; license: string };
+  // Street parking from OpenStreetMap for the streets `streetParking` leaves out (or all of them, without it).
+  osmStreetParking?: { kind: "overpass"; url: string };
   // What there's no Source for here, said in Coverage so that nothing listed isn't read as nothing going on.
   unavailable?: { id: string; name: LocalizedText; reason: LocalizedText }[];
 }
