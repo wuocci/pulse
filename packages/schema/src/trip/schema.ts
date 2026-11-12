@@ -116,12 +116,14 @@ export const StreetParkingSchema = z
     ev: z.number().int().openapi({ description: "For electric cars" }),
     accessible: z.number().int().openapi({ description: "For disabled parking permits" }),
     radiusM: z.number().int(),
+    estimated: z.boolean().optional().openapi({ description: "Some of the spaces are worked out from streets' length, not counted" }),
     places: z
       .array(
         z.object({
           lat: z.number(),
           lon: z.number(),
           spaces: z.number().int(),
+          estimated: z.boolean().optional().openapi({ description: "The spaces are worked out from the street's length (OpenStreetMap), not counted" }),
           kind: z.enum(["paid", "free", "other"]).openapi({ description: "other: only for some cars (`type`)" }),
           type: z.enum(["ev", "accessible"]).optional(),
           cost: z.enum(["free", "paid"]).optional().openapi({ description: "On arrival, as a pick's; absent for `other`" }),
@@ -145,6 +147,7 @@ export const ParkingPickSchema = z
     lon: z.number(),
     distanceM: z.number().int().openapi({ description: "As the crow flies from the destination" }),
     spaces: z.number().int(),
+    estimated: z.boolean().optional().openapi({ description: "The spaces are worked out from the street's length (OpenStreetMap), not counted" }),
     cost: z.enum(["free", "paid", "unknown"]).openapi({ description: "On arrival: free also when it's outside the paid hours" }),
     perHour: z.number().optional().openapi({ description: "Euros an hour, from the fee zone, when it's paid" }),
     paidUntil: z.string().optional().openapi({ description: "When the paid hours end on the day of arrival, as HH:MM", example: "21:00" }),

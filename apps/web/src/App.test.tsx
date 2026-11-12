@@ -1461,6 +1461,29 @@ describe("parking with a car Trip", () => {
     expect(screen.getByTestId("map")).toHaveAttribute("data-parking", "3 picks, 2 places");
   });
 
+  it("says \"about\" for spaces worked out from OpenStreetMap streets, and credits it", async () => {
+    const places = [{ lat: 60.199, lon: 24.933, spaces: 26, estimated: true, kind: "free" as const, cost: "free" as const, maxStayMin: 600, disc: true }];
+    trip = {
+      events: [],
+      plans: [{ mode: "car", itineraries: [DRIVE] }],
+      parking: {
+        street: { spaces: 360, paid: 0, free: 360, ev: 0, accessible: 0, radiusM: 300, estimated: true, places },
+        carParks: [],
+        sources: ["© OpenStreetMap contributors (ODbL)"],
+        picks: [{ reasons: ["closest", "cheapest"], kind: "street", lat: 60.199, lon: 24.933, distanceM: 29, spaces: 26, estimated: true, cost: "free", maxStayMin: 600, disc: true }],
+      },
+    };
+    renderApp(`${TO}&mode=car`);
+
+    const parking = await screen.findByRole("region", { name: "Parking near Pasila" });
+    expect(within(parking).getAllByRole("listitem").map((item) => item.textContent)).toEqual([
+      "1Closest · Cheapest · Street parking29 m · about 26 spaces · free · max 10 h · parking disc",
+    ]);
+    expect(parking).toHaveTextContent("About 360 spaces within 300 m");
+    expect(parking).toHaveTextContent("Parking data: © OpenStreetMap contributors (ODbL)");
+    expect(within(screen.getByRole("list", { name: "parking spots on the map" })).getByRole("listitem")).toHaveTextContent("about 26 spaces · free · max 10 h · parking disc");
+  });
+
   it("marks the destination, tells what each spot on the map offers, and zooms to a pick chosen in the panel", async () => {
     const places = [
       { lat: 60.199, lon: 24.933, spaces: 4, kind: "paid" as const, cost: "paid" as const, perHour: 4, paidUntil: "21:00", maxStayMin: 240, disc: false },

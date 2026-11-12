@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import pasila from "./fixtures/street-parking/pasila.json" with { type: "json" };
-import { helsinkiStreetParking } from "./street-parking.ts";
+import { helsinkiStreetParking, type StreetParkingSource, type StreetSpot, withFiller } from "./street-parking.ts";
 
 const URL_ = "https://kartta.hel.fi/ws/geoserver/avoindata/wfs";
 const LAYER = "avoindata:Pysakointipaikat_alue";
@@ -121,5 +121,26 @@ describe("Helsinki's street parking", () => {
     );
 
     expect(await helsinkiStreetParking({ url: URL_, layer: LAYER, zonesLayer: ZONES, fetchFn }).around(PASILA)).not.toHaveLength(0);
+  });
+});
+
+describe("the city's street parking, filled in from another Source", () => {
+  const at = (northM: number, patch: Partial<StreetSpot> = {}): StreetSpot => ({ lat: PASILA.lat + northM / 111_320, lon: PASILA.lon, distanceM: northM, spaces: 4, kind: "free", disc: false, ...patch });
+  const fixed = (spots: StreetSpot[]): StreetParkingSource => ({ around: async () => spots });
+  const failing: StreetParkingSource = { around: async () => Promise.reject(new Error("down")) };
+
+  it("keeps the city's spots, and adds the filler's only where the city has none nearby", async () => {
+    const spots = await withFiller(fixed([at(0)]), fixed([at(30, { estimated: true }), at(200, { estimated: true })])).around(PASILA);
+
+    expect(spots.map((s) => [s.distanceM, s.estimated ?? false])).toEqual([
+      [0, false],
+      [200, true],
+    ]);
+  });
+
+  it("gives one's spots when the other fails, and fails only when both do", async () => {
+    expect(await withFiller(failing, fixed([at(10)])).around(PASILA)).toHaveLength(1);
+    expect(await withFiller(fixed([at(10)]), failing).around(PASILA)).toHaveLength(1);
+    await expect(withFiller(failing, failing).around(PASILA)).rejects.toThrow("down");
   });
 });

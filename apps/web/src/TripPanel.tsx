@@ -306,7 +306,7 @@ export function ParkingNear({ parking: { street, picks, sources }, place, onPick
       )}
       {street && (
         <p className="text-xs text-muted-foreground">
-          {[t("parkingSpaces", { count: street.spaces, radius: street.radiusM }), ...kinds].join(" · ")}
+          {[t(street.estimated ? "parkingSpacesAbout" : "parkingSpaces", { count: street.spaces, radius: street.radiusM }), ...kinds].join(" · ")}
         </p>
       )}
       <p className="text-xs text-muted-foreground">{t("parkingSources", { sources: sources.join(", ") })}</p>
@@ -322,12 +322,13 @@ function freeText({ free, spaces }: { free: NonNullable<ParkingPick["free"]>; sp
   return t(free.almostFull ? "almostFullFreeOf" : "freeOf", { free: count(free.spaces), spaces: count(spaces) });
 }
 
-type Spot = Pick<ParkingPick, "spaces" | "perHour" | "paidUntil" | "freeUntil" | "maxStayMin" | "disc"> & {
+type Spot = Pick<ParkingPick, "spaces" | "estimated" | "perHour" | "paidUntil" | "freeUntil" | "maxStayMin" | "disc"> & {
   cost?: ParkingPick["cost"];
   type?: "ev" | "accessible";
 };
 
-// What a pick or a spot on the map offers on arrival: "4 spaces · €4/h until 21:00 · max 1 h".
+// What a pick or a spot on the map offers on arrival: "4 spaces · €4/h until 21:00 · max 1 h"; "about 12 spaces" when
+// they're worked out from the street's length (OpenStreetMap).
 export function parkingDetails(spot: Spot, t: T): string {
   const cost =
     spot.cost === "free"
@@ -343,7 +344,7 @@ export function parkingDetails(spot: Spot, t: T): string {
       : t("maxStayHours", { count: spot.maxStayMin / 60 })
     : undefined;
   const only = spot.type === "ev" ? t("forEv") : spot.type === "accessible" ? t("forAccessible") : undefined;
-  return [t("spaces", { count: spot.spaces }), only, cost, stay, spot.disc && t("parkingDisc")].filter((part): part is string => !!part).join(" · ");
+  return [t(spot.estimated ? "spacesAbout" : "spaces", { count: spot.spaces }), only, cost, stay, spot.disc && t("parkingDisc")].filter((part): part is string => !!part).join(" · ");
 }
 
 export interface HeadsUpProps {

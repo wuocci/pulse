@@ -34,6 +34,8 @@ export const fiCapitalRegion: Region = {
     publisher: "City of Helsinki",
     license: "CC BY 4.0",
   },
+  // The rest of Helsinki, and Espoo, Vantaa and Kauniainen: what OSM mappers have tagged (#60).
+  osmStreetParking: { kind: "overpass", url: "https://overpass-api.de/api/interpreter" },
   unavailable: [
     {
       id: "emergency-call-outs",

@@ -136,6 +136,12 @@ describe("street parking around B", () => {
     ]);
   });
 
+  it("credits OpenStreetMap too when some of the street parking comes from it", async () => {
+    const parking = await finderWith([spot(50), spot(120, { kind: "free", estimated: true, credit: "© OpenStreetMap contributors (ODbL)" })]).near(B, MONDAY_AT("12:00"));
+
+    expect(parking!.sources).toEqual(["City of Helsinki (CC BY 4.0)", "© OpenStreetMap contributors (ODbL)"]);
+  });
+
   it("credits the car parks' source when there are any, and says nothing when there's no parking at all", async () => {
     expect((await finderWith([], [park("REDI", 300, 700)]).near(B, MONDAY_AT("12:00")))!.sources).toEqual(["HSL / Digitransit"]);
     expect(await finderWith([]).near(B, MONDAY_AT("12:00"))).toBeUndefined();

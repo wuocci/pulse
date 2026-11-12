@@ -34,7 +34,9 @@ export function parkingFinder({ street, carParks, timeZone, credits }: ParkingFi
       const clock = localClock(new Date(arriveAt), timeZone);
       const summary = spots && summarise(spots.filter((s) => s.distanceM <= SUMMARY_M), clock);
       const picks = [...streetPicks(spots ?? [], clock), ...biggest(parks)];
-      const sources = [...(spots?.length ? [credits.street] : []), ...(parks.length ? [credits.carParks] : [])];
+      // Each Source the spots came from: the Region's own, or OpenStreetMap where it fills in.
+      const streetSources = new Set((spots ?? []).map((spot) => spot.credit ?? credits.street));
+      const sources = [...streetSources, ...(parks.length ? [credits.carParks] : [])];
       return { ...(summary ? { street: summary } : {}), carParks: parks, sources, picks };
     },
   };
@@ -50,13 +52,15 @@ function summarise(spots: StreetSpot[], clock: Clock): NonNullable<Trip["parking
     ev: sum((s) => s.type === "ev"),
     accessible: sum((s) => s.type === "accessible"),
     radiusM: SUMMARY_M,
+    ...(spots.some((s) => s.estimated) ? { estimated: true } : {}),
     places: spots.map((spot) => {
-      const { lat, lon, spaces, kind, type, maxStayMin, disc } = spot;
+      const { lat, lon, spaces, estimated, kind, type, maxStayMin, disc } = spot;
       const on = kind === "other" ? undefined : priced(spot, clock);
       return {
         lat,
         lon,
         spaces,
+        ...(estimated ? { estimated } : {}),
         kind,
         ...(type ? { type } : {}),
         ...(on ? costOf(on) : {}),
@@ -112,6 +116,7 @@ function pick(priced: Priced, reasons: ParkingPick["reasons"]): ParkingPick {
     lon: spot.lon,
     distanceM: spot.distanceM,
     spaces: spot.spaces,
+    ...(spot.estimated ? { estimated: true } : {}),
     ...costOf(priced),
     ...(spot.maxStayMin ? { maxStayMin: spot.maxStayMin } : {}),
     disc: spot.disc,
