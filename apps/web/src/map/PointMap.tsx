@@ -1,5 +1,6 @@
 import * as maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
+import workerUrl from "maplibre-gl/dist/maplibre-gl-worker.mjs?url";
 import { type ReactNode, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
@@ -9,6 +10,10 @@ import type { LatLon } from "../platform.tsx";
 import { useTheme } from "../theme.ts";
 import { LEG_STYLE } from "../transit.ts";
 import { longPress } from "./long-press.ts";
+
+// MapLibre looks for its worker next to its own module. In a build that module is folded into the app's bundle and the
+// worker isn't copied, so the map stayed blank in production: `?url` makes Vite ship the worker and gives its address.
+maplibregl.setWorkerUrl(workerUrl);
 
 // OpenFreeMap: free vector tiles, no key. Muted, so Events drawn on top stand out: Positron for Paper, and Fiord, a
 // blue-grey, for Dusk.
