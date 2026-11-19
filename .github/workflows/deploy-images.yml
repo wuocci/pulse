@@ -1,0 +1,40 @@
+# Builds the private deploy's images (#32) and pushes them to GHCR, so the server only downloads them and never
+# builds. Started by hand: Actions → "Deploy images" → Run workflow, on the branch to deploy. Steps: docs/deploy.md.
+name: Deploy images
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        app: [api, web]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: docker/setup-buildx-action@v3
+
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # `latest` is what the server runs; the commit tag is there to go back to an earlier build.
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: apps/${{ matrix.app }}/Dockerfile
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/pulse-${{ matrix.app }}:latest
+            ghcr.io/${{ github.repository_owner }}/pulse-${{ matrix.app }}:${{ github.sha }}
+          labels: org.opencontainers.image.source=https://github.com/${{ github.repository }}
+          cache-from: type=gha,scope=${{ matrix.app }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.app }}

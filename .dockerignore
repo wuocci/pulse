@@ -1,0 +1,18 @@
+# The images are built from the repo root (see docker-compose.production.yml).
+.git
+**/node_modules
+**/dist
+**/.vitest
+*.log
+.DS_Store
+
+# Secrets stay on the machine. .env.production is committed and goes into the API image.
+.env
+.env*.local
+
+# Not needed to build or run.
+.agents
+.claude
+docs
+spikes
+tasks

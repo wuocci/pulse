@@ -1,0 +1,72 @@
+# The private deploy (#32): the web app and the API on the server, behind one password. Steps: docs/deploy.md.
+#
+#   docker compose --env-file .env.production.local -f docker-compose.production.yml pull
+#   docker compose --env-file .env.production.local -f docker-compose.production.yml up -d
+#
+# Nothing is built on the server: the "Deploy images" workflow builds api and web on GitHub and pushes them to GHCR.
+# PULSE_TAG picks the build to run (default latest; a commit SHA goes back to that build).
+#
+# Its own Compose project, so it shares nothing with the development one or with other apps on the server.
+name: pulse-production
+
+x-service: &service
+  # Comes back after a crash or a server restart.
+  restart: unless-stopped
+  # The disk is small and shared: keep at most 30 MB of logs per container.
+  logging:
+    driver: json-file
+    options:
+      max-size: 10m
+      max-file: "3"
+
+services:
+  db:
+    <<: *service
+    # The same image as in development: PostGIS and TimescaleDB (ADR 0004).
+    image: timescale/timescaledb-ha:pg17
+    # Small settings for a shared 4 GB server; today the database only holds the Classifier's answers.
+    command: postgres -c shared_buffers=64MB -c max_connections=20
+    environment:
+      POSTGRES_USER: pulse
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env.production.local}
+      POSTGRES_DB: pulse
+    volumes:
+      - db-data:/home/postgres/pgdata
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "pulse"]
+      interval: 5s
+      retries: 10
+    mem_limit: 384m
+
+  api:
+    <<: *service
+    image: ghcr.io/wuocci/pulse-api:${PULSE_TAG:-latest}
+    environment:
+      DATABASE_URL: postgres://pulse:${POSTGRES_PASSWORD}@db:5432/pulse
+      # Without a key the feature it serves is off; the API says which at startup.
+      TYPESAFE_API_KEY: ${TYPESAFE_API_KEY:-}
+      DIGITRANSIT_API_KEY: ${DIGITRANSIT_API_KEY:-}
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/v0/health').then((r) => process.exit(r.ok ? 0 : 1), () => process.exit(1))"]
+      interval: 30s
+      start_period: 20s
+    mem_limit: 512m
+
+  web:
+    <<: *service
+    image: ghcr.io/wuocci/pulse-web:${PULSE_TAG:-latest}
+    environment:
+      BASIC_AUTH_USER: ${BASIC_AUTH_USER:?set BASIC_AUTH_USER in .env.production.local}
+      BASIC_AUTH_HASH: ${BASIC_AUTH_HASH:?set BASIC_AUTH_HASH in .env.production.local}
+    # The only way in, and only from the server itself: `tailscale serve` passes HTTPS traffic here.
+    ports:
+      - "127.0.0.1:${PULSE_PORT:-8090}:80"
+    depends_on:
+      - api
+    mem_limit: 64m
+
+volumes:
+  db-data:
