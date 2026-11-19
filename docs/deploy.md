@@ -43,12 +43,14 @@ To build: GitHub → Actions → "Deploy images" → Run workflow, and pick the 
 6. Put the app behind the server's tailnet address:
 
    ```bash
-   sudo tailscale serve --bg 8090
+   sudo tailscale serve --bg --https=8443 8090
    ```
 
-   It's then at `https://<server>.<tailnet>.ts.net`; `tailscale serve status` shows the address. The setting survives reboots.
+   It's then at `https://<server>.<tailnet>.ts.net:8443`; `tailscale serve status` shows the address. The setting survives reboots.
 
-Another port: set `PULSE_PORT` in `.env.production.local`, and use it in `tailscale serve`.
+   Port 8443 because the server's Traefik (run by Coolify) publishes 443 through Docker on every interface, the tailnet's too, so it catches traffic on 443 before `tailscale serve` sees it.
+
+Another local port: set `PULSE_PORT` in `.env.production.local`, and use it in `tailscale serve`.
 
 ### Later, with a domain
 
@@ -56,7 +58,7 @@ When there's a domain, `web` goes behind the server's Traefik like the other app
 
 ## Check it
 
-- `curl -I https://<server>.<tailnet>.ts.net/` and `curl -I https://<server>.<tailnet>.ts.net/v0/health` answer 401.
+- `curl -I https://<server>.<tailnet>.ts.net:8443/` and `curl -I https://<server>.<tailnet>.ts.net:8443/v0/health` answer 401.
 - On the phone, with Tailscale on, the address asks for the password, then opens the app. "Use my location" works and Home shows live Events.
 - `docker stats` shows `stele` with the memory it had before.
 - After `sudo reboot`, the app is back without doing anything.
