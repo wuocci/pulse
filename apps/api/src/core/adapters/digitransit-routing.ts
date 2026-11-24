@@ -23,6 +23,9 @@ export interface TripRequest {
   departAt: string;
   // Driving only: no park-and-ride ways.
   directOnly?: boolean;
+  // One try among several (a detour's waypoint, a spot to walk in from): asked once, and "no route" is believed.
+  // Such a point is often off the roads, so "no route" is the usual answer, and asking again only doubles the wait.
+  probe?: boolean;
 }
 
 // An itinerary as planned, before Events are matched to it.
@@ -112,10 +115,10 @@ export function digitransitRouter({ url, apiKey, fetchFn = fetch, timeoutMs = TI
 
   const routed = (answer: Answer) => answer.data?.planConnection.edges ?? [];
 
-  // Asked again once on a failure or a "no route": Digitransit sometimes says so wrongly.
+  // Asked again once on a failure or a "no route": Digitransit sometimes says so wrongly. Not for a probe.
   async function planned(trip: TripRequest, ways: Ways): Promise<RoutedItinerary[]> {
-    let answer = await ask(trip, ways).catch(() => ask(trip, ways));
-    if (!routed(answer).length) answer = await ask(trip, ways);
+    let answer = trip.probe ? await ask(trip, ways) : await ask(trip, ways).catch(() => ask(trip, ways));
+    if (!trip.probe && !routed(answer).length) answer = await ask(trip, ways);
     const readAt = clock();
     return routed(answer).map((edge) => toItinerary(edge, readAt));
   }

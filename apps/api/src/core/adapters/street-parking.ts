@@ -81,10 +81,13 @@ interface Zone {
   properties: { nimi: string; lisatiedot: string | null };
 }
 
+// A Trip doesn't wait long for street parking: it's a suggestion on top.
+const WFS_TIMEOUT_MS = 4000;
+
 export function helsinkiStreetParking({ url, layer, zonesLayer, fetchFn = fetch }: StreetParkingOptions): StreetParkingSource {
   const features = async <T>(params: Record<string, string>): Promise<T[]> => {
     const query = new URLSearchParams({ service: "WFS", version: "2.0.0", request: "GetFeature", outputFormat: "application/json", srsName: "EPSG:4326", ...params });
-    const res = await fetchFn(`${url}?${query}`);
+    const res = await fetchFn(`${url}?${query}`, { signal: AbortSignal.timeout(WFS_TIMEOUT_MS) });
     if (!res.ok) throw new Error(`Street parking WFS responded ${res.status}`);
     return ((await res.json()) as { features: T[] }).features;
   };

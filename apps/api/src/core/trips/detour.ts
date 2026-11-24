@@ -44,9 +44,9 @@ const worse = (a: Assessed, b: Assessed) => RANK[a.impact] - RANK[b.impact] || a
 const drivesAllTheWay = ({ legs }: RoutedItinerary) => legs.length > 0 && legs.every((leg) => leg.mode === "car");
 
 async function via(router: Router, trip: TripRequest, waypoint: { lat: number; lon: number }): Promise<RoutedItinerary | undefined> {
-  const first = (await router.plan({ ...trip, to: waypoint, directOnly: true })).find(drivesAllTheWay);
+  const first = (await router.plan({ ...trip, to: waypoint, directOnly: true, probe: true })).find(drivesAllTheWay);
   if (!first) return undefined;
-  const second = (await router.plan({ ...trip, from: waypoint, departAt: first.end, directOnly: true })).find(drivesAllTheWay);
+  const second = (await router.plan({ ...trip, from: waypoint, departAt: first.end, directOnly: true, probe: true })).find(drivesAllTheWay);
   if (!second) return undefined;
   return { start: first.start, end: second.end, durationS: Math.round((Date.parse(second.end) - Date.parse(first.start)) / 1000), legs: [joined([...first.legs, ...second.legs])] };
 }
