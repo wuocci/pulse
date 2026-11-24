@@ -2,7 +2,7 @@ import type { Event } from "@pulse/client";
 import { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { whenText } from "./EventCard.tsx";
-import { type Pin, plainTitle, type RowValue, startsOf, toneOf, untilOf, whenOf } from "./events.ts";
+import { headingOf, type Pin, plainTitle, type RowValue, startsOf, toneOf, underOf, untilOf, whenOf } from "./events.ts";
 import { EventIcon, TONE_CLASSES } from "./map/EventPin.tsx";
 
 // Events as a list: the same choice as tapping its pin, without hunting for it.
@@ -41,12 +41,13 @@ export function EventList({ label, pins, selectedId, languages, timeZone, onSele
   return (
     <ul aria-label={label ?? t("listTitle")} className="space-y-2">
       {nearest.map(({ event, distanceM, trip }) => {
-        const { title, address, workType, what } = plainTitle(event, languages);
+        const plain = plainTitle(event, languages);
+        const under = underOf(plain);
         const far = distanceM !== undefined ? distance(distanceM, i18n.language) : undefined;
         const value: RowValue | undefined = trip ? undefined : lead === "until" ? untilOf(event, timeZone, now) : lead === "starts" ? startsOf(event, timeZone, now) : undefined;
         const details = trip
-          ? [address, subtitle(event, timeZone, now, t, trip.crowd)]
-          : [address, lead === "distance" ? whenText(whenOf(event, timeZone, now), t) : who(event, t), lead === "distance" ? undefined : far];
+          ? [under, subtitle(event, timeZone, now, t, trip.crowd)]
+          : [under, lead === "distance" ? whenText(whenOf(event, timeZone, now), t) : who(event, t), lead === "distance" ? undefined : far];
         return (
         <li key={event.id}>
           <button
@@ -65,7 +66,7 @@ export function EventList({ label, pins, selectedId, languages, timeZone, onSele
               <EventIcon event={event} />
             </span>
             <span className="min-w-0 flex-1">
-              <span className="line-clamp-2 leading-snug font-semibold">{workType ? t(`workTitle_${workType}`) : (what ?? title)}</span>
+              <span className="line-clamp-2 leading-snug font-semibold">{headingOf(plain, t)}</span>
               <span className="mt-0.5 line-clamp-2 text-sm text-muted-foreground">
                 {details.filter(Boolean).join(" · ")}
               </span>

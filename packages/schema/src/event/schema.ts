@@ -20,6 +20,11 @@ export const WorkTypeSchema = z
   .enum(["water_sewer", "district_heating", "electricity_telecom", "paving", "street_construction", "building_site", "other"])
   .openapi("WorkType");
 
+// What a temporary traffic arrangement changes, in plain words: the permit's own title only says "Traffic arrangement".
+export const ArrangementTypeSchema = z
+  .enum(["detour", "walk_cycle_route", "traffic_signs", "parking", "stop_moved", "site_access", "event", "other"])
+  .openapi("ArrangementType");
+
 // Calendar date, YYYY-MM-DD.
 const DateSchema = z.iso.date();
 
@@ -116,6 +121,9 @@ export const EventSchema = z
     severity: SeveritySchema,
     mainlyAffected: MainlyAffectedSchema,
     workType: WorkTypeSchema.optional().openapi({ description: "Kind of work, for works Events" }),
+    arrangementType: ArrangementTypeSchema.optional().openapi({
+      description: "What a temporary traffic arrangement changes. `other` until the Classifier is sure",
+    }),
     noticeable: z.array(NoticeableSchema).openapi({ description: "May be empty: nothing to sense on site" }),
     crowdSize: z.number().int().positive().optional().openapi({
       description: "How many people the venue holds, where the Source says: a rough size of the crowd, not a count",

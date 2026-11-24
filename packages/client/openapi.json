@@ -141,6 +141,9 @@
           "workType": {
             "$ref": "#/components/schemas/WorkType"
           },
+          "arrangementType": {
+            "$ref": "#/components/schemas/ArrangementType"
+          },
           "noticeable": {
             "type": "array",
             "items": {
@@ -499,6 +502,20 @@
           "other"
         ],
         "description": "Kind of work, for works Events"
+      },
+      "ArrangementType": {
+        "type": "string",
+        "enum": [
+          "detour",
+          "walk_cycle_route",
+          "traffic_signs",
+          "parking",
+          "stop_moved",
+          "site_access",
+          "event",
+          "other"
+        ],
+        "description": "What a temporary traffic arrangement changes. `other` until the Classifier is sure"
       },
       "Noticeable": {
         "type": "string",

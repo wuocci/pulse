@@ -1,4 +1,4 @@
-import type { Event, MainlyAffected, Severity, WorkType } from "@pulse/schema";
+import type { ArrangementType, Event, MainlyAffected, Severity, WorkType } from "@pulse/schema";
 import type { PermitItem } from "../adapters/land-use-permits.ts";
 import type { LandUsePermitSource } from "../regions/index.ts";
 import { type ChoiceQuestion, type ClassifierState, type CROWD_SEVERITY, type LOUD_SEVERITY, NOT_STATED, type Questions } from "./classifier.ts";
@@ -10,7 +10,7 @@ import { type ChoiceQuestion, type ClassifierState, type CROWD_SEVERITY, type LO
 
 // Part of the cache key. Bump it whenever a question, its choices or the state sent changes,
 // which deliberately invalidates every cached answer. Never reuse one: 3 was a dropped experiment's, still cached.
-export const QUESTION_VERSION = 6;
+export const QUESTION_VERSION = 7;
 
 type PermitType = LandUsePermitSource["permitType"];
 
@@ -102,6 +102,22 @@ const workType: ChoiceQuestion = {
   } satisfies Record<WorkType, string>,
 };
 
+// What a traffic arrangement changes, which its title doesn't say (#59). The choices come from the first sentences of the
+// live permits: "Tilapäinen reitti kävelijöille", "Väliaikainen aluepysäköintikielto", "kiertotiejärjestely".
+const arrangementType: ChoiceQuestion = {
+  prompt: "What does this temporary traffic arrangement change for people on the street? Judge by what the text names.",
+  choices: {
+    detour: "A detour or a temporary route for vehicles",
+    walk_cycle_route: "A temporary walking or cycling route, or temporary crossings",
+    traffic_signs: "Temporary traffic signs or guidance, and nothing else named",
+    parking: "Parking: a no-parking area, temporary parking, cars asked to move, scooter parking",
+    stop_moved: "A bus, tram or other transit stop moved, added or closed for a while",
+    site_access: "Access, barriers or protection for a building site or works area",
+    event: "Arrangements for a public event, such as a festival, market, run or procession",
+    other: "General traffic arrangements, or the text doesn't say what changes",
+  } satisfies Record<ArrangementType, string>,
+};
+
 // The text's current end date, chosen among the dates code found in it.
 function endDate(dates: string[]): ChoiceQuestion {
   return {
@@ -145,7 +161,9 @@ export function subjectFor({ event, facts }: PermitItem, permitType: PermitType)
       ...(days ? { durationDays: days } : {}),
     },
     // An event's Severity is its crowd; an arrangement's, the street it takes.
-    questions: permitType === "outdoor-event" ? { crowd, mainlyAffected } : { severity, mainlyAffected },
+    // Without its own text an arrangement's title says nothing of what it changes, so it stays "other".
+    questions:
+      permitType === "outdoor-event" ? { crowd, mainlyAffected } : { ...(text ? { arrangementType } : {}), severity, mainlyAffected },
   };
 }
 

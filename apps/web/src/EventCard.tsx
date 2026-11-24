@@ -3,7 +3,7 @@ import { ChevronDown, ExternalLink, X } from "lucide-react";
 import { type ReactNode, useEffect, useId, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
-import { plainTitle, textIn, type When, whenOf } from "./events.ts";
+import { headingOf, plainTitle, textIn, underOf, type When, whenOf } from "./events.ts";
 
 // The card that pops up from a pin, read top to bottom: what and where, how much it gets in the way, then a table of
 // the facts (when, who it affects, what you'd see, which lines and stops), each row only when there's something to
@@ -28,7 +28,8 @@ export function EventCard({ event, languages, timeZone, onClose }: EventCardProp
   const [moreFor, setMoreFor] = useState<string>();
   const titleId = useId();
   const heading = useRef<HTMLHeadingElement>(null);
-  const { title, address, workType, what } = plainTitle(event, languages);
+  const plain = plainTitle(event, languages);
+  const under = underOf(plain);
   const severity = SEVERITY[event.severity];
   const { lineNames = [], stopNames = [] } = event.where;
   // Who it affects only when that's known and someone is: "Not sure yet" says nothing in a fact table.
@@ -61,9 +62,9 @@ export function EventCard({ event, languages, timeZone, onClose }: EventCardProp
       <div className="flex items-start gap-2">
         <div className="min-w-0 flex-1">
           <h3 ref={heading} id={titleId} tabIndex={-1} className="text-lg leading-tight font-semibold outline-none">
-            {workType ? t(`workTitle_${workType}`) : (what ?? title)}
+            {headingOf(plain, t)}
           </h3>
-          {address && <p className="mt-0.5 text-sm text-muted-foreground">{address}</p>}
+          {under && <p className="mt-0.5 line-clamp-2 text-sm text-muted-foreground">{under}</p>}
         </div>
         <Button variant="ghost" size="icon" className="-mt-1 -mr-2 size-11 shrink-0" aria-label={t("close")} onClick={onClose}>
           <X aria-hidden />
@@ -208,7 +209,8 @@ export interface EventGlanceProps {
 // nothing more. Clicking it opens the card.
 export function EventGlance({ event, languages, timeZone, onOpen }: EventGlanceProps) {
   const { t } = useTranslation();
-  const { title, address, workType, what } = plainTitle(event, languages);
+  const plain = plainTitle(event, languages);
+  const under = underOf(plain);
   const severity = SEVERITY[event.severity];
   const who = event.mainlyAffected === "unknown" || event.mainlyAffected === "nobody" ? undefined : t(`who_${event.mainlyAffected}`);
   return (
@@ -217,8 +219,8 @@ export function EventGlance({ event, languages, timeZone, onOpen }: EventGlanceP
       onClick={onOpen}
       className="block w-[min(17rem,calc(100vw-2rem))] space-y-1.5 rounded-3xl p-3 text-left text-foreground outline-none hover:bg-muted/50 focus-visible:ring-2 focus-visible:ring-ring"
     >
-      <span className="line-clamp-2 leading-snug font-semibold">{workType ? t(`workTitle_${workType}`) : (what ?? title)}</span>
-      {address && <span className="block truncate text-sm text-muted-foreground">{address}</span>}
+      <span className="line-clamp-2 leading-snug font-semibold">{headingOf(plain, t)}</span>
+      {under && <span className="block truncate text-sm text-muted-foreground">{under}</span>}
       <span className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted-foreground">
         <span className={`rounded-full px-2 py-0.5 font-semibold ${severity.pill}`}>{t(severity.key)}</span>
         <span>{[whenText(whenOf(event, timeZone, new Date()), t), who].filter(Boolean).join(" · ")}</span>

@@ -196,6 +196,15 @@ export const en = {
   workTitle_street_construction: "Street construction",
   workTitle_building_site: "Building site",
   workTitle_other: "Street dig",
+  // A traffic arrangement's title on its card: what it changes in plain words.
+  arrangementTitle_detour: "Detour",
+  arrangementTitle_walk_cycle_route: "Temporary walking route",
+  arrangementTitle_traffic_signs: "Temporary traffic signs",
+  arrangementTitle_parking: "Parking changes",
+  arrangementTitle_stop_moved: "Stop moved",
+  arrangementTitle_site_access: "Building site access",
+  arrangementTitle_event: "Event arrangements",
+  arrangementTitle_other: "Changed traffic",
   // The card's rows, each shown only when there's something to say.
   rowWhen: "When",
   rowAffects: "Affects",

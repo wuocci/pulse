@@ -35,6 +35,8 @@ interface PermitType {
   // The dates the notice occupies the street, as YYYY-MM-DD
   occupies(p: PermitNotice): { start: Field; end: Field };
   label(p: PermitNotice): { en: string; fi: string };
+  // Fields every Event of this type starts with, which the Classifier may replace.
+  defaults?: Partial<Event>;
   text?(p: PermitNotice): Field;
   // What else the Classifier reads about a notice, beyond the Event. Internal: never on the Event or in the API.
   facts(p: PermitNotice): Record<string, Field | number | undefined>;
@@ -64,6 +66,8 @@ const PERMIT_TYPES: Record<LandUsePermitSource["permitType"], PermitType> = {
     noticeable: ["blocked"],
     occupies: (p) => ({ start: field(p, "liikennejarjestely_alkaa"), end: field(p, "liikennejarjestely_paattyy") }),
     label: () => ({ en: "Traffic arrangement", fi: "Liikennejärjestely" }),
+    // The title only says "Traffic arrangement": the web app says what it is from this, so it's set on every one.
+    defaults: { arrangementType: "other" },
     text: (p) => field(p, "tyon_tarkoitus"),
     facts: (p) => ({ category: field(p, "hakemuksen_laji"), address: field(p, "osoite") }),
   },
@@ -140,6 +144,7 @@ export function toPermitItems(collection: PermitCollection, { source, timeZone, 
       when: { start, ...(end ? { end } : {}) },
       severity: type.severity,
       mainlyAffected: "unknown",
+      ...type.defaults,
       noticeable: [...type.noticeable],
       status: statusAt(now, start, end),
       sources: [
