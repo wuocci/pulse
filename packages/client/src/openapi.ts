@@ -385,6 +385,7 @@ export interface components {
             severity: components["schemas"]["Severity"];
             mainlyAffected: components["schemas"]["MainlyAffected"];
             workType?: components["schemas"]["WorkType"];
+            arrangementType?: components["schemas"]["ArrangementType"];
             /** @description May be empty: nothing to sense on site */
             noticeable: components["schemas"]["Noticeable"][];
             /**
@@ -477,6 +478,11 @@ export interface components {
          * @enum {string}
          */
         WorkType: "water_sewer" | "district_heating" | "electricity_telecom" | "paving" | "street_construction" | "building_site" | "other";
+        /**
+         * @description What a temporary traffic arrangement changes. `other` until the Classifier is sure
+         * @enum {string}
+         */
+        ArrangementType: "detour" | "walk_cycle_route" | "traffic_signs" | "parking" | "stop_moved" | "site_access" | "event" | "other";
         /** @enum {string} */
         Noticeable: "noise" | "crowd" | "sirens" | "blocked" | "aircraft" | "outage";
         Deviation: {

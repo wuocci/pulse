@@ -1,4 +1,4 @@
-import { type Event, MainlyAffectedSchema, type Severity, SeveritySchema, WorkTypeSchema } from "@pulse/schema";
+import { ArrangementTypeSchema, type Event, MainlyAffectedSchema, type Severity, SeveritySchema, WorkTypeSchema } from "@pulse/schema";
 import { localTime } from "../adapters/land-use-permits.ts";
 
 // The Classifier (CONTEXT.md, ADR 0003): typed choices about a Source's free text, once per text, at ingest.
@@ -8,7 +8,7 @@ import { localTime } from "../adapters/land-use-permits.ts";
 // What the Classifier reads about one Event, as named fields.
 export type ClassifierState = Record<string, string | number>;
 
-export const QUESTION_IDS = ["workType", "endDate", "severity", "crowd", "loud", "mainlyAffected"] as const;
+export const QUESTION_IDS = ["workType", "arrangementType", "endDate", "severity", "crowd", "loud", "mainlyAffected"] as const;
 export type QuestionId = (typeof QUESTION_IDS)[number];
 
 // One typed choice. The keys of `choices` are the only valid answers; values describe them, or are null.
@@ -79,6 +79,7 @@ export function applyAnswers(event: Event, questions: Questions, answers: Answer
     if (id === "loud") next.severity = LOUD_SEVERITY[choice as keyof typeof LOUD_SEVERITY];
     if (id === "mainlyAffected") next.mainlyAffected = MainlyAffectedSchema.parse(choice);
     if (id === "workType") next.workType = WorkTypeSchema.parse(choice);
+    if (id === "arrangementType") next.arrangementType = ArrangementTypeSchema.parse(choice);
     if (id === "endDate") {
       // `when.end` keeps the Source's structured date; the text's date only flags the conflict.
       // With no structured date, the text's date becomes the end, to the end of that local day as Adapters do.

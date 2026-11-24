@@ -66,12 +66,21 @@ describe("enriching Events per layer", () => {
     expect(EventSchema.safeParse(event).success).toBe(true);
   });
 
-  it("gives a traffic arrangement its Severity and who is mainly affected, and no kind of work", async () => {
-    const event = await classify(eventOf("traffic-arrangement", "LJ2600093"), "traffic-arrangement", fakeClassifier(everything));
+  it("gives a traffic arrangement what it changes, its Severity and who is mainly affected, and no kind of work", async () => {
+    const answers = { ...everything, arrangementType: sure("event", 0.9) };
+    const event = await classify(eventOf("traffic-arrangement", "LJ2600093"), "traffic-arrangement", fakeClassifier(answers));
 
-    expect(event).toMatchObject({ severity: "major", mainlyAffected: "drivers" });
+    expect(event).toMatchObject({ arrangementType: "event", severity: "major", mainlyAffected: "drivers" });
     expect(event).not.toHaveProperty("workType");
     expect(EventSchema.safeParse(event).success).toBe(true);
+  });
+
+  it("leaves a traffic arrangement as other when the Classifier isn't sure what it changes", async () => {
+    const item = eventOf("traffic-arrangement", "LJ2600093");
+    const event = await classify(item, "traffic-arrangement", fakeClassifier({ arrangementType: sure("detour", 0.4) }));
+
+    expect(item.event.arrangementType).toBe("other");
+    expect(event.arrangementType).toBe("other");
   });
 
   it("makes an outdoor event worth considering when 1,000 or more are there at once, and says who is mainly affected", async () => {

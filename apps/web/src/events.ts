@@ -260,25 +260,55 @@ export function whenOf({ when, status }: Event, timeZone: string, now: Date): Wh
   return withHours(when.end ? { key: "whenUntil" as const, end: date(when.end) } : { key: "whenOngoing" as const });
 }
 
+// A title the card says in plain words, in place of the Source's category.
+export type TitleKey = `workTitle_${NonNullable<Event["workType"]>}` | `arrangementTitle_${NonNullable<Event["arrangementType"]>}`;
+
+export interface PlainTitle {
+  title: string;
+  address?: string;
+  // Said in place of the title when set.
+  label?: TitleKey;
+  // The text's first sentence: the heading when there's no label, else the start of the line under it.
+  what?: string;
+}
+
 // What a card calls an Event: the Source's title split into what and where ("Bridge closed" + "Hopeasalmentien
-// silta"; the Adapters build titles "what · where"), and for a dig its kind of work, which the card says in plain
-// words in place of the Source's "Excavation". A permit's title says only its category ("Traffic arrangement"), so
-// one without a kind of work says what it is with its own text's first sentence (`what`): "Tilapäinen reitti
-// kävelijöille". A public event's text describes it at length, so its title, its name, stays.
-export function plainTitle(
-  event: Event,
-  languages: readonly string[],
-): { title: string; address?: string; workType?: NonNullable<Event["workType"]>; what?: string } {
+// silta"; the Adapters build titles "what · where"). A permit's title says only its category ("Excavation",
+// "Traffic arrangement"), so:
+// - a dig is called by its kind of work ("Cable dig");
+// - a traffic arrangement by what it changes ("Detour"), with its own text's first sentence under it, which is
+//   specific but Finnish and sometimes only a fragment: "Lucia-kulkueen liikennejärjestelyt";
+// - any other works or closure by its text's first sentence (`what`): "Kaukolämpöjohdon korjaus".
+// A public event's text describes it at length, so its title, its name, stays.
+export function plainTitle(event: Event, languages: readonly string[]): PlainTitle {
   const source = textIn(event.title, languages);
   const [head = source, ...rest] = source.split(" · ");
   const address = rest.length ? rest.join(" · ") : undefined;
-  const what = address && !event.workType && (event.kind === "works" || event.kind === "closure") ? firstSentence(textIn(event.originalText ?? {}, languages)) : undefined;
+  const label: TitleKey | undefined = event.workType
+    ? `workTitle_${event.workType}`
+    : event.arrangementType
+      ? `arrangementTitle_${event.arrangementType}`
+      : undefined;
+  const what =
+    address && !event.workType && (event.kind === "works" || event.kind === "closure")
+      ? firstSentence(textIn(event.originalText ?? {}, languages))
+      : undefined;
   return {
     title: address ? head : source,
     ...(address ? { address } : {}),
-    ...(event.workType ? { workType: event.workType } : {}),
+    ...(label ? { label } : {}),
     ...(what ? { what } : {}),
   };
+}
+
+// The heading: the plain-words label, else the text's first sentence, else the Source's title.
+export function headingOf({ title, label, what }: PlainTitle, t: (key: TitleKey) => string): string {
+  return label ? t(label) : (what ?? title);
+}
+
+// The line under the heading: where, after the first sentence when the label took the heading's place.
+export function underOf({ address, label, what }: PlainTitle): string | undefined {
+  return [label ? what : undefined, address].filter(Boolean).join(" · ") || undefined;
 }
 
 // A permit's opening words that only say who reserves the space: "Työstä vastaava varaa tilaa tilapäisille

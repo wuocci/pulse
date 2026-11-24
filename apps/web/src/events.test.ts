@@ -1,6 +1,6 @@
 import type { Event } from "@pulse/client";
 import { describe, expect, it } from "vitest";
-import { circleAround, groupNear, nearestFirst, outlineOf, pinsFor, plainTitle, regionWide, pickedText, sameSpot, sectionsOf, startsOf, summaryOf, textIn, toneOf, untilOf, whenOf } from "./events.ts";
+import { circleAround, groupNear, headingOf, nearestFirst, outlineOf, pickedText, pinsFor, plainTitle, regionWide, sameSpot, sectionsOf, startsOf, summaryOf, textIn, toneOf, underOf, untilOf, whenOf } from "./events.ts";
 
 const base: Event = {
   id: "src:1",
@@ -235,7 +235,25 @@ describe("what a card calls an Event", () => {
   });
 
   it("gives a dig's kind of work, for the card to name in plain words", () => {
-    expect(titled("Excavation · Messitytönkatu 2", { workType: "water_sewer" })).toEqual({ title: "Excavation", address: "Messitytönkatu 2", workType: "water_sewer" });
+    expect(titled("Excavation · Messitytönkatu 2", { workType: "water_sewer" })).toEqual({ title: "Excavation", address: "Messitytönkatu 2", label: "workTitle_water_sewer" });
+  });
+
+  it("names a traffic arrangement by what it changes, and keeps its first sentence for the line under it", () => {
+    const lucia = titled("Traffic arrangement · Aleksanterinkatu", {
+      kind: "closure",
+      arrangementType: "event",
+      originalText: { fi: "Lucia-kulkueen liikennejärjestelyt." },
+    });
+    expect(lucia).toEqual({ title: "Traffic arrangement", address: "Aleksanterinkatu", label: "arrangementTitle_event", what: "Lucia-kulkueen liikennejärjestelyt" });
+    expect(headingOf(lucia, (key) => `<${key}>`)).toBe("<arrangementTitle_event>");
+    expect(underOf(lucia)).toBe("Lucia-kulkueen liikennejärjestelyt · Aleksanterinkatu");
+  });
+
+  it("puts only the address under a heading that is the first sentence or the title", () => {
+    const repair = titled("Excavation · Mannerheimintie 5", { originalText: { fi: "Kaukolämpöjohdon korjaus." } });
+    expect(headingOf(repair, (key) => key)).toBe("Kaukolämpöjohdon korjaus");
+    expect(underOf(repair)).toBe("Mannerheimintie 5");
+    expect(underOf(titled("The stop will be closed."))).toBeUndefined();
   });
 });
 

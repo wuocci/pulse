@@ -105,18 +105,25 @@ describe("subjectFor", () => {
     expect(subjectFor({ ...item, event: withoutText }, "excavation")).toBeNull();
   });
 
-  it("asks traffic arrangements Severity, outdoor events how many come, and both who is mainly affected", () => {
+  it("asks traffic arrangements what they change and Severity, outdoor events how many come, and both who is mainly affected", () => {
     const arrangement = itemsOf(trafficArrangements, "traffic-arrangement")[0]!;
     const outdoorEvent = itemsOf(outdoorEvents, "outdoor-event")[0]!;
 
     for (const [item, permitType, asked] of [
-      [arrangement, "traffic-arrangement", ["mainlyAffected", "severity"]],
+      [arrangement, "traffic-arrangement", ["arrangementType", "mainlyAffected", "severity"]],
       [outdoorEvent, "outdoor-event", ["crowd", "mainlyAffected"]],
     ] as const) {
       const subject = subjectFor(item, permitType)!;
       expect(Object.keys(subject.questions).sort()).toEqual(asked);
       expect(subject.state.title).toBe(item.event.title.fi);
     }
+  });
+
+  it("doesn't ask what a traffic arrangement changes when it has no text of its own", () => {
+    const item = itemsOf(trafficArrangements, "traffic-arrangement")[0]!;
+    const { originalText: _, ...withoutText } = item.event;
+
+    expect(Object.keys(subjectFor({ ...item, event: withoutText }, "traffic-arrangement")!.questions).sort()).toEqual(["mainlyAffected", "severity"]);
   });
 
   it("tells the Classifier how many days the notice lasts", () => {

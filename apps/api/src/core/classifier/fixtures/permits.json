@@ -3,7 +3,7 @@
   "at": "2026-10-26",
   "url": "https://kartta.hel.fi/ws/geoserver/avoindata/wfs",
   "query": "service=WFS&version=2.0.0&request=GetFeature&typeName=<layer>&outputFormat=application/json&srsName=EPSG:4326",
-  "note": "Raw features from the live WFS, unmodified, filtered to the notices listed in answer-key.json. A notice can span several features (one per polygon). KP2302652-6, KP2102753-23 and KP2602098-5 were added on 2026-11-04, as loud and ordinary digs near Gunillantie."
+  "note": "Raw features from the live WFS, unmodified, filtered to the notices listed in answer-key.json. A notice can span several features (one per polygon). KP2302652-6, KP2102753-23 and KP2602098-5 were added on 2026-11-04, as loud and ordinary digs near Gunillantie. The traffic arrangements LJ2400076-3, LJ2400073-3, LJ2500010-6, LJ2600122, LJ2600132-2, LJ2500108, LJ2300141-3, LJ2600058-2, LJ2400124, LJ2600004, LJ2600103, LJ2500004, LJ2300179-3, LJ2500144, LJ2600153, LJ2600165, LJ2400146, LJ2500046 were added on 2026-11-23, for the arrangementType question (#59)."
  },
  "layers": {
   "avoindata:Tapahtumat_alue": {
@@ -14366,6 +14366,5623 @@
       "tyon_suorittaja": "",
       "liikennejarjestely_alkaa_txt": "09.11.2026",
       "liikennejarjestely_paattyy_txt": "30.12.2026"
+     }
+    },
+    {
+     "type": "Feature",
+     "id": "Tilapainen_liikennejarjestely_alue.28",
+     "geometry": {
+      "type": "MultiPolygon",
+      "coordinates": [
+       [
+        [
+         [
+          24.929181,
+          60.20074503
+         ],
+         [
+          24.92918,
+          60.20074303
+         ],
+         [
+          24.929178,
+          60.20074103
+         ],
+         [
+          24.929175,
+          60.20073903
+         ],
+         [
+          24.929171,
+          60.20073803
+         ],
+         [
+          24.929168,
+          60.20073703
+         ],
+         [
+          24.929164,
+          60.20073703
+         ],
+         [
+          24.929159,
+          60.20073703
+         ],
+         [
+          24.929154,
+          60.20073803
+         ],
+         [
+          24.929151,
+          60.20073903
+         ],
+         [
+          24.929148,
+          60.20074103
+         ],
+         [
+          24.929145,
+          60.20074303
+         ],
+         [
+          24.929145,
+          60.20074503
+         ],
+         [
+          24.929145,
+          60.20074703
+         ],
+         [
+          24.929146,
+          60.20074903
+         ],
+         [
+          24.929148,
+          60.20075103
+         ],
+         [
+          24.929151,
+          60.20075303
+         ],
+         [
+          24.929154,
+          60.20075403
+         ],
+         [
+          24.929159,
+          60.20075503
+         ],
+         [
+          24.929163,
+          60.20075503
+         ],
+         [
+          24.929168,
+          60.20075403
+         ],
+         [
+          24.929173,
+          60.20075303
+         ],
+         [
+          24.929177,
+          60.20075103
+         ],
+         [
+          24.929179,
+          60.20074903
+         ],
+         [
+          24.929181,
+          60.20074703
+         ],
+         [
+          24.929181,
+          60.20074503
+         ]
+        ]
+       ]
+      ]
+     },
+     "geometry_name": "singlegeom",
+     "properties": {
+      "id": 28,
+      "hakemus": "Tilapäinen liikennejärjestely",
+      "hakemuksen_laji": "Muu",
+      "hakemustunnus": "LJ2300141-3",
+      "liikennejarjestely_alkaa": "2023-09-25",
+      "liikennejarjestely_paattyy": "2028-10-01",
+      "tyon_tarkoitus": "Päätöksensaaja varaa tilaa väliaikaiselle opastukselle autojuna-asemalle.\n\nLISÄYS 6.11.2025: lisäaikaa 1.10.2025 - 30.9.2026\nLISÄYS 1.10.2026: lisäaikaa 1.10.2026 - 1.10.2028.",
+      "osoite": "Tulistimenkatu 1vp 4, , Höyrykatu 1, Lastumäki",
+      "kaupunginosa": "17 PASILA",
+      "status": "Käynnissä",
+      "hakija": "",
+      "geometrytype": "ST_Polygon",
+      "tyon_suorittaja": "",
+      "liikennejarjestely_alkaa_txt": "25.09.2023",
+      "liikennejarjestely_paattyy_txt": "01.10.2028"
+     }
+    },
+    {
+     "type": "Feature",
+     "id": "Tilapainen_liikennejarjestely_alue.29",
+     "geometry": {
+      "type": "MultiPolygon",
+      "coordinates": [
+       [
+        [
+         [
+          24.929442,
+          60.20069903
+         ],
+         [
+          24.929441,
+          60.20069703
+         ],
+         [
+          24.92944,
+          60.20069503
+         ],
+         [
+          24.929437,
+          60.20069303
+         ],
+         [
+          24.929434,
+          60.20069203
+         ],
+         [
+          24.929431,
+          60.20069103
+         ],
+         [
+          24.929426,
+          60.20069103
+         ],
+         [
+          24.929422,
+          60.20069103
+         ],
+         [
+          24.929417,
+          60.20069103
+         ],
+         [
+          24.929414,
+          60.20069203
+         ],
+         [
+          24.929411,
+          60.20069303
+         ],
+         [
+          24.929409,
+          60.20069503
+         ],
+         [
+          24.929407,
+          60.20069703
+         ],
+         [
+          24.929406,
+          60.20069903
+         ],
+         [
+          24.929407,
+          60.20070103
+         ],
+         [
+          24.929408,
+          60.20070303
+         ],
+         [
+          24.929409,
+          60.20070503
+         ],
+         [
+          24.929413,
+          60.20070603
+         ],
+         [
+          24.929416,
+          60.20070703
+         ],
+         [
+          24.929419,
+          60.20070803
+         ],
+         [
+          24.929424,
+          60.20070903
+         ],
+         [
+          24.929428,
+          60.20070803
+         ],
+         [
+          24.929433,
+          60.20070703
+         ],
+         [
+          24.929437,
+          60.20070603
+         ],
+         [
+          24.92944,
+          60.20070403
+         ],
+         [
+          24.929441,
+          60.20070203
+         ],
+         [
+          24.929442,
+          60.20069903
+         ]
+        ]
+       ]
+      ]
+     },
+     "geometry_name": "singlegeom",
+     "properties": {
+      "id": 29,
+      "hakemus": "Tilapäinen liikennejärjestely",
+      "hakemuksen_laji": "Muu",
+      "hakemustunnus": "LJ2300141-3",
+      "liikennejarjestely_alkaa": "2023-09-25",
+      "liikennejarjestely_paattyy": "2028-10-01",
+      "tyon_tarkoitus": "Päätöksensaaja varaa tilaa väliaikaiselle opastukselle autojuna-asemalle.\n\nLISÄYS 6.11.2025: lisäaikaa 1.10.2025 - 30.9.2026\nLISÄYS 1.10.2026: lisäaikaa 1.10.2026 - 1.10.2028.",
+      "osoite": "Tulistimenkatu 1vp 4, , Höyrykatu 1, Lastumäki",
+      "kaupunginosa": "17 PASILA",
+      "status": "Käynnissä",
+      "hakija": "",
+      "geometrytype": "ST_Polygon",
+      "tyon_suorittaja": "",
+      "liikennejarjestely_alkaa_txt": "25.09.2023",
+      "liikennejarjestely_paattyy_txt": "01.10.2028"
+     }
+    },
+    {
+     "type": "Feature",
+     "id": "Tilapainen_liikennejarjestely_alue.30",
+     "geometry": {
+      "type": "MultiPolygon",
+      "coordinates": [
+       [
+        [
+         [
+          24.929544,
+          60.20234003
+         ],
+         [
+          24.929543,
+          60.20233803
+         ],
+         [
+          24.929541,
+          60.20233603
+         ],
+         [
+          24.929537,
+          60.20233403
+         ],
+         [
+          24.929534,
+          60.20233303
+         ],
+         [
+          24.929529,
+          60.20233203
+         ],
+         [
+          24.929524,
+          60.20233203
+         ],
+         [
+          24.929521,
+          60.20233303
+         ],
+         [
+          24.929517,
+          60.20233303
+         ],
+         [
+          24.929514,
+          60.20233403
+         ],
+         [
+          24.929511,
+          60.20233603
+         ],
+         [
+          24.929509,
+          60.20233803
+         ],
+         [
+          24.929508,
+          60.20234003
+         ],
+         [
+          24.929508,
+          60.20234203
+         ],
+         [
+          24.929509,
+          60.20234403
+         ],
+         [
+          24.929511,
+          60.20234603
+         ],
+         [
+          24.929514,
+          60.20234803
+         ],
+         [
+          24.929517,
+          60.20234903
+         ],
+         [
+          24.929521,
+          60.20235003
+         ],
+         [
+          24.929526,
+          60.20235003
+         ],
+         [
+          24.929531,
+          60.20235003
+         ],
+         [
+          24.929534,
+          60.20234903
+         ],
+         [
+          24.929537,
+          60.20234803
+         ],
+         [
+          24.92954,
+          60.20234703
+         ],
+         [
+          24.929542,
+          60.20234503
+         ],
+         [
+          24.929544,
+          60.20234303
+         ],
+         [
+          24.929544,
+          60.20234003
+         ]
+        ]
+       ]
+      ]
+     },
+     "geometry_name": "singlegeom",
+     "properties": {
+      "id": 30,
+      "hakemus": "Tilapäinen liikennejärjestely",
+      "hakemuksen_laji": "Muu",
+      "hakemustunnus": "LJ2300141-3",
+      "liikennejarjestely_alkaa": "2023-09-25",
+      "liikennejarjestely_paattyy": "2028-10-01",
+      "tyon_tarkoitus": "Päätöksensaaja varaa tilaa väliaikaiselle opastukselle autojuna-asemalle.\n\nLISÄYS 6.11.2025: lisäaikaa 1.10.2025 - 30.9.2026\nLISÄYS 1.10.2026: lisäaikaa 1.10.2026 - 1.10.2028.",
+      "osoite": "Tulistimenkatu 1vp 4, , Höyrykatu 1, Lastumäki",
+      "kaupunginosa": "17 PASILA",
+      "status": "Käynnissä",
+      "hakija": "",
+      "geometrytype": "ST_Polygon",
+      "tyon_suorittaja": "",
+      "liikennejarjestely_alkaa_txt": "25.09.2023",
+      "liikennejarjestely_paattyy_txt": "01.10.2028"
+     }
+    },
+    {
+     "type": "Feature",
+     "id": "Tilapainen_liikennejarjestely_alue.31",
+     "geometry": {
+      "type": "MultiPolygon",
+      "coordinates": [
+       [
+        [
+         [
+          24.928763,
+          60.20204203
+         ],
+         [
+          24.928762,
+          60.20204003
+         ],
+         [
+          24.92876,
+          60.20203803
+         ],
+         [
+          24.928757,
+          60.20203603
+         ],
+         [
+          24.928754,
+          60.20203503
+         ],
+         [
+          24.92875,
+          60.20203503
+         ],
+         [
+          24.928747,
+          60.20203403
+         ],
+         [
+          24.928743,
+          60.20203403
+         ],
+         [
+          24.92874,
+          60.20203503
+         ],
+         [
+          24.928735,
+          60.20203603
+         ],
+         [
+          24.928732,
+          60.20203703
+         ],
+         [
+          24.928729,
+          60.20203903
+         ],
+         [
+          24.928728,
+          60.20204103
+         ],
+         [
+          24.928727,
+          60.20204303
+         ],
+         [
+          24.928727,
+          60.20204503
+         ],
+         [
+          24.928729,
+          60.20204703
+         ],
+         [
+          24.928731,
+          60.20204903
+         ],
+         [
+          24.928734,
+          60.20205003
+         ],
+         [
+          24.928737,
+          60.20205103
+         ],
+         [
+          24.92874,
+          60.20205203
+         ],
+         [
+          24.928745,
+          60.20205203
+         ],
+         [
+          24.928749,
+          60.20205203
+         ],
+         [
+          24.928754,
+          60.20205103
+         ],
+         [
+          24.928757,
+          60.20205003
+         ],
+         [
+          24.92876,
+          60.20204803
+         ],
+         [
+          24.928762,
+          60.20204603
+         ],
+         [
+          24.928763,
+          60.20204403
+         ],
+         [
+          24.928763,
+          60.20204203
+         ]
+        ]
+       ]
+      ]
+     },
+     "geometry_name": "singlegeom",
+     "properties": {
+      "id": 31,
+      "hakemus": "Tilapäinen liikennejärjestely",
+      "hakemuksen_laji": "Muu",
+      "hakemustunnus": "LJ2300141-3",
+      "liikennejarjestely_alkaa": "2023-09-25",
+      "liikennejarjestely_paattyy": "2028-10-01",
+      "tyon_tarkoitus": "Päätöksensaaja varaa tilaa väliaikaiselle opastukselle autojuna-asemalle.\n\nLISÄYS 6.11.2025: lisäaikaa 1.10.2025 - 30.9.2026\nLISÄYS 1.10.2026: lisäaikaa 1.10.2026 - 1.10.2028.",
+      "osoite": "Tulistimenkatu 1vp 4, , Höyrykatu 1, Lastumäki",
+      "kaupunginosa": "17 PASILA",
+      "status": "Käynnissä",
+      "hakija": "",
+      "geometrytype": "ST_Polygon",
+      "tyon_suorittaja": "",
+      "liikennejarjestely_alkaa_txt": "25.09.2023",
+      "liikennejarjestely_paattyy_txt": "01.10.2028"
+     }
+    },
+    {
+     "type": "Feature",
+     "id": "Tilapainen_liikennejarjestely_alue.32",
+     "geometry": {
+      "type": "MultiPolygon",
+      "coordinates": [
+       [
+        [
+         [
+          24.92886,
+          60.20192403
+         ],
+         [
+          24.928858,
+          60.20192203
+         ],
+         [
+          24.928857,
+          60.20192003
+         ],
+         [
+          24.928854,
+          60.20191903
+         ],
+         [
+          24.92885,
+          60.20191703
+         ],
+         [
+          24.928845,
+          60.20191603
+         ],
+         [
+          24.92884,
+          60.20191603
+         ],
+         [
+          24.928836,
+          60.20191703
+         ],
+         [
+          24.928832,
+          60.20191803
+         ],
+         [
+          24.928829,
+          60.20191903
+         ],
+         [
+          24.928826,
+          60.20192103
+         ],
+         [
+          24.928824,
+          60.20192303
+         ],
+         [
+          24.928824,
+          60.20192503
+         ],
+         [
+          24.928824,
+          60.20192703
+         ],
+         [
+          24.928825,
+          60.20192903
+         ],
+         [
+          24.928828,
+          60.20193103
+         ],
+         [
+          24.928832,
+          60.20193303
+         ],
+         [
+          24.928836,
+          60.20193403
+         ],
+         [
+          24.92884,
+          60.20193403
+         ],
+         [
+          24.928845,
+          60.20193403
+         ],
+         [
+          24.928848,
+          60.20193303
+         ],
+         [
+          24.928852,
+          60.20193303
+         ],
+         [
+          24.928856,
+          60.20193103
+         ],
+         [
+          24.928857,
+          60.20192903
+         ],
+         [
+          24.928859,
+          60.20192703
+         ],
+         [
+          24.92886,
+          60.20192403
+         ]
+        ]
+       ]
+      ]
+     },
+     "geometry_name": "singlegeom",
+     "properties": {
+      "id": 32,
+      "hakemus": "Tilapäinen liikennejärjestely",
+      "hakemuksen_laji": "Muu",
+      "hakemustunnus": "LJ2300141-3",
+      "liikennejarjestely_alkaa": "2023-09-25",
+      "liikennejarjestely_paattyy": "2028-10-01",
+      "tyon_tarkoitus": "Päätöksensaaja varaa tilaa väliaikaiselle opastukselle autojuna-asemalle.\n\nLISÄYS 6.11.2025: lisäaikaa 1.10.2025 - 30.9.2026\nLISÄYS 1.10.2026: lisäaikaa 1.10.2026 - 1.10.2028.",
+      "osoite": "Tulistimenkatu 1vp 4, , Höyrykatu 1, Lastumäki",
+      "kaupunginosa": "17 PASILA",
+      "status": "Käynnissä",
+      "hakija": "",
+      "geometrytype": "ST_Polygon",
+      "tyon_suorittaja": "",
+      "liikennejarjestely_alkaa_txt": "25.09.2023",
+      "liikennejarjestely_paattyy_txt": "01.10.2028"
+     }
+    },
+    {
+     "type": "Feature",
+     "id": "Tilapainen_liikennejarjestely_alue.33",
+     "geometry": {
+      "type": "MultiPolygon",
+      "coordinates": [
+       [
+        [
+         [
+          24.949521,
+          60.19161103
+         ],
+         [
+          24.949552,
+          60.19162703
+         ],
+         [
+          24.949474,
+          60.19166403
+         ],
+         [
+          24.949449,
+          60.19164603
+         ],
+         [
+          24.949521,
+          60.19161103
+         ]
+        ]
+       ]
+      ]
+     },
+     "geometry_name": "singlegeom",
+     "properties": {
+      "id": 33,
+      "hakemus": "Tilapäinen liikennejärjestely",
+      "hakemuksen_laji": "Muu",
+      "hakemustunnus": "LJ2300179-3",
+      "liikennejarjestely_alkaa": "2023-10-11",
+      "liikennejarjestely_paattyy": "2027-12-31",
+      "tyon_tarkoitus": "Päätöksensaaja varaa tilaa raskassuojille.\n\nLISÄYS 27.6.2024: uusia alueita Konepajanraitille sekä Konepajankujalle.\nLISÄYS 17.12.2025: lisäaika 11.10.2025–31.12.2027.",
+      "osoite": "Konepajankuja 7 -8, Bruno Granholmin kuja 2, Konepajanraitti X Konepajankuja, Konepajanraitti X Konepajanpasaasi, Konepajanraitti X Bruno Granholmin kuja, Konepajankuja 3 ",
+      "kaupunginosa": "22 VALLILA",
+      "status": "Käynnissä",
+      "hakija": "",
+      "geometrytype": "ST_Polygon",
+      "tyon_suorittaja": "",
+      "liikennejarjestely_alkaa_txt": "11.10.2023",
+      "liikennejarjestely_paattyy_txt": "31.12.2027"
+     }
+    },
+    {
+     "type": "Feature",
+     "id": "Tilapainen_liikennejarjestely_alue.34",
+     "geometry": {
+      "type": "MultiPolygon",
+      "coordinates": [
+       [
+        [
+         [
+          24.94883,
+          60.19148203
+         ],
+         [
+          24.948804,
+          60.19149403
+         ],
+         [
+          24.94868,
+          60.19142703
+         ],
+         [
+          24.948706,
+          60.19141503
+         ],
+         [
+          24.94883,
+          60.19148203
+         ]
+        ]
+       ]
+      ]
+     },
+     "geometry_name": "singlegeom",
+     "properties": {
+      "id": 34,
+      "hakemus": "Tilapäinen liikennejärjestely",
+      "hakemuksen_laji": "Muu",
+      "hakemustunnus": "LJ2300179-3",
+      "liikennejarjestely_alkaa": "2023-10-11",
+      "liikennejarjestely_paattyy": "2027-12-31",
+      "tyon_tarkoitus": "Päätöksensaaja varaa tilaa raskassuojille.\n\nLISÄYS 27.6.2024: uusia alueita Konepajanraitille sekä Konepajankujalle.\nLISÄYS 17.12.2025: lisäaika 11.10.2025–31.12.2027.",
+      "osoite": "Konepajankuja 7 -8, Bruno Granholmin kuja 2, Konepajanraitti X Konepajankuja, Konepajanraitti X Konepajanpasaasi, Konepajanraitti X Bruno Granholmin kuja, Konepajankuja 3 ",
+      "kaupunginosa": "22 VALLILA",
+      "status": "Käynnissä",
+      "hakija": "",
+      "geometrytype": "ST_Polygon",
+      "tyon_suorittaja": "",
+      "liikennejarjestely_alkaa_txt": "11.10.2023",
+      "liikennejarjestely_paattyy_txt": "31.12.2027"
+     }
+    },
+    {
+     "type": "Feature",
+     "id": "Tilapainen_liikennejarjestely_alue.35",
+     "geometry": {
+      "type": "MultiPolygon",
+      "coordinates": [
+       [
+        [
+         [
+          24.946407,
+          60.19237803
+         ],
+         [
+          24.946532,
+          60.19243703
+         ],
+         [
+          24.946556,
+          60.19242603
+         ],
+         [
+          24.946426,
+          60.19237203
+         ],
+         [
+          24.946407,
+          60.19237803
+         ]
+        ]
+       ]
+      ]
+     },
+     "geometry_name": "singlegeom",
+     "properties": {
+      "id": 35,
+      "hakemus": "Tilapäinen liikennejärjestely",
+      "hakemuksen_laji": "Muu",
+      "hakemustunnus": "LJ2300179-3",
+      "liikennejarjestely_alkaa": "2023-10-11",
+      "liikennejarjestely_paattyy": "2027-12-31",
+      "tyon_tarkoitus": "Päätöksensaaja varaa tilaa raskassuojille.\n\nLISÄYS 27.6.2024: uusia alueita Konepajanraitille sekä Konepajankujalle.\nLISÄYS 17.12.2025: lisäaika 11.10.2025–31.12.2027.",
+      "osoite": "Konepajankuja 7 -8, Bruno Granholmin kuja 2, Konepajanraitti X Konepajankuja, Konepajanraitti X Konepajanpasaasi, Konepajanraitti X Bruno Granholmin kuja, Konepajankuja 3 ",
+      "kaupunginosa": "22 VALLILA",
+      "status": "Käynnissä",
+      "hakija": "",
+      "geometrytype": "ST_Polygon",
+      "tyon_suorittaja": "",
+      "liikennejarjestely_alkaa_txt": "11.10.2023",
+      "liikennejarjestely_paattyy_txt": "31.12.2027"
+     }
+    },
+    {
+     "type": "Feature",
+     "id": "Tilapainen_liikennejarjestely_alue.36",
+     "geometry": {
+      "type": "MultiPolygon",
+      "coordinates": [
+       [
+        [
+         [
+          24.948063,
+          60.19208203
+         ],
+         [
+          24.94807,
+          60.19208203
+         ],
+         [
+          24.948073,
+          60.19208303
+         ],
+         [
+          24.948372,
+          60.19220403
+         ],
+         [
+          24.948362,
+          60.19221003
+         ],
+         [
+          24.948068,
+          60.19209103
+         ],
+         [
+          24.947508,
+          60.19228403
+         ],
+         [
+          24.947498,
+          60.19227603
+         ],
+         [
+          24.948063,
+          60.19208203
+         ]
+        ]
+       ]
+      ]
+     },
+     "geometry_name": "singlegeom",
+     "properties": {
+      "id": 36,
+      "hakemus": "Tilapäinen liikennejärjestely",
+      "hakemuksen_laji": "Muu",
+      "hakemustunnus": "LJ2300179-3",
+      "liikennejarjestely_alkaa": "2023-10-11",
+      "liikennejarjestely_paattyy": "2027-12-31",
+      "tyon_tarkoitus": "Päätöksensaaja varaa tilaa raskassuojille.\n\nLISÄYS 27.6.2024: uusia alueita Konepajanraitille sekä Konepajankujalle.\nLISÄYS 17.12.2025: lisäaika 11.10.2025–31.12.2027.",
+      "osoite": "Konepajankuja 7 -8, Bruno Granholmin kuja 2, Konepajanraitti X Konepajankuja, Konepajanraitti X Konepajanpasaasi, Konepajanraitti X Bruno Granholmin kuja, Konepajankuja 3 ",
+      "kaupunginosa": "22 VALLILA",
+      "status": "Käynnissä",
+      "hakija": "",
+      "geometrytype": "ST_Polygon",
+      "tyon_suorittaja": "",
+      "liikennejarjestely_alkaa_txt": "11.10.2023",
+      "liikennejarjestely_paattyy_txt": "31.12.2027"
+     }
+    },
+    {
+     "type": "Feature",
+     "id": "Tilapainen_liikennejarjestely_alue.37",
+     "geometry": {
+      "type": "MultiPolygon",
+      "coordinates": [
+       [
+        [
+         [
+          24.950613,
+          60.19252903
+         ],
+         [
+          24.950601,
+          60.19252303
+         ],
+         [
+          24.950866,
+          60.19240003
+         ],
+         [
+          24.950878,
+          60.19240603
+         ],
+         [
+          24.950613,
+          60.19252903
+         ]
+        ]
+       ]
+      ]
+     },
+     "geometry_name": "singlegeom",
+     "properties": {
+      "id": 37,
+      "hakemus": "Tilapäinen liikennejärjestely",
+      "hakemuksen_laji": "Muu",
+      "hakemustunnus": "LJ2300179-3",
+      "liikennejarjestely_alkaa": "2023-10-11",
+      "liikennejarjestely_paattyy": "2027-12-31",
+      "tyon_tarkoitus": "Päätöksensaaja varaa tilaa raskassuojille.\n\nLISÄYS 27.6.2024: uusia alueita Konepajanraitille sekä Konepajankujalle.\nLISÄYS 17.12.2025: lisäaika 11.10.2025–31.12.2027.",
+      "osoite": "Konepajankuja 7 -8, Bruno Granholmin kuja 2, Konepajanraitti X Konepajankuja, Konepajanraitti X Konepajanpasaasi, Konepajanraitti X Bruno Granholmin kuja, Konepajankuja 3 ",
+      "kaupunginosa": "22 VALLILA",
+      "status": "Käynnissä",
+      "hakija": "",
+      "geometrytype": "ST_Polygon",
+      "tyon_suorittaja": "",
+      "liikennejarjestely_alkaa_txt": "11.10.2023",
+      "liikennejarjestely_paattyy_txt": "31.12.2027"
+     }
+    },
+    {
+     "type": "Feature",
+     "id": "Tilapainen_liikennejarjestely_alue.38",
+     "geometry": {
+      "type": "MultiPolygon",
+      "coordinates": [
+       [
+        [
+         [
+          24.944978,
+          60.19310103
+         ],
+         [
+          24.944954,
+          60.19311303
+         ],
+         [
+          24.944829,
+          60.19305403
+         ],
+         [
+          24.944853,
+          60.19304203
+         ],
+         [
+          24.944978,
+          60.19310103
+         ]
+        ]
+       ]
+      ]
+     },
+     "geometry_name": "singlegeom",
+     "properties": {
+      "id": 38,
+      "hakemus": "Tilapäinen liikennejärjestely",
+      "hakemuksen_laji": "Muu",
+      "hakemustunnus": "LJ2300179-3",
+      "liikennejarjestely_alkaa": "2023-10-11",
+      "liikennejarjestely_paattyy": "2027-12-31",
+      "tyon_tarkoitus": "Päätöksensaaja varaa tilaa raskassuojille.\n\nLISÄYS 27.6.2024: uusia alueita Konepajanraitille sekä Konepajankujalle.\nLISÄYS 17.12.2025: lisäaika 11.10.2025–31.12.2027.",
+      "osoite": "Konepajankuja 7 -8, Bruno Granholmin kuja 2, Konepajanraitti X Konepajankuja, Konepajanraitti X Konepajanpasaasi, Konepajanraitti X Bruno Granholmin kuja, Konepajankuja 3 ",
+      "kaupunginosa": "22 VALLILA",
+      "status": "Käynnissä",
+      "hakija": "",
+      "geometrytype": "ST_Polygon",
+      "tyon_suorittaja": "",
+      "liikennejarjestely_alkaa_txt": "11.10.2023",
+      "liikennejarjestely_paattyy_txt": "31.12.2027"
+     }
+    },
+    {
+     "type": "Feature",
+     "id": "Tilapainen_liikennejarjestely_alue.44",
+     "geometry": {
+      "type": "MultiPolygon",
+      "coordinates": [
+       [
+        [
+         [
+          24.909252,
+          60.15258203
+         ],
+         [
+          24.90926,
+          60.15258003
+         ],
+         [
+          24.90932,
+          60.15257503
+         ],
+         [
+          24.909325,
+          60.15257403
+         ],
+         [
+          24.90933,
+          60.15257503
+         ],
+         [
+          24.910097,
+          60.15274803
+         ],
+         [
+          24.910102,
+          60.15275003
+         ],
+         [
+          24.910106,
+          60.15275303
+         ],
+         [
+          24.910107,
+          60.15275603
+         ],
+         [
+          24.910106,
+          60.15275903
+         ],
+         [
+          24.910029,
+          60.15286803
+         ],
+         [
+          24.909997,
+          60.15286203
+         ],
+         [
+          24.910068,
+          60.15276103
+         ],
+         [
+          24.909321,
+          60.15259203
+         ],
+         [
+          24.909271,
+          60.15259603
+         ],
+         [
+          24.909222,
+          60.15261703
+         ],
+         [
+          24.9092,
+          60.15260503
+         ],
+         [
+          24.909252,
+          60.15258203
+         ]
+        ]
+       ]
+      ]
+     },
+     "geometry_name": "singlegeom",
+     "properties": {
+      "id": 44,
+      "hakemus": "Tilapäinen liikennejärjestely",
+      "hakemuksen_laji": "Muu",
+      "hakemustunnus": "LJ2400073-3",
+      "liikennejarjestely_alkaa": "2024-05-30",
+      "liikennejarjestely_paattyy": "2029-02-01",
+      "tyon_tarkoitus": "Tilapäinen reitti kävelijöille.\n\nLISÄYS 8.7.2025: lisäaikaa 2.6.2025 - 1.2.2026.\nLISÄYS 10.2.2026: lisäaikaa 2.2.2026 - 1.2.2029. Työstä vastaavan yhteyshenkilön muutos.",
+      "osoite": "Samoankuja, välillä Atlantinkatu ja Tahitinkatu",
+      "kaupunginosa": "20 LÄNSISATAMA",
+      "status": "Käynnissä",
+      "hakija": "",
+      "geometrytype": "ST_Polygon",
+      "tyon_suorittaja": "",
+      "liikennejarjestely_alkaa_txt": "30.05.2024",
+      "liikennejarjestely_paattyy_txt": "01.02.2029"
+     }
+    },
+    {
+     "type": "Feature",
+     "id": "Tilapainen_liikennejarjestely_alue.45",
+     "geometry": {
+      "type": "MultiPolygon",
+      "coordinates": [
+       [
+        [
+         [
+          24.895661,
+          60.25974003
+         ],
+         [
+          24.89566,
+          60.25973803
+         ],
+         [
+          24.895659,
+          60.25973603
+         ],
+         [
+          24.895656,
+          60.25973403
+         ],
+         [
+          24.895651,
+          60.25973203
+         ],
+         [
+          24.895646,
+          60.25973203
+         ],
+         [
+          24.895641,
+          60.25973103
+         ],
+         [
+          24.895636,
+          60.25973203
+         ],
+         [
+          24.895631,
+          60.25973303
+         ],
+         [
+          24.895629,
+          60.25973503
+         ],
+         [
+          24.895626,
+          60.25973703
+         ],
+         [
+          24.895625,
+          60.25973903
+         ],
+         [
+          24.895625,
+          60.25974103
+         ],
+         [
+          24.895626,
+          60.25974303
+         ],
+         [
+          24.895627,
+          60.25974503
+         ],
+         [
+          24.89563,
+          60.25974703
+         ],
+         [
+          24.895634,
+          60.25974803
+         ],
+         [
+          24.895638,
+          60.25974903
+         ],
+         [
+          24.895643,
+          60.25974903
+         ],
+         [
+          24.895648,
+          60.25974903
+         ],
+         [
+          24.895653,
+          60.25974803
+         ],
+         [
+          24.895657,
+          60.25974603
+         ],
+         [
+          24.89566,
+          60.25974403
+         ],
+         [
+          24.895661,
+          60.25974203
+         ],
+         [
+          24.895661,
+          60.25974003
+         ]
+        ]
+       ]
+      ]
+     },
+     "geometry_name": "singlegeom",
+     "properties": {
+      "id": 45,
+      "hakemus": "Tilapäinen liikennejärjestely",
+      "hakemuksen_laji": "Muu",
+      "hakemustunnus": "LJ2400076-3",
+      "liikennejarjestely_alkaa": "2024-06-06",
+      "liikennejarjestely_paattyy": "2028-09-08",
+      "tyon_tarkoitus": "Kuninkaantammentien katu-urakan takia joudutaan avaamaan tilapäinen kiertotie Paletinkierrolle ja Vedenkierrolle. Samaa reitistöä käytetään myös avattavalle Palettilammelle. \nLISÄYS 06.07.2025: lisäaikaa 06.06.2025 - 30.06.2026.\nLISÄYS 11.09.2026: lisäaikaa 01.07.2026 - 08.09.2028.\nMUUTOS 28.09.2026: Pinta-ala muutos, 19805m2 -> 442m2. Uusi liikennejärjestelysuunnitelma.",
+      "osoite": "Kuninkaantammi, välillä Kuninkaantammentie Kuninkaantammenkierto.",
+      "kaupunginosa": "33 KAARELA",
+      "status": "Käynnissä",
+      "hakija": "",
+      "geometrytype": "ST_Polygon",
+      "tyon_suorittaja": "",
+      "liikennejarjestely_alkaa_txt": "06.06.2024",
+      "liikennejarjestely_paattyy_txt": "08.09.2028"
+     }
+    },
+    {
+     "type": "Feature",
+     "id": "Tilapainen_liikennejarjestely_alue.46",
+     "geometry": {
+      "type": "MultiPolygon",
+      "coordinates": [
+       [
+        [
+         [
+          24.887513,
+          60.26175203
+         ],
+         [
+          24.887512,
+          60.26175003
+         ],
+         [
+          24.887511,
+          60.26174803
+         ],
+         [
+          24.887508,
+          60.26174603
+         ],
+         [
+          24.887503,
+          60.26174503
+         ],
+         [
+          24.887498,
+          60.26174403
+         ],
+         [
+          24.887493,
+          60.26174403
+         ],
+         [
+          24.887488,
+          60.26174403
+         ],
+         [
+          24.887483,
+          60.26174603
+         ],
+         [
+          24.88748,
+          60.26174803
+         ],
+         [
+          24.887478,
+          60.26175003
+         ],
+         [
+          24.887477,
+          60.26175203
+         ],
+         [
+          24.887477,
+          60.26175403
+         ],
+         [
+          24.887478,
+          60.26175603
+         ],
+         [
+          24.88748,
+          60.26175803
+         ],
+         [
+          24.887483,
+          60.26176003
+         ],
+         [
+          24.887488,
+          60.26176103
+         ],
+         [
+          24.887493,
+          60.26176203
+         ],
+         [
+          24.887497,
+          60.26176203
+         ],
+         [
+          24.887502,
+          60.26176103
+         ],
+         [
+          24.887506,
+          60.26176003
+         ],
+         [
+          24.887509,
+          60.26175803
+         ],
+         [
+          24.887512,
+          60.26175603
+         ],
+         [
+          24.887513,
+          60.26175403
+         ],
+         [
+          24.887513,
+          60.26175203
+         ]
+        ]
+       ]
+      ]
+     },
+     "geometry_name": "singlegeom",
+     "properties": {
+      "id": 46,
+      "hakemus": "Tilapäinen liikennejärjestely",
+      "hakemuksen_laji": "Muu",
+      "hakemustunnus": "LJ2400076-3",
+      "liikennejarjestely_alkaa": "2024-06-06",
+      "liikennejarjestely_paattyy": "2028-09-08",
+      "tyon_tarkoitus": "Kuninkaantammentien katu-urakan takia joudutaan avaamaan tilapäinen kiertotie Paletinkierrolle ja Vedenkierrolle. Samaa reitistöä käytetään myös avattavalle Palettilammelle. \nLISÄYS 06.07.2025: lisäaikaa 06.06.2025 - 30.06.2026.\nLISÄYS 11.09.2026: lisäaikaa 01.07.2026 - 08.09.2028.\nMUUTOS 28.09.2026: Pinta-ala muutos, 19805m2 -> 442m2. Uusi liikennejärjestelysuunnitelma.",
+      "osoite": "Kuninkaantammi, välillä Kuninkaantammentie Kuninkaantammenkierto.",
+      "kaupunginosa": "33 KAARELA",
+      "status": "Käynnissä",
+      "hakija": "",
+      "geometrytype": "ST_Polygon",
+      "tyon_suorittaja": "",
+      "liikennejarjestely_alkaa_txt": "06.06.2024",
+      "liikennejarjestely_paattyy_txt": "08.09.2028"
+     }
+    },
+    {
+     "type": "Feature",
+     "id": "Tilapainen_liikennejarjestely_alue.47",
+     "geometry": {
+      "type": "MultiPolygon",
+      "coordinates": [
+       [
+        [
+         [
+          24.887521,
+          60.26187903
+         ],
+         [
+          24.88752,
+          60.26187703
+         ],
+         [
+          24.887519,
+          60.26187503
+         ],
+         [
+          24.887516,
+          60.26187303
+         ],
+         [
+          24.887511,
+          60.26187203
+         ],
+         [
+          24.887506,
+          60.26187103
+         ],
+         [
+          24.887501,
+          60.26187103
+         ],
+         [
+          24.887496,
+          60.26187103
+         ],
+         [
+          24.887491,
+          60.26187303
+         ],
+         [
+          24.887487,
+          60.26187503
+         ],
+         [
+          24.887485,
+          60.26187703
+         ],
+         [
+          24.887485,
+          60.26187903
+         ],
+         [
+          24.887485,
+          60.26188103
+         ],
+         [
+          24.887486,
+          60.26188303
+         ],
+         [
+          24.887489,
+          60.26188503
+         ],
+         [
+          24.887493,
+          60.26188703
+         ],
+         [
+          24.887497,
+          60.26188803
+         ],
+         [
+          24.887501,
+          60.26188803
+         ],
+         [
+          24.887506,
+          60.26188803
+         ],
+         [
+          24.88751,
+          60.26188803
+         ],
+         [
+          24.887514,
+          60.26188603
+         ],
+         [
+          24.887518,
+          60.26188403
+         ],
+         [
+          24.88752,
+          60.26188203
+         ],
+         [
+          24.887521,
+          60.26187903
+         ]
+        ]
+       ]
+      ]
+     },
+     "geometry_name": "singlegeom",
+     "properties": {
+      "id": 47,
+      "hakemus": "Tilapäinen liikennejärjestely",
+      "hakemuksen_laji": "Muu",
+      "hakemustunnus": "LJ2400076-3",
+      "liikennejarjestely_alkaa": "2024-06-06",
+      "liikennejarjestely_paattyy": "2028-09-08",
+      "tyon_tarkoitus": "Kuninkaantammentien katu-urakan takia joudutaan avaamaan tilapäinen kiertotie Paletinkierrolle ja Vedenkierrolle. Samaa reitistöä käytetään myös avattavalle Palettilammelle. \nLISÄYS 06.07.2025: lisäaikaa 06.06.2025 - 30.06.2026.\nLISÄYS 11.09.2026: lisäaikaa 01.07.2026 - 08.09.2028.\nMUUTOS 28.09.2026: Pinta-ala muutos, 19805m2 -> 442m2. Uusi liikennejärjestelysuunnitelma.",
+      "osoite": "Kuninkaantammi, välillä Kuninkaantammentie Kuninkaantammenkierto.",
+      "kaupunginosa": "33 KAARELA",
+      "status": "Käynnissä",
+      "hakija": "",
+      "geometrytype": "ST_Polygon",
+      "tyon_suorittaja": "",
+      "liikennejarjestely_alkaa_txt": "06.06.2024",
+      "liikennejarjestely_paattyy_txt": "08.09.2028"
+     }
+    },
+    {
+     "type": "Feature",
+     "id": "Tilapainen_liikennejarjestely_alue.48",
+     "geometry": {
+      "type": "MultiPolygon",
+      "coordinates": [
+       [
+        [
+         [
+          24.895548,
+          60.26043603
+         ],
+         [
+          24.895638,
+          60.26061703
+         ],
+         [
+          24.89574,
+          60.26077403
+         ],
+         [
+          24.896088,
+          60.26102403
+         ],
+         [
+          24.896272,
+          60.26110703
+         ],
+         [
+          24.896275,
+          60.26110903
+         ],
+         [
+          24.896277,
+          60.26111203
+         ],
+         [
+          24.896295,
+          60.26118203
+         ],
+         [
+          24.896295,
+          60.26118503
+         ],
+         [
+          24.896292,
+          60.26118803
+         ],
+         [
+          24.895723,
+          60.26160703
+         ],
+         [
+          24.895602,
+          60.26171203
+         ],
+         [
+          24.895584,
+          60.26181103
+         ],
+         [
+          24.89555,
+          60.26180903
+         ],
+         [
+          24.895568,
+          60.26170803
+         ],
+         [
+          24.89557,
+          60.26170503
+         ],
+         [
+          24.895693,
+          60.26159803
+         ],
+         [
+          24.89626,
+          60.26118103
+         ],
+         [
+          24.896244,
+          60.26111703
+         ],
+         [
+          24.896063,
+          60.26103603
+         ],
+         [
+          24.89571,
+          60.26078303
+         ],
+         [
+          24.895707,
+          60.26078103
+         ],
+         [
+          24.895604,
+          60.26062203
+         ],
+         [
+          24.895514,
+          60.26043903
+         ],
+         [
+          24.895514,
+          60.26043703
+         ],
+         [
+          24.89551,
+          60.26025703
+         ],
+         [
+          24.895544,
+          60.26025703
+         ],
+         [
+          24.895548,
+          60.26043603
+         ]
+        ]
+       ]
+      ]
+     },
+     "geometry_name": "singlegeom",
+     "properties": {
+      "id": 48,
+      "hakemus": "Tilapäinen liikennejärjestely",
+      "hakemuksen_laji": "Muu",
+      "hakemustunnus": "LJ2400076-3",
+      "liikennejarjestely_alkaa": "2024-06-06",
+      "liikennejarjestely_paattyy": "2028-09-08",
+      "tyon_tarkoitus": "Kuninkaantammentien katu-urakan takia joudutaan avaamaan tilapäinen kiertotie Paletinkierrolle ja Vedenkierrolle. Samaa reitistöä käytetään myös avattavalle Palettilammelle. \nLISÄYS 06.07.2025: lisäaikaa 06.06.2025 - 30.06.2026.\nLISÄYS 11.09.2026: lisäaikaa 01.07.2026 - 08.09.2028.\nMUUTOS 28.09.2026: Pinta-ala muutos, 19805m2 -> 442m2. Uusi liikennejärjestelysuunnitelma.",
+      "osoite": "Kuninkaantammi, välillä Kuninkaantammentie Kuninkaantammenkierto.",
+      "kaupunginosa": "33 KAARELA",
+      "status": "Käynnissä",
+      "hakija": "",
+      "geometrytype": "ST_Polygon",
+      "tyon_suorittaja": "",
+      "liikennejarjestely_alkaa_txt": "06.06.2024",
+      "liikennejarjestely_paattyy_txt": "08.09.2028"
+     }
+    },
+    {
+     "type": "Feature",
+     "id": "Tilapainen_liikennejarjestely_alue.49",
+     "geometry": {
+      "type": "MultiPolygon",
+      "coordinates": [
+       [
+        [
+         [
+          24.895683,
+          60.26217403
+         ],
+         [
+          24.895683,
+          60.26217203
+         ],
+         [
+          24.895681,
+          60.26217003
+         ],
+         [
+          24.895678,
+          60.26216803
+         ],
+         [
+          24.895674,
+          60.26216703
+         ],
+         [
+          24.895669,
+          60.26216603
+         ],
+         [
+          24.895665,
+          60.26216603
+         ],
+         [
+          24.89566,
+          60.26216603
+         ],
+         [
+          24.895655,
+          60.26216703
+         ],
+         [
+          24.895651,
+          60.26216903
+         ],
+         [
+          24.895649,
+          60.26217103
+         ],
+         [
+          24.895648,
+          60.26217303
+         ],
+         [
+          24.895647,
+          60.26217503
+         ],
+         [
+          24.895648,
+          60.26217703
+         ],
+         [
+          24.895649,
+          60.26217903
+         ],
+         [
+          24.895652,
+          60.26218103
+         ],
+         [
+          24.895657,
+          60.26218203
+         ],
+         [
+          24.895662,
+          60.26218303
+         ],
+         [
+          24.895667,
+          60.26218403
+         ],
+         [
+          24.895671,
+          60.26218303
+         ],
+         [
+          24.895675,
+          60.26218203
+         ],
+         [
+          24.895679,
+          60.26218003
+         ],
+         [
+          24.895682,
+          60.26217803
+         ],
+         [
+          24.895683,
+          60.26217603
+         ],
+         [
+          24.895683,
+          60.26217403
+         ]
+        ]
+       ]
+      ]
+     },
+     "geometry_name": "singlegeom",
+     "properties": {
+      "id": 49,
+      "hakemus": "Tilapäinen liikennejärjestely",
+      "hakemuksen_laji": "Muu",
+      "hakemustunnus": "LJ2400076-3",
+      "liikennejarjestely_alkaa": "2024-06-06",
+      "liikennejarjestely_paattyy": "2028-09-08",
+      "tyon_tarkoitus": "Kuninkaantammentien katu-urakan takia joudutaan avaamaan tilapäinen kiertotie Paletinkierrolle ja Vedenkierrolle. Samaa reitistöä käytetään myös avattavalle Palettilammelle. \nLISÄYS 06.07.2025: lisäaikaa 06.06.2025 - 30.06.2026.\nLISÄYS 11.09.2026: lisäaikaa 01.07.2026 - 08.09.2028.\nMUUTOS 28.09.2026: Pinta-ala muutos, 19805m2 -> 442m2. Uusi liikennejärjestelysuunnitelma.",
+      "osoite": "Kuninkaantammi, välillä Kuninkaantammentie Kuninkaantammenkierto.",
+      "kaupunginosa": "33 KAARELA",
+      "status": "Käynnissä",
+      "hakija": "",
+      "geometrytype": "ST_Polygon",
+      "tyon_suorittaja": "",
+      "liikennejarjestely_alkaa_txt": "06.06.2024",
+      "liikennejarjestely_paattyy_txt": "08.09.2028"
+     }
+    },
+    {
+     "type": "Feature",
+     "id": "Tilapainen_liikennejarjestely_alue.50",
+     "geometry": {
+      "type": "MultiPolygon",
+      "coordinates": [
+       [
+        [
+         [
+          24.895754,
+          60.26210603
+         ],
+         [
+          24.895753,
+          60.26210403
+         ],
+         [
+          24.895751,
+          60.26210203
+         ],
+         [
+          24.895748,
+          60.26210003
+         ],
+         [
+          24.895743,
+          60.26209903
+         ],
+         [
+          24.895738,
+          60.26209803
+         ],
+         [
+          24.895733,
+          60.26209903
+         ],
+         [
+          24.895729,
+          60.26209903
+         ],
+         [
+          24.895725,
+          60.26210003
+         ],
+         [
+          24.895722,
+          60.26210203
+         ],
+         [
+          24.89572,
+          60.26210403
+         ],
+         [
+          24.895719,
+          60.26210603
+         ],
+         [
+          24.895718,
+          60.26210803
+         ],
+         [
+          24.895719,
+          60.26211003
+         ],
+         [
+          24.89572,
+          60.26211203
+         ],
+         [
+          24.895723,
+          60.26211403
+         ],
+         [
+          24.895728,
+          60.26211503
+         ],
+         [
+          24.895733,
+          60.26211603
+         ],
+         [
+          24.895738,
+          60.26211603
+         ],
+         [
+          24.895743,
+          60.26211603
+         ],
+         [
+          24.895748,
+          60.26211403
+         ],
+         [
+          24.895751,
+          60.26211203
+         ],
+         [
+          24.895754,
+          60.26211003
+         ],
+         [
+          24.895754,
+          60.26210803
+         ],
+         [
+          24.895754,
+          60.26210603
+         ]
+        ]
+       ]
+      ]
+     },
+     "geometry_name": "singlegeom",
+     "properties": {
+      "id": 50,
+      "hakemus": "Tilapäinen liikennejärjestely",
+      "hakemuksen_laji": "Muu",
+      "hakemustunnus": "LJ2400076-3",
+      "liikennejarjestely_alkaa": "2024-06-06",
+      "liikennejarjestely_paattyy": "2028-09-08",
+      "tyon_tarkoitus": "Kuninkaantammentien katu-urakan takia joudutaan avaamaan tilapäinen kiertotie Paletinkierrolle ja Vedenkierrolle. Samaa reitistöä käytetään myös avattavalle Palettilammelle. \nLISÄYS 06.07.2025: lisäaikaa 06.06.2025 - 30.06.2026.\nLISÄYS 11.09.2026: lisäaikaa 01.07.2026 - 08.09.2028.\nMUUTOS 28.09.2026: Pinta-ala muutos, 19805m2 -> 442m2. Uusi liikennejärjestelysuunnitelma.",
+      "osoite": "Kuninkaantammi, välillä Kuninkaantammentie Kuninkaantammenkierto.",
+      "kaupunginosa": "33 KAARELA",
+      "status": "Käynnissä",
+      "hakija": "",
+      "geometrytype": "ST_Polygon",
+      "tyon_suorittaja": "",
+      "liikennejarjestely_alkaa_txt": "06.06.2024",
+      "liikennejarjestely_paattyy_txt": "08.09.2028"
+     }
+    },
+    {
+     "type": "Feature",
+     "id": "Tilapainen_liikennejarjestely_alue.51",
+     "geometry": {
+      "type": "MultiPolygon",
+      "coordinates": [
+       [
+        [
+         [
+          24.884934,
+          60.26345203
+         ],
+         [
+          24.884934,
+          60.26345003
+         ],
+         [
+          24.884931,
+          60.26344803
+         ],
+         [
+          24.884928,
+          60.26344603
+         ],
+         [
+          24.884923,
+          60.26344503
+         ],
+         [
+          24.884918,
+          60.26344403
+         ],
+         [
+          24.884913,
+          60.26344403
+         ],
+         [
+          24.884909,
+          60.26344503
+         ],
+         [
+          24.884905,
+          60.26344603
+         ],
+         [
+          24.884901,
+          60.26344803
+         ],
+         [
+          24.884899,
+          60.26345003
+         ],
+         [
+          24.884898,
+          60.26345203
+         ],
+         [
+          24.884898,
+          60.26345403
+         ],
+         [
+          24.8849,
+          60.26345603
+         ],
+         [
+          24.884901,
+          60.26345803
+         ],
+         [
+          24.884905,
+          60.26346003
+         ],
+         [
+          24.884909,
+          60.26346103
+         ],
+         [
+          24.884913,
+          60.26346203
+         ],
+         [
+          24.884918,
+          60.26346203
+         ],
+         [
+          24.884922,
+          60.26346103
+         ],
+         [
+          24.884926,
+          60.26346003
+         ],
+         [
+          24.88493,
+          60.26345903
+         ],
+         [
+          24.884932,
+          60.26345703
+         ],
+         [
+          24.884934,
+          60.26345503
+         ],
+         [
+          24.884934,
+          60.26345203
+         ]
+        ]
+       ]
+      ]
+     },
+     "geometry_name": "singlegeom",
+     "properties": {
+      "id": 51,
+      "hakemus": "Tilapäinen liikennejärjestely",
+      "hakemuksen_laji": "Muu",
+      "hakemustunnus": "LJ2400076-3",
+      "liikennejarjestely_alkaa": "2024-06-06",
+      "liikennejarjestely_paattyy": "2028-09-08",
+      "tyon_tarkoitus": "Kuninkaantammentien katu-urakan takia joudutaan avaamaan tilapäinen kiertotie Paletinkierrolle ja Vedenkierrolle. Samaa reitistöä käytetään myös avattavalle Palettilammelle. \nLISÄYS 06.07.2025: lisäaikaa 06.06.2025 - 30.06.2026.\nLISÄYS 11.09.2026: lisäaikaa 01.07.2026 - 08.09.2028.\nMUUTOS 28.09.2026: Pinta-ala muutos, 19805m2 -> 442m2. Uusi liikennejärjestelysuunnitelma.",
+      "osoite": "Kuninkaantammi, välillä Kuninkaantammentie Kuninkaantammenkierto.",
+      "kaupunginosa": "33 KAARELA",
+      "status": "Käynnissä",
+      "hakija": "",
+      "geometrytype": "ST_Polygon",
+      "tyon_suorittaja": "",
+      "liikennejarjestely_alkaa_txt": "06.06.2024",
+      "liikennejarjestely_paattyy_txt": "08.09.2028"
+     }
+    },
+    {
+     "type": "Feature",
+     "id": "Tilapainen_liikennejarjestely_alue.52",
+     "geometry": {
+      "type": "MultiPolygon",
+      "coordinates": [
+       [
+        [
+         [
+          24.884996,
+          60.26338703
+         ],
+         [
+          24.884996,
+          60.26338503
+         ],
+         [
+          24.884993,
+          60.26338303
+         ],
+         [
+          24.88499,
+          60.26338103
+         ],
+         [
+          24.884985,
+          60.26338003
+         ],
+         [
+          24.88498,
+          60.26337903
+         ],
+         [
+          24.884975,
+          60.26337903
+         ],
+         [
+          24.884971,
+          60.26338003
+         ],
+         [
+          24.884967,
+          60.26338103
+         ],
+         [
+          24.884963,
+          60.26338303
+         ],
+         [
+          24.884961,
+          60.26338503
+         ],
+         [
+          24.88496,
+          60.26338703
+         ],
+         [
+          24.88496,
+          60.26338903
+         ],
+         [
+          24.884962,
+          60.26339103
+         ],
+         [
+          24.884963,
+          60.26339303
+         ],
+         [
+          24.884967,
+          60.26339503
+         ],
+         [
+          24.884971,
+          60.26339603
+         ],
+         [
+          24.884975,
+          60.26339703
+         ],
+         [
+          24.88498,
+          60.26339703
+         ],
+         [
+          24.884985,
+          60.26339603
+         ],
+         [
+          24.88499,
+          60.26339503
+         ],
+         [
+          24.884993,
+          60.26339303
+         ],
+         [
+          24.884995,
+          60.26339103
+         ],
+         [
+          24.884996,
+          60.26338903
+         ],
+         [
+          24.884996,
+          60.26338703
+         ]
+        ]
+       ]
+      ]
+     },
+     "geometry_name": "singlegeom",
+     "properties": {
+      "id": 52,
+      "hakemus": "Tilapäinen liikennejärjestely",
+      "hakemuksen_laji": "Muu",
+      "hakemustunnus": "LJ2400076-3",
+      "liikennejarjestely_alkaa": "2024-06-06",
+      "liikennejarjestely_paattyy": "2028-09-08",
+      "tyon_tarkoitus": "Kuninkaantammentien katu-urakan takia joudutaan avaamaan tilapäinen kiertotie Paletinkierrolle ja Vedenkierrolle. Samaa reitistöä käytetään myös avattavalle Palettilammelle. \nLISÄYS 06.07.2025: lisäaikaa 06.06.2025 - 30.06.2026.\nLISÄYS 11.09.2026: lisäaikaa 01.07.2026 - 08.09.2028.\nMUUTOS 28.09.2026: Pinta-ala muutos, 19805m2 -> 442m2. Uusi liikennejärjestelysuunnitelma.",
+      "osoite": "Kuninkaantammi, välillä Kuninkaantammentie Kuninkaantammenkierto.",
+      "kaupunginosa": "33 KAARELA",
+      "status": "Käynnissä",
+      "hakija": "",
+      "geometrytype": "ST_Polygon",
+      "tyon_suorittaja": "",
+      "liikennejarjestely_alkaa_txt": "06.06.2024",
+      "liikennejarjestely_paattyy_txt": "08.09.2028"
+     }
+    },
+    {
+     "type": "Feature",
+     "id": "Tilapainen_liikennejarjestely_alue.53",
+     "geometry": {
+      "type": "MultiPolygon",
+      "coordinates": [
+       [
+        [
+         [
+          24.885341,
+          60.26336003
+         ],
+         [
+          24.885371,
+          60.26337003
+         ],
+         [
+          24.885284,
+          60.26343903
+         ],
+         [
+          24.885254,
+          60.26342903
+         ],
+         [
+          24.885341,
+          60.26336003
+         ]
+        ]
+       ]
+      ]
+     },
+     "geometry_name": "singlegeom",
+     "properties": {
+      "id": 53,
+      "hakemus": "Tilapäinen liikennejärjestely",
+      "hakemuksen_laji": "Muu",
+      "hakemustunnus": "LJ2400076-3",
+      "liikennejarjestely_alkaa": "2024-06-06",
+      "liikennejarjestely_paattyy": "2028-09-08",
+      "tyon_tarkoitus": "Kuninkaantammentien katu-urakan takia joudutaan avaamaan tilapäinen kiertotie Paletinkierrolle ja Vedenkierrolle. Samaa reitistöä käytetään myös avattavalle Palettilammelle. \nLISÄYS 06.07.2025: lisäaikaa 06.06.2025 - 30.06.2026.\nLISÄYS 11.09.2026: lisäaikaa 01.07.2026 - 08.09.2028.\nMUUTOS 28.09.2026: Pinta-ala muutos, 19805m2 -> 442m2. Uusi liikennejärjestelysuunnitelma.",
+      "osoite": "Kuninkaantammi, välillä Kuninkaantammentie Kuninkaantammenkierto.",
+      "kaupunginosa": "33 KAARELA",
+      "status": "Käynnissä",
+      "hakija": "",
+      "geometrytype": "ST_Polygon",
+      "tyon_suorittaja": "",
+      "liikennejarjestely_alkaa_txt": "06.06.2024",
+      "liikennejarjestely_paattyy_txt": "08.09.2028"
+     }
+    },
+    {
+     "type": "Feature",
+     "id": "Tilapainen_liikennejarjestely_alue.54",
+     "geometry": {
+      "type": "MultiPolygon",
+      "coordinates": [
+       [
+        [
+         [
+          24.885679,
+          60.26318603
+         ],
+         [
+          24.885678,
+          60.26318403
+         ],
+         [
+          24.885676,
+          60.26318203
+         ],
+         [
+          24.885672,
+          60.26318003
+         ],
+         [
+          24.885668,
+          60.26317903
+         ],
+         [
+          24.885664,
+          60.26317803
+         ],
+         [
+          24.885659,
+          60.26317803
+         ],
+         [
+          24.885654,
+          60.26317903
+         ],
+         [
+          24.885649,
+          60.26318003
+         ],
+         [
+          24.885647,
+          60.26318203
+         ],
+         [
+          24.885644,
+          60.26318403
+         ],
+         [
+          24.885643,
+          60.26318603
+         ],
+         [
+          24.885643,
+          60.26318803
+         ],
+         [
+          24.885644,
+          60.26319003
+         ],
+         [
+          24.885646,
+          60.26319203
+         ],
+         [
+          24.885648,
+          60.26319403
+         ],
+         [
+          24.885652,
+          60.26319503
+         ],
+         [
+          24.885656,
+          60.26319603
+         ],
+         [
+          24.885661,
+          60.26319603
+         ],
+         [
+          24.885666,
+          60.26319603
+         ],
+         [
+          24.885671,
+          60.26319503
+         ],
+         [
+          24.885675,
+          60.26319303
+         ],
+         [
+          24.885678,
+          60.26319103
+         ],
+         [
+          24.885679,
+          60.26318903
+         ],
+         [
+          24.885679,
+          60.26318603
+         ]
+        ]
+       ]
+      ]
+     },
+     "geometry_name": "singlegeom",
+     "properties": {
+      "id": 54,
+      "hakemus": "Tilapäinen liikennejärjestely",
+      "hakemuksen_laji": "Muu",
+      "hakemustunnus": "LJ2400076-3",
+      "liikennejarjestely_alkaa": "2024-06-06",
+      "liikennejarjestely_paattyy": "2028-09-08",
+      "tyon_tarkoitus": "Kuninkaantammentien katu-urakan takia joudutaan avaamaan tilapäinen kiertotie Paletinkierrolle ja Vedenkierrolle. Samaa reitistöä käytetään myös avattavalle Palettilammelle. \nLISÄYS 06.07.2025: lisäaikaa 06.06.2025 - 30.06.2026.\nLISÄYS 11.09.2026: lisäaikaa 01.07.2026 - 08.09.2028.\nMUUTOS 28.09.2026: Pinta-ala muutos, 19805m2 -> 442m2. Uusi liikennejärjestelysuunnitelma.",
+      "osoite": "Kuninkaantammi, välillä Kuninkaantammentie Kuninkaantammenkierto.",
+      "kaupunginosa": "33 KAARELA",
+      "status": "Käynnissä",
+      "hakija": "",
+      "geometrytype": "ST_Polygon",
+      "tyon_suorittaja": "",
+      "liikennejarjestely_alkaa_txt": "06.06.2024",
+      "liikennejarjestely_paattyy_txt": "08.09.2028"
+     }
+    },
+    {
+     "type": "Feature",
+     "id": "Tilapainen_liikennejarjestely_alue.55",
+     "geometry": {
+      "type": "MultiPolygon",
+      "coordinates": [
+       [
+        [
+         [
+          24.888885,
+          60.26481603
+         ],
+         [
+          24.888917,
+          60.26482203
+         ],
+         [
+          24.888861,
+          60.26488803
+         ],
+         [
+          24.888829,
+          60.26488203
+         ],
+         [
+          24.888885,
+          60.26481603
+         ]
+        ]
+       ]
+      ]
+     },
+     "geometry_name": "singlegeom",
+     "properties": {
+      "id": 55,
+      "hakemus": "Tilapäinen liikennejärjestely",
+      "hakemuksen_laji": "Muu",
+      "hakemustunnus": "LJ2400076-3",
+      "liikennejarjestely_alkaa": "2024-06-06",
+      "liikennejarjestely_paattyy": "2028-09-08",
+      "tyon_tarkoitus": "Kuninkaantammentien katu-urakan takia joudutaan avaamaan tilapäinen kiertotie Paletinkierrolle ja Vedenkierrolle. Samaa reitistöä käytetään myös avattavalle Palettilammelle. \nLISÄYS 06.07.2025: lisäaikaa 06.06.2025 - 30.06.2026.\nLISÄYS 11.09.2026: lisäaikaa 01.07.2026 - 08.09.2028.\nMUUTOS 28.09.2026: Pinta-ala muutos, 19805m2 -> 442m2. Uusi liikennejärjestelysuunnitelma.",
+      "osoite": "Kuninkaantammi, välillä Kuninkaantammentie Kuninkaantammenkierto.",
+      "kaupunginosa": "33 KAARELA",
+      "status": "Käynnissä",
+      "hakija": "",
+      "geometrytype": "ST_Polygon",
+      "tyon_suorittaja": "",
+      "liikennejarjestely_alkaa_txt": "06.06.2024",
+      "liikennejarjestely_paattyy_txt": "08.09.2028"
+     }
+    },
+    {
+     "type": "Feature",
+     "id": "Tilapainen_liikennejarjestely_alue.56",
+     "geometry": {
+      "type": "MultiPolygon",
+      "coordinates": [
+       [
+        [
+         [
+          24.894603,
+          60.26560003
+         ],
+         [
+          24.894603,
+          60.26559803
+         ],
+         [
+          24.894601,
+          60.26559603
+         ],
+         [
+          24.894598,
+          60.26559403
+         ],
+         [
+          24.894594,
+          60.26559303
+         ],
+         [
+          24.894589,
+          60.26559203
+         ],
+         [
+          24.894585,
+          60.26559203
+         ],
+         [
+          24.89458,
+          60.26559203
+         ],
+         [
+          24.894575,
+          60.26559303
+         ],
+         [
+          24.894572,
+          60.26559503
+         ],
+         [
+          24.89457,
+          60.26559703
+         ],
+         [
+          24.894568,
+          60.26559903
+         ],
+         [
+          24.894567,
+          60.26560103
+         ],
+         [
+          24.894568,
+          60.26560303
+         ],
+         [
+          24.89457,
+          60.26560503
+         ],
+         [
+          24.894573,
+          60.26560703
+         ],
+         [
+          24.894577,
+          60.26560903
+         ],
+         [
+          24.894582,
+          60.26561003
+         ],
+         [
+          24.894587,
+          60.26561003
+         ],
+         [
+          24.894591,
+          60.26560903
+         ],
+         [
+          24.894595,
+          60.26560803
+         ],
+         [
+          24.894599,
+          60.26560703
+         ],
+         [
+          24.894601,
+          60.26560503
+         ],
+         [
+          24.894603,
+          60.26560303
+         ],
+         [
+          24.894603,
+          60.26560003
+         ]
+        ]
+       ]
+      ]
+     },
+     "geometry_name": "singlegeom",
+     "properties": {
+      "id": 56,
+      "hakemus": "Tilapäinen liikennejärjestely",
+      "hakemuksen_laji": "Muu",
+      "hakemustunnus": "LJ2400076-3",
+      "liikennejarjestely_alkaa": "2024-06-06",
+      "liikennejarjestely_paattyy": "2028-09-08",
+      "tyon_tarkoitus": "Kuninkaantammentien katu-urakan takia joudutaan avaamaan tilapäinen kiertotie Paletinkierrolle ja Vedenkierrolle. Samaa reitistöä käytetään myös avattavalle Palettilammelle. \nLISÄYS 06.07.2025: lisäaikaa 06.06.2025 - 30.06.2026.\nLISÄYS 11.09.2026: lisäaikaa 01.07.2026 - 08.09.2028.\nMUUTOS 28.09.2026: Pinta-ala muutos, 19805m2 -> 442m2. Uusi liikennejärjestelysuunnitelma.",
+      "osoite": "Kuninkaantammi, välillä Kuninkaantammentie Kuninkaantammenkierto.",
+      "kaupunginosa": "33 KAARELA",
+      "status": "Käynnissä",
+      "hakija": "",
+      "geometrytype": "ST_Polygon",
+      "tyon_suorittaja": "",
+      "liikennejarjestely_alkaa_txt": "06.06.2024",
+      "liikennejarjestely_paattyy_txt": "08.09.2028"
+     }
+    },
+    {
+     "type": "Feature",
+     "id": "Tilapainen_liikennejarjestely_alue.57",
+     "geometry": {
+      "type": "MultiPolygon",
+      "coordinates": [
+       [
+        [
+         [
+          24.893907,
+          60.26556703
+         ],
+         [
+          24.893906,
+          60.26556503
+         ],
+         [
+          24.893904,
+          60.26556303
+         ],
+         [
+          24.893901,
+          60.26556103
+         ],
+         [
+          24.893897,
+          60.26556003
+         ],
+         [
+          24.893892,
+          60.26555903
+         ],
+         [
+          24.893887,
+          60.26555903
+         ],
+         [
+          24.893883,
+          60.26555903
+         ],
+         [
+          24.893879,
+          60.26556003
+         ],
+         [
+          24.893875,
+          60.26556203
+         ],
+         [
+          24.893872,
+          60.26556403
+         ],
+         [
+          24.893871,
+          60.26556603
+         ],
+         [
+          24.89387,
+          60.26556803
+         ],
+         [
+          24.893871,
+          60.26557003
+         ],
+         [
+          24.893873,
+          60.26557203
+         ],
+         [
+          24.893876,
+          60.26557403
+         ],
+         [
+          24.89388,
+          60.26557603
+         ],
+         [
+          24.893885,
+          60.26557703
+         ],
+         [
+          24.89389,
+          60.26557703
+         ],
+         [
+          24.893894,
+          60.26557603
+         ],
+         [
+          24.893899,
+          60.26557503
+         ],
+         [
+          24.893902,
+          60.26557303
+         ],
+         [
+          24.893905,
+          60.26557103
+         ],
+         [
+          24.893906,
+          60.26556903
+         ],
+         [
+          24.893907,
+          60.26556703
+         ]
+        ]
+       ]
+      ]
+     },
+     "geometry_name": "singlegeom",
+     "properties": {
+      "id": 57,
+      "hakemus": "Tilapäinen liikennejärjestely",
+      "hakemuksen_laji": "Muu",
+      "hakemustunnus": "LJ2400076-3",
+      "liikennejarjestely_alkaa": "2024-06-06",
+      "liikennejarjestely_paattyy": "2028-09-08",
+      "tyon_tarkoitus": "Kuninkaantammentien katu-urakan takia joudutaan avaamaan tilapäinen kiertotie Paletinkierrolle ja Vedenkierrolle. Samaa reitistöä käytetään myös avattavalle Palettilammelle. \nLISÄYS 06.07.2025: lisäaikaa 06.06.2025 - 30.06.2026.\nLISÄYS 11.09.2026: lisäaikaa 01.07.2026 - 08.09.2028.\nMUUTOS 28.09.2026: Pinta-ala muutos, 19805m2 -> 442m2. Uusi liikennejärjestelysuunnitelma.",
+      "osoite": "Kuninkaantammi, välillä Kuninkaantammentie Kuninkaantammenkierto.",
+      "kaupunginosa": "33 KAARELA",
+      "status": "Käynnissä",
+      "hakija": "",
+      "geometrytype": "ST_Polygon",
+      "tyon_suorittaja": "",
+      "liikennejarjestely_alkaa_txt": "06.06.2024",
+      "liikennejarjestely_paattyy_txt": "08.09.2028"
+     }
+    },
+    {
+     "type": "Feature",
+     "id": "Tilapainen_liikennejarjestely_alue.62",
+     "geometry": {
+      "type": "MultiPolygon",
+      "coordinates": [
+       [
+        [
+         [
+          24.90177,
+          60.18854303
+         ],
+         [
+          24.901541,
+          60.18849503
+         ],
+         [
+          24.901518,
+          60.18845303
+         ],
+         [
+          24.901282,
+          60.18836703
+         ],
+         [
+          24.90125,
+          60.18832703
+         ],
+         [
+          24.901266,
+          60.18828803
+         ],
+         [
+          24.901467,
+          60.18816303
+         ],
+         [
+          24.901772,
+          60.18798903
+         ],
+         [
+          24.902001,
+          60.18806403
+         ],
+         [
+          24.902276,
+          60.18818303
+         ],
+         [
+          24.90231,
+          60.18821703
+         ],
+         [
+          24.902115,
+          60.18836303
+         ],
+         [
+          24.901962,
+          60.18847403
+         ],
+         [
+          24.90177,
+          60.18854303
+         ]
+        ]
+       ]
+      ]
+     },
+     "geometry_name": "singlegeom",
+     "properties": {
+      "id": 62,
+      "hakemus": "Tilapäinen liikennejärjestely",
+      "hakemuksen_laji": "Muu",
+      "hakemustunnus": "LJ2400124",
+      "liikennejarjestely_alkaa": "2024-09-01",
+      "liikennejarjestely_paattyy": "2029-07-31",
+      "tyon_tarkoitus": "Siirtokehotukset p-alueen tyhjentämistä varten uuden vuokrasopimuksen astuessa voimaan.",
+      "osoite": "Oksakoskenpolku 6",
+      "kaupunginosa": "15 MEILAHTI",
+      "status": "Käynnissä",
+      "hakija": "",
+      "geometrytype": "ST_Polygon",
+      "tyon_suorittaja": "",
+      "liikennejarjestely_alkaa_txt": "01.09.2024",
+      "liikennejarjestely_paattyy_txt": "31.07.2029"
+     }
+    },
+    {
+     "type": "Feature",
+     "id": "Tilapainen_liikennejarjestely_alue.82",
+     "geometry": {
+      "type": "MultiPolygon",
+      "coordinates": [
+       [
+        [
+         [
+          24.92606,
+          60.14809503
+         ],
+         [
+          24.924938,
+          60.14709703
+         ],
+         [
+          24.924566,
+          60.14717503
+         ],
+         [
+          24.925678,
+          60.14818203
+         ],
+         [
+          24.92606,
+          60.14809503
+         ]
+        ]
+       ]
+      ]
+     },
+     "geometry_name": "singlegeom",
+     "properties": {
+      "id": 82,
+      "hakemus": "Tilapäinen liikennejärjestely",
+      "hakemuksen_laji": "Muu",
+      "hakemustunnus": "LJ2400146",
+      "liikennejarjestely_alkaa": "2024-11-15",
+      "liikennejarjestely_paattyy": "2028-11-16",
+      "tyon_tarkoitus": "Tilapäiset liikennejärjestelyt aluerakennuskohteessa",
+      "osoite": "Hernesaarenranta",
+      "kaupunginosa": "20 LÄNSISATAMA",
+      "status": "Käynnissä",
+      "hakija": "",
+      "geometrytype": "ST_Polygon",
+      "tyon_suorittaja": "",
+      "liikennejarjestely_alkaa_txt": "15.11.2024",
+      "liikennejarjestely_paattyy_txt": "16.11.2028"
+     }
+    },
+    {
+     "type": "Feature",
+     "id": "Tilapainen_liikennejarjestely_alue.84",
+     "geometry": {
+      "type": "MultiPolygon",
+      "coordinates": [
+       [
+        [
+         [
+          24.999563,
+          60.27574003
+         ],
+         [
+          24.999947,
+          60.27577803
+         ],
+         [
+          25.000073,
+          60.27559503
+         ],
+         [
+          25.000422,
+          60.27547703
+         ],
+         [
+          25.00048,
+          60.27545303
+         ],
+         [
+          25.000515,
+          60.27544003
+         ],
+         [
+          25.000564,
+          60.27543803
+         ],
+         [
+          25.000428,
+          60.27539803
+         ],
+         [
+          25.000443,
+          60.27541703
+         ],
+         [
+          25.000398,
+          60.27545203
+         ],
+         [
+          25.000138,
+          60.27554103
+         ],
+         [
+          25.000027,
+          60.27558503
+         ],
+         [
+          24.999967,
+          60.27558503
+         ],
+         [
+          24.999904,
+          60.27558103
+         ],
+         [
+          24.999669,
+          60.27556603
+         ],
+         [
+          24.999563,
+          60.27574003
+         ]
+        ]
+       ]
+      ]
+     },
+     "geometry_name": "singlegeom",
+     "properties": {
+      "id": 84,
+      "hakemus": "Tilapäinen liikennejärjestely",
+      "hakemuksen_laji": "Muu",
+      "hakemustunnus": "LJ2500004",
+      "liikennejarjestely_alkaa": "2025-01-27",
+      "liikennejarjestely_paattyy": "2027-05-01",
+      "tyon_tarkoitus": "Työmaatieliittymän liikennejärjestelyt.",
+      "osoite": "Seulastentie 11",
+      "kaupunginosa": "40 SUUTARILA",
+      "status": "Käynnissä",
+      "hakija": "",
+      "geometrytype": "ST_Polygon",
+      "tyon_suorittaja": "",
+      "liikennejarjestely_alkaa_txt": "27.01.2025",
+      "liikennejarjestely_paattyy_txt": "01.05.2027"
+     }
+    },
+    {
+     "type": "Feature",
+     "id": "Tilapainen_liikennejarjestely_alue.85",
+     "geometry": {
+      "type": "MultiPolygon",
+      "coordinates": [
+       [
+        [
+         [
+          24.927993,
+          60.20585103
+         ],
+         [
+          24.927992,
+          60.20584903
+         ],
+         [
+          24.927991,
+          60.20584703
+         ],
+         [
+          24.927988,
+          60.20584503
+         ],
+         [
+          24.927985,
+          60.20584403
+         ],
+         [
+          24.927982,
+          60.20584303
+         ],
+         [
+          24.927977,
+          60.20584303
+         ],
+         [
+          24.927973,
+          60.20584303
+         ],
+         [
+          24.927968,
+          60.20584303
+         ],
+         [
+          24.927965,
+          60.20584403
+         ],
+         [
+          24.927962,
+          60.20584503
+         ],
+         [
+          24.92796,
+          60.20584703
+         ],
+         [
+          24.927958,
+          60.20584903
+         ],
+         [
+          24.927957,
+          60.20585103
+         ],
+         [
+          24.927957,
+          60.20585303
+         ],
+         [
+          24.927958,
+          60.20585503
+         ],
+         [
+          24.92796,
+          60.20585703
+         ],
+         [
+          24.927964,
+          60.20585803
+         ],
+         [
+          24.927968,
+          60.20586003
+         ],
+         [
+          24.927973,
+          60.20586003
+         ],
+         [
+          24.927977,
+          60.20586003
+         ],
+         [
+          24.927982,
+          60.20586003
+         ],
+         [
+          24.927985,
+          60.20585903
+         ],
+         [
+          24.927988,
+          60.20585803
+         ],
+         [
+          24.927991,
+          60.20585603
+         ],
+         [
+          24.927992,
+          60.20585403
+         ],
+         [
+          24.927993,
+          60.20585103
+         ]
+        ]
+       ]
+      ]
+     },
+     "geometry_name": "singlegeom",
+     "properties": {
+      "id": 85,
+      "hakemus": "Tilapäinen liikennejärjestely",
+      "hakemuksen_laji": "Muu",
+      "hakemustunnus": "LJ2500010-6",
+      "liikennejarjestely_alkaa": "2025-02-25",
+      "liikennejarjestely_paattyy": "2028-02-25",
+      "tyon_tarkoitus": "Työstä vastaava varaa tilaa Tulistimenkadun tilapäisille suojateille ja ajoesteille Radioportin sillan alla.\n\nLISÄYS 29.4.2025: liikennejärjestelysuunnitelmat päivitetty: liikennejärjestelyiden laajennus Tulistimenkatu, Veturitien lännenpuoleinen jkpp-väylä, Tenderinlenkki, Höyrykatu\nLISÄYS 13.10.2025: liikennejärjestelysuunnitelma päivitetty\nLISÄYS 22.10.2025: liikennejärjestelysuunnitelma päivitetty\nLISÄYS 21.11.2025: liikennejärjestelysuunnitelma päivitetty\nLISÄYS 11.5.2026: päivitetty liikennejärjestelysuunnitelma; lisätty tilapäiset bussipysäkit Veturitie ajalle 1.6.–9.8.2026.",
+      "osoite": "Tulistimenkatu ",
+      "kaupunginosa": "17 PASILA",
+      "status": "Käynnissä",
+      "hakija": "",
+      "geometrytype": "ST_Polygon",
+      "tyon_suorittaja": "",
+      "liikennejarjestely_alkaa_txt": "25.02.2025",
+      "liikennejarjestely_paattyy_txt": "25.02.2028"
+     }
+    },
+    {
+     "type": "Feature",
+     "id": "Tilapainen_liikennejarjestely_alue.86",
+     "geometry": {
+      "type": "MultiPolygon",
+      "coordinates": [
+       [
+        [
+         [
+          24.926732,
+          60.20504003
+         ],
+         [
+          24.926732,
+          60.20503803
+         ],
+         [
+          24.926729,
+          60.20503603
+         ],
+         [
+          24.926727,
+          60.20503403
+         ],
+         [
+          24.926723,
+          60.20503303
+         ],
+         [
+          24.92672,
+          60.20503203
+         ],
+         [
+          24.926716,
+          60.20503203
+         ],
+         [
+          24.926711,
+          60.20503203
+         ],
+         [
+          24.926708,
+          60.20503303
+         ],
+         [
+          24.926704,
+          60.20503303
+         ],
+         [
+          24.926701,
+          60.20503503
+         ],
+         [
+          24.926699,
+          60.20503703
+         ],
+         [
+          24.926697,
+          60.20503903
+         ],
+         [
+          24.926696,
+          60.20504103
+         ],
+         [
+          24.926697,
+          60.20504303
+         ],
+         [
+          24.926699,
+          60.20504503
+         ],
+         [
+          24.926701,
+          60.20504703
+         ],
+         [
+          24.926704,
+          60.20504803
+         ],
+         [
+          24.926708,
+          60.20504903
+         ],
+         [
+          24.926711,
+          60.20505003
+         ],
+         [
+          24.926716,
+          60.20505003
+         ],
+         [
+          24.92672,
+          60.20504903
+         ],
+         [
+          24.926724,
+          60.20504803
+         ],
+         [
+          24.926727,
+          60.20504703
+         ],
+         [
+          24.92673,
+          60.20504503
+         ],
+         [
+          24.926732,
+          60.20504303
+         ],
+         [
+          24.926732,
+          60.20504003
+         ]
+        ]
+       ]
+      ]
+     },
+     "geometry_name": "singlegeom",
+     "properties": {
+      "id": 86,
+      "hakemus": "Tilapäinen liikennejärjestely",
+      "hakemuksen_laji": "Muu",
+      "hakemustunnus": "LJ2500010-6",
+      "liikennejarjestely_alkaa": "2025-02-25",
+      "liikennejarjestely_paattyy": "2028-02-25",
+      "tyon_tarkoitus": "Työstä vastaava varaa tilaa Tulistimenkadun tilapäisille suojateille ja ajoesteille Radioportin sillan alla.\n\nLISÄYS 29.4.2025: liikennejärjestelysuunnitelmat päivitetty: liikennejärjestelyiden laajennus Tulistimenkatu, Veturitien lännenpuoleinen jkpp-väylä, Tenderinlenkki, Höyrykatu\nLISÄYS 13.10.2025: liikennejärjestelysuunnitelma päivitetty\nLISÄYS 22.10.2025: liikennejärjestelysuunnitelma päivitetty\nLISÄYS 21.11.2025: liikennejärjestelysuunnitelma päivitetty\nLISÄYS 11.5.2026: päivitetty liikennejärjestelysuunnitelma; lisätty tilapäiset bussipysäkit Veturitie ajalle 1.6.–9.8.2026.",
+      "osoite": "Tulistimenkatu ",
+      "kaupunginosa": "17 PASILA",
+      "status": "Käynnissä",
+      "hakija": "",
+      "geometrytype": "ST_Polygon",
+      "tyon_suorittaja": "",
+      "liikennejarjestely_alkaa_txt": "25.02.2025",
+      "liikennejarjestely_paattyy_txt": "25.02.2028"
+     }
+    },
+    {
+     "type": "Feature",
+     "id": "Tilapainen_liikennejarjestely_alue.87",
+     "geometry": {
+      "type": "MultiPolygon",
+      "coordinates": [
+       [
+        [
+         [
+          24.929622,
+          60.20227903
+         ],
+         [
+          24.928018,
+          60.20324603
+         ],
+         [
+          24.928084,
+          60.20327403
+         ],
+         [
+          24.929699,
+          60.20230103
+         ],
+         [
+          24.929892,
+          60.20215103
+         ],
+         [
+          24.929898,
+          60.20214403
+         ],
+         [
+          24.930124,
+          60.20166303
+         ],
+         [
+          24.93004,
+          60.20165303
+         ],
+         [
+          24.929816,
+          60.20213003
+         ],
+         [
+          24.929622,
+          60.20227903
+         ]
+        ]
+       ]
+      ]
+     },
+     "geometry_name": "singlegeom",
+     "properties": {
+      "id": 87,
+      "hakemus": "Tilapäinen liikennejärjestely",
+      "hakemuksen_laji": "Muu",
+      "hakemustunnus": "LJ2500010-6",
+      "liikennejarjestely_alkaa": "2025-02-25",
+      "liikennejarjestely_paattyy": "2028-02-25",
+      "tyon_tarkoitus": "Työstä vastaava varaa tilaa Tulistimenkadun tilapäisille suojateille ja ajoesteille Radioportin sillan alla.\n\nLISÄYS 29.4.2025: liikennejärjestelysuunnitelmat päivitetty: liikennejärjestelyiden laajennus Tulistimenkatu, Veturitien lännenpuoleinen jkpp-väylä, Tenderinlenkki, Höyrykatu\nLISÄYS 13.10.2025: liikennejärjestelysuunnitelma päivitetty\nLISÄYS 22.10.2025: liikennejärjestelysuunnitelma päivitetty\nLISÄYS 21.11.2025: liikennejärjestelysuunnitelma päivitetty\nLISÄYS 11.5.2026: päivitetty liikennejärjestelysuunnitelma; lisätty tilapäiset bussipysäkit Veturitie ajalle 1.6.–9.8.2026.",
+      "osoite": "Tulistimenkatu ",
+      "kaupunginosa": "17 PASILA",
+      "status": "Käynnissä",
+      "hakija": "",
+      "geometrytype": "ST_Polygon",
+      "tyon_suorittaja": "",
+      "liikennejarjestely_alkaa_txt": "25.02.2025",
+      "liikennejarjestely_paattyy_txt": "25.02.2028"
+     }
+    },
+    {
+     "type": "Feature",
+     "id": "Tilapainen_liikennejarjestely_alue.88",
+     "geometry": {
+      "type": "MultiPolygon",
+      "coordinates": [
+       [
+        [
+         [
+          24.92923,
+          60.20068203
+         ],
+         [
+          24.929051,
+          60.20167103
+         ],
+         [
+          24.928832,
+          60.20201503
+         ],
+         [
+          24.928073,
+          60.20252303
+         ],
+         [
+          24.927093,
+          60.20285103
+         ],
+         [
+          24.927189,
+          60.20292303
+         ],
+         [
+          24.928182,
+          60.20259103
+         ],
+         [
+          24.928204,
+          60.20258103
+         ],
+         [
+          24.92898,
+          60.20206103
+         ],
+         [
+          24.928993,
+          60.20204803
+         ],
+         [
+          24.929219,
+          60.20169303
+         ],
+         [
+          24.929222,
+          60.20168403
+         ],
+         [
+          24.929404,
+          60.20068403
+         ],
+         [
+          24.930488,
+          60.20069603
+         ],
+         [
+          24.930492,
+          60.20061003
+         ],
+         [
+          24.929419,
+          60.20059803
+         ],
+         [
+          24.929568,
+          60.19977903
+         ],
+         [
+          24.929786,
+          60.19954803
+         ],
+         [
+          24.929794,
+          60.19953303
+         ],
+         [
+          24.929791,
+          60.19951803
+         ],
+         [
+          24.929777,
+          60.19950403
+         ],
+         [
+          24.929754,
+          60.19949403
+         ],
+         [
+          24.929511,
+          60.19941803
+         ],
+         [
+          24.929484,
+          60.19941203
+         ],
+         [
+          24.929454,
+          60.19941103
+         ],
+         [
+          24.929426,
+          60.19941503
+         ],
+         [
+          24.929156,
+          60.19948203
+         ],
+         [
+          24.929133,
+          60.19949103
+         ],
+         [
+          24.929117,
+          60.19950203
+         ],
+         [
+          24.92899,
+          60.19963203
+         ],
+         [
+          24.928982,
+          60.19964803
+         ],
+         [
+          24.928918,
+          60.20013503
+         ],
+         [
+          24.928599,
+          60.20050503
+         ],
+         [
+          24.928568,
+          60.20054303
+         ],
+         [
+          24.927448,
+          60.20032903
+         ],
+         [
+          24.927386,
+          60.20040903
+         ],
+         [
+          24.928584,
+          60.20063803
+         ],
+         [
+          24.928617,
+          60.20064103
+         ],
+         [
+          24.928649,
+          60.20063803
+         ],
+         [
+          24.928677,
+          60.20062803
+         ],
+         [
+          24.928684,
+          60.20062303
+         ],
+         [
+          24.928678,
+          60.20065003
+         ],
+         [
+          24.929209,
+          60.20068203
+         ],
+         [
+          24.929217,
+          60.20068203
+         ],
+         [
+          24.92923,
+          60.20068203
+         ]
+        ],
+        [
+         [
+          24.928736,
+          60.20056603
+         ],
+         [
+          24.928759,
+          60.20053903
+         ],
+         [
+          24.929084,
+          60.20016203
+         ],
+         [
+          24.92909,
+          60.20014803
+         ],
+         [
+          24.929153,
+          60.19966203
+         ],
+         [
+          24.92926,
+          60.19955303
+         ],
+         [
+          24.92946,
+          60.19950303
+         ],
+         [
+          24.929597,
+          60.19954603
+         ],
+         [
+          24.929405,
+          60.19975003
+         ],
+         [
+          24.929397,
+          60.19976403
+         ],
+         [
+          24.929246,
+          60.20059603
+         ],
+         [
+          24.929225,
+          60.20059603
+         ],
+         [
+          24.928736,
+          60.20056603
+         ]
+        ]
+       ]
+      ]
+     },
+     "geometry_name": "singlegeom",
+     "properties": {
+      "id": 88,
+      "hakemus": "Tilapäinen liikennejärjestely",
+      "hakemuksen_laji": "Muu",
+      "hakemustunnus": "LJ2500010-6",
+      "liikennejarjestely_alkaa": "2025-02-25",
+      "liikennejarjestely_paattyy": "2028-02-25",
+      "tyon_tarkoitus": "Työstä vastaava varaa tilaa Tulistimenkadun tilapäisille suojateille ja ajoesteille Radioportin sillan alla.\n\nLISÄYS 29.4.2025: liikennejärjestelysuunnitelmat päivitetty: liikennejärjestelyiden laajennus Tulistimenkatu, Veturitien lännenpuoleinen jkpp-väylä, Tenderinlenkki, Höyrykatu\nLISÄYS 13.10.2025: liikennejärjestelysuunnitelma päivitetty\nLISÄYS 22.10.2025: liikennejärjestelysuunnitelma päivitetty\nLISÄYS 21.11.2025: liikennejärjestelysuunnitelma päivitetty\nLISÄYS 11.5.2026: päivitetty liikennejärjestelysuunnitelma; lisätty tilapäiset bussipysäkit Veturitie ajalle 1.6.–9.8.2026.",
+      "osoite": "Tulistimenkatu ",
+      "kaupunginosa": "17 PASILA",
+      "status": "Käynnissä",
+      "hakija": "",
+      "geometrytype": "ST_Polygon",
+      "tyon_suorittaja": "",
+      "liikennejarjestely_alkaa_txt": "25.02.2025",
+      "liikennejarjestely_paattyy_txt": "25.02.2028"
+     }
+    },
+    {
+     "type": "Feature",
+     "id": "Tilapainen_liikennejarjestely_alue.126",
+     "geometry": {
+      "type": "MultiPolygon",
+      "coordinates": [
+       [
+        [
+         [
+          24.92276,
+          60.16489203
+         ],
+         [
+          24.92225,
+          60.16385903
+         ],
+         [
+          24.922695,
+          60.16404803
+         ],
+         [
+          24.923486,
+          60.16600903
+         ],
+         [
+          24.923366,
+          60.16703703
+         ],
+         [
+          24.923123,
+          60.16704103
+         ],
+         [
+          24.923087,
+          60.16594603
+         ],
+         [
+          24.92276,
+          60.16489203
+         ]
+        ]
+       ]
+      ]
+     },
+     "geometry_name": "singlegeom",
+     "properties": {
+      "id": 126,
+      "hakemus": "Tilapäinen liikennejärjestely",
+      "hakemuksen_laji": "Muu",
+      "hakemustunnus": "LJ2500046",
+      "liikennejarjestely_alkaa": "2025-08-01",
+      "liikennejarjestely_paattyy": "2028-12-31",
+      "tyon_tarkoitus": "Työstä vastaava varaa tilaa tilapäisille liikennejärjestelyille kahden rakentamisvaiheen välissä.",
+      "osoite": " Mechelininkatu, Lapinlahdenkatu, Itämerenkatu ja Porkkalankatu",
+      "kaupunginosa": "4 KAMPPI",
+      "status": "Käynnissä",
+      "hakija": "",
+      "geometrytype": "ST_Polygon",
+      "tyon_suorittaja": "",
+      "liikennejarjestely_alkaa_txt": "01.08.2025",
+      "liikennejarjestely_paattyy_txt": "31.12.2028"
+     }
+    },
+    {
+     "type": "Feature",
+     "id": "Tilapainen_liikennejarjestely_alue.127",
+     "geometry": {
+      "type": "MultiPolygon",
+      "coordinates": [
+       [
+        [
+         [
+          24.92075,
+          60.16354903
+         ],
+         [
+          24.920995,
+          60.16356703
+         ],
+         [
+          24.921055,
+          60.16349003
+         ],
+         [
+          24.921511,
+          60.16351203
+         ],
+         [
+          24.921505,
+          60.16359203
+         ],
+         [
+          24.921826,
+          60.16360003
+         ],
+         [
+          24.921735,
+          60.16366203
+         ],
+         [
+          24.921485,
+          60.16365003
+         ],
+         [
+          24.921358,
+          60.16453203
+         ],
+         [
+          24.921337,
+          60.16470903
+         ],
+         [
+          24.921182,
+          60.16475403
+         ],
+         [
+          24.921297,
+          60.16508503
+         ],
+         [
+          24.921195,
+          60.16569103
+         ],
+         [
+          24.921048,
+          60.16666103
+         ],
+         [
+          24.921117,
+          60.16683303
+         ],
+         [
+          24.921302,
+          60.16708203
+         ],
+         [
+          24.921266,
+          60.16744403
+         ],
+         [
+          24.921441,
+          60.16745103
+         ],
+         [
+          24.921445,
+          60.16773103
+         ],
+         [
+          24.92158,
+          60.16777103
+         ],
+         [
+          24.922276,
+          60.16777303
+         ],
+         [
+          24.922492,
+          60.16761103
+         ],
+         [
+          24.922372,
+          60.16758403
+         ],
+         [
+          24.922186,
+          60.16771903
+         ],
+         [
+          24.921751,
+          60.16770103
+         ],
+         [
+          24.921541,
+          60.16758603
+         ],
+         [
+          24.921551,
+          60.16743403
+         ],
+         [
+          24.921493,
+          60.16678603
+         ],
+         [
+          24.921257,
+          60.16679303
+         ],
+         [
+          24.921188,
+          60.16649103
+         ],
+         [
+          24.921259,
+          60.16611003
+         ],
+         [
+          24.92136,
+          60.16557703
+         ],
+         [
+          24.921461,
+          60.16490103
+         ],
+         [
+          24.921546,
+          60.16486203
+         ],
+         [
+          24.921566,
+          60.16474703
+         ],
+         [
+          24.921446,
+          60.16471903
+         ],
+         [
+          24.921485,
+          60.16459103
+         ],
+         [
+          24.921486,
+          60.16448403
+         ],
+         [
+          24.921522,
+          60.16415503
+         ],
+         [
+          24.921672,
+          60.16388603
+         ],
+         [
+          24.921883,
+          60.16369203
+         ],
+         [
+          24.922054,
+          60.16348003
+         ],
+         [
+          24.921548,
+          60.16346403
+         ],
+         [
+          24.921558,
+          60.16343003
+         ],
+         [
+          24.920938,
+          60.16340203
+         ],
+         [
+          24.920863,
+          60.16344203
+         ],
+         [
+          24.92084,
+          60.16344603
+         ],
+         [
+          24.920657,
+          60.16343803
+         ],
+         [
+          24.920654,
+          60.16346903
+         ],
+         [
+          24.920758,
+          60.16347203
+         ],
+         [
+          24.92075,
+          60.16354903
+         ]
+        ]
+       ]
+      ]
+     },
+     "geometry_name": "singlegeom",
+     "properties": {
+      "id": 127,
+      "hakemus": "Tilapäinen liikennejärjestely",
+      "hakemuksen_laji": "Muu",
+      "hakemustunnus": "LJ2500046",
+      "liikennejarjestely_alkaa": "2025-08-01",
+      "liikennejarjestely_paattyy": "2028-12-31",
+      "tyon_tarkoitus": "Työstä vastaava varaa tilaa tilapäisille liikennejärjestelyille kahden rakentamisvaiheen välissä.",
+      "osoite": " Mechelininkatu, Lapinlahdenkatu, Itämerenkatu ja Porkkalankatu",
+      "kaupunginosa": "4 KAMPPI",
+      "status": "Käynnissä",
+      "hakija": "",
+      "geometrytype": "ST_Polygon",
+      "tyon_suorittaja": "",
+      "liikennejarjestely_alkaa_txt": "01.08.2025",
+      "liikennejarjestely_paattyy_txt": "31.12.2028"
+     }
+    },
+    {
+     "type": "Feature",
+     "id": "Tilapainen_liikennejarjestely_alue.136",
+     "geometry": {
+      "type": "MultiPolygon",
+      "coordinates": [
+       [
+        [
+         [
+          24.904988,
+          60.15614503
+         ],
+         [
+          24.905567,
+          60.15562203
+         ],
+         [
+          24.906463,
+          60.15477803
+         ],
+         [
+          24.904817,
+          60.15396403
+         ],
+         [
+          24.904814,
+          60.15396203
+         ],
+         [
+          24.904812,
+          60.15396003
+         ],
+         [
+          24.904633,
+          60.15345703
+         ],
+         [
+          24.904633,
+          60.15345403
+         ],
+         [
+          24.904634,
+          60.15345103
+         ],
+         [
+          24.905519,
+          60.15247303
+         ],
+         [
+          24.905551,
+          60.15248103
+         ],
+         [
+          24.904668,
+          60.15345603
+         ],
+         [
+          24.904845,
+          60.15395403
+         ],
+         [
+          24.906496,
+          60.15477003
+         ],
+         [
+          24.9065,
+          60.15477303
+         ],
+         [
+          24.906501,
+          60.15477703
+         ],
+         [
+          24.906499,
+          60.15478003
+         ],
+         [
+          24.905596,
+          60.15563203
+         ],
+         [
+          24.905592,
+          60.15563503
+         ],
+         [
+          24.905038,
+          60.15613803
+         ],
+         [
+          24.910987,
+          60.15781403
+         ],
+         [
+          24.910971,
+          60.15783003
+         ],
+         [
+          24.904988,
+          60.15614503
+         ]
+        ]
+       ]
+      ]
+     },
+     "geometry_name": "singlegeom",
+     "properties": {
+      "id": 136,
+      "hakemus": "Tilapäinen liikennejärjestely",
+      "hakemuksen_laji": "Muu",
+      "hakemustunnus": "LJ2500108",
+      "liikennejarjestely_alkaa": "2025-08-18",
+      "liikennejarjestely_paattyy": "2027-08-19",
+      "tyon_tarkoitus": "Työstä vastaava varaa tilaa työmaatien opastukselle. ",
+      "osoite": "Saukonlaituri, Saukonkanava",
+      "kaupunginosa": "20 LÄNSISATAMA",
+      "status": "Käynnissä",
+      "hakija": "",
+      "geometrytype": "ST_Polygon",
+      "tyon_suorittaja": "",
+      "liikennejarjestely_alkaa_txt": "18.08.2025",
+      "liikennejarjestely_paattyy_txt": "19.08.2027"
+     }
+    },
+    {
+     "type": "Feature",
+     "id": "Tilapainen_liikennejarjestely_alue.165",
+     "geometry": {
+      "type": "MultiPolygon",
+      "coordinates": [
+       [
+        [
+         [
+          24.926114,
+          60.24579203
+         ],
+         [
+          24.926106,
+          60.24580803
+         ],
+         [
+          24.925744,
+          60.24576603
+         ],
+         [
+          24.925752,
+          60.24575003
+         ],
+         [
+          24.926114,
+          60.24579203
+         ]
+        ]
+       ]
+      ]
+     },
+     "geometry_name": "singlegeom",
+     "properties": {
+      "id": 165,
+      "hakemus": "Tilapäinen liikennejärjestely",
+      "hakemuksen_laji": "Muu",
+      "hakemustunnus": "LJ2500144",
+      "liikennejarjestely_alkaa": "2025-11-27",
+      "liikennejarjestely_paattyy": "2028-12-31",
+      "tyon_tarkoitus": "Työstä vastaava varaa tilaa esteettömän asunnon sisäänkäynnin vapaana pitämiselle.  ",
+      "osoite": "Välitalontie 71",
+      "kaupunginosa": "34 PAKILA",
+      "status": "Käynnissä",
+      "hakija": "",
+      "geometrytype": "ST_Polygon",
+      "tyon_suorittaja": "",
+      "liikennejarjestely_alkaa_txt": "27.11.2025",
+      "liikennejarjestely_paattyy_txt": "31.12.2028"
+     }
+    },
+    {
+     "type": "Feature",
+     "id": "Tilapainen_liikennejarjestely_alue.192",
+     "geometry": {
+      "type": "MultiPolygon",
+      "coordinates": [
+       [
+        [
+         [
+          24.926768,
+          60.23342103
+         ],
+         [
+          24.926765,
+          60.23342003
+         ],
+         [
+          24.926462,
+          60.23338803
+         ],
+         [
+          24.926126,
+          60.23331803
+         ],
+         [
+          24.92614,
+          60.23330203
+         ],
+         [
+          24.926471,
+          60.23337203
+         ],
+         [
+          24.926771,
+          60.23340303
+         ],
+         [
+          24.929572,
+          60.23345103
+         ],
+         [
+          24.92957,
+          60.23346903
+         ],
+         [
+          24.926768,
+          60.23342103
+         ]
+        ]
+       ]
+      ]
+     },
+     "geometry_name": "singlegeom",
+     "properties": {
+      "id": 192,
+      "hakemus": "Tilapäinen liikennejärjestely",
+      "hakemuksen_laji": "Muu",
+      "hakemustunnus": "LJ2600004",
+      "liikennejarjestely_alkaa": "2026-01-27",
+      "liikennejarjestely_paattyy": "2028-10-31",
+      "tyon_tarkoitus": "Pysäköintijärjestelyt pelastustien avoinna pitämiseksi",
+      "osoite": "Lampuotilantie 32-38",
+      "kaupunginosa": "28 OULUNKYLÄ",
+      "status": "Käynnissä",
+      "hakija": "",
+      "geometrytype": "ST_Polygon",
+      "tyon_suorittaja": "",
+      "liikennejarjestely_alkaa_txt": "27.01.2026",
+      "liikennejarjestely_paattyy_txt": "31.10.2028"
+     }
+    },
+    {
+     "type": "Feature",
+     "id": "Tilapainen_liikennejarjestely_alue.193",
+     "geometry": {
+      "type": "MultiPolygon",
+      "coordinates": [
+       [
+        [
+         [
+          24.926534,
+          60.23333303
+         ],
+         [
+          24.929176,
+          60.23338803
+         ],
+         [
+          24.929664,
+          60.23328203
+         ],
+         [
+          24.929678,
+          60.23329803
+         ],
+         [
+          24.929186,
+          60.23340503
+         ],
+         [
+          24.929178,
+          60.23340603
+         ],
+         [
+          24.926529,
+          60.23335103
+         ],
+         [
+          24.926522,
+          60.23335003
+         ],
+         [
+          24.92621,
+          60.23327403
+         ],
+         [
+          24.926226,
+          60.23325803
+         ],
+         [
+          24.926534,
+          60.23333303
+         ]
+        ]
+       ]
+      ]
+     },
+     "geometry_name": "singlegeom",
+     "properties": {
+      "id": 193,
+      "hakemus": "Tilapäinen liikennejärjestely",
+      "hakemuksen_laji": "Muu",
+      "hakemustunnus": "LJ2600004",
+      "liikennejarjestely_alkaa": "2026-01-27",
+      "liikennejarjestely_paattyy": "2028-10-31",
+      "tyon_tarkoitus": "Pysäköintijärjestelyt pelastustien avoinna pitämiseksi",
+      "osoite": "Lampuotilantie 32-38",
+      "kaupunginosa": "28 OULUNKYLÄ",
+      "status": "Käynnissä",
+      "hakija": "",
+      "geometrytype": "ST_Polygon",
+      "tyon_suorittaja": "",
+      "liikennejarjestely_alkaa_txt": "27.01.2026",
+      "liikennejarjestely_paattyy_txt": "31.10.2028"
+     }
+    },
+    {
+     "type": "Feature",
+     "id": "Tilapainen_liikennejarjestely_alue.201",
+     "geometry": {
+      "type": "MultiPolygon",
+      "coordinates": [
+       [
+        [
+         [
+          24.973495,
+          60.18885703
+         ],
+         [
+          24.973526,
+          60.18884903
+         ],
+         [
+          24.973561,
+          60.18888703
+         ],
+         [
+          24.97353,
+          60.18889503
+         ],
+         [
+          24.973495,
+          60.18885703
+         ]
+        ]
+       ]
+      ]
+     },
+     "geometry_name": "singlegeom",
+     "properties": {
+      "id": 201,
+      "hakemus": "Tilapäinen liikennejärjestely",
+      "hakemuksen_laji": "Muu",
+      "hakemustunnus": "LJ2600058-2",
+      "liikennejarjestely_alkaa": "2026-05-14",
+      "liikennejarjestely_paattyy": "2028-08-31",
+      "tyon_tarkoitus": "Väliaikaiset sähköpotkulautojen parkit\n\nLISÄYS 16.7.2026: lisäaikaa 1.9.2026 - 31.8.2028.",
+      "osoite": "Panimokatu 2 ja Hermannin rantatie 7",
+      "kaupunginosa": "10 SÖRNÄINEN",
+      "status": "Käynnissä",
+      "hakija": "",
+      "geometrytype": "ST_Polygon",
+      "tyon_suorittaja": "",
+      "liikennejarjestely_alkaa_txt": "14.05.2026",
+      "liikennejarjestely_paattyy_txt": "31.08.2028"
+     }
+    },
+    {
+     "type": "Feature",
+     "id": "Tilapainen_liikennejarjestely_alue.202",
+     "geometry": {
+      "type": "MultiPolygon",
+      "coordinates": [
+       [
+        [
+         [
+          24.977758,
+          60.18760303
+         ],
+         [
+          24.977731,
+          60.18761403
+         ],
+         [
+          24.977675,
+          60.18757903
+         ],
+         [
+          24.977702,
+          60.18756803
+         ],
+         [
+          24.977758,
+          60.18760303
+         ]
+        ]
+       ]
+      ]
+     },
+     "geometry_name": "singlegeom",
+     "properties": {
+      "id": 202,
+      "hakemus": "Tilapäinen liikennejärjestely",
+      "hakemuksen_laji": "Muu",
+      "hakemustunnus": "LJ2600058-2",
+      "liikennejarjestely_alkaa": "2026-05-14",
+      "liikennejarjestely_paattyy": "2028-08-31",
+      "tyon_tarkoitus": "Väliaikaiset sähköpotkulautojen parkit\n\nLISÄYS 16.7.2026: lisäaikaa 1.9.2026 - 31.8.2028.",
+      "osoite": "Panimokatu 2 ja Hermannin rantatie 7",
+      "kaupunginosa": "10 SÖRNÄINEN",
+      "status": "Käynnissä",
+      "hakija": "",
+      "geometrytype": "ST_Polygon",
+      "tyon_suorittaja": "",
+      "liikennejarjestely_alkaa_txt": "14.05.2026",
+      "liikennejarjestely_paattyy_txt": "31.08.2028"
+     }
+    },
+    {
+     "type": "Feature",
+     "id": "Tilapainen_liikennejarjestely_alue.204",
+     "geometry": {
+      "type": "MultiPolygon",
+      "coordinates": [
+       [
+        [
+         [
+          24.853122,
+          60.22696403
+         ],
+         [
+          24.853121,
+          60.22696203
+         ],
+         [
+          24.853119,
+          60.22696003
+         ],
+         [
+          24.853116,
+          60.22695903
+         ],
+         [
+          24.853112,
+          60.22695703
+         ],
+         [
+          24.853109,
+          60.22695603
+         ],
+         [
+          24.853105,
+          60.22695603
+         ],
+         [
+          24.8531,
+          60.22695603
+         ],
+         [
+          24.853097,
+          60.22695703
+         ],
+         [
+          24.853094,
+          60.22695803
+         ],
+         [
+          24.853091,
+          60.22695903
+         ],
+         [
+          24.853088,
+          60.22696103
+         ],
+         [
+          24.853086,
+          60.22696303
+         ],
+         [
+          24.853086,
+          60.22696503
+         ],
+         [
+          24.853086,
+          60.22696703
+         ],
+         [
+          24.853088,
+          60.22696903
+         ],
+         [
+          24.85309,
+          60.22697103
+         ],
+         [
+          24.853094,
+          60.22697203
+         ],
+         [
+          24.853097,
+          60.22697303
+         ],
+         [
+          24.8531,
+          60.22697403
+         ],
+         [
+          24.853104,
+          60.22697403
+         ],
+         [
+          24.853109,
+          60.22697403
+         ],
+         [
+          24.853112,
+          60.22697303
+         ],
+         [
+          24.853115,
+          60.22697203
+         ],
+         [
+          24.853118,
+          60.22697103
+         ],
+         [
+          24.853119,
+          60.22696903
+         ],
+         [
+          24.853121,
+          60.22696703
+         ],
+         [
+          24.853122,
+          60.22696403
+         ]
+        ]
+       ]
+      ]
+     },
+     "geometry_name": "singlegeom",
+     "properties": {
+      "id": 204,
+      "hakemus": "Tilapäinen liikennejärjestely",
+      "hakemuksen_laji": "Muu",
+      "hakemustunnus": "LJ2600103",
+      "liikennejarjestely_alkaa": "2026-08-17",
+      "liikennejarjestely_paattyy": "2029-08-31",
+      "tyon_tarkoitus": "Tilapäinen kirjastoautopysäkki.",
+      "osoite": "Konalantie 10",
+      "kaupunginosa": "46 PITÄJÄNMÄKI",
+      "status": "Käynnissä",
+      "hakija": "",
+      "geometrytype": "ST_Polygon",
+      "tyon_suorittaja": "",
+      "liikennejarjestely_alkaa_txt": "17.08.2026",
+      "liikennejarjestely_paattyy_txt": "31.08.2029"
+     }
+    },
+    {
+     "type": "Feature",
+     "id": "Tilapainen_liikennejarjestely_alue.205",
+     "geometry": {
+      "type": "MultiPolygon",
+      "coordinates": [
+       [
+        [
+         [
+          24.852846,
+          60.22709003
+         ],
+         [
+          24.852845,
+          60.22708803
+         ],
+         [
+          24.852844,
+          60.22708603
+         ],
+         [
+          24.852841,
+          60.22708403
+         ],
+         [
+          24.852838,
+          60.22708303
+         ],
+         [
+          24.852835,
+          60.22708203
+         ],
+         [
+          24.852831,
+          60.22708203
+         ],
+         [
+          24.852828,
+          60.22708103
+         ],
+         [
+          24.852824,
+          60.22708203
+         ],
+         [
+          24.852819,
+          60.22708203
+         ],
+         [
+          24.852816,
+          60.22708303
+         ],
+         [
+          24.852814,
+          60.22708503
+         ],
+         [
+          24.852811,
+          60.22708703
+         ],
+         [
+          24.85281,
+          60.22708903
+         ],
+         [
+          24.85281,
+          60.22709103
+         ],
+         [
+          24.852811,
+          60.22709303
+         ],
+         [
+          24.852812,
+          60.22709503
+         ],
+         [
+          24.852815,
+          60.22709703
+         ],
+         [
+          24.852818,
+          60.22709803
+         ],
+         [
+          24.852821,
+          60.22709903
+         ],
+         [
+          24.852826,
+          60.22709903
+         ],
+         [
+          24.85283,
+          60.22709903
+         ],
+         [
+          24.852835,
+          60.22709903
+         ],
+         [
+          24.852838,
+          60.22709803
+         ],
+         [
+          24.852841,
+          60.22709703
+         ],
+         [
+          24.852843,
+          60.22709503
+         ],
+         [
+          24.852845,
+          60.22709303
+         ],
+         [
+          24.852846,
+          60.22709003
+         ]
+        ]
+       ]
+      ]
+     },
+     "geometry_name": "singlegeom",
+     "properties": {
+      "id": 205,
+      "hakemus": "Tilapäinen liikennejärjestely",
+      "hakemuksen_laji": "Muu",
+      "hakemustunnus": "LJ2600103",
+      "liikennejarjestely_alkaa": "2026-08-17",
+      "liikennejarjestely_paattyy": "2029-08-31",
+      "tyon_tarkoitus": "Tilapäinen kirjastoautopysäkki.",
+      "osoite": "Konalantie 10",
+      "kaupunginosa": "46 PITÄJÄNMÄKI",
+      "status": "Käynnissä",
+      "hakija": "",
+      "geometrytype": "ST_Polygon",
+      "tyon_suorittaja": "",
+      "liikennejarjestely_alkaa_txt": "17.08.2026",
+      "liikennejarjestely_paattyy_txt": "31.08.2029"
+     }
+    },
+    {
+     "type": "Feature",
+     "id": "Tilapainen_liikennejarjestely_alue.220",
+     "geometry": {
+      "type": "MultiPolygon",
+      "coordinates": [
+       [
+        [
+         [
+          24.878646,
+          60.20646503
+         ],
+         [
+          24.878645,
+          60.20646303
+         ],
+         [
+          24.878643,
+          60.20646003
+         ],
+         [
+          24.87864,
+          60.20645803
+         ],
+         [
+          24.878636,
+          60.20645603
+         ],
+         [
+          24.878632,
+          60.20645503
+         ],
+         [
+          24.878629,
+          60.20645403
+         ],
+         [
+          24.878624,
+          60.20645303
+         ],
+         [
+          24.878619,
+          60.20645303
+         ],
+         [
+          24.878614,
+          60.20645303
+         ],
+         [
+          24.878611,
+          60.20645403
+         ],
+         [
+          24.878606,
+          60.20645503
+         ],
+         [
+          24.878602,
+          60.20645603
+         ],
+         [
+          24.878598,
+          60.20645803
+         ],
+         [
+          24.878595,
+          60.20646003
+         ],
+         [
+          24.878594,
+          60.20646203
+         ],
+         [
+          24.878592,
+          60.20646403
+         ],
+         [
+          24.878592,
+          60.20646703
+         ],
+         [
+          24.878592,
+          60.20646903
+         ],
+         [
+          24.878593,
+          60.20647103
+         ],
+         [
+          24.878595,
+          60.20647303
+         ],
+         [
+          24.878598,
+          60.20647503
+         ],
+         [
+          24.878602,
+          60.20647703
+         ],
+         [
+          24.878606,
+          60.20647903
+         ],
+         [
+          24.878611,
+          60.20648003
+         ],
+         [
+          24.878616,
+          60.20648003
+         ],
+         [
+          24.878622,
+          60.20648003
+         ],
+         [
+          24.878627,
+          60.20648003
+         ],
+         [
+          24.878632,
+          60.20647903
+         ],
+         [
+          24.878636,
+          60.20647703
+         ],
+         [
+          24.87864,
+          60.20647503
+         ],
+         [
+          24.878643,
+          60.20647303
+         ],
+         [
+          24.878645,
+          60.20647103
+         ],
+         [
+          24.878645,
+          60.20646903
+         ],
+         [
+          24.878646,
+          60.20646503
+         ]
+        ]
+       ]
+      ]
+     },
+     "geometry_name": "singlegeom",
+     "properties": {
+      "id": 220,
+      "hakemus": "Tilapäinen liikennejärjestely",
+      "hakemuksen_laji": "Muu",
+      "hakemustunnus": "LJ2600122",
+      "liikennejarjestely_alkaa": "2026-07-31",
+      "liikennejarjestely_paattyy": "2027-08-31",
+      "tyon_tarkoitus": "Tilapäinen liikennemerkki.",
+      "osoite": "Naantalintie 2 vp",
+      "kaupunginosa": "30 MUNKKINIEMI",
+      "status": "Käynnissä",
+      "hakija": "",
+      "geometrytype": "ST_Polygon",
+      "tyon_suorittaja": "",
+      "liikennejarjestely_alkaa_txt": "31.07.2026",
+      "liikennejarjestely_paattyy_txt": "31.08.2027"
+     }
+    },
+    {
+     "type": "Feature",
+     "id": "Tilapainen_liikennejarjestely_alue.221",
+     "geometry": {
+      "type": "MultiPolygon",
+      "coordinates": [
+       [
+        [
+         [
+          24.922363,
+          60.16380403
+         ],
+         [
+          24.922362,
+          60.16380203
+         ],
+         [
+          24.922361,
+          60.16380003
+         ],
+         [
+          24.922358,
+          60.16379803
+         ],
+         [
+          24.922355,
+          60.16379603
+         ],
+         [
+          24.922351,
+          60.16379403
+         ],
+         [
+          24.922346,
+          60.16379303
+         ],
+         [
+          24.922341,
+          60.16379203
+         ],
+         [
+          24.922336,
+          60.16379203
+         ],
+         [
+          24.922331,
+          60.16379203
+         ],
+         [
+          24.922328,
+          60.16379303
+         ],
+         [
+          24.922323,
+          60.16379403
+         ],
+         [
+          24.922319,
+          60.16379503
+         ],
+         [
+          24.922315,
+          60.16379703
+         ],
+         [
+          24.922312,
+          60.16379903
+         ],
+         [
+          24.92231,
+          60.16380203
+         ],
+         [
+          24.922309,
+          60.16380403
+         ],
+         [
+          24.922309,
+          60.16380603
+         ],
+         [
+          24.922309,
+          60.16380803
+         ],
+         [
+          24.922311,
+          60.16381103
+         ],
+         [
+          24.922313,
+          60.16381303
+         ],
+         [
+          24.922317,
+          60.16381503
+         ],
+         [
+          24.922321,
+          60.16381703
+         ],
+         [
+          24.922326,
+          60.16381803
+         ],
+         [
+          24.922331,
+          60.16381903
+         ],
+         [
+          24.922336,
+          60.16381903
+         ],
+         [
+          24.922341,
+          60.16381903
+         ],
+         [
+          24.922344,
+          60.16381803
+         ],
+         [
+          24.922349,
+          60.16381703
+         ],
+         [
+          24.922353,
+          60.16381603
+         ],
+         [
+          24.922357,
+          60.16381403
+         ],
+         [
+          24.92236,
+          60.16381203
+         ],
+         [
+          24.922362,
+          60.16380903
+         ],
+         [
+          24.922363,
+          60.16380703
+         ],
+         [
+          24.922363,
+          60.16380403
+         ]
+        ]
+       ]
+      ]
+     },
+     "geometry_name": "singlegeom",
+     "properties": {
+      "id": 221,
+      "hakemus": "Tilapäinen liikennejärjestely",
+      "hakemuksen_laji": "Muu",
+      "hakemustunnus": "LJ2600132-2",
+      "liikennejarjestely_alkaa": "2026-08-28",
+      "liikennejarjestely_paattyy": "2027-12-31",
+      "tyon_tarkoitus": "Työstä vastaava varaa tilaa tilapäisille liikennemerkeille.\n\nLISÄYS 11.11.2026: poistettu toinen työnsuorittajan yhteyshenkilö ",
+      "osoite": "Mechelininkatu X Ruoholahdenranta ",
+      "kaupunginosa": "4 KAMPPI",
+      "status": "Käynnissä",
+      "hakija": "",
+      "geometrytype": "ST_Polygon",
+      "tyon_suorittaja": "",
+      "liikennejarjestely_alkaa_txt": "28.08.2026",
+      "liikennejarjestely_paattyy_txt": "31.12.2027"
+     }
+    },
+    {
+     "type": "Feature",
+     "id": "Tilapainen_liikennejarjestely_alue.222",
+     "geometry": {
+      "type": "MultiPolygon",
+      "coordinates": [
+       [
+        [
+         [
+          24.922201,
+          60.16356503
+         ],
+         [
+          24.9222,
+          60.16356303
+         ],
+         [
+          24.922199,
+          60.16356103
+         ],
+         [
+          24.922197,
+          60.16355903
+         ],
+         [
+          24.922193,
+          60.16355703
+         ],
+         [
+          24.922189,
+          60.16355503
+         ],
+         [
+          24.922185,
+          60.16355403
+         ],
+         [
+          24.92218,
+          60.16355303
+         ],
+         [
+          24.922174,
+          60.16355303
+         ],
+         [
+          24.922169,
+          60.16355303
+         ],
+         [
+          24.922164,
+          60.16355403
+         ],
+         [
+          24.922159,
+          60.16355503
+         ],
+         [
+          24.922155,
+          60.16355703
+         ],
+         [
+          24.922152,
+          60.16355903
+         ],
+         [
+          24.922149,
+          60.16356103
+         ],
+         [
+          24.922149,
+          60.16356303
+         ],
+         [
+          24.922147,
+          60.16356503
+         ],
+         [
+          24.922147,
+          60.16356703
+         ],
+         [
+          24.922148,
+          60.16356903
+         ],
+         [
+          24.922149,
+          60.16357203
+         ],
+         [
+          24.922152,
+          60.16357403
+         ],
+         [
+          24.922155,
+          60.16357603
+         ],
+         [
+          24.922159,
+          60.16357803
+         ],
+         [
+          24.922164,
+          60.16357903
+         ],
+         [
+          24.922169,
+          60.16358003
+         ],
+         [
+          24.922174,
+          60.16358003
+         ],
+         [
+          24.92218,
+          60.16358003
+         ],
+         [
+          24.922185,
+          60.16357903
+         ],
+         [
+          24.922189,
+          60.16357803
+         ],
+         [
+          24.922193,
+          60.16357603
+         ],
+         [
+          24.922197,
+          60.16357403
+         ],
+         [
+          24.922199,
+          60.16357203
+         ],
+         [
+          24.9222,
+          60.16357003
+         ],
+         [
+          24.922201,
+          60.16356803
+         ],
+         [
+          24.922201,
+          60.16356503
+         ]
+        ]
+       ]
+      ]
+     },
+     "geometry_name": "singlegeom",
+     "properties": {
+      "id": 222,
+      "hakemus": "Tilapäinen liikennejärjestely",
+      "hakemuksen_laji": "Muu",
+      "hakemustunnus": "LJ2600132-2",
+      "liikennejarjestely_alkaa": "2026-08-28",
+      "liikennejarjestely_paattyy": "2027-12-31",
+      "tyon_tarkoitus": "Työstä vastaava varaa tilaa tilapäisille liikennemerkeille.\n\nLISÄYS 11.11.2026: poistettu toinen työnsuorittajan yhteyshenkilö ",
+      "osoite": "Mechelininkatu X Ruoholahdenranta ",
+      "kaupunginosa": "4 KAMPPI",
+      "status": "Käynnissä",
+      "hakija": "",
+      "geometrytype": "ST_Polygon",
+      "tyon_suorittaja": "",
+      "liikennejarjestely_alkaa_txt": "28.08.2026",
+      "liikennejarjestely_paattyy_txt": "31.12.2027"
+     }
+    },
+    {
+     "type": "Feature",
+     "id": "Tilapainen_liikennejarjestely_alue.223",
+     "geometry": {
+      "type": "MultiPolygon",
+      "coordinates": [
+       [
+        [
+         [
+          24.922417,
+          60.16367403
+         ],
+         [
+          24.922416,
+          60.16367203
+         ],
+         [
+          24.922415,
+          60.16367003
+         ],
+         [
+          24.922413,
+          60.16366803
+         ],
+         [
+          24.922409,
+          60.16366603
+         ],
+         [
+          24.922405,
+          60.16366403
+         ],
+         [
+          24.922401,
+          60.16366303
+         ],
+         [
+          24.922396,
+          60.16366203
+         ],
+         [
+          24.92239,
+          60.16366203
+         ],
+         [
+          24.922385,
+          60.16366203
+         ],
+         [
+          24.922382,
+          60.16366303
+         ],
+         [
+          24.922378,
+          60.16366403
+         ],
+         [
+          24.922373,
+          60.16366503
+         ],
+         [
+          24.922369,
+          60.16366703
+         ],
+         [
+          24.922366,
+          60.16366903
+         ],
+         [
+          24.922364,
+          60.16367203
+         ],
+         [
+          24.922363,
+          60.16367403
+         ],
+         [
+          24.922363,
+          60.16367703
+         ],
+         [
+          24.922364,
+          60.16367903
+         ],
+         [
+          24.922365,
+          60.16368103
+         ],
+         [
+          24.922368,
+          60.16368303
+         ],
+         [
+          24.922371,
+          60.16368503
+         ],
+         [
+          24.922375,
+          60.16368703
+         ],
+         [
+          24.92238,
+          60.16368803
+         ],
+         [
+          24.922385,
+          60.16368903
+         ],
+         [
+          24.92239,
+          60.16368903
+         ],
+         [
+          24.922396,
+          60.16368903
+         ],
+         [
+          24.922401,
+          60.16368803
+         ],
+         [
+          24.922405,
+          60.16368703
+         ],
+         [
+          24.922409,
+          60.16368503
+         ],
+         [
+          24.922413,
+          60.16368303
+         ],
+         [
+          24.922415,
+          60.16368103
+         ],
+         [
+          24.922416,
+          60.16367903
+         ],
+         [
+          24.922417,
+          60.16367703
+         ],
+         [
+          24.922417,
+          60.16367403
+         ]
+        ]
+       ]
+      ]
+     },
+     "geometry_name": "singlegeom",
+     "properties": {
+      "id": 223,
+      "hakemus": "Tilapäinen liikennejärjestely",
+      "hakemuksen_laji": "Muu",
+      "hakemustunnus": "LJ2600132-2",
+      "liikennejarjestely_alkaa": "2026-08-28",
+      "liikennejarjestely_paattyy": "2027-12-31",
+      "tyon_tarkoitus": "Työstä vastaava varaa tilaa tilapäisille liikennemerkeille.\n\nLISÄYS 11.11.2026: poistettu toinen työnsuorittajan yhteyshenkilö ",
+      "osoite": "Mechelininkatu X Ruoholahdenranta ",
+      "kaupunginosa": "4 KAMPPI",
+      "status": "Käynnissä",
+      "hakija": "",
+      "geometrytype": "ST_Polygon",
+      "tyon_suorittaja": "",
+      "liikennejarjestely_alkaa_txt": "28.08.2026",
+      "liikennejarjestely_paattyy_txt": "31.12.2027"
+     }
+    },
+    {
+     "type": "Feature",
+     "id": "Tilapainen_liikennejarjestely_alue.224",
+     "geometry": {
+      "type": "MultiPolygon",
+      "coordinates": [
+       [
+        [
+         [
+          24.92178,
+          60.16365503
+         ],
+         [
+          24.92178,
+          60.16365303
+         ],
+         [
+          24.921778,
+          60.16365103
+         ],
+         [
+          24.921776,
+          60.16364903
+         ],
+         [
+          24.921772,
+          60.16364703
+         ],
+         [
+          24.921768,
+          60.16364503
+         ],
+         [
+          24.921763,
+          60.16364403
+         ],
+         [
+          24.921758,
+          60.16364303
+         ],
+         [
+          24.921753,
+          60.16364303
+         ],
+         [
+          24.921748,
+          60.16364303
+         ],
+         [
+          24.921743,
+          60.16364403
+         ],
+         [
+          24.921738,
+          60.16364503
+         ],
+         [
+          24.921734,
+          60.16364703
+         ],
+         [
+          24.921731,
+          60.16364903
+         ],
+         [
+          24.921728,
+          60.16365103
+         ],
+         [
+          24.921727,
+          60.16365303
+         ],
+         [
+          24.921726,
+          60.16365503
+         ],
+         [
+          24.921726,
+          60.16365703
+         ],
+         [
+          24.921727,
+          60.16365903
+         ],
+         [
+          24.921728,
+          60.16366103
+         ],
+         [
+          24.921731,
+          60.16366403
+         ],
+         [
+          24.921734,
+          60.16366603
+         ],
+         [
+          24.921738,
+          60.16366703
+         ],
+         [
+          24.921743,
+          60.16366803
+         ],
+         [
+          24.921748,
+          60.16366903
+         ],
+         [
+          24.921753,
+          60.16367003
+         ],
+         [
+          24.921756,
+          60.16366903
+         ],
+         [
+          24.921761,
+          60.16366903
+         ],
+         [
+          24.921766,
+          60.16366803
+         ],
+         [
+          24.92177,
+          60.16366603
+         ],
+         [
+          24.921774,
+          60.16366503
+         ],
+         [
+          24.921777,
+          60.16366203
+         ],
+         [
+          24.921779,
+          60.16366003
+         ],
+         [
+          24.92178,
+          60.16365703
+         ],
+         [
+          24.92178,
+          60.16365503
+         ]
+        ]
+       ]
+      ]
+     },
+     "geometry_name": "singlegeom",
+     "properties": {
+      "id": 224,
+      "hakemus": "Tilapäinen liikennejärjestely",
+      "hakemuksen_laji": "Muu",
+      "hakemustunnus": "LJ2600132-2",
+      "liikennejarjestely_alkaa": "2026-08-28",
+      "liikennejarjestely_paattyy": "2027-12-31",
+      "tyon_tarkoitus": "Työstä vastaava varaa tilaa tilapäisille liikennemerkeille.\n\nLISÄYS 11.11.2026: poistettu toinen työnsuorittajan yhteyshenkilö ",
+      "osoite": "Mechelininkatu X Ruoholahdenranta ",
+      "kaupunginosa": "4 KAMPPI",
+      "status": "Käynnissä",
+      "hakija": "",
+      "geometrytype": "ST_Polygon",
+      "tyon_suorittaja": "",
+      "liikennejarjestely_alkaa_txt": "28.08.2026",
+      "liikennejarjestely_paattyy_txt": "31.12.2027"
+     }
+    },
+    {
+     "type": "Feature",
+     "id": "Tilapainen_liikennejarjestely_alue.232",
+     "geometry": {
+      "type": "MultiPolygon",
+      "coordinates": [
+       [
+        [
+         [
+          24.958152,
+          60.26687303
+         ],
+         [
+          24.958152,
+          60.26687103
+         ],
+         [
+          24.95815,
+          60.26686803
+         ],
+         [
+          24.958148,
+          60.26686603
+         ],
+         [
+          24.958144,
+          60.26686403
+         ],
+         [
+          24.958142,
+          60.26686203
+         ],
+         [
+          24.958137,
+          60.26686003
+         ],
+         [
+          24.95813,
+          60.26685803
+         ],
+         [
+          24.958124,
+          60.26685703
+         ],
+         [
+          24.95812,
+          60.26685703
+         ],
+         [
+          24.958116,
+          60.26685703
+         ],
+         [
+          24.958109,
+          60.26685703
+         ],
+         [
+          24.958103,
+          60.26685803
+         ],
+         [
+          24.958099,
+          60.26685903
+         ],
+         [
+          24.958094,
+          60.26686103
+         ],
+         [
+          24.958089,
+          60.26686403
+         ],
+         [
+          24.958085,
+          60.26686603
+         ],
+         [
+          24.958083,
+          60.26686803
+         ],
+         [
+          24.958082,
+          60.26687003
+         ],
+         [
+          24.95808,
+          60.26687303
+         ],
+         [
+          24.95808,
+          60.26687503
+         ],
+         [
+          24.95808,
+          60.26687703
+         ],
+         [
+          24.958082,
+          60.26688003
+         ],
+         [
+          24.958083,
+          60.26688203
+         ],
+         [
+          24.958086,
+          60.26688503
+         ],
+         [
+          24.958091,
+          60.26688803
+         ],
+         [
+          24.958096,
+          60.26689003
+         ],
+         [
+          24.958103,
+          60.26689203
+         ],
+         [
+          24.958109,
+          60.26689303
+         ],
+         [
+          24.958113,
+          60.26689303
+         ],
+         [
+          24.95812,
+          60.26689303
+         ],
+         [
+          24.958127,
+          60.26689203
+         ],
+         [
+          24.958133,
+          60.26689103
+         ],
+         [
+          24.958137,
+          60.26689003
+         ],
+         [
+          24.958142,
+          60.26688803
+         ],
+         [
+          24.958144,
+          60.26688603
+         ],
+         [
+          24.958148,
+          60.26688303
+         ],
+         [
+          24.958151,
+          60.26688003
+         ],
+         [
+          24.958152,
+          60.26687803
+         ],
+         [
+          24.958152,
+          60.26687303
+         ]
+        ]
+       ]
+      ]
+     },
+     "geometry_name": "singlegeom",
+     "properties": {
+      "id": 232,
+      "hakemus": "Tilapäinen liikennejärjestely",
+      "hakemuksen_laji": "Muu",
+      "hakemustunnus": "LJ2600153",
+      "liikennejarjestely_alkaa": "2026-11-27",
+      "liikennejarjestely_paattyy": "2026-12-22",
+      "tyon_tarkoitus": "Haltialan tilan joulupihan tarvitsemat liikennejärjestelyt.",
+      "osoite": "Torpparinmäenpolku  x Laamannintie",
+      "kaupunginosa": "35 TUOMARINKYLÄ",
+      "status": "Tuleva",
+      "hakija": "",
+      "geometrytype": "ST_Polygon",
+      "tyon_suorittaja": "",
+      "liikennejarjestely_alkaa_txt": "27.11.2026",
+      "liikennejarjestely_paattyy_txt": "22.12.2026"
+     }
+    },
+    {
+     "type": "Feature",
+     "id": "Tilapainen_liikennejarjestely_alue.290",
+     "geometry": {
+      "type": "MultiPolygon",
+      "coordinates": [
+       [
+        [
+         [
+          24.954769,
+          60.17158603
+         ],
+         [
+          24.954772,
+          60.17156103
+         ],
+         [
+          24.955363,
+          60.17157803
+         ],
+         [
+          24.95536,
+          60.17160303
+         ],
+         [
+          24.954769,
+          60.17158603
+         ]
+        ]
+       ]
+      ]
+     },
+     "geometry_name": "singlegeom",
+     "properties": {
+      "id": 290,
+      "hakemus": "Tilapäinen liikennejärjestely",
+      "hakemuksen_laji": "Yleisötilaisuus",
+      "hakemustunnus": "LJ2600165",
+      "liikennejarjestely_alkaa": "2026-12-02",
+      "liikennejarjestely_paattyy": "2026-12-02",
+      "tyon_tarkoitus": "Tilapäiset liikennejärjestelyt: lasten itsenäisyyspäivän juhla Säätytalon puistossa.",
+      "osoite": "Rauhankatu 14",
+      "kaupunginosa": "1 KRUUNUNHAKA",
+      "status": "Tuleva",
+      "hakija": "",
+      "geometrytype": "ST_Polygon",
+      "tyon_suorittaja": "",
+      "liikennejarjestely_alkaa_txt": "02.12.2026",
+      "liikennejarjestely_paattyy_txt": "02.12.2026"
      }
     }
    ]

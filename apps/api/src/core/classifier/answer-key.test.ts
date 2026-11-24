@@ -34,7 +34,7 @@ describe("Jev against the answer key", () => {
   });
 
   // The rule the threshold rests on: answers that reach it, and so land on the Event, are nearly always right.
-  it.each(["workType", "endDate", "severity", "crowd", "loud", "mainlyAffected"] as const)(
+  it.each(["workType", "arrangementType", "endDate", "severity", "crowd", "loud", "mainlyAffected"] as const)(
     "%s: at least 85%% of the answers reaching the threshold are right",
     (question) => {
       const s = score(graded, DEFAULT_THRESHOLD)[question]!;
