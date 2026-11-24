@@ -47,6 +47,7 @@ const M_PER_DEG = 111_320;
 // Long sections are cut into pieces at most this long.
 const PIECE_M = 100;
 // How much of a street's kerb is left for cars: driveways, crossings and gaps take the rest.
+const OVERPASS_TIMEOUT_MS = 4000;
 const KERB_USED = 0.7;
 // The kerb one car takes, by how cars stand.
 const CAR_M: Record<Orientation, number> = { parallel: 5.5, diagonal: 3, perpendicular: 2.5 };
@@ -69,6 +70,8 @@ export function osmStreetParking({ url, credit, fetchFn = fetch, keepMs = WEEK_M
       method: "POST",
       headers: { "content-type": "application/x-www-form-urlencoded", "user-agent": "pulse (github.com/wuocci/pulse)" },
       body: new URLSearchParams({ data: query }),
+      // Overpass is a shared public server and sometimes takes long: a Trip doesn't wait for it.
+      signal: AbortSignal.timeout(OVERPASS_TIMEOUT_MS),
     })
       .then(async (res) => {
         if (!res.ok) throw new Error(`Overpass responded ${res.status}`);

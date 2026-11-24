@@ -236,12 +236,24 @@ export function impactOfMatch({ event, legs, crowd }: Pick<Match, "event" | "leg
 // Geometry, in metres on a flat projection around the itinerary: fine at the scale of a city.
 
 type Point = [number, number];
+type BBox = [number, number, number, number];
+// A run of consecutive segments (or a lone point) with its bounding box: a long route is compared piece by piece,
+// and a piece far from an Event is skipped whole. Without it, a drive across town compared every one of its points
+// with every Event's outline, for every way tried: 15 s of CPU for one car Trip (2026-11-24).
+interface Piece {
+  points: Point[];
+  segments: [Point, Point][];
+  bbox: BBox;
+}
 interface Shape {
   points: Point[];
   segments: [Point, Point][];
   rings: Point[][];
-  bbox: [number, number, number, number];
+  bbox: BBox;
+  pieces: Piece[];
 }
+
+const PIECE_SEGMENTS = 32;
 
 const M_PER_DEG = 111_320;
 type Projection = (lonLat: number[]) => Point;
@@ -260,9 +272,33 @@ function shapeOf(project: Projection, lines: number[][][], rings: number[][][] =
     points,
     segments: projectedLines.flatMap((line) => line.slice(1).map((p, i): [Point, Point] => [line[i]!, p])),
     rings: rings.map((ring) => ring.map(project)),
-    bbox: [Math.min(...xs), Math.min(...ys), Math.max(...xs), Math.max(...ys)],
+    bbox: bboxOf(points),
+    pieces: projectedLines.flatMap(piecesOf),
   };
 }
+
+function bboxOf(points: Point[]): BBox {
+  let [x0, y0, x1, y1] = [Infinity, Infinity, -Infinity, -Infinity];
+  for (const [x, y] of points) {
+    if (x < x0) x0 = x;
+    if (y < y0) y0 = y;
+    if (x > x1) x1 = x;
+    if (y > y1) y1 = y;
+  }
+  return [x0, y0, x1, y1];
+}
+
+function piecesOf(line: Point[]): Piece[] {
+  if (line.length === 1) return [{ points: line, segments: [], bbox: bboxOf(line) }];
+  const pieces: Piece[] = [];
+  for (let i = 0; i < line.length - 1; i += PIECE_SEGMENTS) {
+    const points = line.slice(i, i + PIECE_SEGMENTS + 1);
+    pieces.push({ points, segments: points.slice(1).map((p, j): [Point, Point] => [points[j]!, p]), bbox: bboxOf(points) });
+  }
+  return pieces;
+}
+
+const gapOf = ([ax0, ay0, ax1, ay1]: BBox, [bx0, by0, bx1, by1]: BBox) => Math.max(ax0 - bx1, bx0 - ax1, ay0 - by1, by0 - ay1, 0);
 
 function eventShape({ where: { geometry: g } }: Event, project: Projection): Shape {
   switch (g.type) {
@@ -282,22 +318,36 @@ function eventShape({ where: { geometry: g } }: Event, project: Projection): Sha
 }
 
 // 0 when they touch or the route runs inside an area; otherwise the shortest gap between them.
-// `within`: how near matters. Further than that, the gap between their bounding boxes is close enough.
+// `within`: how near matters. Further than that, the gap between their bounding boxes is close enough. Pieces
+// further apart than that, or than the nearest found so far, aren't looked into.
 function distanceM(a: Shape, route: Shape, within = CORRIDOR_M * 10): number {
-  const [ax0, ay0, ax1, ay1] = a.bbox;
-  const [bx0, by0, bx1, by1] = route.bbox;
-  const gap = Math.max(ax0 - bx1, bx0 - ax1, ay0 - by1, by0 - ay1, 0);
+  const gap = gapOf(a.bbox, route.bbox);
   if (gap > within) return gap;
 
-  if (route.points.some((p) => a.rings.some((ring) => inside(p, ring)))) return 0;
-  if (a.segments.some(([p, q]) => route.segments.some(([r, s]) => crosses(p, q, r, s)))) return 0;
+  // Only route points within the area's box can be inside it.
+  if (a.rings.length) {
+    for (const piece of route.pieces) {
+      if (gapOf(piece.bbox, a.bbox) > 0) continue;
+      if (piece.points.some((p) => a.rings.some((ring) => inside(p, ring)))) return 0;
+    }
+  }
 
   let best = Infinity;
-  for (const p of a.points) for (const [r, s] of route.segments) best = Math.min(best, toSegment(p, r, s));
-  for (const p of route.points) for (const [r, s] of a.segments) best = Math.min(best, toSegment(p, r, s));
-  // A route of one point (no segments) against a point.
-  if (best === Infinity) for (const p of a.points) for (const q of route.points) best = Math.min(best, Math.hypot(p[0] - q[0], p[1] - q[1]));
-  return best;
+  let nearestGap = Infinity;
+  for (const pa of a.pieces) {
+    for (const pr of route.pieces) {
+      const g = gapOf(pa.bbox, pr.bbox);
+      nearestGap = Math.min(nearestGap, g);
+      if (g > within || g >= best) continue;
+      if (pa.segments.some(([p, q]) => pr.segments.some(([r, s]) => crosses(p, q, r, s)))) return 0;
+      for (const p of pa.points) for (const [r, s] of pr.segments) best = Math.min(best, toSegment(p, r, s));
+      for (const p of pr.points) for (const [r, s] of pa.segments) best = Math.min(best, toSegment(p, r, s));
+      // A piece of one point (no segments) against another.
+      if (!pa.segments.length && !pr.segments.length)
+        for (const p of pa.points) for (const q of pr.points) best = Math.min(best, Math.hypot(p[0] - q[0], p[1] - q[1]));
+    }
+  }
+  return best === Infinity ? nearestGap : best;
 }
 
 // Where a leg meets an Event: where it first enters or crosses it, else its point nearest it; and how far along the leg.
@@ -313,25 +363,42 @@ function meeting(event: Shape, leg: Leg, project: Projection): { at: number[]; f
     return { at: [ax + t * (bx - ax), ay + t * (by - ay)], fraction: along(i, t) };
   };
 
-  for (let i = 0; i < route.length; i++) {
-    if (event.rings.some((ring) => inside(route[i]!, ring))) return on(i, 0);
-    if (i === route.length - 1) break;
-    const crossings = event.segments.flatMap(([p, q]) => (crosses(p, q, route[i]!, route[i + 1]!) ? [crossingAt(route[i]!, route[i + 1]!, p, q)] : []));
-    if (crossings.length) return on(i, Math.min(...crossings));
+  // The route in pieces, in order: a piece whose box doesn't reach the Event's can't enter or cross it.
+  const pieces: { from: number; to: number; bbox: BBox }[] = [];
+  for (let i = 0; i < Math.max(1, route.length - 1); i += PIECE_SEGMENTS) {
+    const to = Math.min(route.length - 1, i + PIECE_SEGMENTS);
+    pieces.push({ from: i, to, bbox: bboxOf(route.slice(i, to + 1)) });
   }
-
-  let best = { gap: Infinity, i: 0, t: 0 };
-  for (const p of event.points) {
-    for (let i = 0; i < route.length - 1; i++) {
-      const t = towards(p, route[i]!, route[i + 1]!);
-      const gap = toSegment(p, route[i]!, route[i + 1]!);
-      if (gap < best.gap) best = { gap, i, t };
+  for (const piece of pieces) {
+    if (gapOf(piece.bbox, event.bbox) > 0) continue;
+    for (let i = piece.from; i < piece.to; i++) {
+      if (event.rings.some((ring) => inside(route[i]!, ring))) return on(i, 0);
+      const crossings = event.segments.flatMap(([p, q]) => (crosses(p, q, route[i]!, route[i + 1]!) ? [crossingAt(route[i]!, route[i + 1]!, p, q)] : []));
+      if (crossings.length) return on(i, Math.min(...crossings));
     }
   }
-  for (let i = 0; i < route.length; i++) {
-    for (const [r, s] of event.segments) {
-      const gap = toSegment(route[i]!, r, s);
-      if (gap < best.gap) best = { gap, i, t: 0 };
+  const last = route.length - 1;
+  if (last >= 0 && event.rings.some((ring) => inside(route[last]!, ring))) return on(last, 0);
+
+  // Else the nearest: the Event's points against the route's segments, then the route's points against the Event's
+  // segments, skipping pieces no nearer than the best so far. The first of equals wins, as in route order.
+  let best = { gap: Infinity, i: 0, t: 0 };
+  for (const p of event.points) {
+    for (const piece of pieces) {
+      if (gapOf(piece.bbox, [p[0], p[1], p[0], p[1]]) >= best.gap) continue;
+      for (let i = piece.from; i < piece.to; i++) {
+        const gap = toSegment(p, route[i]!, route[i + 1]!);
+        if (gap < best.gap) best = { gap, i, t: towards(p, route[i]!, route[i + 1]!) };
+      }
+    }
+  }
+  for (const piece of pieces) {
+    if (gapOf(piece.bbox, event.bbox) >= best.gap) continue;
+    for (let i = piece.from; i <= piece.to; i++) {
+      for (const [r, s] of event.segments) {
+        const gap = toSegment(route[i]!, r, s);
+        if (gap < best.gap) best = { gap, i, t: 0 };
+      }
     }
   }
   return on(best.i, best.t);

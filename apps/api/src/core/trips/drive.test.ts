@@ -1,5 +1,5 @@
 import type { Leg, Trip } from "@pulse/schema";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import type { RoutedItinerary, Router, TripRequest } from "../adapters/digitransit-routing.ts";
 import { distanceM } from "../adapters/street-parking.ts";
 import { planCar } from "./drive.ts";
@@ -77,8 +77,9 @@ describe("a car Trip", () => {
 
     const [drive, ...rest] = await planCar(router, picks(streetPick), trip);
 
-    expect(asked.slice(1)).toEqual([
-      { from: A, to: STREET_SPOT, mode: "car", departAt },
+    // The way out of B is looked up alongside the street parking, but not driven to: the street spot wins.
+    expect(asked.filter((a) => [a.from, a.to].some((p) => p.lat === STREET_SPOT.lat && p.lon === STREET_SPOT.lon))).toEqual([
+      { from: A, to: STREET_SPOT, mode: "car", departAt, probe: true },
       { from: STREET_SPOT, to: B, mode: "walk", departAt: at(14) },
     ]);
     expect(drive!.legs.map((l) => l.mode)).toEqual(["car", "walk"]);
@@ -88,14 +89,14 @@ describe("a car Trip", () => {
   });
 
   it("else drives to where a car first gets on the way out of B, not to a car park far off", async () => {
-    // A car gets 250 m out, not 100 m.
+    // A car gets 250 m out (and 500 m), not 100 m. All three are tried at once; the nearest that works wins.
     const reached = (to: { lat: number; lon: number }) => (distanceFromB(to) > 200 ? [way(leg("car", A, to, 0, 13))] : []);
     const { router, asked } = fakeRouter([], reached);
 
     const [drive] = await planCar(router, picks(carPark), trip);
 
     const tried = asked.filter((a) => a.mode === "car" && a.to !== B).map((a) => Math.round(distanceFromB(a.to) / 50) * 50);
-    expect(tried).toEqual([100, 250]);
+    expect(tried).toEqual([100, 250, 500]);
     expect(drive!.legs.map((l) => l.mode)).toEqual(["car", "walk"]);
     expect(drive!.end).toBe(at(16));
   });
@@ -117,6 +118,21 @@ describe("a car Trip", () => {
 
     expect(await planCar(router, picks(), trip)).toEqual([]);
     expect(await planCar(router, undefined, trip)).toEqual([]);
+  });
+
+  it("gives up on the walk-in drive when it takes longer than its budget, and still answers", async () => {
+    vi.useFakeTimers();
+    try {
+      const { router } = fakeRouter([], () => [way(leg("car", A, STREET_SPOT, 0, 14))]);
+      const slow: ParkingFinder = { near: () => new Promise(() => {}) };
+
+      const answer = planCar(router, slow, trip);
+      await vi.advanceTimersByTimeAsync(5000);
+
+      expect(await answer).toEqual([]);
+    } finally {
+      vi.useRealTimers();
+    }
   });
 
   it("gives up on the walk-in drive quietly when it can't be planned", async () => {

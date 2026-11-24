@@ -7,11 +7,15 @@ import { detour } from "./detour.ts";
 import { parksAlmostFull, planCar } from "./drive.ts";
 import { CROWD_ARRIVING_MS, CROWD_LEAVING_MS, impactOf, impactOfMatch, matchItinerary, RANK } from "./match.ts";
 import { recommend } from "./recommend.ts";
+import { within } from "./within.ts";
 
 const MODES = TravelModeSchema.options;
 // A detour may arrive this much after the drive; it's looked for round this many spots in its way, at most.
 const DETOUR_ROOM_MS = 5 * 60_000;
 const DETOUR_SPOTS = 2;
+// The detour is a suggestion on top of the Trip: what isn't found in this time isn't offered. Without a budget, a
+// drive into town took 15 s (2026-11-24).
+const DETOUR_BUDGET_MS = 3000;
 // How far ahead a heads-up looks: what starts on the way in the week after the trip.
 const COMING_UP_MS = 7 * 86_400_000;
 const MessageSchema = z.object({ message: z.string() });
@@ -148,20 +152,23 @@ export function tripRoutes(
       const matches = matchesOf(itinerary);
       return { impact: impactOf(matches), inTheWay: matches.filter((m) => RANK[impactOfMatch(m)] >= RANK.consider).length };
     };
-    let around: RoutedItinerary | undefined;
-    for (const spot of first ? spots : []) {
-      around = await detour(router, { from, to, mode: "car", departAt }, first!, [spot.at[0] ?? 0, spot.at[1] ?? 0], assess).catch(() => undefined);
-      if (around) break;
-    }
-    if (car && around) car.itineraries.splice(1, 0, withEvents(around));
-    const recommended = recommend(plans) ?? (around ? { mode: "car" as const, index: 1 } : undefined);
-    // Where to leave the car, when there's a way to drive: a suggestion, so it never holds up the Trip.
-    const drive = plans.find((p) => p.mode === "car")?.itineraries[0];
-    const parking = drive
-      ? await parkingFinder
-          ?.near(to, drive.end)
+    // Where to leave the car, when there's a way to drive: a suggestion, so it never holds up the Trip. Looked up
+    // while the detour is looked for.
+    const parkingLookup = first
+      ? parkingFinder
+          ?.near(to, first.end)
           .catch((error: unknown) => console.error("Parking lookup failed:", error instanceof Error ? error.message : error))
       : undefined;
+    // Round each spot at once, within the budget; the first spot's detour wins over the next's.
+    const tried = await Promise.all(
+      (first ? spots : []).map((spot) =>
+        within(DETOUR_BUDGET_MS, detour(router, { from, to, mode: "car", departAt }, first!, [spot.at[0] ?? 0, spot.at[1] ?? 0], assess)),
+      ),
+    );
+    const around = tried.find((way): way is RoutedItinerary => way !== undefined);
+    if (car && around) car.itineraries.splice(1, 0, withEvents(around));
+    const recommended = recommend(plans) ?? (around ? { mode: "car" as const, index: 1 } : undefined);
+    const parking = await parkingLookup;
     return c.json({ events: [...events.values()], plans, ...(parking ? { parking } : {}), ...(recommended ? { recommended } : {}) }, 200);
   });
 }

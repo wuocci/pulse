@@ -215,6 +215,17 @@ describe("the Digitransit router", () => {
     expect(routes).toEqual([]);
   });
 
+  it("asks a probe once: its \"no route\" is believed and a failure isn't retried", async () => {
+    const noRoute = fakeDigitransit(NO_ROUTE, bike);
+    const failing = fakeDigitransit(503, bike);
+    const probe = { from: KAMPPI, to: PASILA, mode: "car" as const, departAt, directOnly: true, probe: true };
+
+    expect(await digitransitRouter({ url: URL_, apiKey: "k", fetchFn: noRoute.fetchFn }).plan(probe)).toEqual([]);
+    expect(noRoute.asked).toHaveLength(1);
+    await expect(digitransitRouter({ url: URL_, apiKey: "k", fetchFn: failing.fetchFn }).plan(probe)).rejects.toThrow();
+    expect(failing.asked).toHaveLength(1);
+  });
+
   it("retries a failed or hung request once, then fails", async () => {
     const failing = fakeDigitransit(503, bike);
     const hanging = fakeDigitransit("hang");
