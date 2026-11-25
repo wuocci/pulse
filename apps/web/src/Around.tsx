@@ -1,14 +1,15 @@
-import type { GeocodeResult, TravelMode } from "@pulse/client";
-import { CalendarClock, ChevronDown, LoaderCircle, LocateFixed, List, LocateIcon, Map as MapIcon, Navigation, Search, X } from "lucide-react";
-import { useNavigate, useSearch } from "@tanstack/react-router";
-import { type KeyboardEvent, useEffect, useId, useMemo, useRef, useState } from "react";
+import type { Event, GeocodeResult, TravelMode } from "@pulse/client";
+import { CalendarClock, ChevronDown, LoaderCircle, LocateFixed, List, LocateIcon, Map as MapIcon, Navigation, X } from "lucide-react";
+import { Link, useNavigate, useSearch } from "@tanstack/react-router";
+import { type ReactNode, useEffect, useId, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { AddressSearch } from "./AddressSearch.tsx";
 import { RADIUS_M, useComingUp, useEvents, useRegions, useTrip } from "./api.ts";
 import { EventCard, EventGlance } from "./EventCard.tsx";
-import { EventList, type ListRow } from "./EventList.tsx";
-import { nearestFirst, pickedText, readingLanguages, type Sections, sectionsOf, summaryOf, textIn, tripPins } from "./events.ts";
+import { distance } from "./EventList.tsx";
+import { Accordion, EventRow } from "./EventRows.tsx";
+import { nearestFirst, pickedText, readingLanguages, type RowValue, type Sections, sectionsOf, startsOf, summaryOf, textIn, tripPins, untilOf } from "./events.ts";
 import { EventPin, PinGroup } from "./map/EventPin.tsx";
 import { Legend } from "./MapOverlays.tsx";
 import { PointMap, type PointMapProps } from "./map/PointMap.tsx";
@@ -154,6 +155,8 @@ export function Around() {
   const closeCard = () => {
     if (selectedId) void navigate({ search: (prev) => ({ ...prev, event: undefined }) });
   };
+  const closeCardRef = useRef(closeCard);
+  closeCardRef.current = closeCard;
   const wasSelected = useRef(selectedId);
   useEffect(() => {
     const closed = wasSelected.current;
@@ -236,6 +239,13 @@ export function Around() {
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
   }, [glance]);
+  const listCardOpen = !search.trip && !!selectedId;
+  useEffect(() => {
+    if (!listCardOpen) return;
+    const onKey = (e: globalThis.KeyboardEvent) => e.key === "Escape" && closeCardRef.current();
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [listCardOpen]);
   const glancePin = glance && glance.eventId !== selectedId ? pins.find((p) => p.key === glance.pinKey) : undefined;
   const timeZone = regions.data?.[0]?.timeZone ?? "UTC";
 
@@ -265,21 +275,27 @@ export function Around() {
   const locateLabel = { off: t("goToMyLocation"), centred: t("followMyLocation"), following: t("followingYourLocation") }[locate];
   const LocateGlyph = { off: LocateIcon, centred: LocateFixed, following: Navigation }[locate];
   const lang = languages[0] ?? "en";
-  const card = selected ? <EventCard event={selected} languages={languages} timeZone={timeZone} onClose={closeCard} /> : null;
-  const listProps = { point, selectedId, languages, timeZone, onSelect: select, onHighlight: setHighlighted };
+  const card = search.trip && selected ? <EventCard event={selected} languages={languages} timeZone={timeZone} onClose={closeCard} /> : null;
 
   return (
-    <main className="relative grid h-dvh w-full grid-rows-[auto_minmax(0,1fr)] overflow-hidden bg-background text-foreground [grid-template-areas:'head'_'main'] lg:grid-cols-[26rem_minmax(0,1fr)] lg:grid-rows-[auto_minmax(0,1fr)] lg:[grid-template-areas:'head_map'_'body_map']">
+    <main className="signage around relative grid h-dvh w-full grid-rows-[auto_minmax(0,1fr)] overflow-hidden [grid-template-areas:'head'_'main'] lg:grid-cols-[26rem_minmax(0,1fr)] lg:grid-rows-[auto_minmax(0,1fr)] lg:[grid-template-areas:'head_map'_'body_map']">
       <h1 className="sr-only">{t("appName")}</h1>
-      <div className={`space-y-3 p-4 pt-[max(1rem,env(safe-area-inset-top))] [grid-area:head] lg:border-r ${mapView ? "pointer-events-none absolute inset-x-0 top-0 z-10 *:pointer-events-auto lg:pointer-events-auto lg:static" : ""}`}>
+      <div className={`around-head space-y-3 p-4 pt-[max(1rem,env(safe-area-inset-top))] [grid-area:head] ${mapView ? "pointer-events-none absolute inset-x-0 top-0 z-10 *:pointer-events-auto lg:pointer-events-auto lg:static" : ""}`}>
         {search.trip ? (
           <div className={mapView ? "max-lg:hidden" : undefined}>
             <TripForm point={point} lang={lang} fromName={search.fromName} toName={search.toName} onFrom={setTripEnd("from")} onTo={setTripEnd("to")} onClose={closeTrip} />
           </div>
         ) : (
-          <PlaceChip name={placeName ?? t("chosenPlace")} point={point} lang={lang} locating={locating} onHere={() => void goHere().then((ok) => ok && setLocate("off"))} onPick={(p) => choosePlace(p, p.name)} />
+          <>
+            <div className={`around-top ${mapView ? "max-lg:hidden" : ""}`}>
+              <Link to="/" className="around-back" aria-label={t("aroundBackLabel")}>
+                ‹ {t("aroundBack")}
+              </Link>
+            </div>
+            <PlaceChip name={placeName ?? t("chosenPlace")} point={point} lang={lang} locating={locating} onHere={() => void goHere().then((ok) => ok && setLocate("off"))} onPick={(p) => choosePlace(p, p.name)} />
+          </>
         )}
-        <p role="status" className={`flex min-h-5 items-center gap-1.5 font-medium ${mapView ? "max-lg:sr-only" : ""}`}>
+        <p role="status" className={`around-status ${mapView ? "max-lg:sr-only" : ""}`}>
           {status === null ? (
             <>
               <LoaderCircle aria-hidden className="size-4 animate-spin motion-reduce:animate-none" />
@@ -290,13 +306,9 @@ export function Around() {
           )}
         </p>
         {!search.trip && (
-          <button
-            type="button"
-            onClick={openTrip}
-            className={`flex h-12 w-full items-center gap-2 rounded-full border bg-card px-4 text-left text-base text-muted-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring ${mapView ? "max-lg:hidden" : ""}`}
-          >
-            <Search aria-hidden className="size-5 shrink-0" />
-            {t("whereTo")}
+          <button type="button" onClick={openTrip} className={`around-where ${mapView ? "max-lg:hidden" : ""}`}>
+            <span>{t("whereTo")}</span>
+            <span aria-hidden>→</span>
           </button>
         )}
         <TimeControl at={at} leave={search.trip === true} onChange={setTime} />
@@ -377,7 +389,7 @@ export function Around() {
           </Button>
         </div>
       </div>
-      <div className={`overflow-y-auto p-4 pb-28 [grid-area:main] lg:pb-[max(1rem,env(safe-area-inset-bottom))] lg:block! lg:border-r lg:[grid-area:body] ${mapView ? "hidden" : "block"}`}>
+      <div className={`around-body overflow-y-auto p-4 pb-28 [grid-area:main] lg:pb-[max(1rem,env(safe-area-inset-bottom))] lg:block! lg:[grid-area:body] ${mapView ? "hidden" : "block"}`}>
         {card && <div className="rounded-3xl border bg-card">{card}</div>}
         <div hidden={card !== null} className="space-y-5">
           {search.trip ? (
@@ -422,7 +434,7 @@ export function Around() {
               </div>
             )
           ) : (
-            sections && <SectionTabs sections={sections} {...listProps} />
+            sections && <SectionList sections={sections} point={point} selectedId={selectedId} timeZone={timeZone} onSelect={select} onClose={closeCard} onHighlight={setHighlighted} />
           )}
         </div>
       </div>
@@ -435,19 +447,13 @@ export function Around() {
 // A phone's switch between the list and the map.
 function ListOrMap({ map, onChange }: { map: boolean; onChange: (map: boolean) => void }) {
   const { t } = useTranslation();
-  const side = (on: boolean) =>
-    `flex h-12 items-center justify-center gap-2 rounded-full px-6 font-medium outline-none focus-visible:ring-2 focus-visible:ring-ring ${on ? "bg-muted text-brand" : "text-foreground"}`;
   return (
-    <div
-      role="group"
-      aria-label={t("showAs")}
-      className="fixed bottom-[max(1.25rem,env(safe-area-inset-bottom))] left-1/2 z-30 flex -translate-x-1/2 rounded-full border bg-card/90 p-1.5 shadow-xl backdrop-blur lg:hidden"
-    >
-      <button type="button" aria-pressed={!map} onClick={() => onChange(false)} className={side(!map)}>
+    <div role="group" aria-label={t("showAs")} className="around-switch lg:hidden">
+      <button type="button" aria-pressed={!map} onClick={() => onChange(false)}>
         <List aria-hidden className="size-5" />
         {t("listView")}
       </button>
-      <button type="button" aria-pressed={map} onClick={() => onChange(true)} className={side(map)}>
+      <button type="button" aria-pressed={map} onClick={() => onChange(true)}>
         <MapIcon aria-hidden className="size-5" />
         {t("mapView")}
       </button>
@@ -472,30 +478,24 @@ function PlaceChip({ name, point, lang, locating, onHere, onPick }: PlaceChipPro
 
   return (
     <div>
-      <button
-        type="button"
-        aria-expanded={open}
-        aria-controls={id}
-        onClick={() => setOpen(!open)}
-        className="flex h-10 max-w-full items-center gap-1.5 rounded-full border bg-card/90 px-4 text-sm font-medium shadow-sm backdrop-blur outline-none focus-visible:ring-2 focus-visible:ring-ring"
-      >
+      <button type="button" aria-expanded={open} aria-controls={id} onClick={() => setOpen(!open)} className="around-place">
         <span className="truncate">{t("placeChip", { place: name })}</span>
-        <ChevronDown aria-hidden className={`size-4 shrink-0 motion-safe:transition-transform ${open ? "rotate-180" : ""}`} />
+        <ChevronDown aria-hidden className={`size-5 shrink-0 motion-safe:transition-transform ${open ? "rotate-180" : ""}`} />
       </button>
       {open && (
-        <div id={id} role="group" aria-label={t("placeTitle")} className="mt-2 space-y-2 rounded-3xl border bg-card p-3 shadow-xl">
-          <Button
-            variant="secondary"
-            className="h-11 w-full justify-start"
+        <div id={id} role="group" aria-label={t("placeTitle")} className="around-place-panel">
+          <button
+            type="button"
+            className="around-here"
             disabled={locating}
             onClick={() => {
               onHere();
               setOpen(false);
             }}
           >
-            <LocateFixed aria-hidden />
+            <LocateFixed aria-hidden className="size-5" />
             {locating ? t("locating") : t("useMyLocation")}
-          </Button>
+          </button>
           <AddressSearch
             point={point}
             lang={lang}
@@ -515,15 +515,13 @@ function PlaceChip({ name, point, lang, locating, onHere, onPick }: PlaceChipPro
 // a Trip (`leave`) it's when to leave.
 function TimeControl({ at, leave, onChange }: { at: string | undefined; leave: boolean; onChange: (at: string | undefined) => void }) {
   const { t } = useTranslation();
-  const chip = (on: boolean) =>
-    `flex h-10 items-center gap-1.5 rounded-full border px-4 text-sm font-medium shadow-sm has-focus-visible:ring-2 has-focus-visible:ring-ring ${on ? "border-foreground bg-foreground text-background" : "bg-card/90 backdrop-blur"}`;
 
   return (
-    <div role="group" aria-label={t(leave ? "leaveWhen" : "time")} className="flex flex-wrap items-center gap-2">
-      <button type="button" aria-pressed={!at} onClick={() => onChange(undefined)} className={`${chip(!at)} outline-none focus-visible:ring-2 focus-visible:ring-ring`}>
+    <div role="group" aria-label={t(leave ? "leaveWhen" : "time")} className="around-time">
+      <button type="button" aria-pressed={!at} onClick={() => onChange(undefined)} className="around-chip">
         {t(leave ? "leaveNow" : "timeNow")}
       </button>
-      <span className={`relative ${chip(at !== undefined)}`}>
+      <span className="around-chip relative has-focus-visible:outline-3" data-on={at !== undefined}>
         <CalendarClock aria-hidden className="size-4" />
         {at ? (leave ? t("leavingAt", { time: pickedText(at) }) : pickedText(at)) : t(leave ? "leaveAt" : "pickTime")}
         <input
@@ -541,12 +539,7 @@ function TimeControl({ at, leave, onChange }: { at: string | undefined; leave: b
           className={`absolute inset-y-0 left-0 cursor-pointer opacity-0 ${at ? "right-10" : "right-0"}`}
         />
         {at && (
-          <button
-            type="button"
-            aria-label={t("backToNow")}
-            onClick={() => onChange(undefined)}
-            className="-mr-2.5 grid size-8 place-items-center rounded-full outline-none hover:bg-background/15 focus-visible:ring-2 focus-visible:ring-ring"
-          >
+          <button type="button" aria-label={t("backToNow")} onClick={() => onChange(undefined)} className="around-chip-clear">
             <X aria-hidden className="size-4" />
           </button>
         )}
@@ -558,85 +551,105 @@ function TimeControl({ at, leave, onChange }: { at: string | undefined; leave: b
 type SectionKey = keyof Sections;
 // How long a glance stays after the pointer leaves its pin, shape or itself.
 const GLANCE_LINGER_MS = 250;
-// The tab an Event's row is in, if any.
+// The section an Event's row is in, if any.
 const holdingOf = (sections: Sections, id: string | undefined) => (id ? SECTIONS.find(({ key }) => sections[key].some((e) => e.id === id))?.key : undefined);
-const SECTIONS: { key: SectionKey; lead: "until" | "distance" | "starts"; empty: "emptyInYourWay" | "emptyAroundYou" | "emptyComingUp" }[] = [
-  { key: "inYourWay", lead: "until", empty: "emptyInYourWay" },
-  { key: "aroundYou", lead: "distance", empty: "emptyAroundYou" },
-  { key: "comingUp", lead: "starts", empty: "emptyComingUp" },
+const SECTIONS: { key: SectionKey; aside: "until" | "distance" | "starts"; empty: "emptyInYourWay" | "emptyAroundYou" | "emptyComingUp" }[] = [
+  { key: "inYourWay", aside: "until", empty: "emptyInYourWay" },
+  { key: "aroundYou", aside: "distance", empty: "emptyAroundYou" },
+  { key: "comingUp", aside: "starts", empty: "emptyComingUp" },
 ];
 
-interface SectionTabsProps {
+interface SectionListProps {
   sections: Sections;
   point: LatLon | undefined;
   selectedId: string | undefined;
-  languages: readonly string[];
   timeZone: string;
   onSelect: (id: string) => void;
+  onClose: () => void;
   onHighlight: (id: string | undefined) => void;
 }
 
-// Around's sections as tabs, each with its count: In your way, Around you, Coming up. Opens on the first with anything,
-// and moves to the one holding an Event chosen on the map, so its row is there when the card closes.
-function SectionTabs({ sections, point, ...list }: SectionTabsProps) {
-  const { t } = useTranslation();
-  const id = useId();
-  const [chosen, setChosen] = useState<SectionKey>();
-  const active = chosen ?? SECTIONS.find(({ key }) => sections[key].length)?.key ?? "inYourWay";
-  const { selectedId } = list;
-  useEffect(() => {
-    const holding = holdingOf(sections, selectedId);
-    if (holding) setChosen(holding);
-  }, [selectedId, sections]);
-  const events = sections[active];
-  const rows = useMemo((): ListRow[] => {
-    const distances = new Map<string, number>();
-    if (point) for (const pin of nearestFirst(events, point)) if (!distances.has(pin.event.id)) distances.set(pin.event.id, pin.distanceM);
-    return events.map((event) => {
-      const distanceM = distances.get(event.id);
-      return distanceM === undefined ? { event } : { event, distanceM };
-    });
-  }, [events, point]);
-  const tabs = useRef<(HTMLButtonElement | null)[]>([]);
-  // Arrow keys move between the tabs, as tabs do.
-  const onKey = (e: KeyboardEvent, i: number) => {
-    const step = { ArrowRight: 1, ArrowLeft: -1 }[e.key];
-    if (!step) return;
-    const next = SECTIONS[(i + step + SECTIONS.length) % SECTIONS.length]!;
-    setChosen(next.key);
-    tabs.current[SECTIONS.indexOf(next)]?.focus();
+// Around's sections, each a heading with its count that opens to its rows: In your way, Around you, Coming up. The
+// first with anything is open; the one holding an Event chosen on the map opens, with that Event's card. Within a
+// section, what changes plans comes first; the rest is quiet, there for anyone who looks.
+function SectionList({ sections, point, selectedId, timeZone, onSelect, onClose, onHighlight }: SectionListProps) {
+  const { t, i18n } = useTranslation();
+  const [toggled, setToggled] = useState<Partial<Record<SectionKey, boolean>>>({});
+  const first = SECTIONS.find(({ key }) => sections[key].length)?.key;
+  const holding = holdingOf(sections, selectedId);
+  const isOpen = (key: SectionKey) => key === holding || (toggled[key] ?? key === first);
+  const distances = useMemo(() => {
+    const found = new Map<string, number>();
+    const all = [...sections.inYourWay, ...sections.aroundYou, ...sections.comingUp];
+    if (point) for (const pin of nearestFirst(all, point)) if (!found.has(pin.event.id)) found.set(pin.event.id, pin.distanceM);
+    return found;
+  }, [sections, point]);
+  const now = new Date();
+
+  const asideOf = (event: Event, aside: (typeof SECTIONS)[number]["aside"]): ReactNode => {
+    if (aside === "distance") {
+      const far = distances.get(event.id);
+      return far === undefined ? undefined : <span className="sg-aside-value">{distance(far, i18n.language)}</span>;
+    }
+    const value = aside === "until" ? untilOf(event, timeZone, now) : startsOf(event, timeZone, now);
+    return <AsideValue value={value} caption={t(aside === "until" ? "rowUntil" : "rowStarts")} />;
   };
-  const current = SECTIONS.find(({ key }) => key === active)!;
 
   return (
-    <div className="space-y-3">
-      <div role="tablist" aria-label={t("sectionTabs")} className="flex gap-1 rounded-full border bg-card p-1">
-        {SECTIONS.map(({ key }, i) => (
-          <button
+    <div className="around-sections">
+      {SECTIONS.map(({ key, aside, empty }) => {
+        const events = [...sections[key]].sort((a, b) => Number(b.decision === "change_plans") - Number(a.decision === "change_plans"));
+        const open = isOpen(key);
+        return (
+          <Accordion
             key={key}
-            ref={(el) => void (tabs.current[i] = el)}
-            type="button"
-            role="tab"
-            id={`${id}-${key}`}
-            aria-selected={key === active}
-            aria-controls={`${id}-panel`}
-            tabIndex={key === active ? 0 : -1}
-            onClick={() => setChosen(key)}
-            onKeyDown={(e) => onKey(e, i)}
-            className="flex min-h-10 min-w-0 flex-1 items-center justify-center gap-1.5 rounded-full px-2 text-sm font-medium text-muted-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring aria-selected:bg-foreground aria-selected:text-background"
+            className="around-section"
+            open={open}
+            onToggle={() => {
+              setToggled({ ...toggled, [key]: !open });
+              if (open && key === holding) onClose();
+            }}
+            header={
+              <>
+                <span className="around-section-label">{t(key)}</span>{" "}
+                <span className="around-section-count" data-empty={!events.length}>
+                  {events.length}
+                </span>
+              </>
+            }
           >
-            <span className="truncate">{t(key)}</span>{" "}
-            <span className="tabular-nums opacity-70">{sections[key].length}</span>
-          </button>
-        ))}
-      </div>
-      <div role="tabpanel" id={`${id}-panel`} aria-labelledby={`${id}-${active}`}>
-        {events.length ? (
-          <EventList label={t(active)} pins={rows} lead={current.lead} {...list} />
-        ) : (
-          <p className="px-1 py-6 text-center text-sm text-muted-foreground">{t(current.empty)}</p>
-        )}
-      </div>
+            {events.length ? (
+              <ul aria-label={t(key)} className="around-rows">
+                {events.map((event) => (
+                  <li key={event.id}>
+                    <EventRow
+                      event={event}
+                      open={event.id === selectedId}
+                      onToggle={() => (event.id === selectedId ? onClose() : onSelect(event.id))}
+                      aside={asideOf(event, aside)}
+                      onHighlight={onHighlight}
+                    />
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="around-empty">{t(empty)}</p>
+            )}
+          </Accordion>
+        );
+      })}
     </div>
+  );
+}
+
+// "until" over "1.4.2027", "starts" over "Tomorrow"; just "No end date" when there's none.
+function AsideValue({ value, caption }: { value: RowValue; caption: string }) {
+  const { t } = useTranslation();
+  if (value.key === "rowNoEnd") return <span className="sg-aside-caption">{t("rowNoEnd")}</span>;
+  return (
+    <>
+      <span className="sg-aside-caption">{caption}</span>
+      <span className="sg-aside-value">{value.key === "rowUntil" ? value.value : t(value.key, value)}</span>
+    </>
   );
 }

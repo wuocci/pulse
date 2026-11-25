@@ -289,6 +289,7 @@ const anEvent = (id: string, patch: Partial<Event> = {}): Event => ({
   // Only what's worth considering or major is shown.
   severity: "consider",
   mainlyAffected: "drivers",
+  decision: "change_plans",
   noticeable: [],
   status: "active",
   sources: [{ name: "City", id, updatedAt: "2026-10-01T00:00:00+03:00", license: "CC BY 4.0" }],
@@ -343,15 +344,17 @@ describe("Events on the map", () => {
     await waitFor(() => expect(within(list).getAllByRole("button").map((b) => b.textContent)).toEqual([
       expect.stringMatching(/^Metro: no service/),
       expect.stringMatching(/^Bridge closed/),
-      expect.stringMatching(/^Works here.*110 m/),
+      expect.stringMatching(/^Works here/),
     ]));
-    await userEvent.click(within(list).getByRole("button", { name: /^Metro: no service/ }));
+    const metro = within(list).getByRole("button", { name: /^Metro: no service/ });
+    await userEvent.click(metro);
 
     await waitFor(() => expect(history.location.search).toContain("event=metro"));
-    expect(screen.getByRole("heading", { name: "Metro: no service" })).toHaveFocus();
-    expect(screen.getByRole("article")).toHaveTextContent("WhereRoughly: the Source doesn't say exactly where");
+    const card = await screen.findByRole("article", { name: "Metro: no service" });
+    await userEvent.click(within(card).getByRole("button", { name: "Details" }));
+    expect(card).toHaveTextContent("WhereRoughly: the Source doesn't say exactly where");
 
-    await userEvent.click(screen.getByRole("button", { name: "Close" }));
+    await userEvent.click(metro);
     await waitFor(() => expect(history.location.search).not.toContain("event="));
   });
 
@@ -380,7 +383,7 @@ describe("Events on the map", () => {
     await userEvent.click(await screen.findByRole("button", { name: "tap the shape of road" }));
 
     await waitFor(() => expect(history.location.search).toContain("event=road"));
-    expect(within(await screen.findByRole("article")).getByRole("heading", { name: "Works road" })).toBeInTheDocument();
+    expect(await screen.findByRole("article", { name: "Works road" })).toBeInTheDocument();
     expect(screen.getByTestId("map")).toHaveAttribute("data-emphasised", "road");
   });
 
@@ -428,50 +431,67 @@ describe("Events on the map", () => {
   });
 });
 
-describe("the Event card", () => {
+describe("an Event's card", () => {
+  const textOf = (event: Event) => event.title.en!;
+  // Opened from its pin on the map: the card opens in place, in the Event's row.
   const open = async (event: Event) => {
     events = [event];
     const history = renderApp("/around?at=60.17000,24.95000");
     await userEvent.click(await screen.findByRole("button", { name: new RegExp(`^${textOf(event)},`) }));
     return { history, card: await screen.findByRole("article") };
   };
-  const textOf = (event: Event) => event.title.en!;
+  const details = (card: HTMLElement) => userEvent.click(within(card).getByRole("button", { name: "Details" }));
+  const fact = (card: HTMLElement, name: string) => within(card).getByText(name, { selector: "dt" }).closest("div");
+  const rowOf = (name: RegExp) => within(screen.getByRole("list", { name: "In your way" })).getByRole("button", { name });
 
-  it("opens from the pin with what it is and how much it gets in the way", async () => {
-    const { card } = await open(anEvent("a", { title: { en: "Bridge closed · Hopeasalmentien silta" }, severity: "consider" }));
+  it("opens in its row from the pin: where, what it means, then how much it gets in the way, what it is and when", async () => {
+    const { card } = await open(
+      anEvent("a", { title: { en: "Bridge closed · Hopeasalmentien silta" }, when: { start: "2026-10-01T07:00:00+03:00", end: "2027-12-31T23:59:59+02:00" } }),
+    );
 
-    expect(card).toHaveAccessibleName("Bridge closed");
-    expect(within(card).getByRole("heading", { name: "Bridge closed" })).toBeInTheDocument();
-    expect(card).toHaveTextContent("Hopeasalmentien silta");
-    expect(card).toHaveTextContent("Some disruption");
+    expect(card).toHaveAccessibleName("Hopeasalmentien silta");
+    expect(card).toHaveTextContent(/^Some disruptionBridge closedNow – 31\.12\.2027/);
+    const row = rowOf(/^Hopeasalmentien silta/);
+    expect(row).toHaveAttribute("aria-expanded", "true");
+    expect(row).toHaveTextContent("Lane narrowed: slower driving");
   });
 
   it("names a dig by its kind of work, in plain words", async () => {
     const { card } = await open(anEvent("a", { title: { en: "Works a · Messitytönkatu 2" }, workType: "water_sewer" }));
 
-    expect(card).toHaveAccessibleName("Water and sewer dig");
-    expect(card).toHaveTextContent("Messitytönkatu 2");
+    expect(card).toHaveAccessibleName("Messitytönkatu 2");
+    expect(card).toHaveTextContent("Water and sewer dig");
   });
 
-  it("lays out when, who and what you'd see as a table, in Finnish dates", async () => {
-    const { card } = await open(
-      anEvent("a", { when: { start: "2026-10-01T07:00:00+03:00", end: "2027-12-31T23:59:59+02:00" }, mainlyAffected: "pedestrians", noticeable: ["noise", "blocked"] }),
-    );
-    const row = (name: string) => within(card).getByRole("rowheader", { name }).closest("tr");
+  it("says only that it's worth knowing, in grey, when it doesn't change plans", async () => {
+    const { card } = await open(anEvent("a", { decision: "worth_knowing", severity: "major" }));
 
-    expect(row("When")).toHaveTextContent("Now – 31.12.2027");
-    expect(row("Affects")).toHaveTextContent("Pedestrians");
-    expect(row("You'd see")).toHaveTextContent("Noise · Blocked way");
+    expect(card).toHaveTextContent(/^Worth knowing/);
+    expect(card).not.toHaveTextContent("Major");
+    expect(card).toHaveAttribute("data-tone", "quiet");
   });
 
-  it("leaves out a row with nothing to say, like who it affects when that isn't known", async () => {
+  it("keeps who, what you'd notice on site and where it comes from under Details", async () => {
+    const { card } = await open(anEvent("a", { mainlyAffected: "pedestrians", noticeable: ["noise", "blocked"] }));
+    const more = within(card).getByRole("button", { name: "Details" });
+    expect(more).toHaveAttribute("aria-expanded", "false");
+
+    await details(card);
+
+    expect(more).toHaveAttribute("aria-expanded", "true");
+    expect(fact(card, "Mostly")).toHaveTextContent("Pedestrians");
+    expect(fact(card, "On site")).toHaveTextContent("Noise, Blocked way");
+  });
+
+  it("leaves out a fact with nothing to say, like who it affects when that isn't known", async () => {
     const { card } = await open(anEvent("a", { mainlyAffected: "unknown" }));
+    await details(card);
 
-    expect(within(card).getAllByRole("rowheader").map((th) => th.textContent)).toEqual(["When"]);
+    expect(card.querySelectorAll("dt")).toHaveLength(0);
     expect(card).not.toHaveTextContent("Not sure yet");
   });
 
-  it("moves to another pin when that one is tapped", async () => {
+  it("moves to another Event when its pin is tapped", async () => {
     events = [anEvent("a"), anEvent("b", APART)];
     renderApp("/around?at=60.17000,24.95000");
 
@@ -482,23 +502,23 @@ describe("the Event card", () => {
     expect(screen.queryByRole("article", { name: "Works a" })).not.toBeInTheDocument();
   });
 
-  it("closes with its close button, Escape, or a tap on empty map, and leaves the URL", async () => {
+  it("closes with its row, Escape, or a tap on empty map, and leaves the URL", async () => {
     for (const close of [
-      () => userEvent.click(screen.getByRole("button", { name: "Close" })),
+      () => userEvent.click(rowOf(/^Works a/)),
       () => userEvent.keyboard("{Escape}"),
       () => userEvent.click(screen.getByRole("button", { name: "tap empty map" })),
     ]) {
       const { history } = await open(anEvent("a"));
       await close();
-      expect(screen.queryByRole("article")).not.toBeInTheDocument();
+      await waitFor(() => expect(screen.queryByRole("article")).not.toBeInTheDocument());
       expect(history.location.search).not.toContain("event=");
       cleanup();
     }
   });
 
-  it("moves focus into the card, and back to the pin when it closes", async () => {
+  it("moves focus to its row, and back to the pin when it closes", async () => {
     await open(anEvent("a"));
-    await waitFor(() => expect(screen.getByRole("heading", { name: "Works a" })).toHaveFocus());
+    await waitFor(() => expect(rowOf(/^Works a/)).toHaveFocus());
 
     await userEvent.keyboard("{Escape}");
 
@@ -512,11 +532,17 @@ describe("the Event card", () => {
     expect(await screen.findByRole("article", { name: "Works a" })).toBeInTheDocument();
   });
 
-  it("opens below the map in place of the sections, and the map centres on it", async () => {
-    await open(anEvent("a"));
+  it("opens the section it's in, and the map centres on it", async () => {
+    events = [anEvent("big"), anEvent("loud", { ...APART, severity: "minor", noticeable: ["noise"] })];
+    renderApp("/around?at=60.17000,24.95000");
+    const section = await screen.findByRole("button", { name: "Around you 1" });
+    expect(section).toHaveAttribute("aria-expanded", "false");
 
-    expect(screen.queryByRole("list", { name: "In your way" })).not.toBeInTheDocument();
-    await waitFor(() => expect(screen.getByTestId("map")).toHaveAttribute("data-focus", "60.171,24.95"));
+    await userEvent.click(screen.getByRole("button", { name: /^Works loud,/ }));
+
+    expect(section).toHaveAttribute("aria-expanded", "true");
+    expect(await within(screen.getByRole("list", { name: "Around you" })).findByRole("article", { name: "Works loud" })).toBeInTheDocument();
+    await waitFor(() => expect(screen.getByTestId("map")).toHaveAttribute("data-focus", "60.172,24.96"));
   });
 
   it("puts the map back where it was when the card closes", async () => {
@@ -535,32 +561,28 @@ describe("the Event card", () => {
         where: { ...anEvent("a").where, lines: ["HSL:1805"], stops: ["HSL:1", "HSL:2"], lineNames: ["805"], stopNames: ["Klaavuntie", "Juorumäki"] },
       }),
     );
+    await details(card);
 
-    expect(within(card).getByRole("rowheader", { name: "Line" }).closest("tr")).toHaveTextContent("805");
-    expect(within(card).getByRole("rowheader", { name: "Stops" }).closest("tr")).toHaveTextContent("Klaavuntie and Juorumäki");
-    expect(within(card).queryByRole("rowheader", { name: "Where" })).not.toBeInTheDocument();
+    expect(fact(card, "Lines")).toHaveTextContent("805");
+    expect(fact(card, "Stops")).toHaveTextContent("Klaavuntie and Juorumäki");
+    expect(within(card).queryByText("Where", { selector: "dt" })).not.toBeInTheDocument();
   });
 
-  it("links the Source at the bottom, with its own title, text and terms under More", async () => {
+  it("links the Source with its terms, and the Source's own text, under Details", async () => {
     const { card } = await open(
       anEvent("a", {
         originalText: { en: "Water pipe repair. Lane closed." },
         sources: [{ name: "City of Helsinki", id: "a", url: "https://example.fi/a", updatedAt: "2026-10-01T09:00:00+03:00", license: "CC BY 4.0" }],
       }),
     );
-    const more = within(card).getByRole("button", { name: "More" });
-    expect(more).toHaveAttribute("aria-expanded", "false");
-    expect(card).not.toHaveTextContent("Water pipe repair");
 
-    await userEvent.click(more);
+    await details(card);
 
-    expect(more).toHaveAttribute("aria-expanded", "true");
-    expect(card).toHaveTextContent("The Source's titleWorks a");
     expect(card).toHaveTextContent("Water pipe repair. Lane closed.");
-    expect(card).toHaveTextContent("City of Helsinki · CC BY 4.0");
-    expect(within(card).getByRole("link", { name: "Open at City of Helsinki" })).toHaveAttribute("href", "https://example.fi/a");
+    expect(card).toHaveTextContent("City of Helsinki ↗ · CC BY 4.0");
+    expect(card).toHaveTextContent("Updated 1.10.2026 klo 9.00");
+    expect(within(card).getByRole("link", { name: /City of Helsinki/ })).toHaveAttribute("href", "https://example.fi/a");
   });
-
 });
 
 describe("the summary line", () => {
@@ -641,29 +663,40 @@ describe("the time", () => {
   });
 });
 
-describe("Home's sections", () => {
+describe("Around's sections", () => {
   const at = (id: string, lat: number, patch: Partial<Event> = {}) =>
     anEvent(id, { where: { geometry: { type: "Point", coordinates: [24.95, lat] }, precision: "area" }, ...patch });
   const list = async () => within(await screen.findByRole("list", { name: "In your way", hidden: true }));
 
-  it("lists what's in your way nearest first, once, with who and how far, led by when it ends", async () => {
+  it("lists what's in your way, what changes plans first, then nearest, once, led by when it ends", async () => {
     events = [
       at("far", 60.19),
+      at("aside", 60.1705, { decision: "worth_knowing" }),
       anEvent("stops", { where: { geometry: { type: "MultiPoint", coordinates: [[24.95, 60.18], [24.95, 60.172]] }, precision: "exact" } }),
-      at("near", 60.171, { mainlyAffected: "pedestrians" }),
+      at("near", 60.171, { when: { start: "2026-10-01T00:00:00+03:00", end: "2027-04-01T16:00:00+03:00" } }),
     ];
     renderApp("/around?at=60.17000,24.95000");
     const rows = await (await list()).findAllByRole("button");
 
     expect(rows.map((r) => r.textContent)).toEqual([
-      expect.stringMatching(/^Works near.*Pedestrians · 110 m/),
-      expect.stringMatching(/^Works stops.*220 m/),
-      expect.stringMatching(/^Works far.*2\.2 km/),
+      expect.stringMatching(/^Works near.*until1\.4\.2027/),
+      expect.stringMatching(/^Works stops.*No end date/),
+      expect.stringMatching(/^Works far/),
+      expect.stringMatching(/^Works aside/),
     ]);
-    expect(within(rows[0]!).getByText("No end date")).toBeInTheDocument();
   });
 
-  it("opens an Event's card, like its pin, and marks it in the list", async () => {
+  it("says what changes plans in signal colours, and the rest quietly", async () => {
+    events = [at("big", 60.171, { severity: "major" }), at("some", 60.172), at("aside", 60.173, { decision: "worth_knowing" })];
+    renderApp("/around?at=60.17000,24.95000");
+    const tone = async (name: RegExp) => (await (await list()).findByRole("button", { name })).querySelector(".sg-row-body")?.getAttribute("data-tone");
+
+    expect(await tone(/^Works big/)).toBe("major");
+    expect(await tone(/^Works some/)).toBe("consider");
+    expect(await tone(/^Works aside/)).toBe("quiet");
+  });
+
+  it("opens an Event's card in its row, like its pin", async () => {
     events = [at("a", 60.171), at("b", 60.172)];
     const history = renderApp("/around?at=60.17000,24.95000");
     const row = await (await list()).findByRole("button", { name: /^Works b/ });
@@ -672,8 +705,8 @@ describe("Home's sections", () => {
 
     expect(await screen.findByRole("article", { name: "Works b" })).toBeInTheDocument();
     expect(history.location.search).toContain("event=b");
-    expect(row).toHaveAttribute("aria-current", "true");
-    expect((await list()).getByRole("button", { name: /^Works a/, hidden: true })).not.toHaveAttribute("aria-current");
+    expect(row).toHaveAttribute("aria-expanded", "true");
+    expect((await list()).getByRole("button", { name: /^Works a/ })).toHaveAttribute("aria-expanded", "false");
   });
 
   it("points out an Event's shape on the map while it's hovered or focused in the list", async () => {
@@ -699,7 +732,7 @@ describe("Home's sections", () => {
     await userEvent.hover(pin);
     const glance = within(screen.getByTestId("popup")).getByRole("button", { name: /^Works b/ });
     expect(screen.getByTestId("map")).toHaveAttribute("data-emphasised", "b");
-    expect((await list()).getByRole("button", { name: /^Works b/ })).not.toHaveAttribute("aria-current");
+    expect((await list()).getByRole("button", { name: /^Works b/ })).toHaveAttribute("aria-expanded", "false");
 
     await userEvent.click(glance);
     expect(await screen.findByRole("article", { name: "Works b" })).toBeInTheDocument();
@@ -721,16 +754,17 @@ describe("Home's sections", () => {
     expect(screen.queryByTestId("popup")).not.toBeInTheDocument();
   });
 
-  it("glances at an Event while its area is pointed at, leaving the list's tab as it is", async () => {
+  it("glances at an Event while its area is pointed at, leaving the sections as they are", async () => {
     events = [at("big", 60.171), at("loud", 60.172, { severity: "minor", noticeable: ["noise"] })];
     renderApp("/around?at=60.17000,24.95000");
     const shape = await screen.findByRole("button", { name: "tap the shape of loud" });
-    expect(await screen.findByRole("tab", { name: "In your way 1" })).toHaveAttribute("aria-selected", "true");
+    const around = await screen.findByRole("button", { name: "Around you 1" });
+    expect(around).toHaveAttribute("aria-expanded", "false");
 
     await userEvent.hover(shape);
 
     expect(within(screen.getByTestId("popup")).getByRole("button", { name: /^Works loud/ })).toBeInTheDocument();
-    expect(screen.getByRole("tab", { name: "In your way 1" })).toHaveAttribute("aria-selected", "true");
+    expect(around).toHaveAttribute("aria-expanded", "false");
   });
 
   it("asks the map to show the Event a row is pointed at, and stops when it isn't", async () => {
@@ -751,7 +785,7 @@ describe("Home's sections", () => {
 
     await userEvent.click(await screen.findByRole("button", { name: "tap the shape of b" }));
 
-    await waitFor(async () => expect((await list()).getByRole("button", { name: /^Works b/, hidden: true })).toHaveAttribute("aria-current", "true"));
+    await waitFor(async () => expect((await list()).getByRole("button", { name: /^Works b/ })).toHaveAttribute("aria-expanded", "true"));
   });
 
   it("gives focus back to the row a card was opened from", async () => {
@@ -776,7 +810,7 @@ describe("Home's sections", () => {
     renderApp("/around?at=60.17000,24.95000");
 
     expect(await (await list()).findByRole("button", { name: /^Works big/ })).toBeInTheDocument();
-    await userEvent.click(screen.getByRole("tab", { name: "Around you 1" }));
+    await userEvent.click(screen.getByRole("button", { name: "Around you 1" }));
     const around = within(screen.getByRole("list", { name: "Around you" }));
     expect(around.getAllByRole("button").map((b) => b.textContent)).toEqual([expect.stringMatching(/^Works loud/)]);
     expect(screen.queryByText("Works note")).not.toBeInTheDocument();
@@ -784,44 +818,39 @@ describe("Home's sections", () => {
     expect(screen.queryByRole("button", { name: /^Works note,/ })).not.toBeInTheDocument();
   });
 
-  it("lists what starts in the next two weeks under Coming up, soonest first, and opens on the first tab with anything", async () => {
+  it("lists what starts in the next two weeks under Coming up, soonest first, and opens the first section with anything", async () => {
     events = [
       at("later", 60.171, { status: "upcoming", when: { start: "2026-11-20T08:00:00+02:00" } }),
       at("sooner", 60.172, { status: "upcoming", when: { start: "2026-11-12T08:00:00+02:00", end: "2026-11-14T16:00:00+02:00" } }),
     ];
     renderApp("/around?at=60.17000,24.95000");
 
-    expect(await screen.findByRole("tab", { name: "Coming up 2" })).toHaveAttribute("aria-selected", "true");
-    expect(screen.getByRole("tab", { name: "In your way 0" })).toHaveAttribute("aria-selected", "false");
+    expect(await screen.findByRole("button", { name: "Coming up 2" })).toHaveAttribute("aria-expanded", "true");
+    expect(screen.getByRole("button", { name: "In your way 0" })).toHaveAttribute("aria-expanded", "false");
     const comingUp = within(screen.getByRole("list", { name: "Coming up" }));
     expect(comingUp.getAllByRole("button").map((b) => b.textContent)).toEqual([expect.stringMatching(/^Works sooner.*starts/), expect.stringMatching(/^Works later.*starts/)]);
     const query = soonQuery()!;
     expect(query.get("near")).toBe("60.17,24.95,1000");
     expect(new Date(query.get("to")!).getTime() - new Date(query.get("from")!).getTime()).toBe(14 * 86_400_000);
 
-    await userEvent.click(screen.getByRole("tab", { name: "In your way 0" }));
+    await userEvent.click(screen.getByRole("button", { name: "In your way 0" }));
     expect(screen.getByText("Nothing in your way")).toBeInTheDocument();
   });
 
-  it("moves between the tabs with the arrow keys", async () => {
-    events = [at("a", 60.171)];
-    renderApp("/around?at=60.17000,24.95000");
-    const first = await screen.findByRole("tab", { name: "In your way 1" });
-
-    act(() => first.focus());
-    await userEvent.keyboard("{ArrowRight}");
-    expect(screen.getByRole("tab", { name: "Around you 0" })).toHaveFocus();
-    expect(screen.getByRole("tab", { name: "Around you 0" })).toHaveAttribute("aria-selected", "true");
-    await userEvent.keyboard("{ArrowLeft}{ArrowLeft}");
-    expect(screen.getByRole("tab", { name: "Coming up 0" })).toHaveAttribute("aria-selected", "true");
-  });
-
-  it("leads with what a dig is, and where, in place of the Source's \"Excavation · street\"", async () => {
+  it("leads a dig's row with where, and what it means for you, in place of the Source's \"Excavation · street\"", async () => {
     events = [at("dig", 60.171, { title: { en: "Excavation · Arkadiankatu 2" }, workType: "water_sewer" })];
     renderApp("/around?at=60.17000,24.95000");
 
-    const row = await (await list()).findByRole("button", { name: /^Water and sewer dig/ });
-    expect(row).toHaveTextContent(/^Water and sewer digArkadiankatu 2 · Drivers · 110 m/);
+    const row = await (await list()).findByRole("button", { name: /^Arkadiankatu 2/ });
+    expect(row).toHaveTextContent(/^Arkadiankatu 2Lane narrowed: slower driving/);
+  });
+
+  it("says how far what's around you is", async () => {
+    events = [at("loud", 60.172, { severity: "minor", noticeable: ["noise"] })];
+    renderApp("/around?at=60.17000,24.95000");
+
+    const row = await within(await screen.findByRole("list", { name: "Around you" })).findByRole("button", { name: /^Works loud/ });
+    expect(row).toHaveTextContent(/220 m›$/);
   });
 });
 
