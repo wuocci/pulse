@@ -1,5 +1,7 @@
-import { conditionRetentionDays, createPool } from "./config.ts";
+import { conditionRetentionDays, createPool, digitransitApiKey } from "./config.ts";
+import { digitransitOccupancy } from "./core/adapters/digitransit-parking.ts";
 import { hfpStream } from "./core/adapters/hfp.ts";
+import { startOccupancyIngest } from "./core/conditions/occupancy.ts";
 import { startConditionIngest } from "./core/conditions/recorder.ts";
 import { PgConditionStore } from "./core/conditions/store.ts";
 import { retryWithBackoff } from "./core/ingest/retry.ts";
@@ -27,4 +29,13 @@ await retryWithBackoff(() => conditions.prepare(retentionDays), {
     console.error(`Database not ready, retrying in ${waitMs / 1000} s:`, error instanceof Error ? error.message : error),
 });
 console.log(`Ingest started; Conditions kept ${retentionDays} days`);
-stop = startConditionIngest(regions, conditions, hfpStream);
+const digitransitKey = digitransitApiKey();
+if (!digitransitKey) console.log("Car park occupancy off: DIGITRANSIT_API_KEY not set");
+const stopDelays = startConditionIngest(regions, conditions, hfpStream);
+const stopOccupancy = startOccupancyIngest(regions, conditions, (source, region) =>
+  digitransitKey ? digitransitOccupancy({ url: source.url, apiKey: digitransitKey, bbox: region.bbox }) : null,
+);
+stop = () => {
+  stopDelays();
+  stopOccupancy();
+};

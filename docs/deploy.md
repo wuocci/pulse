@@ -10,10 +10,10 @@ How to run the web app and the API on the server behind one password (#32). Auto
 | --- | --- | --- | --- |
 | `web` | Caddy: asks for the password, serves the built app, passes `/v0` to `api` | 64 MB | 22 MB |
 | `api` | The API, and polling the Sources for Events | 512 MB | 205 MB |
-| `ingest` | Records HSL delays as 5-minute Conditions (#9): the API's image, another command | 256 MB | |
+| `ingest` | Records HSL delays (#9) and park-and-ride occupancy (#50) as 5-minute Conditions: the API's image, another command | 256 MB | |
 | `db` | Postgres: the Classifier's answers and the recorded delays | 384 MB | 35 MB |
 
-`ingest` keeps 90 days of delays (`CONDITION_RETENTION_DAYS` in `.env.production`). It is the first data that can't be fetched again, so backups matter from here on (#21).
+`ingest` keeps 90 days of Conditions (`CONDITION_RETENTION_DAYS` in `.env.production`). It is the first data that can't be fetched again, so backups matter from here on (#21).
 
 Only `web` has a port, and only on the server itself: `127.0.0.1:8090`. `tailscale serve` handles HTTPS and passes traffic to it, so only devices on the tailnet can open the app.
 

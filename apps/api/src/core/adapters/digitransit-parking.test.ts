@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { digitransitCarParks, freeSpaces } from "./digitransit-parking.ts";
+import { digitransitCarParks, digitransitOccupancy, freeSpaces } from "./digitransit-parking.ts";
 import parkings from "./fixtures/digitransit-routing/parkings.json" with { type: "json" };
 
 const URL_ = "https://api.digitransit.fi/routing/v2/hsl/gtfs/v1";
@@ -112,3 +112,45 @@ describe("Digitransit's car parks", () => {
 const bodies = (fetchFn: ReturnType<typeof fakeDigitransit>) => fetchFn.mock.calls.map(([, init]) => String(init?.body));
 const listReads = (fetchFn: ReturnType<typeof fakeDigitransit>) => bodies(fetchFn).filter((b) => b.includes("capacity")).length;
 const liveReads = (fetchFn: ReturnType<typeof fakeDigitransit>) => bodies(fetchFn).filter((b) => b.includes("availability")).length;
+
+describe("Digitransit's car park occupancy", () => {
+  const CAPITAL_REGION: [number, number, number, number] = [24.4, 60.0, 25.3, 60.45];
+
+  it("reads free spaces and capacity of every car park in the bbox that reports them live", async () => {
+    const readings = await digitransitOccupancy({ url: URL_, apiKey: "k", bbox: CAPITAL_REGION, fetchFn: fakeDigitransit() }).read();
+
+    expect(readings.length).toBeGreaterThan(20);
+    expect(readings).toContainEqual({ facility: "liipi:308", freeSpaces: 13, capacity: 26 });
+    // Tampere's Hiedanranta reports live too, but it's outside the Region.
+    expect(readings.map((r) => r.facility)).not.toContain("liipi:1494");
+    expect(readings.every((r) => r.facility.startsWith("liipi:"))).toBe(true);
+  });
+
+  it("leaves out a car park without a live count, rather than reading it as full", async () => {
+    const park = (id: string, extra: object) => ({ vehicleParkingId: id, lat: 60.2, lon: 24.9, realtime: true, capacity: { carSpaces: 50 }, ...extra });
+    const answer = {
+      data: {
+        vehicleParkings: [
+          park("a", { availability: { carSpaces: 5 } }),
+          park("b", { availability: { carSpaces: null } }),
+          park("c", { realtime: false, availability: { carSpaces: 5 } }),
+          park("d", { availability: null }),
+          park("e", { capacity: { carSpaces: null }, availability: { carSpaces: 5 } }),
+        ],
+      },
+    };
+    const fetchFn = vi.fn(async () => Response.json(answer));
+
+    expect(await digitransitOccupancy({ url: URL_, apiKey: "k", bbox: CAPITAL_REGION, fetchFn }).read()).toEqual([
+      { facility: "a", freeSpaces: 5, capacity: 50 },
+    ]);
+  });
+
+  it("fails on an error or an answer without data, so the bucket stays a gap", async () => {
+    const failing = vi.fn(async () => new Response("", { status: 502 }));
+    const empty = vi.fn(async () => Response.json({ errors: [{ message: "no" }] }));
+
+    await expect(digitransitOccupancy({ url: URL_, apiKey: "k", bbox: CAPITAL_REGION, fetchFn: failing }).read()).rejects.toThrow(/502/);
+    await expect(digitransitOccupancy({ url: URL_, apiKey: "k", bbox: CAPITAL_REGION, fetchFn: empty }).read()).rejects.toThrow(/without data/);
+  });
+});
