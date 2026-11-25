@@ -685,6 +685,23 @@
       "severity": null,
       "mainlyAffected": null,
       "decision": "worth_knowing"
+    },
+    {
+      "id": "KP2601611-4",
+      "layer": "excavation",
+      "text": "Työstä vastaava varaa tilaa kaivutyölle; kaapelityö. /  / LISÄYS 29.7.2026: aluelisäykset ja päivitetty liikennejärjestelysuunnitelma. / LISÄYS 10.8.2026: aluelisäykset ja päivitetty liikennejärjestelysuunnitelma. / LISÄYS 28.8.2026: lisäaikaa 28.8.2026 -> 18.12.2026. | address: Castreninkatu 1, 10, 13, 16, 22-24, Wallininkatu 7-11, Wallininkuja 6, 3-4, 1, Toinen Linja 19-31, Kolmas linja 1-3, 13-15, 28-32, 29-31, Neljäs linja 10-14, Viides linja 12-18, Siltasaarenkatu 15, Kaarlenkatu 3-5, 10-12, Helsinginkatu 4-20, Fleminginkatu 10-12, 11, 15-17, Harjutori 2-4, 10-12, Harjutorinkatu 4, Pengerkatu 7-15, 21-25, 22-24, 27, 29, Torkkelinkatu , Torkkelinkuja, Agricolankatu 2-4, Porthaninkatu 4, 13-17, Alppikatu 11, Franzéninkatu 3, 24-26 | district: Kallio",
+      "candidateDates": [
+        "2026-07-29",
+        "2026-08-10",
+        "2026-08-28",
+        "2026-12-18"
+      ],
+      "tyoPaattyy": "2027-05-14",
+      "workType": "electricity_telecom",
+      "endDate": "2026-12-18",
+      "mainlyAffected": "drivers",
+      "loud": "ordinary",
+      "decision": "worth_knowing"
     }
   ]
 }

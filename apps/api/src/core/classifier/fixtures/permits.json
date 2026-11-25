@@ -3,7 +3,7 @@
   "at": "2026-10-26",
   "url": "https://kartta.hel.fi/ws/geoserver/avoindata/wfs",
   "query": "service=WFS&version=2.0.0&request=GetFeature&typeName=<layer>&outputFormat=application/json&srsName=EPSG:4326",
-  "note": "Raw features from the live WFS, unmodified, filtered to the notices listed in answer-key.json. A notice can span several features (one per polygon). KP2302652-6, KP2102753-23 and KP2602098-5 were added on 2026-11-04, as loud and ordinary digs near Gunillantie. The traffic arrangements LJ2400076-3, LJ2400073-3, LJ2500010-6, LJ2600122, LJ2600132-2, LJ2500108, LJ2300141-3, LJ2600058-2, LJ2400124, LJ2600004, LJ2600103, LJ2500004, LJ2300179-3, LJ2500144, LJ2600153, LJ2600165, LJ2400146, LJ2500046 were added on 2026-11-23, for the arrangementType question (#59)."
+  "note": "Raw features from the live WFS, unmodified, filtered to the notices listed in answer-key.json. A notice can span several features (one per polygon). KP2302652-6, KP2102753-23 and KP2602098-5 were added on 2026-11-04, as loud and ordinary digs near Gunillantie. The traffic arrangements LJ2400076-3, LJ2400073-3, LJ2500010-6, LJ2600122, LJ2600132-2, LJ2500108, LJ2300141-3, LJ2600058-2, LJ2400124, LJ2600004, LJ2600103, LJ2500004, LJ2300179-3, LJ2500144, LJ2600153, LJ2600165, LJ2400146, LJ2500046 were added on 2026-11-23, for the arrangementType question (#59). KP2601611-4 was added on 2026-11-25: a cable job across 37 areas of Kallio, shown on Home as changing plans, for the decision question."
  },
  "layers": {
   "avoindata:Tapahtumat_alue": {
@@ -21968,6 +21968,2650 @@
       "tyo_alkaa_txt": "26.08.2026",
       "tyo_paattyy_txt": "15.11.2026",
       "toiminnallinen_kunto_txt": null
+     }
+    },
+    {
+     "type": "Feature",
+     "id": "Kaivuilmoitus_alue.776",
+     "geometry": {
+      "type": "MultiPolygon",
+      "coordinates": [
+       [
+        [
+         [
+          24.94642587,
+          60.18247056
+         ],
+         [
+          24.94641204,
+          60.18246131
+         ],
+         [
+          24.94644387,
+          60.18244872
+         ],
+         [
+          24.94645959,
+          60.18245953
+         ],
+         [
+          24.94642587,
+          60.18247056
+         ]
+        ]
+       ]
+      ]
+     },
+     "geometry_name": "singlegeom",
+     "properties": {
+      "id": 776,
+      "hakemus": "Kaivuilmoitus",
+      "hakemustunnus": "KP2601611-4",
+      "tyo_alkaa": "2026-07-06",
+      "tyo_paattyy": "2027-05-14",
+      "toiminnallinen_kunto": "2026-12-18",
+      "tyon_tarkoitus": "Työstä vastaava varaa tilaa kaivutyölle; kaapelityö.\n\nLISÄYS 29.7.2026: aluelisäykset ja päivitetty liikennejärjestelysuunnitelma.\nLISÄYS 10.8.2026: aluelisäykset ja päivitetty liikennejärjestelysuunnitelma.\nLISÄYS 28.8.2026: lisäaikaa 28.8.2026 -> 18.12.2026.",
+      "osoite": "Castreninkatu 1, 10, 13, 16, 22-24, Wallininkatu 7-11, Wallininkuja 6, 3-4, 1, Toinen Linja 19-31, Kolmas linja 1-3, 13-15, 28-32, 29-31, Neljäs linja 10-14, Viides linja 12-18, Siltasaarenkatu 15, Kaarlenkatu 3-5, 10-12, Helsinginkatu 4-20, Fleminginkatu 10-12, 11, 15-17, Harjutori 2-4, 10-12, Harjutorinkatu 4, Pengerkatu 7-15, 21-25, 22-24, 27, 29, Torkkelinkatu , Torkkelinkuja, Agricolankatu 2-4, Porthaninkatu 4, 13-17, Alppikatu 11, Franzéninkatu 3, 24-26",
+      "kaupunginosa": "11 KALLIO",
+      "status": "Käynnissä",
+      "hakija": "",
+      "tyon_suorittaja": "",
+      "geometrytype": "ST_Polygon",
+      "tyo_alkaa_txt": "06.07.2026",
+      "tyo_paattyy_txt": "14.05.2027",
+      "toiminnallinen_kunto_txt": "18.12.2026"
+     }
+    },
+    {
+     "type": "Feature",
+     "id": "Kaivuilmoitus_alue.777",
+     "geometry": {
+      "type": "MultiPolygon",
+      "coordinates": [
+       [
+        [
+         [
+          24.94666451,
+          60.18238345
+         ],
+         [
+          24.9466905,
+          60.18237447
+         ],
+         [
+          24.94667375,
+          60.18236278
+         ],
+         [
+          24.94664618,
+          60.18237164
+         ],
+         [
+          24.94666451,
+          60.18238345
+         ]
+        ]
+       ]
+      ]
+     },
+     "geometry_name": "singlegeom",
+     "properties": {
+      "id": 777,
+      "hakemus": "Kaivuilmoitus",
+      "hakemustunnus": "KP2601611-4",
+      "tyo_alkaa": "2026-07-06",
+      "tyo_paattyy": "2027-05-14",
+      "toiminnallinen_kunto": "2026-12-18",
+      "tyon_tarkoitus": "Työstä vastaava varaa tilaa kaivutyölle; kaapelityö.\n\nLISÄYS 29.7.2026: aluelisäykset ja päivitetty liikennejärjestelysuunnitelma.\nLISÄYS 10.8.2026: aluelisäykset ja päivitetty liikennejärjestelysuunnitelma.\nLISÄYS 28.8.2026: lisäaikaa 28.8.2026 -> 18.12.2026.",
+      "osoite": "Castreninkatu 1, 10, 13, 16, 22-24, Wallininkatu 7-11, Wallininkuja 6, 3-4, 1, Toinen Linja 19-31, Kolmas linja 1-3, 13-15, 28-32, 29-31, Neljäs linja 10-14, Viides linja 12-18, Siltasaarenkatu 15, Kaarlenkatu 3-5, 10-12, Helsinginkatu 4-20, Fleminginkatu 10-12, 11, 15-17, Harjutori 2-4, 10-12, Harjutorinkatu 4, Pengerkatu 7-15, 21-25, 22-24, 27, 29, Torkkelinkatu , Torkkelinkuja, Agricolankatu 2-4, Porthaninkatu 4, 13-17, Alppikatu 11, Franzéninkatu 3, 24-26",
+      "kaupunginosa": "11 KALLIO",
+      "status": "Käynnissä",
+      "hakija": "",
+      "tyon_suorittaja": "",
+      "geometrytype": "ST_Polygon",
+      "tyo_alkaa_txt": "06.07.2026",
+      "tyo_paattyy_txt": "14.05.2027",
+      "toiminnallinen_kunto_txt": "18.12.2026"
+     }
+    },
+    {
+     "type": "Feature",
+     "id": "Kaivuilmoitus_alue.778",
+     "geometry": {
+      "type": "MultiPolygon",
+      "coordinates": [
+       [
+        [
+         [
+          24.95086859,
+          60.18192898
+         ],
+         [
+          24.95090798,
+          60.18195262
+         ],
+         [
+          24.9509496,
+          60.18193561
+         ],
+         [
+          24.95091567,
+          60.18191056
+         ],
+         [
+          24.95086859,
+          60.18192898
+         ]
+        ]
+       ]
+      ]
+     },
+     "geometry_name": "singlegeom",
+     "properties": {
+      "id": 778,
+      "hakemus": "Kaivuilmoitus",
+      "hakemustunnus": "KP2601611-4",
+      "tyo_alkaa": "2026-07-06",
+      "tyo_paattyy": "2027-05-14",
+      "toiminnallinen_kunto": "2026-12-18",
+      "tyon_tarkoitus": "Työstä vastaava varaa tilaa kaivutyölle; kaapelityö.\n\nLISÄYS 29.7.2026: aluelisäykset ja päivitetty liikennejärjestelysuunnitelma.\nLISÄYS 10.8.2026: aluelisäykset ja päivitetty liikennejärjestelysuunnitelma.\nLISÄYS 28.8.2026: lisäaikaa 28.8.2026 -> 18.12.2026.",
+      "osoite": "Castreninkatu 1, 10, 13, 16, 22-24, Wallininkatu 7-11, Wallininkuja 6, 3-4, 1, Toinen Linja 19-31, Kolmas linja 1-3, 13-15, 28-32, 29-31, Neljäs linja 10-14, Viides linja 12-18, Siltasaarenkatu 15, Kaarlenkatu 3-5, 10-12, Helsinginkatu 4-20, Fleminginkatu 10-12, 11, 15-17, Harjutori 2-4, 10-12, Harjutorinkatu 4, Pengerkatu 7-15, 21-25, 22-24, 27, 29, Torkkelinkatu , Torkkelinkuja, Agricolankatu 2-4, Porthaninkatu 4, 13-17, Alppikatu 11, Franzéninkatu 3, 24-26",
+      "kaupunginosa": "11 KALLIO",
+      "status": "Käynnissä",
+      "hakija": "",
+      "tyon_suorittaja": "",
+      "geometrytype": "ST_Polygon",
+      "tyo_alkaa_txt": "06.07.2026",
+      "tyo_paattyy_txt": "14.05.2027",
+      "toiminnallinen_kunto_txt": "18.12.2026"
+     }
+    },
+    {
+     "type": "Feature",
+     "id": "Kaivuilmoitus_alue.779",
+     "geometry": {
+      "type": "MultiPolygon",
+      "coordinates": [
+       [
+        [
+         [
+          24.94969154,
+          60.18232944
+         ],
+         [
+          24.94967379,
+          60.18232704
+         ],
+         [
+          24.94965786,
+          60.18235694
+         ],
+         [
+          24.94964994,
+          60.18249525
+         ],
+         [
+          24.9494182,
+          60.18250059
+         ],
+         [
+          24.94927118,
+          60.18247006
+         ],
+         [
+          24.94925023,
+          60.18247854
+         ],
+         [
+          24.94941479,
+          60.18251315
+         ],
+         [
+          24.9496735,
+          60.18250499
+         ],
+         [
+          24.94967889,
+          60.18236054
+         ],
+         [
+          24.94969154,
+          60.18232944
+         ]
+        ]
+       ]
+      ]
+     },
+     "geometry_name": "singlegeom",
+     "properties": {
+      "id": 779,
+      "hakemus": "Kaivuilmoitus",
+      "hakemustunnus": "KP2601611-4",
+      "tyo_alkaa": "2026-07-06",
+      "tyo_paattyy": "2027-05-14",
+      "toiminnallinen_kunto": "2026-12-18",
+      "tyon_tarkoitus": "Työstä vastaava varaa tilaa kaivutyölle; kaapelityö.\n\nLISÄYS 29.7.2026: aluelisäykset ja päivitetty liikennejärjestelysuunnitelma.\nLISÄYS 10.8.2026: aluelisäykset ja päivitetty liikennejärjestelysuunnitelma.\nLISÄYS 28.8.2026: lisäaikaa 28.8.2026 -> 18.12.2026.",
+      "osoite": "Castreninkatu 1, 10, 13, 16, 22-24, Wallininkatu 7-11, Wallininkuja 6, 3-4, 1, Toinen Linja 19-31, Kolmas linja 1-3, 13-15, 28-32, 29-31, Neljäs linja 10-14, Viides linja 12-18, Siltasaarenkatu 15, Kaarlenkatu 3-5, 10-12, Helsinginkatu 4-20, Fleminginkatu 10-12, 11, 15-17, Harjutori 2-4, 10-12, Harjutorinkatu 4, Pengerkatu 7-15, 21-25, 22-24, 27, 29, Torkkelinkatu , Torkkelinkuja, Agricolankatu 2-4, Porthaninkatu 4, 13-17, Alppikatu 11, Franzéninkatu 3, 24-26",
+      "kaupunginosa": "11 KALLIO",
+      "status": "Käynnissä",
+      "hakija": "",
+      "tyon_suorittaja": "",
+      "geometrytype": "ST_Polygon",
+      "tyo_alkaa_txt": "06.07.2026",
+      "tyo_paattyy_txt": "14.05.2027",
+      "toiminnallinen_kunto_txt": "18.12.2026"
+     }
+    },
+    {
+     "type": "Feature",
+     "id": "Kaivuilmoitus_alue.780",
+     "geometry": {
+      "type": "MultiPolygon",
+      "coordinates": [
+       [
+        [
+         [
+          24.94886277,
+          60.18246916
+         ],
+         [
+          24.94881355,
+          60.18248906
+         ],
+         [
+          24.94899244,
+          60.18259638
+         ],
+         [
+          24.94903886,
+          60.18257588
+         ],
+         [
+          24.94886277,
+          60.18246916
+         ]
+        ]
+       ]
+      ]
+     },
+     "geometry_name": "singlegeom",
+     "properties": {
+      "id": 780,
+      "hakemus": "Kaivuilmoitus",
+      "hakemustunnus": "KP2601611-4",
+      "tyo_alkaa": "2026-07-06",
+      "tyo_paattyy": "2027-05-14",
+      "toiminnallinen_kunto": "2026-12-18",
+      "tyon_tarkoitus": "Työstä vastaava varaa tilaa kaivutyölle; kaapelityö.\n\nLISÄYS 29.7.2026: aluelisäykset ja päivitetty liikennejärjestelysuunnitelma.\nLISÄYS 10.8.2026: aluelisäykset ja päivitetty liikennejärjestelysuunnitelma.\nLISÄYS 28.8.2026: lisäaikaa 28.8.2026 -> 18.12.2026.",
+      "osoite": "Castreninkatu 1, 10, 13, 16, 22-24, Wallininkatu 7-11, Wallininkuja 6, 3-4, 1, Toinen Linja 19-31, Kolmas linja 1-3, 13-15, 28-32, 29-31, Neljäs linja 10-14, Viides linja 12-18, Siltasaarenkatu 15, Kaarlenkatu 3-5, 10-12, Helsinginkatu 4-20, Fleminginkatu 10-12, 11, 15-17, Harjutori 2-4, 10-12, Harjutorinkatu 4, Pengerkatu 7-15, 21-25, 22-24, 27, 29, Torkkelinkatu , Torkkelinkuja, Agricolankatu 2-4, Porthaninkatu 4, 13-17, Alppikatu 11, Franzéninkatu 3, 24-26",
+      "kaupunginosa": "11 KALLIO",
+      "status": "Käynnissä",
+      "hakija": "",
+      "tyon_suorittaja": "",
+      "geometrytype": "ST_Polygon",
+      "tyo_alkaa_txt": "06.07.2026",
+      "tyo_paattyy_txt": "14.05.2027",
+      "toiminnallinen_kunto_txt": "18.12.2026"
+     }
+    },
+    {
+     "type": "Feature",
+     "id": "Kaivuilmoitus_alue.781",
+     "geometry": {
+      "type": "MultiPolygon",
+      "coordinates": [
+       [
+        [
+         [
+          24.95264337,
+          60.1811569
+         ],
+         [
+          24.95222722,
+          60.18131764
+         ],
+         [
+          24.9522689,
+          60.18133866
+         ],
+         [
+          24.95228674,
+          60.1813295
+         ],
+         [
+          24.95226739,
+          60.18131805
+         ],
+         [
+          24.95266382,
+          60.18116473
+         ],
+         [
+          24.95264337,
+          60.1811569
+         ]
+        ]
+       ]
+      ]
+     },
+     "geometry_name": "singlegeom",
+     "properties": {
+      "id": 781,
+      "hakemus": "Kaivuilmoitus",
+      "hakemustunnus": "KP2601611-4",
+      "tyo_alkaa": "2026-07-06",
+      "tyo_paattyy": "2027-05-14",
+      "toiminnallinen_kunto": "2026-12-18",
+      "tyon_tarkoitus": "Työstä vastaava varaa tilaa kaivutyölle; kaapelityö.\n\nLISÄYS 29.7.2026: aluelisäykset ja päivitetty liikennejärjestelysuunnitelma.\nLISÄYS 10.8.2026: aluelisäykset ja päivitetty liikennejärjestelysuunnitelma.\nLISÄYS 28.8.2026: lisäaikaa 28.8.2026 -> 18.12.2026.",
+      "osoite": "Castreninkatu 1, 10, 13, 16, 22-24, Wallininkatu 7-11, Wallininkuja 6, 3-4, 1, Toinen Linja 19-31, Kolmas linja 1-3, 13-15, 28-32, 29-31, Neljäs linja 10-14, Viides linja 12-18, Siltasaarenkatu 15, Kaarlenkatu 3-5, 10-12, Helsinginkatu 4-20, Fleminginkatu 10-12, 11, 15-17, Harjutori 2-4, 10-12, Harjutorinkatu 4, Pengerkatu 7-15, 21-25, 22-24, 27, 29, Torkkelinkatu , Torkkelinkuja, Agricolankatu 2-4, Porthaninkatu 4, 13-17, Alppikatu 11, Franzéninkatu 3, 24-26",
+      "kaupunginosa": "11 KALLIO",
+      "status": "Käynnissä",
+      "hakija": "",
+      "tyon_suorittaja": "",
+      "geometrytype": "ST_Polygon",
+      "tyo_alkaa_txt": "06.07.2026",
+      "tyo_paattyy_txt": "14.05.2027",
+      "toiminnallinen_kunto_txt": "18.12.2026"
+     }
+    },
+    {
+     "type": "Feature",
+     "id": "Kaivuilmoitus_alue.782",
+     "geometry": {
+      "type": "MultiPolygon",
+      "coordinates": [
+       [
+        [
+         [
+          24.95889001,
+          60.18489233
+         ],
+         [
+          24.95885573,
+          60.18490055
+         ],
+         [
+          24.95839545,
+          60.18462004
+         ],
+         [
+          24.95791261,
+          60.18441558
+         ],
+         [
+          24.95744893,
+          60.18426921
+         ],
+         [
+          24.95663426,
+          60.18378012
+         ],
+         [
+          24.95666897,
+          60.18376545
+         ],
+         [
+          24.95747893,
+          60.18425341
+         ],
+         [
+          24.95794085,
+          60.18440469
+         ],
+         [
+          24.95836274,
+          60.18457781
+         ],
+         [
+          24.95857763,
+          60.18470525
+         ],
+         [
+          24.95889001,
+          60.18489233
+         ]
+        ]
+       ]
+      ]
+     },
+     "geometry_name": "singlegeom",
+     "properties": {
+      "id": 782,
+      "hakemus": "Kaivuilmoitus",
+      "hakemustunnus": "KP2601611-4",
+      "tyo_alkaa": "2026-07-06",
+      "tyo_paattyy": "2027-05-14",
+      "toiminnallinen_kunto": "2026-12-18",
+      "tyon_tarkoitus": "Työstä vastaava varaa tilaa kaivutyölle; kaapelityö.\n\nLISÄYS 29.7.2026: aluelisäykset ja päivitetty liikennejärjestelysuunnitelma.\nLISÄYS 10.8.2026: aluelisäykset ja päivitetty liikennejärjestelysuunnitelma.\nLISÄYS 28.8.2026: lisäaikaa 28.8.2026 -> 18.12.2026.",
+      "osoite": "Castreninkatu 1, 10, 13, 16, 22-24, Wallininkatu 7-11, Wallininkuja 6, 3-4, 1, Toinen Linja 19-31, Kolmas linja 1-3, 13-15, 28-32, 29-31, Neljäs linja 10-14, Viides linja 12-18, Siltasaarenkatu 15, Kaarlenkatu 3-5, 10-12, Helsinginkatu 4-20, Fleminginkatu 10-12, 11, 15-17, Harjutori 2-4, 10-12, Harjutorinkatu 4, Pengerkatu 7-15, 21-25, 22-24, 27, 29, Torkkelinkatu , Torkkelinkuja, Agricolankatu 2-4, Porthaninkatu 4, 13-17, Alppikatu 11, Franzéninkatu 3, 24-26",
+      "kaupunginosa": "11 KALLIO",
+      "status": "Käynnissä",
+      "hakija": "",
+      "tyon_suorittaja": "",
+      "geometrytype": "ST_Polygon",
+      "tyo_alkaa_txt": "06.07.2026",
+      "tyo_paattyy_txt": "14.05.2027",
+      "toiminnallinen_kunto_txt": "18.12.2026"
+     }
+    },
+    {
+     "type": "Feature",
+     "id": "Kaivuilmoitus_alue.783",
+     "geometry": {
+      "type": "MultiPolygon",
+      "coordinates": [
+       [
+        [
+         [
+          24.95879239,
+          60.18603128
+         ],
+         [
+          24.95878874,
+          60.1860518
+         ],
+         [
+          24.95778118,
+          60.1859935
+         ],
+         [
+          24.95754807,
+          60.18595141
+         ],
+         [
+          24.95711868,
+          60.18571131
+         ],
+         [
+          24.95689488,
+          60.18579307
+         ],
+         [
+          24.95693239,
+          60.18582073
+         ],
+         [
+          24.95639646,
+          60.18600334
+         ],
+         [
+          24.95522573,
+          60.18595164
+         ],
+         [
+          24.95475836,
+          60.18561649
+         ],
+         [
+          24.9547998,
+          60.1853424
+         ],
+         [
+          24.95582127,
+          60.18497644
+         ],
+         [
+          24.95543832,
+          60.18460484
+         ],
+         [
+          24.95562671,
+          60.1845468
+         ],
+         [
+          24.95550136,
+          60.18443183
+         ],
+         [
+          24.95551357,
+          60.18440785
+         ],
+         [
+          24.95556527,
+          60.18439678
+         ],
+         [
+          24.95555869,
+          60.18425064
+         ],
+         [
+          24.95561436,
+          60.18425284
+         ],
+         [
+          24.9556045,
+          60.18440947
+         ],
+         [
+          24.95554408,
+          60.18442654
+         ],
+         [
+          24.95568257,
+          60.18455663
+         ],
+         [
+          24.95549471,
+          60.18461418
+         ],
+         [
+          24.95580354,
+          60.18491037
+         ],
+         [
+          24.95588758,
+          60.18498092
+         ],
+         [
+          24.95483556,
+          60.18535373
+         ],
+         [
+          24.9547927,
+          60.18561249
+         ],
+         [
+          24.95522936,
+          60.18592924
+         ],
+         [
+          24.95637757,
+          60.18598404
+         ],
+         [
+          24.95634675,
+          60.18594894
+         ],
+         [
+          24.95582563,
+          60.18556964
+         ],
+         [
+          24.95586844,
+          60.18555948
+         ],
+         [
+          24.95643875,
+          60.18596444
+         ],
+         [
+          24.95686086,
+          60.18582507
+         ],
+         [
+          24.95682263,
+          60.18578928
+         ],
+         [
+          24.95691362,
+          60.18575352
+         ],
+         [
+          24.95637513,
+          60.18540262
+         ],
+         [
+          24.95584234,
+          60.18500001
+         ],
+         [
+          24.95589001,
+          60.18498087
+         ],
+         [
+          24.95629468,
+          60.18530421
+         ],
+         [
+          24.95656812,
+          60.18550148
+         ],
+         [
+          24.95696182,
+          60.18574296
+         ],
+         [
+          24.95713591,
+          60.18567866
+         ],
+         [
+          24.95759369,
+          60.18593908
+         ],
+         [
+          24.95776472,
+          60.18597069
+         ],
+         [
+          24.95879239,
+          60.18603128
+         ]
+        ]
+       ]
+      ]
+     },
+     "geometry_name": "singlegeom",
+     "properties": {
+      "id": 783,
+      "hakemus": "Kaivuilmoitus",
+      "hakemustunnus": "KP2601611-4",
+      "tyo_alkaa": "2026-07-06",
+      "tyo_paattyy": "2027-05-14",
+      "toiminnallinen_kunto": "2026-12-18",
+      "tyon_tarkoitus": "Työstä vastaava varaa tilaa kaivutyölle; kaapelityö.\n\nLISÄYS 29.7.2026: aluelisäykset ja päivitetty liikennejärjestelysuunnitelma.\nLISÄYS 10.8.2026: aluelisäykset ja päivitetty liikennejärjestelysuunnitelma.\nLISÄYS 28.8.2026: lisäaikaa 28.8.2026 -> 18.12.2026.",
+      "osoite": "Castreninkatu 1, 10, 13, 16, 22-24, Wallininkatu 7-11, Wallininkuja 6, 3-4, 1, Toinen Linja 19-31, Kolmas linja 1-3, 13-15, 28-32, 29-31, Neljäs linja 10-14, Viides linja 12-18, Siltasaarenkatu 15, Kaarlenkatu 3-5, 10-12, Helsinginkatu 4-20, Fleminginkatu 10-12, 11, 15-17, Harjutori 2-4, 10-12, Harjutorinkatu 4, Pengerkatu 7-15, 21-25, 22-24, 27, 29, Torkkelinkatu , Torkkelinkuja, Agricolankatu 2-4, Porthaninkatu 4, 13-17, Alppikatu 11, Franzéninkatu 3, 24-26",
+      "kaupunginosa": "11 KALLIO",
+      "status": "Käynnissä",
+      "hakija": "",
+      "tyon_suorittaja": "",
+      "geometrytype": "ST_Polygon",
+      "tyo_alkaa_txt": "06.07.2026",
+      "tyo_paattyy_txt": "14.05.2027",
+      "toiminnallinen_kunto_txt": "18.12.2026"
+     }
+    },
+    {
+     "type": "Feature",
+     "id": "Kaivuilmoitus_alue.784",
+     "geometry": {
+      "type": "MultiPolygon",
+      "coordinates": [
+       [
+        [
+         [
+          24.95943443,
+          60.18567268
+         ],
+         [
+          24.95937602,
+          60.18567263
+         ],
+         [
+          24.95938651,
+          60.18588059
+         ],
+         [
+          24.95938529,
+          60.18588295
+         ],
+         [
+          24.95938112,
+          60.18588463
+         ],
+         [
+          24.95938451,
+          60.18589536
+         ],
+         [
+          24.95938633,
+          60.18589825
+         ],
+         [
+          24.95939566,
+          60.18594659
+         ],
+         [
+          24.9593722,
+          60.18604096
+         ],
+         [
+          24.95934444,
+          60.18605956
+         ],
+         [
+          24.9593081,
+          60.18608588
+         ],
+         [
+          24.95958055,
+          60.18650145
+         ],
+         [
+          24.95961454,
+          60.1864933
+         ],
+         [
+          24.95934129,
+          60.18609118
+         ],
+         [
+          24.95941111,
+          60.18604033
+         ],
+         [
+          24.95942871,
+          60.18593594
+         ],
+         [
+          24.9602906,
+          60.18598329
+         ],
+         [
+          24.9602878,
+          60.18596643
+         ],
+         [
+          24.95941615,
+          60.18591871
+         ],
+         [
+          24.95940282,
+          60.18569421
+         ],
+         [
+          24.95943474,
+          60.18569188
+         ],
+         [
+          24.95943443,
+          60.18567268
+         ]
+        ]
+       ]
+      ]
+     },
+     "geometry_name": "singlegeom",
+     "properties": {
+      "id": 784,
+      "hakemus": "Kaivuilmoitus",
+      "hakemustunnus": "KP2601611-4",
+      "tyo_alkaa": "2026-07-06",
+      "tyo_paattyy": "2027-05-14",
+      "toiminnallinen_kunto": "2026-12-18",
+      "tyon_tarkoitus": "Työstä vastaava varaa tilaa kaivutyölle; kaapelityö.\n\nLISÄYS 29.7.2026: aluelisäykset ja päivitetty liikennejärjestelysuunnitelma.\nLISÄYS 10.8.2026: aluelisäykset ja päivitetty liikennejärjestelysuunnitelma.\nLISÄYS 28.8.2026: lisäaikaa 28.8.2026 -> 18.12.2026.",
+      "osoite": "Castreninkatu 1, 10, 13, 16, 22-24, Wallininkatu 7-11, Wallininkuja 6, 3-4, 1, Toinen Linja 19-31, Kolmas linja 1-3, 13-15, 28-32, 29-31, Neljäs linja 10-14, Viides linja 12-18, Siltasaarenkatu 15, Kaarlenkatu 3-5, 10-12, Helsinginkatu 4-20, Fleminginkatu 10-12, 11, 15-17, Harjutori 2-4, 10-12, Harjutorinkatu 4, Pengerkatu 7-15, 21-25, 22-24, 27, 29, Torkkelinkatu , Torkkelinkuja, Agricolankatu 2-4, Porthaninkatu 4, 13-17, Alppikatu 11, Franzéninkatu 3, 24-26",
+      "kaupunginosa": "11 KALLIO",
+      "status": "Käynnissä",
+      "hakija": "",
+      "tyon_suorittaja": "",
+      "geometrytype": "ST_Polygon",
+      "tyo_alkaa_txt": "06.07.2026",
+      "tyo_paattyy_txt": "14.05.2027",
+      "toiminnallinen_kunto_txt": "18.12.2026"
+     }
+    },
+    {
+     "type": "Feature",
+     "id": "Kaivuilmoitus_alue.785",
+     "geometry": {
+      "type": "MultiPolygon",
+      "coordinates": [
+       [
+        [
+         [
+          24.95913396,
+          60.18586839
+         ],
+         [
+          24.95913293,
+          60.18588608
+         ],
+         [
+          24.95937921,
+          60.18588958
+         ],
+         [
+          24.95937946,
+          60.18587061
+         ],
+         [
+          24.95913396,
+          60.18586839
+         ]
+        ]
+       ]
+      ]
+     },
+     "geometry_name": "singlegeom",
+     "properties": {
+      "id": 785,
+      "hakemus": "Kaivuilmoitus",
+      "hakemustunnus": "KP2601611-4",
+      "tyo_alkaa": "2026-07-06",
+      "tyo_paattyy": "2027-05-14",
+      "toiminnallinen_kunto": "2026-12-18",
+      "tyon_tarkoitus": "Työstä vastaava varaa tilaa kaivutyölle; kaapelityö.\n\nLISÄYS 29.7.2026: aluelisäykset ja päivitetty liikennejärjestelysuunnitelma.\nLISÄYS 10.8.2026: aluelisäykset ja päivitetty liikennejärjestelysuunnitelma.\nLISÄYS 28.8.2026: lisäaikaa 28.8.2026 -> 18.12.2026.",
+      "osoite": "Castreninkatu 1, 10, 13, 16, 22-24, Wallininkatu 7-11, Wallininkuja 6, 3-4, 1, Toinen Linja 19-31, Kolmas linja 1-3, 13-15, 28-32, 29-31, Neljäs linja 10-14, Viides linja 12-18, Siltasaarenkatu 15, Kaarlenkatu 3-5, 10-12, Helsinginkatu 4-20, Fleminginkatu 10-12, 11, 15-17, Harjutori 2-4, 10-12, Harjutorinkatu 4, Pengerkatu 7-15, 21-25, 22-24, 27, 29, Torkkelinkatu , Torkkelinkuja, Agricolankatu 2-4, Porthaninkatu 4, 13-17, Alppikatu 11, Franzéninkatu 3, 24-26",
+      "kaupunginosa": "11 KALLIO",
+      "status": "Käynnissä",
+      "hakija": "",
+      "tyon_suorittaja": "",
+      "geometrytype": "ST_Polygon",
+      "tyo_alkaa_txt": "06.07.2026",
+      "tyo_paattyy_txt": "14.05.2027",
+      "toiminnallinen_kunto_txt": "18.12.2026"
+     }
+    },
+    {
+     "type": "Feature",
+     "id": "Kaivuilmoitus_alue.786",
+     "geometry": {
+      "type": "MultiPolygon",
+      "coordinates": [
+       [
+        [
+         [
+          24.95823917,
+          60.18627064
+         ],
+         [
+          24.95825272,
+          60.18620061
+         ],
+         [
+          24.95829738,
+          60.18620169
+         ],
+         [
+          24.95827677,
+          60.18627379
+         ],
+         [
+          24.95823917,
+          60.18627064
+         ]
+        ]
+       ]
+      ]
+     },
+     "geometry_name": "singlegeom",
+     "properties": {
+      "id": 786,
+      "hakemus": "Kaivuilmoitus",
+      "hakemustunnus": "KP2601611-4",
+      "tyo_alkaa": "2026-07-06",
+      "tyo_paattyy": "2027-05-14",
+      "toiminnallinen_kunto": "2026-12-18",
+      "tyon_tarkoitus": "Työstä vastaava varaa tilaa kaivutyölle; kaapelityö.\n\nLISÄYS 29.7.2026: aluelisäykset ja päivitetty liikennejärjestelysuunnitelma.\nLISÄYS 10.8.2026: aluelisäykset ja päivitetty liikennejärjestelysuunnitelma.\nLISÄYS 28.8.2026: lisäaikaa 28.8.2026 -> 18.12.2026.",
+      "osoite": "Castreninkatu 1, 10, 13, 16, 22-24, Wallininkatu 7-11, Wallininkuja 6, 3-4, 1, Toinen Linja 19-31, Kolmas linja 1-3, 13-15, 28-32, 29-31, Neljäs linja 10-14, Viides linja 12-18, Siltasaarenkatu 15, Kaarlenkatu 3-5, 10-12, Helsinginkatu 4-20, Fleminginkatu 10-12, 11, 15-17, Harjutori 2-4, 10-12, Harjutorinkatu 4, Pengerkatu 7-15, 21-25, 22-24, 27, 29, Torkkelinkatu , Torkkelinkuja, Agricolankatu 2-4, Porthaninkatu 4, 13-17, Alppikatu 11, Franzéninkatu 3, 24-26",
+      "kaupunginosa": "11 KALLIO",
+      "status": "Käynnissä",
+      "hakija": "",
+      "tyon_suorittaja": "",
+      "geometrytype": "ST_Polygon",
+      "tyo_alkaa_txt": "06.07.2026",
+      "tyo_paattyy_txt": "14.05.2027",
+      "toiminnallinen_kunto_txt": "18.12.2026"
+     }
+    },
+    {
+     "type": "Feature",
+     "id": "Kaivuilmoitus_alue.787",
+     "geometry": {
+      "type": "MultiPolygon",
+      "coordinates": [
+       [
+        [
+         [
+          24.95968341,
+          60.18703344
+         ],
+         [
+          24.95965987,
+          60.18703535
+         ],
+         [
+          24.95969801,
+          60.18709117
+         ],
+         [
+          24.95971908,
+          60.1870899
+         ],
+         [
+          24.95968341,
+          60.18703344
+         ]
+        ]
+       ]
+      ]
+     },
+     "geometry_name": "singlegeom",
+     "properties": {
+      "id": 787,
+      "hakemus": "Kaivuilmoitus",
+      "hakemustunnus": "KP2601611-4",
+      "tyo_alkaa": "2026-07-06",
+      "tyo_paattyy": "2027-05-14",
+      "toiminnallinen_kunto": "2026-12-18",
+      "tyon_tarkoitus": "Työstä vastaava varaa tilaa kaivutyölle; kaapelityö.\n\nLISÄYS 29.7.2026: aluelisäykset ja päivitetty liikennejärjestelysuunnitelma.\nLISÄYS 10.8.2026: aluelisäykset ja päivitetty liikennejärjestelysuunnitelma.\nLISÄYS 28.8.2026: lisäaikaa 28.8.2026 -> 18.12.2026.",
+      "osoite": "Castreninkatu 1, 10, 13, 16, 22-24, Wallininkatu 7-11, Wallininkuja 6, 3-4, 1, Toinen Linja 19-31, Kolmas linja 1-3, 13-15, 28-32, 29-31, Neljäs linja 10-14, Viides linja 12-18, Siltasaarenkatu 15, Kaarlenkatu 3-5, 10-12, Helsinginkatu 4-20, Fleminginkatu 10-12, 11, 15-17, Harjutori 2-4, 10-12, Harjutorinkatu 4, Pengerkatu 7-15, 21-25, 22-24, 27, 29, Torkkelinkatu , Torkkelinkuja, Agricolankatu 2-4, Porthaninkatu 4, 13-17, Alppikatu 11, Franzéninkatu 3, 24-26",
+      "kaupunginosa": "11 KALLIO",
+      "status": "Käynnissä",
+      "hakija": "",
+      "tyon_suorittaja": "",
+      "geometrytype": "ST_Polygon",
+      "tyo_alkaa_txt": "06.07.2026",
+      "tyo_paattyy_txt": "14.05.2027",
+      "toiminnallinen_kunto_txt": "18.12.2026"
+     }
+    },
+    {
+     "type": "Feature",
+     "id": "Kaivuilmoitus_alue.788",
+     "geometry": {
+      "type": "MultiPolygon",
+      "coordinates": [
+       [
+        [
+         [
+          24.95995217,
+          60.18706281
+         ],
+         [
+          24.95999378,
+          60.18705543
+         ],
+         [
+          24.95997504,
+          60.18702889
+         ],
+         [
+          24.95993383,
+          60.18704044
+         ],
+         [
+          24.95995217,
+          60.18706281
+         ]
+        ]
+       ]
+      ]
+     },
+     "geometry_name": "singlegeom",
+     "properties": {
+      "id": 788,
+      "hakemus": "Kaivuilmoitus",
+      "hakemustunnus": "KP2601611-4",
+      "tyo_alkaa": "2026-07-06",
+      "tyo_paattyy": "2027-05-14",
+      "toiminnallinen_kunto": "2026-12-18",
+      "tyon_tarkoitus": "Työstä vastaava varaa tilaa kaivutyölle; kaapelityö.\n\nLISÄYS 29.7.2026: aluelisäykset ja päivitetty liikennejärjestelysuunnitelma.\nLISÄYS 10.8.2026: aluelisäykset ja päivitetty liikennejärjestelysuunnitelma.\nLISÄYS 28.8.2026: lisäaikaa 28.8.2026 -> 18.12.2026.",
+      "osoite": "Castreninkatu 1, 10, 13, 16, 22-24, Wallininkatu 7-11, Wallininkuja 6, 3-4, 1, Toinen Linja 19-31, Kolmas linja 1-3, 13-15, 28-32, 29-31, Neljäs linja 10-14, Viides linja 12-18, Siltasaarenkatu 15, Kaarlenkatu 3-5, 10-12, Helsinginkatu 4-20, Fleminginkatu 10-12, 11, 15-17, Harjutori 2-4, 10-12, Harjutorinkatu 4, Pengerkatu 7-15, 21-25, 22-24, 27, 29, Torkkelinkatu , Torkkelinkuja, Agricolankatu 2-4, Porthaninkatu 4, 13-17, Alppikatu 11, Franzéninkatu 3, 24-26",
+      "kaupunginosa": "11 KALLIO",
+      "status": "Käynnissä",
+      "hakija": "",
+      "tyon_suorittaja": "",
+      "geometrytype": "ST_Polygon",
+      "tyo_alkaa_txt": "06.07.2026",
+      "tyo_paattyy_txt": "14.05.2027",
+      "toiminnallinen_kunto_txt": "18.12.2026"
+     }
+    },
+    {
+     "type": "Feature",
+     "id": "Kaivuilmoitus_alue.789",
+     "geometry": {
+      "type": "MultiPolygon",
+      "coordinates": [
+       [
+        [
+         [
+          24.96027385,
+          60.18748958
+         ],
+         [
+          24.96023812,
+          60.18748783
+         ],
+         [
+          24.96017664,
+          60.1874036
+         ],
+         [
+          24.96022205,
+          60.18739724
+         ],
+         [
+          24.96027385,
+          60.18748958
+         ]
+        ]
+       ]
+      ]
+     },
+     "geometry_name": "singlegeom",
+     "properties": {
+      "id": 789,
+      "hakemus": "Kaivuilmoitus",
+      "hakemustunnus": "KP2601611-4",
+      "tyo_alkaa": "2026-07-06",
+      "tyo_paattyy": "2027-05-14",
+      "toiminnallinen_kunto": "2026-12-18",
+      "tyon_tarkoitus": "Työstä vastaava varaa tilaa kaivutyölle; kaapelityö.\n\nLISÄYS 29.7.2026: aluelisäykset ja päivitetty liikennejärjestelysuunnitelma.\nLISÄYS 10.8.2026: aluelisäykset ja päivitetty liikennejärjestelysuunnitelma.\nLISÄYS 28.8.2026: lisäaikaa 28.8.2026 -> 18.12.2026.",
+      "osoite": "Castreninkatu 1, 10, 13, 16, 22-24, Wallininkatu 7-11, Wallininkuja 6, 3-4, 1, Toinen Linja 19-31, Kolmas linja 1-3, 13-15, 28-32, 29-31, Neljäs linja 10-14, Viides linja 12-18, Siltasaarenkatu 15, Kaarlenkatu 3-5, 10-12, Helsinginkatu 4-20, Fleminginkatu 10-12, 11, 15-17, Harjutori 2-4, 10-12, Harjutorinkatu 4, Pengerkatu 7-15, 21-25, 22-24, 27, 29, Torkkelinkatu , Torkkelinkuja, Agricolankatu 2-4, Porthaninkatu 4, 13-17, Alppikatu 11, Franzéninkatu 3, 24-26",
+      "kaupunginosa": "11 KALLIO",
+      "status": "Käynnissä",
+      "hakija": "",
+      "tyon_suorittaja": "",
+      "geometrytype": "ST_Polygon",
+      "tyo_alkaa_txt": "06.07.2026",
+      "tyo_paattyy_txt": "14.05.2027",
+      "toiminnallinen_kunto_txt": "18.12.2026"
+     }
+    },
+    {
+     "type": "Feature",
+     "id": "Kaivuilmoitus_alue.790",
+     "geometry": {
+      "type": "MultiPolygon",
+      "coordinates": [
+       [
+        [
+         [
+          24.95963601,
+          60.18744738
+         ],
+         [
+          24.95964221,
+          60.18742786
+         ],
+         [
+          24.95903542,
+          60.18738162
+         ],
+         [
+          24.95901061,
+          60.18736245
+         ],
+         [
+          24.95902049,
+          60.1872915
+         ],
+         [
+          24.95905486,
+          60.1871696
+         ],
+         [
+          24.95881083,
+          60.18700619
+         ],
+         [
+          24.95886161,
+          60.18699157
+         ],
+         [
+          24.95883632,
+          60.18697581
+         ],
+         [
+          24.9587529,
+          60.18700254
+         ],
+         [
+          24.95902269,
+          60.18717989
+         ],
+         [
+          24.95897332,
+          60.18737264
+         ],
+         [
+          24.95890415,
+          60.18737972
+         ],
+         [
+          24.95871995,
+          60.18736231
+         ],
+         [
+          24.95764335,
+          60.18727878
+         ],
+         [
+          24.95755579,
+          60.18726641
+         ],
+         [
+          24.95732092,
+          60.18724393
+         ],
+         [
+          24.95729177,
+          60.18723053
+         ],
+         [
+          24.95733766,
+          60.18709276
+         ],
+         [
+          24.95739503,
+          60.18702401
+         ],
+         [
+          24.9575609,
+          60.18697409
+         ],
+         [
+          24.95756315,
+          60.18695648
+         ],
+         [
+          24.95734343,
+          60.18679547
+         ],
+         [
+          24.95730372,
+          60.18680798
+         ],
+         [
+          24.95752753,
+          60.18696616
+         ],
+         [
+          24.95735684,
+          60.18701771
+         ],
+         [
+          24.95729462,
+          60.18709966
+         ],
+         [
+          24.95724256,
+          60.1872344
+         ],
+         [
+          24.9533403,
+          60.18689569
+         ],
+         [
+          24.95330886,
+          60.18683339
+         ],
+         [
+          24.95305044,
+          60.18682473
+         ],
+         [
+          24.95297387,
+          60.18686943
+         ],
+         [
+          24.95171289,
+          60.18681369
+         ],
+         [
+          24.95159731,
+          60.18677567
+         ],
+         [
+          24.95156011,
+          60.18678657
+         ],
+         [
+          24.95167369,
+          60.18682629
+         ],
+         [
+          24.95299235,
+          60.18688711
+         ],
+         [
+          24.95306172,
+          60.18683724
+         ],
+         [
+          24.95328285,
+          60.18684724
+         ],
+         [
+          24.95331288,
+          60.18690961
+         ],
+         [
+          24.95748678,
+          60.18727542
+         ],
+         [
+          24.95754512,
+          60.18728481
+         ],
+         [
+          24.95890403,
+          60.18739748
+         ],
+         [
+          24.95897529,
+          60.18739324
+         ],
+         [
+          24.95963601,
+          60.18744738
+         ]
+        ]
+       ]
+      ]
+     },
+     "geometry_name": "singlegeom",
+     "properties": {
+      "id": 790,
+      "hakemus": "Kaivuilmoitus",
+      "hakemustunnus": "KP2601611-4",
+      "tyo_alkaa": "2026-07-06",
+      "tyo_paattyy": "2027-05-14",
+      "toiminnallinen_kunto": "2026-12-18",
+      "tyon_tarkoitus": "Työstä vastaava varaa tilaa kaivutyölle; kaapelityö.\n\nLISÄYS 29.7.2026: aluelisäykset ja päivitetty liikennejärjestelysuunnitelma.\nLISÄYS 10.8.2026: aluelisäykset ja päivitetty liikennejärjestelysuunnitelma.\nLISÄYS 28.8.2026: lisäaikaa 28.8.2026 -> 18.12.2026.",
+      "osoite": "Castreninkatu 1, 10, 13, 16, 22-24, Wallininkatu 7-11, Wallininkuja 6, 3-4, 1, Toinen Linja 19-31, Kolmas linja 1-3, 13-15, 28-32, 29-31, Neljäs linja 10-14, Viides linja 12-18, Siltasaarenkatu 15, Kaarlenkatu 3-5, 10-12, Helsinginkatu 4-20, Fleminginkatu 10-12, 11, 15-17, Harjutori 2-4, 10-12, Harjutorinkatu 4, Pengerkatu 7-15, 21-25, 22-24, 27, 29, Torkkelinkatu , Torkkelinkuja, Agricolankatu 2-4, Porthaninkatu 4, 13-17, Alppikatu 11, Franzéninkatu 3, 24-26",
+      "kaupunginosa": "11 KALLIO",
+      "status": "Käynnissä",
+      "hakija": "",
+      "tyon_suorittaja": "",
+      "geometrytype": "ST_Polygon",
+      "tyo_alkaa_txt": "06.07.2026",
+      "tyo_paattyy_txt": "14.05.2027",
+      "toiminnallinen_kunto_txt": "18.12.2026"
+     }
+    },
+    {
+     "type": "Feature",
+     "id": "Kaivuilmoitus_alue.791",
+     "geometry": {
+      "type": "MultiPolygon",
+      "coordinates": [
+       [
+        [
+         [
+          24.95327928,
+          60.18682868
+         ],
+         [
+          24.95332647,
+          60.18683163
+         ],
+         [
+          24.95337235,
+          60.1863059
+         ],
+         [
+          24.95333814,
+          60.18630285
+         ],
+         [
+          24.95327928,
+          60.18682868
+         ]
+        ]
+       ]
+      ]
+     },
+     "geometry_name": "singlegeom",
+     "properties": {
+      "id": 791,
+      "hakemus": "Kaivuilmoitus",
+      "hakemustunnus": "KP2601611-4",
+      "tyo_alkaa": "2026-07-06",
+      "tyo_paattyy": "2027-05-14",
+      "toiminnallinen_kunto": "2026-12-18",
+      "tyon_tarkoitus": "Työstä vastaava varaa tilaa kaivutyölle; kaapelityö.\n\nLISÄYS 29.7.2026: aluelisäykset ja päivitetty liikennejärjestelysuunnitelma.\nLISÄYS 10.8.2026: aluelisäykset ja päivitetty liikennejärjestelysuunnitelma.\nLISÄYS 28.8.2026: lisäaikaa 28.8.2026 -> 18.12.2026.",
+      "osoite": "Castreninkatu 1, 10, 13, 16, 22-24, Wallininkatu 7-11, Wallininkuja 6, 3-4, 1, Toinen Linja 19-31, Kolmas linja 1-3, 13-15, 28-32, 29-31, Neljäs linja 10-14, Viides linja 12-18, Siltasaarenkatu 15, Kaarlenkatu 3-5, 10-12, Helsinginkatu 4-20, Fleminginkatu 10-12, 11, 15-17, Harjutori 2-4, 10-12, Harjutorinkatu 4, Pengerkatu 7-15, 21-25, 22-24, 27, 29, Torkkelinkatu , Torkkelinkuja, Agricolankatu 2-4, Porthaninkatu 4, 13-17, Alppikatu 11, Franzéninkatu 3, 24-26",
+      "kaupunginosa": "11 KALLIO",
+      "status": "Käynnissä",
+      "hakija": "",
+      "tyon_suorittaja": "",
+      "geometrytype": "ST_Polygon",
+      "tyo_alkaa_txt": "06.07.2026",
+      "tyo_paattyy_txt": "14.05.2027",
+      "toiminnallinen_kunto_txt": "18.12.2026"
+     }
+    },
+    {
+     "type": "Feature",
+     "id": "Kaivuilmoitus_alue.792",
+     "geometry": {
+      "type": "MultiPolygon",
+      "coordinates": [
+       [
+        [
+         [
+          24.95161571,
+          60.18665841
+         ],
+         [
+          24.95161341,
+          60.18668347
+         ],
+         [
+          24.95169673,
+          60.18668621
+         ],
+         [
+          24.95170317,
+          60.18665431
+         ],
+         [
+          24.95161571,
+          60.18665841
+         ]
+        ]
+       ]
+      ]
+     },
+     "geometry_name": "singlegeom",
+     "properties": {
+      "id": 792,
+      "hakemus": "Kaivuilmoitus",
+      "hakemustunnus": "KP2601611-4",
+      "tyo_alkaa": "2026-07-06",
+      "tyo_paattyy": "2027-05-14",
+      "toiminnallinen_kunto": "2026-12-18",
+      "tyon_tarkoitus": "Työstä vastaava varaa tilaa kaivutyölle; kaapelityö.\n\nLISÄYS 29.7.2026: aluelisäykset ja päivitetty liikennejärjestelysuunnitelma.\nLISÄYS 10.8.2026: aluelisäykset ja päivitetty liikennejärjestelysuunnitelma.\nLISÄYS 28.8.2026: lisäaikaa 28.8.2026 -> 18.12.2026.",
+      "osoite": "Castreninkatu 1, 10, 13, 16, 22-24, Wallininkatu 7-11, Wallininkuja 6, 3-4, 1, Toinen Linja 19-31, Kolmas linja 1-3, 13-15, 28-32, 29-31, Neljäs linja 10-14, Viides linja 12-18, Siltasaarenkatu 15, Kaarlenkatu 3-5, 10-12, Helsinginkatu 4-20, Fleminginkatu 10-12, 11, 15-17, Harjutori 2-4, 10-12, Harjutorinkatu 4, Pengerkatu 7-15, 21-25, 22-24, 27, 29, Torkkelinkatu , Torkkelinkuja, Agricolankatu 2-4, Porthaninkatu 4, 13-17, Alppikatu 11, Franzéninkatu 3, 24-26",
+      "kaupunginosa": "11 KALLIO",
+      "status": "Käynnissä",
+      "hakija": "",
+      "tyon_suorittaja": "",
+      "geometrytype": "ST_Polygon",
+      "tyo_alkaa_txt": "06.07.2026",
+      "tyo_paattyy_txt": "14.05.2027",
+      "toiminnallinen_kunto_txt": "18.12.2026"
+     }
+    },
+    {
+     "type": "Feature",
+     "id": "Kaivuilmoitus_alue.793",
+     "geometry": {
+      "type": "MultiPolygon",
+      "coordinates": [
+       [
+        [
+         [
+          24.9514773,
+          60.18647599
+         ],
+         [
+          24.9514798,
+          60.18651398
+         ],
+         [
+          24.95154666,
+          60.18651341
+         ],
+         [
+          24.95154692,
+          60.18646952
+         ],
+         [
+          24.9514773,
+          60.18647599
+         ]
+        ]
+       ]
+      ]
+     },
+     "geometry_name": "singlegeom",
+     "properties": {
+      "id": 793,
+      "hakemus": "Kaivuilmoitus",
+      "hakemustunnus": "KP2601611-4",
+      "tyo_alkaa": "2026-07-06",
+      "tyo_paattyy": "2027-05-14",
+      "toiminnallinen_kunto": "2026-12-18",
+      "tyon_tarkoitus": "Työstä vastaava varaa tilaa kaivutyölle; kaapelityö.\n\nLISÄYS 29.7.2026: aluelisäykset ja päivitetty liikennejärjestelysuunnitelma.\nLISÄYS 10.8.2026: aluelisäykset ja päivitetty liikennejärjestelysuunnitelma.\nLISÄYS 28.8.2026: lisäaikaa 28.8.2026 -> 18.12.2026.",
+      "osoite": "Castreninkatu 1, 10, 13, 16, 22-24, Wallininkatu 7-11, Wallininkuja 6, 3-4, 1, Toinen Linja 19-31, Kolmas linja 1-3, 13-15, 28-32, 29-31, Neljäs linja 10-14, Viides linja 12-18, Siltasaarenkatu 15, Kaarlenkatu 3-5, 10-12, Helsinginkatu 4-20, Fleminginkatu 10-12, 11, 15-17, Harjutori 2-4, 10-12, Harjutorinkatu 4, Pengerkatu 7-15, 21-25, 22-24, 27, 29, Torkkelinkatu , Torkkelinkuja, Agricolankatu 2-4, Porthaninkatu 4, 13-17, Alppikatu 11, Franzéninkatu 3, 24-26",
+      "kaupunginosa": "11 KALLIO",
+      "status": "Käynnissä",
+      "hakija": "",
+      "tyon_suorittaja": "",
+      "geometrytype": "ST_Polygon",
+      "tyo_alkaa_txt": "06.07.2026",
+      "tyo_paattyy_txt": "14.05.2027",
+      "toiminnallinen_kunto_txt": "18.12.2026"
+     }
+    },
+    {
+     "type": "Feature",
+     "id": "Kaivuilmoitus_alue.794",
+     "geometry": {
+      "type": "MultiPolygon",
+      "coordinates": [
+       [
+        [
+         [
+          24.94395065,
+          60.18559541
+         ],
+         [
+          24.94394631,
+          60.1856129
+         ],
+         [
+          24.94472815,
+          60.18563633
+         ],
+         [
+          24.9447297,
+          60.18561731
+         ],
+         [
+          24.94395065,
+          60.18559541
+         ]
+        ]
+       ]
+      ]
+     },
+     "geometry_name": "singlegeom",
+     "properties": {
+      "id": 794,
+      "hakemus": "Kaivuilmoitus",
+      "hakemustunnus": "KP2601611-4",
+      "tyo_alkaa": "2026-07-06",
+      "tyo_paattyy": "2027-05-14",
+      "toiminnallinen_kunto": "2026-12-18",
+      "tyon_tarkoitus": "Työstä vastaava varaa tilaa kaivutyölle; kaapelityö.\n\nLISÄYS 29.7.2026: aluelisäykset ja päivitetty liikennejärjestelysuunnitelma.\nLISÄYS 10.8.2026: aluelisäykset ja päivitetty liikennejärjestelysuunnitelma.\nLISÄYS 28.8.2026: lisäaikaa 28.8.2026 -> 18.12.2026.",
+      "osoite": "Castreninkatu 1, 10, 13, 16, 22-24, Wallininkatu 7-11, Wallininkuja 6, 3-4, 1, Toinen Linja 19-31, Kolmas linja 1-3, 13-15, 28-32, 29-31, Neljäs linja 10-14, Viides linja 12-18, Siltasaarenkatu 15, Kaarlenkatu 3-5, 10-12, Helsinginkatu 4-20, Fleminginkatu 10-12, 11, 15-17, Harjutori 2-4, 10-12, Harjutorinkatu 4, Pengerkatu 7-15, 21-25, 22-24, 27, 29, Torkkelinkatu , Torkkelinkuja, Agricolankatu 2-4, Porthaninkatu 4, 13-17, Alppikatu 11, Franzéninkatu 3, 24-26",
+      "kaupunginosa": "11 KALLIO",
+      "status": "Käynnissä",
+      "hakija": "",
+      "tyon_suorittaja": "",
+      "geometrytype": "ST_Polygon",
+      "tyo_alkaa_txt": "06.07.2026",
+      "tyo_paattyy_txt": "14.05.2027",
+      "toiminnallinen_kunto_txt": "18.12.2026"
+     }
+    },
+    {
+     "type": "Feature",
+     "id": "Kaivuilmoitus_alue.795",
+     "geometry": {
+      "type": "MultiPolygon",
+      "coordinates": [
+       [
+        [
+         [
+          24.94673211,
+          60.18518322
+         ],
+         [
+          24.94677386,
+          60.1851711
+         ],
+         [
+          24.94673596,
+          60.1851472
+         ],
+         [
+          24.9466931,
+          60.18516288
+         ],
+         [
+          24.94673211,
+          60.18518322
+         ]
+        ]
+       ]
+      ]
+     },
+     "geometry_name": "singlegeom",
+     "properties": {
+      "id": 795,
+      "hakemus": "Kaivuilmoitus",
+      "hakemustunnus": "KP2601611-4",
+      "tyo_alkaa": "2026-07-06",
+      "tyo_paattyy": "2027-05-14",
+      "toiminnallinen_kunto": "2026-12-18",
+      "tyon_tarkoitus": "Työstä vastaava varaa tilaa kaivutyölle; kaapelityö.\n\nLISÄYS 29.7.2026: aluelisäykset ja päivitetty liikennejärjestelysuunnitelma.\nLISÄYS 10.8.2026: aluelisäykset ja päivitetty liikennejärjestelysuunnitelma.\nLISÄYS 28.8.2026: lisäaikaa 28.8.2026 -> 18.12.2026.",
+      "osoite": "Castreninkatu 1, 10, 13, 16, 22-24, Wallininkatu 7-11, Wallininkuja 6, 3-4, 1, Toinen Linja 19-31, Kolmas linja 1-3, 13-15, 28-32, 29-31, Neljäs linja 10-14, Viides linja 12-18, Siltasaarenkatu 15, Kaarlenkatu 3-5, 10-12, Helsinginkatu 4-20, Fleminginkatu 10-12, 11, 15-17, Harjutori 2-4, 10-12, Harjutorinkatu 4, Pengerkatu 7-15, 21-25, 22-24, 27, 29, Torkkelinkatu , Torkkelinkuja, Agricolankatu 2-4, Porthaninkatu 4, 13-17, Alppikatu 11, Franzéninkatu 3, 24-26",
+      "kaupunginosa": "11 KALLIO",
+      "status": "Käynnissä",
+      "hakija": "",
+      "tyon_suorittaja": "",
+      "geometrytype": "ST_Polygon",
+      "tyo_alkaa_txt": "06.07.2026",
+      "tyo_paattyy_txt": "14.05.2027",
+      "toiminnallinen_kunto_txt": "18.12.2026"
+     }
+    },
+    {
+     "type": "Feature",
+     "id": "Kaivuilmoitus_alue.796",
+     "geometry": {
+      "type": "MultiPolygon",
+      "coordinates": [
+       [
+        [
+         [
+          24.94847352,
+          60.18515806
+         ],
+         [
+          24.9484757,
+          60.1851267
+         ],
+         [
+          24.94852945,
+          60.18512805
+         ],
+         [
+          24.94852628,
+          60.18515889
+         ],
+         [
+          24.94847352,
+          60.18515806
+         ]
+        ]
+       ]
+      ]
+     },
+     "geometry_name": "singlegeom",
+     "properties": {
+      "id": 796,
+      "hakemus": "Kaivuilmoitus",
+      "hakemustunnus": "KP2601611-4",
+      "tyo_alkaa": "2026-07-06",
+      "tyo_paattyy": "2027-05-14",
+      "toiminnallinen_kunto": "2026-12-18",
+      "tyon_tarkoitus": "Työstä vastaava varaa tilaa kaivutyölle; kaapelityö.\n\nLISÄYS 29.7.2026: aluelisäykset ja päivitetty liikennejärjestelysuunnitelma.\nLISÄYS 10.8.2026: aluelisäykset ja päivitetty liikennejärjestelysuunnitelma.\nLISÄYS 28.8.2026: lisäaikaa 28.8.2026 -> 18.12.2026.",
+      "osoite": "Castreninkatu 1, 10, 13, 16, 22-24, Wallininkatu 7-11, Wallininkuja 6, 3-4, 1, Toinen Linja 19-31, Kolmas linja 1-3, 13-15, 28-32, 29-31, Neljäs linja 10-14, Viides linja 12-18, Siltasaarenkatu 15, Kaarlenkatu 3-5, 10-12, Helsinginkatu 4-20, Fleminginkatu 10-12, 11, 15-17, Harjutori 2-4, 10-12, Harjutorinkatu 4, Pengerkatu 7-15, 21-25, 22-24, 27, 29, Torkkelinkatu , Torkkelinkuja, Agricolankatu 2-4, Porthaninkatu 4, 13-17, Alppikatu 11, Franzéninkatu 3, 24-26",
+      "kaupunginosa": "11 KALLIO",
+      "status": "Käynnissä",
+      "hakija": "",
+      "tyon_suorittaja": "",
+      "geometrytype": "ST_Polygon",
+      "tyo_alkaa_txt": "06.07.2026",
+      "tyo_paattyy_txt": "14.05.2027",
+      "toiminnallinen_kunto_txt": "18.12.2026"
+     }
+    },
+    {
+     "type": "Feature",
+     "id": "Kaivuilmoitus_alue.797",
+     "geometry": {
+      "type": "MultiPolygon",
+      "coordinates": [
+       [
+        [
+         [
+          24.94940473,
+          60.18530176
+         ],
+         [
+          24.94938976,
+          60.18531989
+         ],
+         [
+          24.94873279,
+          60.18530481
+         ],
+         [
+          24.94873603,
+          60.18528663
+         ],
+         [
+          24.94940473,
+          60.18530176
+         ]
+        ]
+       ]
+      ]
+     },
+     "geometry_name": "singlegeom",
+     "properties": {
+      "id": 797,
+      "hakemus": "Kaivuilmoitus",
+      "hakemustunnus": "KP2601611-4",
+      "tyo_alkaa": "2026-07-06",
+      "tyo_paattyy": "2027-05-14",
+      "toiminnallinen_kunto": "2026-12-18",
+      "tyon_tarkoitus": "Työstä vastaava varaa tilaa kaivutyölle; kaapelityö.\n\nLISÄYS 29.7.2026: aluelisäykset ja päivitetty liikennejärjestelysuunnitelma.\nLISÄYS 10.8.2026: aluelisäykset ja päivitetty liikennejärjestelysuunnitelma.\nLISÄYS 28.8.2026: lisäaikaa 28.8.2026 -> 18.12.2026.",
+      "osoite": "Castreninkatu 1, 10, 13, 16, 22-24, Wallininkatu 7-11, Wallininkuja 6, 3-4, 1, Toinen Linja 19-31, Kolmas linja 1-3, 13-15, 28-32, 29-31, Neljäs linja 10-14, Viides linja 12-18, Siltasaarenkatu 15, Kaarlenkatu 3-5, 10-12, Helsinginkatu 4-20, Fleminginkatu 10-12, 11, 15-17, Harjutori 2-4, 10-12, Harjutorinkatu 4, Pengerkatu 7-15, 21-25, 22-24, 27, 29, Torkkelinkatu , Torkkelinkuja, Agricolankatu 2-4, Porthaninkatu 4, 13-17, Alppikatu 11, Franzéninkatu 3, 24-26",
+      "kaupunginosa": "11 KALLIO",
+      "status": "Käynnissä",
+      "hakija": "",
+      "tyon_suorittaja": "",
+      "geometrytype": "ST_Polygon",
+      "tyo_alkaa_txt": "06.07.2026",
+      "tyo_paattyy_txt": "14.05.2027",
+      "toiminnallinen_kunto_txt": "18.12.2026"
+     }
+    },
+    {
+     "type": "Feature",
+     "id": "Kaivuilmoitus_alue.798",
+     "geometry": {
+      "type": "MultiPolygon",
+      "coordinates": [
+       [
+        [
+         [
+          24.95162439,
+          60.18544136
+         ],
+         [
+          24.9516818,
+          60.18544068
+         ],
+         [
+          24.95168084,
+          60.1854197
+         ],
+         [
+          24.95160929,
+          60.18541825
+         ],
+         [
+          24.95162439,
+          60.18544136
+         ]
+        ]
+       ]
+      ]
+     },
+     "geometry_name": "singlegeom",
+     "properties": {
+      "id": 798,
+      "hakemus": "Kaivuilmoitus",
+      "hakemustunnus": "KP2601611-4",
+      "tyo_alkaa": "2026-07-06",
+      "tyo_paattyy": "2027-05-14",
+      "toiminnallinen_kunto": "2026-12-18",
+      "tyon_tarkoitus": "Työstä vastaava varaa tilaa kaivutyölle; kaapelityö.\n\nLISÄYS 29.7.2026: aluelisäykset ja päivitetty liikennejärjestelysuunnitelma.\nLISÄYS 10.8.2026: aluelisäykset ja päivitetty liikennejärjestelysuunnitelma.\nLISÄYS 28.8.2026: lisäaikaa 28.8.2026 -> 18.12.2026.",
+      "osoite": "Castreninkatu 1, 10, 13, 16, 22-24, Wallininkatu 7-11, Wallininkuja 6, 3-4, 1, Toinen Linja 19-31, Kolmas linja 1-3, 13-15, 28-32, 29-31, Neljäs linja 10-14, Viides linja 12-18, Siltasaarenkatu 15, Kaarlenkatu 3-5, 10-12, Helsinginkatu 4-20, Fleminginkatu 10-12, 11, 15-17, Harjutori 2-4, 10-12, Harjutorinkatu 4, Pengerkatu 7-15, 21-25, 22-24, 27, 29, Torkkelinkatu , Torkkelinkuja, Agricolankatu 2-4, Porthaninkatu 4, 13-17, Alppikatu 11, Franzéninkatu 3, 24-26",
+      "kaupunginosa": "11 KALLIO",
+      "status": "Käynnissä",
+      "hakija": "",
+      "tyon_suorittaja": "",
+      "geometrytype": "ST_Polygon",
+      "tyo_alkaa_txt": "06.07.2026",
+      "tyo_paattyy_txt": "14.05.2027",
+      "toiminnallinen_kunto_txt": "18.12.2026"
+     }
+    },
+    {
+     "type": "Feature",
+     "id": "Kaivuilmoitus_alue.799",
+     "geometry": {
+      "type": "MultiPolygon",
+      "coordinates": [
+       [
+        [
+         [
+          24.95121948,
+          60.18580424
+         ],
+         [
+          24.95125888,
+          60.18578748
+         ],
+         [
+          24.95131881,
+          60.18584105
+         ],
+         [
+          24.95124796,
+          60.18643791
+         ],
+         [
+          24.95121592,
+          60.18643681
+         ],
+         [
+          24.951275,
+          60.18583943
+         ],
+         [
+          24.95121948,
+          60.18580424
+         ]
+        ]
+       ]
+      ]
+     },
+     "geometry_name": "singlegeom",
+     "properties": {
+      "id": 799,
+      "hakemus": "Kaivuilmoitus",
+      "hakemustunnus": "KP2601611-4",
+      "tyo_alkaa": "2026-07-06",
+      "tyo_paattyy": "2027-05-14",
+      "toiminnallinen_kunto": "2026-12-18",
+      "tyon_tarkoitus": "Työstä vastaava varaa tilaa kaivutyölle; kaapelityö.\n\nLISÄYS 29.7.2026: aluelisäykset ja päivitetty liikennejärjestelysuunnitelma.\nLISÄYS 10.8.2026: aluelisäykset ja päivitetty liikennejärjestelysuunnitelma.\nLISÄYS 28.8.2026: lisäaikaa 28.8.2026 -> 18.12.2026.",
+      "osoite": "Castreninkatu 1, 10, 13, 16, 22-24, Wallininkatu 7-11, Wallininkuja 6, 3-4, 1, Toinen Linja 19-31, Kolmas linja 1-3, 13-15, 28-32, 29-31, Neljäs linja 10-14, Viides linja 12-18, Siltasaarenkatu 15, Kaarlenkatu 3-5, 10-12, Helsinginkatu 4-20, Fleminginkatu 10-12, 11, 15-17, Harjutori 2-4, 10-12, Harjutorinkatu 4, Pengerkatu 7-15, 21-25, 22-24, 27, 29, Torkkelinkatu , Torkkelinkuja, Agricolankatu 2-4, Porthaninkatu 4, 13-17, Alppikatu 11, Franzéninkatu 3, 24-26",
+      "kaupunginosa": "11 KALLIO",
+      "status": "Käynnissä",
+      "hakija": "",
+      "tyon_suorittaja": "",
+      "geometrytype": "ST_Polygon",
+      "tyo_alkaa_txt": "06.07.2026",
+      "tyo_paattyy_txt": "14.05.2027",
+      "toiminnallinen_kunto_txt": "18.12.2026"
+     }
+    },
+    {
+     "type": "Feature",
+     "id": "Kaivuilmoitus_alue.800",
+     "geometry": {
+      "type": "MultiPolygon",
+      "coordinates": [
+       [
+        [
+         [
+          24.95340733,
+          60.18577414
+         ],
+         [
+          24.95340072,
+          60.18581051
+         ],
+         [
+          24.95345048,
+          60.18580663
+         ],
+         [
+          24.95345259,
+          60.18576837
+         ],
+         [
+          24.95340733,
+          60.18577414
+         ]
+        ]
+       ]
+      ]
+     },
+     "geometry_name": "singlegeom",
+     "properties": {
+      "id": 800,
+      "hakemus": "Kaivuilmoitus",
+      "hakemustunnus": "KP2601611-4",
+      "tyo_alkaa": "2026-07-06",
+      "tyo_paattyy": "2027-05-14",
+      "toiminnallinen_kunto": "2026-12-18",
+      "tyon_tarkoitus": "Työstä vastaava varaa tilaa kaivutyölle; kaapelityö.\n\nLISÄYS 29.7.2026: aluelisäykset ja päivitetty liikennejärjestelysuunnitelma.\nLISÄYS 10.8.2026: aluelisäykset ja päivitetty liikennejärjestelysuunnitelma.\nLISÄYS 28.8.2026: lisäaikaa 28.8.2026 -> 18.12.2026.",
+      "osoite": "Castreninkatu 1, 10, 13, 16, 22-24, Wallininkatu 7-11, Wallininkuja 6, 3-4, 1, Toinen Linja 19-31, Kolmas linja 1-3, 13-15, 28-32, 29-31, Neljäs linja 10-14, Viides linja 12-18, Siltasaarenkatu 15, Kaarlenkatu 3-5, 10-12, Helsinginkatu 4-20, Fleminginkatu 10-12, 11, 15-17, Harjutori 2-4, 10-12, Harjutorinkatu 4, Pengerkatu 7-15, 21-25, 22-24, 27, 29, Torkkelinkatu , Torkkelinkuja, Agricolankatu 2-4, Porthaninkatu 4, 13-17, Alppikatu 11, Franzéninkatu 3, 24-26",
+      "kaupunginosa": "11 KALLIO",
+      "status": "Käynnissä",
+      "hakija": "",
+      "tyon_suorittaja": "",
+      "geometrytype": "ST_Polygon",
+      "tyo_alkaa_txt": "06.07.2026",
+      "tyo_paattyy_txt": "14.05.2027",
+      "toiminnallinen_kunto_txt": "18.12.2026"
+     }
+    },
+    {
+     "type": "Feature",
+     "id": "Kaivuilmoitus_alue.801",
+     "geometry": {
+      "type": "MultiPolygon",
+      "coordinates": [
+       [
+        [
+         [
+          24.95317399,
+          60.1857753
+         ],
+         [
+          24.95314574,
+          60.18577498
+         ],
+         [
+          24.95313525,
+          60.18591511
+         ],
+         [
+          24.9530954,
+          60.18591534
+         ],
+         [
+          24.95309413,
+          60.18593008
+         ],
+         [
+          24.95315746,
+          60.18593367
+         ],
+         [
+          24.95317399,
+          60.1857753
+         ]
+        ]
+       ]
+      ]
+     },
+     "geometry_name": "singlegeom",
+     "properties": {
+      "id": 801,
+      "hakemus": "Kaivuilmoitus",
+      "hakemustunnus": "KP2601611-4",
+      "tyo_alkaa": "2026-07-06",
+      "tyo_paattyy": "2027-05-14",
+      "toiminnallinen_kunto": "2026-12-18",
+      "tyon_tarkoitus": "Työstä vastaava varaa tilaa kaivutyölle; kaapelityö.\n\nLISÄYS 29.7.2026: aluelisäykset ja päivitetty liikennejärjestelysuunnitelma.\nLISÄYS 10.8.2026: aluelisäykset ja päivitetty liikennejärjestelysuunnitelma.\nLISÄYS 28.8.2026: lisäaikaa 28.8.2026 -> 18.12.2026.",
+      "osoite": "Castreninkatu 1, 10, 13, 16, 22-24, Wallininkatu 7-11, Wallininkuja 6, 3-4, 1, Toinen Linja 19-31, Kolmas linja 1-3, 13-15, 28-32, 29-31, Neljäs linja 10-14, Viides linja 12-18, Siltasaarenkatu 15, Kaarlenkatu 3-5, 10-12, Helsinginkatu 4-20, Fleminginkatu 10-12, 11, 15-17, Harjutori 2-4, 10-12, Harjutorinkatu 4, Pengerkatu 7-15, 21-25, 22-24, 27, 29, Torkkelinkatu , Torkkelinkuja, Agricolankatu 2-4, Porthaninkatu 4, 13-17, Alppikatu 11, Franzéninkatu 3, 24-26",
+      "kaupunginosa": "11 KALLIO",
+      "status": "Käynnissä",
+      "hakija": "",
+      "tyon_suorittaja": "",
+      "geometrytype": "ST_Polygon",
+      "tyo_alkaa_txt": "06.07.2026",
+      "tyo_paattyy_txt": "14.05.2027",
+      "toiminnallinen_kunto_txt": "18.12.2026"
+     }
+    },
+    {
+     "type": "Feature",
+     "id": "Kaivuilmoitus_alue.802",
+     "geometry": {
+      "type": "MultiPolygon",
+      "coordinates": [
+       [
+        [
+         [
+          24.95256352,
+          60.18546483
+         ],
+         [
+          24.95262994,
+          60.18546681
+         ],
+         [
+          24.95262589,
+          60.18544264
+         ],
+         [
+          24.9525621,
+          60.18544067
+         ],
+         [
+          24.95256352,
+          60.18546483
+         ]
+        ]
+       ]
+      ]
+     },
+     "geometry_name": "singlegeom",
+     "properties": {
+      "id": 802,
+      "hakemus": "Kaivuilmoitus",
+      "hakemustunnus": "KP2601611-4",
+      "tyo_alkaa": "2026-07-06",
+      "tyo_paattyy": "2027-05-14",
+      "toiminnallinen_kunto": "2026-12-18",
+      "tyon_tarkoitus": "Työstä vastaava varaa tilaa kaivutyölle; kaapelityö.\n\nLISÄYS 29.7.2026: aluelisäykset ja päivitetty liikennejärjestelysuunnitelma.\nLISÄYS 10.8.2026: aluelisäykset ja päivitetty liikennejärjestelysuunnitelma.\nLISÄYS 28.8.2026: lisäaikaa 28.8.2026 -> 18.12.2026.",
+      "osoite": "Castreninkatu 1, 10, 13, 16, 22-24, Wallininkatu 7-11, Wallininkuja 6, 3-4, 1, Toinen Linja 19-31, Kolmas linja 1-3, 13-15, 28-32, 29-31, Neljäs linja 10-14, Viides linja 12-18, Siltasaarenkatu 15, Kaarlenkatu 3-5, 10-12, Helsinginkatu 4-20, Fleminginkatu 10-12, 11, 15-17, Harjutori 2-4, 10-12, Harjutorinkatu 4, Pengerkatu 7-15, 21-25, 22-24, 27, 29, Torkkelinkatu , Torkkelinkuja, Agricolankatu 2-4, Porthaninkatu 4, 13-17, Alppikatu 11, Franzéninkatu 3, 24-26",
+      "kaupunginosa": "11 KALLIO",
+      "status": "Käynnissä",
+      "hakija": "",
+      "tyon_suorittaja": "",
+      "geometrytype": "ST_Polygon",
+      "tyo_alkaa_txt": "06.07.2026",
+      "tyo_paattyy_txt": "14.05.2027",
+      "toiminnallinen_kunto_txt": "18.12.2026"
+     }
+    },
+    {
+     "type": "Feature",
+     "id": "Kaivuilmoitus_alue.803",
+     "geometry": {
+      "type": "MultiPolygon",
+      "coordinates": [
+       [
+        [
+         [
+          24.9516309,
+          60.18513341
+         ],
+         [
+          24.9516643,
+          60.18513466
+         ],
+         [
+          24.95171594,
+          60.18454878
+         ],
+         [
+          24.95175815,
+          60.18454865
+         ],
+         [
+          24.95175638,
+          60.18451898
+         ],
+         [
+          24.9516916,
+          60.18452122
+         ],
+         [
+          24.9516309,
+          60.18513341
+         ]
+        ]
+       ]
+      ]
+     },
+     "geometry_name": "singlegeom",
+     "properties": {
+      "id": 803,
+      "hakemus": "Kaivuilmoitus",
+      "hakemustunnus": "KP2601611-4",
+      "tyo_alkaa": "2026-07-06",
+      "tyo_paattyy": "2027-05-14",
+      "toiminnallinen_kunto": "2026-12-18",
+      "tyon_tarkoitus": "Työstä vastaava varaa tilaa kaivutyölle; kaapelityö.\n\nLISÄYS 29.7.2026: aluelisäykset ja päivitetty liikennejärjestelysuunnitelma.\nLISÄYS 10.8.2026: aluelisäykset ja päivitetty liikennejärjestelysuunnitelma.\nLISÄYS 28.8.2026: lisäaikaa 28.8.2026 -> 18.12.2026.",
+      "osoite": "Castreninkatu 1, 10, 13, 16, 22-24, Wallininkatu 7-11, Wallininkuja 6, 3-4, 1, Toinen Linja 19-31, Kolmas linja 1-3, 13-15, 28-32, 29-31, Neljäs linja 10-14, Viides linja 12-18, Siltasaarenkatu 15, Kaarlenkatu 3-5, 10-12, Helsinginkatu 4-20, Fleminginkatu 10-12, 11, 15-17, Harjutori 2-4, 10-12, Harjutorinkatu 4, Pengerkatu 7-15, 21-25, 22-24, 27, 29, Torkkelinkatu , Torkkelinkuja, Agricolankatu 2-4, Porthaninkatu 4, 13-17, Alppikatu 11, Franzéninkatu 3, 24-26",
+      "kaupunginosa": "11 KALLIO",
+      "status": "Käynnissä",
+      "hakija": "",
+      "tyon_suorittaja": "",
+      "geometrytype": "ST_Polygon",
+      "tyo_alkaa_txt": "06.07.2026",
+      "tyo_paattyy_txt": "14.05.2027",
+      "toiminnallinen_kunto_txt": "18.12.2026"
+     }
+    },
+    {
+     "type": "Feature",
+     "id": "Kaivuilmoitus_alue.804",
+     "geometry": {
+      "type": "MultiPolygon",
+      "coordinates": [
+       [
+        [
+         [
+          24.95614626,
+          60.18374132
+         ],
+         [
+          24.95609624,
+          60.18375482
+         ],
+         [
+          24.95689859,
+          60.1842113
+         ],
+         [
+          24.95692126,
+          60.18423927
+         ],
+         [
+          24.95688518,
+          60.18425742
+         ],
+         [
+          24.95519313,
+          60.18421708
+         ],
+         [
+          24.95371371,
+          60.18323973
+         ],
+         [
+          24.9537048,
+          60.1831969
+         ],
+         [
+          24.95365484,
+          60.18321728
+         ],
+         [
+          24.95369132,
+          60.18326403
+         ],
+         [
+          24.95516408,
+          60.18423426
+         ],
+         [
+          24.95566965,
+          60.18425462
+         ],
+         [
+          24.9568988,
+          60.18427823
+         ],
+         [
+          24.9569626,
+          60.18425928
+         ],
+         [
+          24.95696962,
+          60.18423098
+         ],
+         [
+          24.95614626,
+          60.18374132
+         ]
+        ]
+       ]
+      ]
+     },
+     "geometry_name": "singlegeom",
+     "properties": {
+      "id": 804,
+      "hakemus": "Kaivuilmoitus",
+      "hakemustunnus": "KP2601611-4",
+      "tyo_alkaa": "2026-07-06",
+      "tyo_paattyy": "2027-05-14",
+      "toiminnallinen_kunto": "2026-12-18",
+      "tyon_tarkoitus": "Työstä vastaava varaa tilaa kaivutyölle; kaapelityö.\n\nLISÄYS 29.7.2026: aluelisäykset ja päivitetty liikennejärjestelysuunnitelma.\nLISÄYS 10.8.2026: aluelisäykset ja päivitetty liikennejärjestelysuunnitelma.\nLISÄYS 28.8.2026: lisäaikaa 28.8.2026 -> 18.12.2026.",
+      "osoite": "Castreninkatu 1, 10, 13, 16, 22-24, Wallininkatu 7-11, Wallininkuja 6, 3-4, 1, Toinen Linja 19-31, Kolmas linja 1-3, 13-15, 28-32, 29-31, Neljäs linja 10-14, Viides linja 12-18, Siltasaarenkatu 15, Kaarlenkatu 3-5, 10-12, Helsinginkatu 4-20, Fleminginkatu 10-12, 11, 15-17, Harjutori 2-4, 10-12, Harjutorinkatu 4, Pengerkatu 7-15, 21-25, 22-24, 27, 29, Torkkelinkatu , Torkkelinkuja, Agricolankatu 2-4, Porthaninkatu 4, 13-17, Alppikatu 11, Franzéninkatu 3, 24-26",
+      "kaupunginosa": "11 KALLIO",
+      "status": "Käynnissä",
+      "hakija": "",
+      "tyon_suorittaja": "",
+      "geometrytype": "ST_Polygon",
+      "tyo_alkaa_txt": "06.07.2026",
+      "tyo_paattyy_txt": "14.05.2027",
+      "toiminnallinen_kunto_txt": "18.12.2026"
+     }
+    },
+    {
+     "type": "Feature",
+     "id": "Kaivuilmoitus_alue.805",
+     "geometry": {
+      "type": "MultiPolygon",
+      "coordinates": [
+       [
+        [
+         [
+          24.95411617,
+          60.18308982
+         ],
+         [
+          24.95414985,
+          60.18307548
+         ],
+         [
+          24.95409644,
+          60.18303976
+         ],
+         [
+          24.9540606,
+          60.18305599
+         ],
+         [
+          24.95411617,
+          60.18308982
+         ]
+        ]
+       ]
+      ]
+     },
+     "geometry_name": "singlegeom",
+     "properties": {
+      "id": 805,
+      "hakemus": "Kaivuilmoitus",
+      "hakemustunnus": "KP2601611-4",
+      "tyo_alkaa": "2026-07-06",
+      "tyo_paattyy": "2027-05-14",
+      "toiminnallinen_kunto": "2026-12-18",
+      "tyon_tarkoitus": "Työstä vastaava varaa tilaa kaivutyölle; kaapelityö.\n\nLISÄYS 29.7.2026: aluelisäykset ja päivitetty liikennejärjestelysuunnitelma.\nLISÄYS 10.8.2026: aluelisäykset ja päivitetty liikennejärjestelysuunnitelma.\nLISÄYS 28.8.2026: lisäaikaa 28.8.2026 -> 18.12.2026.",
+      "osoite": "Castreninkatu 1, 10, 13, 16, 22-24, Wallininkatu 7-11, Wallininkuja 6, 3-4, 1, Toinen Linja 19-31, Kolmas linja 1-3, 13-15, 28-32, 29-31, Neljäs linja 10-14, Viides linja 12-18, Siltasaarenkatu 15, Kaarlenkatu 3-5, 10-12, Helsinginkatu 4-20, Fleminginkatu 10-12, 11, 15-17, Harjutori 2-4, 10-12, Harjutorinkatu 4, Pengerkatu 7-15, 21-25, 22-24, 27, 29, Torkkelinkatu , Torkkelinkuja, Agricolankatu 2-4, Porthaninkatu 4, 13-17, Alppikatu 11, Franzéninkatu 3, 24-26",
+      "kaupunginosa": "11 KALLIO",
+      "status": "Käynnissä",
+      "hakija": "",
+      "tyon_suorittaja": "",
+      "geometrytype": "ST_Polygon",
+      "tyo_alkaa_txt": "06.07.2026",
+      "tyo_paattyy_txt": "14.05.2027",
+      "toiminnallinen_kunto_txt": "18.12.2026"
+     }
+    },
+    {
+     "type": "Feature",
+     "id": "Kaivuilmoitus_alue.806",
+     "geometry": {
+      "type": "MultiPolygon",
+      "coordinates": [
+       [
+        [
+         [
+          24.95173677,
+          60.18258722
+         ],
+         [
+          24.95121574,
+          60.18278774
+         ],
+         [
+          24.9503617,
+          60.18311985
+         ],
+         [
+          24.95033959,
+          60.18310686
+         ],
+         [
+          24.95155911,
+          60.18264057
+         ],
+         [
+          24.95171767,
+          60.18257284
+         ],
+         [
+          24.95173677,
+          60.18258722
+         ]
+        ]
+       ]
+      ]
+     },
+     "geometry_name": "singlegeom",
+     "properties": {
+      "id": 806,
+      "hakemus": "Kaivuilmoitus",
+      "hakemustunnus": "KP2601611-4",
+      "tyo_alkaa": "2026-07-06",
+      "tyo_paattyy": "2027-05-14",
+      "toiminnallinen_kunto": "2026-12-18",
+      "tyon_tarkoitus": "Työstä vastaava varaa tilaa kaivutyölle; kaapelityö.\n\nLISÄYS 29.7.2026: aluelisäykset ja päivitetty liikennejärjestelysuunnitelma.\nLISÄYS 10.8.2026: aluelisäykset ja päivitetty liikennejärjestelysuunnitelma.\nLISÄYS 28.8.2026: lisäaikaa 28.8.2026 -> 18.12.2026.",
+      "osoite": "Castreninkatu 1, 10, 13, 16, 22-24, Wallininkatu 7-11, Wallininkuja 6, 3-4, 1, Toinen Linja 19-31, Kolmas linja 1-3, 13-15, 28-32, 29-31, Neljäs linja 10-14, Viides linja 12-18, Siltasaarenkatu 15, Kaarlenkatu 3-5, 10-12, Helsinginkatu 4-20, Fleminginkatu 10-12, 11, 15-17, Harjutori 2-4, 10-12, Harjutorinkatu 4, Pengerkatu 7-15, 21-25, 22-24, 27, 29, Torkkelinkatu , Torkkelinkuja, Agricolankatu 2-4, Porthaninkatu 4, 13-17, Alppikatu 11, Franzéninkatu 3, 24-26",
+      "kaupunginosa": "11 KALLIO",
+      "status": "Käynnissä",
+      "hakija": "",
+      "tyon_suorittaja": "",
+      "geometrytype": "ST_Polygon",
+      "tyo_alkaa_txt": "06.07.2026",
+      "tyo_paattyy_txt": "14.05.2027",
+      "toiminnallinen_kunto_txt": "18.12.2026"
+     }
+    },
+    {
+     "type": "Feature",
+     "id": "Kaivuilmoitus_alue.807",
+     "geometry": {
+      "type": "MultiPolygon",
+      "coordinates": [
+       [
+        [
+         [
+          24.95101626,
+          60.18402985
+         ],
+         [
+          24.95105509,
+          60.18404742
+         ],
+         [
+          24.95225962,
+          60.1835851
+         ],
+         [
+          24.95223764,
+          60.18356849
+         ],
+         [
+          24.95152747,
+          60.18384242
+         ],
+         [
+          24.95105505,
+          60.18402989
+         ],
+         [
+          24.95103388,
+          60.1840149
+         ],
+         [
+          24.95101626,
+          60.18402985
+         ]
+        ]
+       ]
+      ]
+     },
+     "geometry_name": "singlegeom",
+     "properties": {
+      "id": 807,
+      "hakemus": "Kaivuilmoitus",
+      "hakemustunnus": "KP2601611-4",
+      "tyo_alkaa": "2026-07-06",
+      "tyo_paattyy": "2027-05-14",
+      "toiminnallinen_kunto": "2026-12-18",
+      "tyon_tarkoitus": "Työstä vastaava varaa tilaa kaivutyölle; kaapelityö.\n\nLISÄYS 29.7.2026: aluelisäykset ja päivitetty liikennejärjestelysuunnitelma.\nLISÄYS 10.8.2026: aluelisäykset ja päivitetty liikennejärjestelysuunnitelma.\nLISÄYS 28.8.2026: lisäaikaa 28.8.2026 -> 18.12.2026.",
+      "osoite": "Castreninkatu 1, 10, 13, 16, 22-24, Wallininkatu 7-11, Wallininkuja 6, 3-4, 1, Toinen Linja 19-31, Kolmas linja 1-3, 13-15, 28-32, 29-31, Neljäs linja 10-14, Viides linja 12-18, Siltasaarenkatu 15, Kaarlenkatu 3-5, 10-12, Helsinginkatu 4-20, Fleminginkatu 10-12, 11, 15-17, Harjutori 2-4, 10-12, Harjutorinkatu 4, Pengerkatu 7-15, 21-25, 22-24, 27, 29, Torkkelinkatu , Torkkelinkuja, Agricolankatu 2-4, Porthaninkatu 4, 13-17, Alppikatu 11, Franzéninkatu 3, 24-26",
+      "kaupunginosa": "11 KALLIO",
+      "status": "Käynnissä",
+      "hakija": "",
+      "tyon_suorittaja": "",
+      "geometrytype": "ST_Polygon",
+      "tyo_alkaa_txt": "06.07.2026",
+      "tyo_paattyy_txt": "14.05.2027",
+      "toiminnallinen_kunto_txt": "18.12.2026"
+     }
+    },
+    {
+     "type": "Feature",
+     "id": "Kaivuilmoitus_alue.808",
+     "geometry": {
+      "type": "MultiPolygon",
+      "coordinates": [
+       [
+        [
+         [
+          24.94407731,
+          60.18502475
+         ],
+         [
+          24.94412393,
+          60.18505058
+         ],
+         [
+          24.94399892,
+          60.18510055
+         ],
+         [
+          24.94413095,
+          60.18519125
+         ],
+         [
+          24.94408883,
+          60.18520348
+         ],
+         [
+          24.94396685,
+          60.18511274
+         ],
+         [
+          24.94388405,
+          60.18511277
+         ],
+         [
+          24.94341144,
+          60.18481613
+         ],
+         [
+          24.94337463,
+          60.1847903
+         ],
+         [
+          24.94340563,
+          60.18475679
+         ],
+         [
+          24.94325892,
+          60.1846869
+         ],
+         [
+          24.94320833,
+          60.18468341
+         ],
+         [
+          24.94297984,
+          60.18453639
+         ],
+         [
+          24.94303216,
+          60.18451637
+         ],
+         [
+          24.94304861,
+          60.18452697
+         ],
+         [
+          24.94302291,
+          60.18453864
+         ],
+         [
+          24.94321857,
+          60.18466902
+         ],
+         [
+          24.94326131,
+          60.18467121
+         ],
+         [
+          24.94493015,
+          60.18400444
+         ],
+         [
+          24.94492518,
+          60.18399478
+         ],
+         [
+          24.94509911,
+          60.18393815
+         ],
+         [
+          24.94417856,
+          60.18334441
+         ],
+         [
+          24.94396782,
+          60.18341583
+         ],
+         [
+          24.94394906,
+          60.18342773
+         ],
+         [
+          24.94259003,
+          60.18395728
+         ],
+         [
+          24.94256684,
+          60.1839419
+         ],
+         [
+          24.94395133,
+          60.18340298
+         ],
+         [
+          24.94419221,
+          60.18331649
+         ],
+         [
+          24.94567649,
+          60.18273152
+         ],
+         [
+          24.94570371,
+          60.18275011
+         ],
+         [
+          24.94536052,
+          60.18288552
+         ],
+         [
+          24.94420579,
+          60.18333661
+         ],
+         [
+          24.94514698,
+          60.18393866
+         ],
+         [
+          24.94497328,
+          60.18400194
+         ],
+         [
+          24.94497288,
+          60.18401788
+         ],
+         [
+          24.94475412,
+          60.18410077
+         ],
+         [
+          24.94328747,
+          60.18467356
+         ],
+         [
+          24.94345913,
+          60.18476903
+         ],
+         [
+          24.94342317,
+          60.18478363
+         ],
+         [
+          24.94343907,
+          60.18480944
+         ],
+         [
+          24.9438991,
+          60.18509831
+         ],
+         [
+          24.94393087,
+          60.18510213
+         ],
+         [
+          24.943978,
+          60.18509333
+         ],
+         [
+          24.94408009,
+          60.18505731
+         ],
+         [
+          24.94405474,
+          60.18503657
+         ],
+         [
+          24.94407731,
+          60.18502475
+         ]
+        ]
+       ]
+      ]
+     },
+     "geometry_name": "singlegeom",
+     "properties": {
+      "id": 808,
+      "hakemus": "Kaivuilmoitus",
+      "hakemustunnus": "KP2601611-4",
+      "tyo_alkaa": "2026-07-06",
+      "tyo_paattyy": "2027-05-14",
+      "toiminnallinen_kunto": "2026-12-18",
+      "tyon_tarkoitus": "Työstä vastaava varaa tilaa kaivutyölle; kaapelityö.\n\nLISÄYS 29.7.2026: aluelisäykset ja päivitetty liikennejärjestelysuunnitelma.\nLISÄYS 10.8.2026: aluelisäykset ja päivitetty liikennejärjestelysuunnitelma.\nLISÄYS 28.8.2026: lisäaikaa 28.8.2026 -> 18.12.2026.",
+      "osoite": "Castreninkatu 1, 10, 13, 16, 22-24, Wallininkatu 7-11, Wallininkuja 6, 3-4, 1, Toinen Linja 19-31, Kolmas linja 1-3, 13-15, 28-32, 29-31, Neljäs linja 10-14, Viides linja 12-18, Siltasaarenkatu 15, Kaarlenkatu 3-5, 10-12, Helsinginkatu 4-20, Fleminginkatu 10-12, 11, 15-17, Harjutori 2-4, 10-12, Harjutorinkatu 4, Pengerkatu 7-15, 21-25, 22-24, 27, 29, Torkkelinkatu , Torkkelinkuja, Agricolankatu 2-4, Porthaninkatu 4, 13-17, Alppikatu 11, Franzéninkatu 3, 24-26",
+      "kaupunginosa": "11 KALLIO",
+      "status": "Käynnissä",
+      "hakija": "",
+      "tyon_suorittaja": "",
+      "geometrytype": "ST_Polygon",
+      "tyo_alkaa_txt": "06.07.2026",
+      "tyo_paattyy_txt": "14.05.2027",
+      "toiminnallinen_kunto_txt": "18.12.2026"
+     }
+    },
+    {
+     "type": "Feature",
+     "id": "Kaivuilmoitus_alue.809",
+     "geometry": {
+      "type": "MultiPolygon",
+      "coordinates": [
+       [
+        [
+         [
+          24.94527826,
+          60.1842593
+         ],
+         [
+          24.94530945,
+          60.18425168
+         ],
+         [
+          24.94527454,
+          60.18422883
+         ],
+         [
+          24.94524646,
+          60.18424197
+         ],
+         [
+          24.94527826,
+          60.1842593
+         ]
+        ]
+       ]
+      ]
+     },
+     "geometry_name": "singlegeom",
+     "properties": {
+      "id": 809,
+      "hakemus": "Kaivuilmoitus",
+      "hakemustunnus": "KP2601611-4",
+      "tyo_alkaa": "2026-07-06",
+      "tyo_paattyy": "2027-05-14",
+      "toiminnallinen_kunto": "2026-12-18",
+      "tyon_tarkoitus": "Työstä vastaava varaa tilaa kaivutyölle; kaapelityö.\n\nLISÄYS 29.7.2026: aluelisäykset ja päivitetty liikennejärjestelysuunnitelma.\nLISÄYS 10.8.2026: aluelisäykset ja päivitetty liikennejärjestelysuunnitelma.\nLISÄYS 28.8.2026: lisäaikaa 28.8.2026 -> 18.12.2026.",
+      "osoite": "Castreninkatu 1, 10, 13, 16, 22-24, Wallininkatu 7-11, Wallininkuja 6, 3-4, 1, Toinen Linja 19-31, Kolmas linja 1-3, 13-15, 28-32, 29-31, Neljäs linja 10-14, Viides linja 12-18, Siltasaarenkatu 15, Kaarlenkatu 3-5, 10-12, Helsinginkatu 4-20, Fleminginkatu 10-12, 11, 15-17, Harjutori 2-4, 10-12, Harjutorinkatu 4, Pengerkatu 7-15, 21-25, 22-24, 27, 29, Torkkelinkatu , Torkkelinkuja, Agricolankatu 2-4, Porthaninkatu 4, 13-17, Alppikatu 11, Franzéninkatu 3, 24-26",
+      "kaupunginosa": "11 KALLIO",
+      "status": "Käynnissä",
+      "hakija": "",
+      "tyon_suorittaja": "",
+      "geometrytype": "ST_Polygon",
+      "tyo_alkaa_txt": "06.07.2026",
+      "tyo_paattyy_txt": "14.05.2027",
+      "toiminnallinen_kunto_txt": "18.12.2026"
+     }
+    },
+    {
+     "type": "Feature",
+     "id": "Kaivuilmoitus_alue.810",
+     "geometry": {
+      "type": "MultiPolygon",
+      "coordinates": [
+       [
+        [
+         [
+          24.94501926,
+          60.1841118
+         ],
+         [
+          24.94504435,
+          60.18412889
+         ],
+         [
+          24.94421469,
+          60.18445349
+         ],
+         [
+          24.94423917,
+          60.18446687
+         ],
+         [
+          24.94508835,
+          60.1841275
+         ],
+         [
+          24.94504691,
+          60.18410137
+         ],
+         [
+          24.94501926,
+          60.1841118
+         ]
+        ]
+       ]
+      ]
+     },
+     "geometry_name": "singlegeom",
+     "properties": {
+      "id": 810,
+      "hakemus": "Kaivuilmoitus",
+      "hakemustunnus": "KP2601611-4",
+      "tyo_alkaa": "2026-07-06",
+      "tyo_paattyy": "2027-05-14",
+      "toiminnallinen_kunto": "2026-12-18",
+      "tyon_tarkoitus": "Työstä vastaava varaa tilaa kaivutyölle; kaapelityö.\n\nLISÄYS 29.7.2026: aluelisäykset ja päivitetty liikennejärjestelysuunnitelma.\nLISÄYS 10.8.2026: aluelisäykset ja päivitetty liikennejärjestelysuunnitelma.\nLISÄYS 28.8.2026: lisäaikaa 28.8.2026 -> 18.12.2026.",
+      "osoite": "Castreninkatu 1, 10, 13, 16, 22-24, Wallininkatu 7-11, Wallininkuja 6, 3-4, 1, Toinen Linja 19-31, Kolmas linja 1-3, 13-15, 28-32, 29-31, Neljäs linja 10-14, Viides linja 12-18, Siltasaarenkatu 15, Kaarlenkatu 3-5, 10-12, Helsinginkatu 4-20, Fleminginkatu 10-12, 11, 15-17, Harjutori 2-4, 10-12, Harjutorinkatu 4, Pengerkatu 7-15, 21-25, 22-24, 27, 29, Torkkelinkatu , Torkkelinkuja, Agricolankatu 2-4, Porthaninkatu 4, 13-17, Alppikatu 11, Franzéninkatu 3, 24-26",
+      "kaupunginosa": "11 KALLIO",
+      "status": "Käynnissä",
+      "hakija": "",
+      "tyon_suorittaja": "",
+      "geometrytype": "ST_Polygon",
+      "tyo_alkaa_txt": "06.07.2026",
+      "tyo_paattyy_txt": "14.05.2027",
+      "toiminnallinen_kunto_txt": "18.12.2026"
+     }
+    },
+    {
+     "type": "Feature",
+     "id": "Kaivuilmoitus_alue.811",
+     "geometry": {
+      "type": "MultiPolygon",
+      "coordinates": [
+       [
+        [
+         [
+          24.9458029,
+          60.18459497
+         ],
+         [
+          24.94583553,
+          60.18458111
+         ],
+         [
+          24.94580775,
+          60.18456187
+         ],
+         [
+          24.94576933,
+          60.18457487
+         ],
+         [
+          24.9458029,
+          60.18459497
+         ]
+        ]
+       ]
+      ]
+     },
+     "geometry_name": "singlegeom",
+     "properties": {
+      "id": 811,
+      "hakemus": "Kaivuilmoitus",
+      "hakemustunnus": "KP2601611-4",
+      "tyo_alkaa": "2026-07-06",
+      "tyo_paattyy": "2027-05-14",
+      "toiminnallinen_kunto": "2026-12-18",
+      "tyon_tarkoitus": "Työstä vastaava varaa tilaa kaivutyölle; kaapelityö.\n\nLISÄYS 29.7.2026: aluelisäykset ja päivitetty liikennejärjestelysuunnitelma.\nLISÄYS 10.8.2026: aluelisäykset ja päivitetty liikennejärjestelysuunnitelma.\nLISÄYS 28.8.2026: lisäaikaa 28.8.2026 -> 18.12.2026.",
+      "osoite": "Castreninkatu 1, 10, 13, 16, 22-24, Wallininkatu 7-11, Wallininkuja 6, 3-4, 1, Toinen Linja 19-31, Kolmas linja 1-3, 13-15, 28-32, 29-31, Neljäs linja 10-14, Viides linja 12-18, Siltasaarenkatu 15, Kaarlenkatu 3-5, 10-12, Helsinginkatu 4-20, Fleminginkatu 10-12, 11, 15-17, Harjutori 2-4, 10-12, Harjutorinkatu 4, Pengerkatu 7-15, 21-25, 22-24, 27, 29, Torkkelinkatu , Torkkelinkuja, Agricolankatu 2-4, Porthaninkatu 4, 13-17, Alppikatu 11, Franzéninkatu 3, 24-26",
+      "kaupunginosa": "11 KALLIO",
+      "status": "Käynnissä",
+      "hakija": "",
+      "tyon_suorittaja": "",
+      "geometrytype": "ST_Polygon",
+      "tyo_alkaa_txt": "06.07.2026",
+      "tyo_paattyy_txt": "14.05.2027",
+      "toiminnallinen_kunto_txt": "18.12.2026"
+     }
+    },
+    {
+     "type": "Feature",
+     "id": "Kaivuilmoitus_alue.812",
+     "geometry": {
+      "type": "MultiPolygon",
+      "coordinates": [
+       [
+        [
+         [
+          24.94476812,
+          60.18476389
+         ],
+         [
+          24.94480168,
+          60.18478339
+         ],
+         [
+          24.94473829,
+          60.18480582
+         ],
+         [
+          24.94491767,
+          60.1849024
+         ],
+         [
+          24.94488583,
+          60.18491666
+         ],
+         [
+          24.94468764,
+          60.18479764
+         ],
+         [
+          24.94476812,
+          60.18476389
+         ]
+        ]
+       ]
+      ]
+     },
+     "geometry_name": "singlegeom",
+     "properties": {
+      "id": 812,
+      "hakemus": "Kaivuilmoitus",
+      "hakemustunnus": "KP2601611-4",
+      "tyo_alkaa": "2026-07-06",
+      "tyo_paattyy": "2027-05-14",
+      "toiminnallinen_kunto": "2026-12-18",
+      "tyon_tarkoitus": "Työstä vastaava varaa tilaa kaivutyölle; kaapelityö.\n\nLISÄYS 29.7.2026: aluelisäykset ja päivitetty liikennejärjestelysuunnitelma.\nLISÄYS 10.8.2026: aluelisäykset ja päivitetty liikennejärjestelysuunnitelma.\nLISÄYS 28.8.2026: lisäaikaa 28.8.2026 -> 18.12.2026.",
+      "osoite": "Castreninkatu 1, 10, 13, 16, 22-24, Wallininkatu 7-11, Wallininkuja 6, 3-4, 1, Toinen Linja 19-31, Kolmas linja 1-3, 13-15, 28-32, 29-31, Neljäs linja 10-14, Viides linja 12-18, Siltasaarenkatu 15, Kaarlenkatu 3-5, 10-12, Helsinginkatu 4-20, Fleminginkatu 10-12, 11, 15-17, Harjutori 2-4, 10-12, Harjutorinkatu 4, Pengerkatu 7-15, 21-25, 22-24, 27, 29, Torkkelinkatu , Torkkelinkuja, Agricolankatu 2-4, Porthaninkatu 4, 13-17, Alppikatu 11, Franzéninkatu 3, 24-26",
+      "kaupunginosa": "11 KALLIO",
+      "status": "Käynnissä",
+      "hakija": "",
+      "tyon_suorittaja": "",
+      "geometrytype": "ST_Polygon",
+      "tyo_alkaa_txt": "06.07.2026",
+      "tyo_paattyy_txt": "14.05.2027",
+      "toiminnallinen_kunto_txt": "18.12.2026"
      }
     }
    ]
