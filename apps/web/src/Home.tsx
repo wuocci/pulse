@@ -1,19 +1,12 @@
 import type { Event, GeocodeResult } from "@pulse/client";
 import { useQueries, useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
-import { type FormEvent, type ReactNode, useId, useState } from "react";
+import { type FormEvent, useId, useState } from "react";
 import { useTranslation } from "react-i18next";
-import "@fontsource/barlow-condensed/600.css";
-import "@fontsource/barlow-condensed/700.css";
-import "@fontsource/barlow/400.css";
-import "@fontsource/barlow/500.css";
-import "@fontsource/barlow/600.css";
 import { AddressSearch } from "./AddressSearch.tsx";
 import { eventsQuery, useRegions } from "./api.ts";
-import { whenText } from "./EventCard.tsx";
-import { headingOf, inMyArea, nearestFirst, plainTitle, readingLanguages, streetOf, textIn, whenOf } from "./events.ts";
-import "./home.css";
-import { type Means, meansOf } from "./means.ts";
+import { Accordion, EventRow } from "./EventRows.tsx";
+import { inMyArea, nearestFirst } from "./events.ts";
 import { MAX_PLACES, type SavedPlace, usePlaces } from "./places.ts";
 import { type LatLon, usePlatform } from "./platform.tsx";
 import { centreOf, formatAt } from "./point.ts";
@@ -141,24 +134,6 @@ function PlaceLines({ places, open, onToggle }: { places: SavedPlace[]; open: st
   );
 }
 
-// A header that opens and closes the panel under it.
-function Accordion({ open, onToggle, header, children, className }: { open: boolean; onToggle: () => void; header: ReactNode; children: ReactNode; className: string }) {
-  const id = useId();
-  return (
-    <div className={`acc ${className}`} data-open={open}>
-      <button type="button" className="acc-head" aria-expanded={open} aria-controls={id} onClick={onToggle}>
-        {header}
-        <span className="acc-chevron" aria-hidden>
-          ›
-        </span>
-      </button>
-      <div id={id} className="acc-panel" role="region" inert={!open}>
-        <div className="acc-inner">{children}</div>
-      </div>
-    </div>
-  );
-}
-
 function PlaceLine({ place, events, open, onToggle }: { place: SavedPlace; events: Event[]; open: boolean; onToggle: () => void }) {
   const { t } = useTranslation();
   const major = events.filter((e) => e.severity === "major").length;
@@ -191,82 +166,6 @@ function PlaceLine({ place, events, open, onToggle }: { place: SavedPlace; event
           {t("homeAllNear", { count: events.length, place: place.name })} ›
         </Link>
       )}
-    </Accordion>
-  );
-}
-
-// What a row leads with: where, when the Event has a street, since on Home where matters more than what kind of work
-// it is ("Castreninkatu 1", not "Cable dig"), and a permit's first sentence is in Finnish. What it is opens the card.
-// A transit alert or an event names its own place, so it keeps its title.
-function rowTitle(event: Event, t: ReturnType<typeof useTranslation>["t"], languages: readonly string[]) {
-  const plain = plainTitle(event, languages);
-  const kind = plain.label ? t(plain.label) : plain.what ? undefined : plain.title;
-  return plain.address ? { title: streetOf(plain.address), kind } : { title: headingOf(plain, t), kind: undefined };
-}
-
-function meansText({ key, lines, noisy }: Means, t: ReturnType<typeof useTranslation>["t"]): string {
-  const means = t(key, { lines });
-  return noisy ? t("meansNoisy", { means }) : means;
-}
-
-// A row: where (or what), then what it means for you. Opens to the card: how big, what it is, when, then Details.
-function EventRow({ event, open, onToggle }: { event: Event; open: boolean; onToggle: () => void }) {
-  const { t, i18n } = useTranslation();
-  const regions = useRegions();
-  const region = regions.data?.[0];
-  const languages = readingLanguages(i18n.language, region?.languages);
-  const timeZone = region?.timeZone ?? "Europe/Helsinki";
-  const [details, setDetails] = useState(false);
-  const { title, kind } = rowTitle(event, t, languages);
-  const source = event.sources[0];
-  const text = event.originalText && textIn(event.originalText, languages);
-  const facts: [string, string][] = [
-    ...(event.mainlyAffected !== "unknown" && event.mainlyAffected !== "nobody" ? [[t("factMostly"), t(`who_${event.mainlyAffected}`)] as [string, string]] : []),
-    ...(event.noticeable.length ? [[t("factOnSite"), event.noticeable.map((n) => t(`how_${n}`)).join(", ")] as [string, string]] : []),
-    ...(event.where.lineNames?.length ? [[t("factLines"), event.where.lineNames.join(", ")] as [string, string]] : []),
-  ];
-
-  return (
-    <Accordion
-      className="home-row"
-      open={open}
-      onToggle={onToggle}
-      header={
-        <span className="home-row-body" data-tone={event.severity}>
-          <span className="home-row-title">{title}</span>
-          <span className="home-row-sub">{meansText(meansOf(event), t)}</span>
-        </span>
-      }
-    >
-      <div className="home-card" data-tone={event.severity}>
-        <p className="home-tone">{t(event.severity === "major" ? "severityMajor" : "severityConsider")}</p>
-        {kind && <p className="home-kind">{kind}</p>}
-        <p className="home-when">{whenText(whenOf(event, timeZone, new Date()), t)}</p>
-        <Accordion className="home-more" open={details} onToggle={() => setDetails(!details)} header={<span>{t("homeDetails")}</span>}>
-          {facts.length > 0 && (
-            <dl className="home-facts">
-              {facts.map(([k, v]) => (
-                <div key={k}>
-                  <dt>{k}</dt>
-                  <dd>{v}</dd>
-                </div>
-              ))}
-            </dl>
-          )}
-          {text && <p className="home-text">{text}</p>}
-          {source && (
-            <p className="home-source">
-              {source.url ? (
-                <a href={source.url} target="_blank" rel="noreferrer">
-                  {source.name} ↗
-                </a>
-              ) : (
-                source.name
-              )}
-            </p>
-          )}
-        </Accordion>
-      </div>
     </Accordion>
   );
 }

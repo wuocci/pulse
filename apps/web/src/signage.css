@@ -1,6 +1,7 @@
 /* Signage (design round 2026-11-25): station boards and road signs. Condensed capitals for labels only, signal colours,
    square corners. A clear hierarchy: 1 the action (Where to?) is the only loud thing; 2 the place lines; 3 details,
-   quiet, opened in place. Spacing groups things, not rules. Home only for now; Around and Trips follow. */
+   quiet, opened in place. Spacing groups things, not rules. Home and Around; Trips follow. Signal colours (amber, red)
+   only for what changes plans: everything else is quiet grey. */
 
 .signage {
   --s-font: "Barlow", system-ui, sans-serif;
@@ -242,83 +243,104 @@
 }
 
 /* 3 The details. */
-.home-row {
+.sg-row {
   border-bottom: 1px solid var(--s-hair);
 }
-.home-row:last-child {
+.sg-row:last-child {
   border-bottom: 0;
 }
-.home-row > .acc-head {
+.sg-row > .acc-head {
   padding: 0.7rem 0;
 }
-.home-row-body {
+.sg-row-body {
   flex: 1;
   display: flex;
   flex-direction: column;
   padding-left: 0.75rem;
   border-left: 4px solid var(--s-amber);
 }
-.home-row-body[data-tone="major"] {
+.sg-row-body[data-tone="major"] {
   border-left-color: var(--s-red);
 }
-.home-row-title {
+.sg-row-body[data-tone="quiet"] {
+  border-left-color: var(--s-hair);
+}
+.sg-row-aside {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.sg-aside-caption {
+  font-size: 0.8rem;
+  color: var(--s-mute);
+}
+.sg-aside-value {
+  font-weight: 600;
+}
+.sg-row-title {
   font: 600 1.08rem/1.25 var(--s-font);
 }
-.home-row-sub {
+.sg-row-sub {
   margin-top: 0.1rem;
   font-size: 0.95rem;
   color: var(--s-mute);
 }
-.home-row[data-open="true"] .home-row-sub {
+.sg-row[data-open="true"] .sg-row-sub {
   color: var(--s-fg);
   font-weight: 600;
 }
-.home-card {
+.sg-card {
   margin: 0 0 0.8rem;
   padding: 0.7rem 0.9rem 0.2rem;
   background: var(--s-panel);
   border-left: 4px solid var(--s-amber);
 }
-.home-card[data-tone="major"] {
+.sg-card[data-tone="major"] {
   border-left-color: var(--s-red);
 }
-.home-tone {
+.sg-card[data-tone="quiet"] {
+  border-left-color: var(--s-hair);
+}
+.sg-tone {
   font: 700 0.8rem/1 var(--s-display);
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--s-mute);
 }
-.home-kind {
+.sg-kind {
   margin-top: 0.4rem;
   font: 600 1.15rem/1.25 var(--s-font);
 }
-.home-when {
+.sg-when {
   margin-top: 0.3rem;
   font-weight: 500;
 }
-.home-more {
+.sg-more {
   margin-top: 0.35rem;
   border-top: 1px solid var(--s-hair);
 }
-.home-more > .acc-head {
+.sg-more > .acc-head {
   padding: 0.6rem 0;
   font-weight: 600;
   color: var(--s-blue);
 }
-.home-more .acc-chevron {
+.sg-more .acc-chevron {
   color: var(--s-blue);
   font-size: 1.3rem;
 }
-.home-facts div {
+.sg-facts div {
   display: grid;
   grid-template-columns: 4.5rem 1fr;
   padding: 0.25rem 0;
   font-size: 0.95rem;
 }
-.home-facts dt {
+.sg-facts dt {
   color: var(--s-mute);
 }
-.home-text {
+.sg-text {
   margin-top: 0.5rem;
   font-size: 0.9rem;
   color: var(--s-mute);
@@ -328,11 +350,187 @@
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
-.home-source {
+.sg-source {
   margin: 0.5rem 0 0.7rem;
   font-size: 0.9rem;
 }
-.home-source a {
+.sg-source a {
   color: var(--s-blue) !important;
   font-weight: 600;
+}
+.sg-source {
+  list-style: none;
+  padding: 0;
+}
+.sg-source li + li {
+  margin-top: 0.4rem;
+}
+.sg-updated {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--s-mute);
+}
+
+/* Around: the same rows under three sections, beside the map. */
+.around {
+  min-height: 0;
+}
+.around-head,
+.around-sections {
+  max-width: 34rem;
+}
+@media (min-width: 64rem) {
+  .around-head,
+  .around-body {
+    border-right: 1px solid var(--s-hair);
+  }
+}
+.around-top {
+  height: 2rem;
+  display: flex;
+  align-items: center;
+}
+.around-back {
+  font: 700 1.05rem/1 var(--s-display);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.4rem 0;
+}
+.around-place {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  max-width: 100%;
+  padding: 0.55rem 0.8rem;
+  background: var(--s-panel);
+  font-weight: 600;
+}
+.around-place-panel {
+  margin-top: 0.5rem;
+  padding: 0.75rem;
+  background: var(--s-panel);
+  display: grid;
+  gap: 0.5rem;
+}
+.around-here {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 0.75rem;
+  border: 2px solid var(--s-hair);
+  font-weight: 600;
+}
+.around-status {
+  min-height: 1.5rem;
+  font: 600 1.2rem/1.3 var(--s-font);
+}
+.around-where {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 0.85rem 1rem;
+  background: var(--s-blue);
+  color: var(--s-on-blue) !important;
+  font: 700 1.6rem/1 var(--s-display);
+  text-transform: uppercase;
+}
+.around-time {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.around-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 2.5rem;
+  padding: 0 0.8rem;
+  background: var(--s-panel);
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+.around-chip[aria-pressed="true"],
+.around-chip[data-on="true"] {
+  background: var(--s-fg);
+  color: var(--s-bg) !important;
+}
+.around-chip-clear {
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  margin-right: -0.6rem;
+}
+.around-section {
+  border-bottom: 1px solid var(--s-hair);
+}
+.around-section > .acc-head {
+  padding: 0.9rem 0 0.7rem;
+  gap: 0.6rem;
+}
+.around-section-label {
+  font: 700 1rem/1 var(--s-display);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.around-section-count {
+  min-width: 1.6rem;
+  padding: 0.2rem 0.35rem;
+  background: var(--s-fg);
+  color: var(--s-bg);
+  font: 700 0.95rem/1 var(--s-display);
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+.around-section-count[data-empty="true"] {
+  background: transparent;
+  color: var(--s-mute);
+}
+.around-rows {
+  list-style: none;
+  margin: 0 0 0.5rem;
+  padding: 0;
+}
+.around-rows > li + li {
+  border-top: 1px solid var(--s-hair);
+}
+.around-rows .sg-row {
+  border-bottom: 0;
+}
+.around-rows .sg-row-aside {
+  margin-left: 0.5rem;
+}
+.around-empty {
+  padding: 0.25rem 0 1rem;
+  color: var(--s-mute);
+}
+.around-switch {
+  position: fixed;
+  z-index: 30;
+  left: 50%;
+  bottom: max(1.25rem, env(safe-area-inset-bottom));
+  transform: translateX(-50%);
+  display: flex;
+  background: var(--s-fg);
+  padding: 0.25rem;
+  box-shadow: 0 6px 20px rgb(0 0 0 / 0.25);
+}
+.around-switch button {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  height: 2.75rem;
+  padding: 0 1.2rem;
+  color: var(--s-bg) !important;
+  font-weight: 600;
+}
+.around-switch button[aria-pressed="true"] {
+  background: var(--s-bg);
+  color: var(--s-fg) !important;
+}
+@media (min-width: 64rem) {
+  .around-switch {
+    display: none;
+  }
 }

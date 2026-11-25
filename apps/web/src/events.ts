@@ -185,13 +185,15 @@ export function sectionsOf(atTheTime: Event[], soon: Event[], here: LatLon): Sec
   };
 }
 
-// The summary line: how many things are in your way at the time, and how many of them are major. Never "all
-// clear": emergency call-outs aren't covered.
+// The summary line: how many things in your way at the time change plans (an Event's Decision), and how many of them
+// are major. What's only worth knowing is listed, quietly, but not counted. Never "all clear": emergency call-outs
+// aren't covered.
 export type Summary = { key: "summaryNothing" } | { key: "summaryInWay"; count: number; major: number };
 
 export function summaryOf({ inYourWay }: Sections): Summary {
-  if (!inYourWay.length) return { key: "summaryNothing" };
-  return { key: "summaryInWay", count: inYourWay.length, major: inYourWay.filter((e) => e.severity === "major").length };
+  const changing = inYourWay.filter((e) => e.decision === "change_plans");
+  if (!changing.length) return { key: "summaryNothing" };
+  return { key: "summaryInWay", count: changing.length, major: changing.filter((e) => e.severity === "major").length };
 }
 
 // A picked time as the time control shows it: "2026-12-12T18:00" → "12.12.2026 18.00".

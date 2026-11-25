@@ -91,7 +91,7 @@ export function EventList({ label, pins, selectedId, languages, timeZone, onSele
 type T = ReturnType<typeof useTranslation>["t"];
 
 // "until" over "1.4.2027", "starts" over "Tomorrow"; just "No end date" when there's none.
-function Lead({ value, caption }: { value: RowValue; caption: string }) {
+export function Lead({ value, caption }: { value: RowValue; caption: string }) {
   const { t } = useTranslation();
   if (value.key === "rowNoEnd") return <span className="max-w-20 text-xs leading-tight text-muted-foreground">{t("rowNoEnd")}</span>;
   return (
@@ -120,7 +120,7 @@ export function crowdText({ at, time }: NonNullable<NonNullable<Pin["trip"]>["cr
 const capitalised = (text: string) => text.replace(/^./, (c) => c.toUpperCase());
 
 // "110 m" to the nearest ten metres, "2.2 km" from a kilometre.
-function distance(m: number, language: string): string {
+export function distance(m: number, language: string): string {
   return m < 1000
     ? new Intl.NumberFormat(language, { style: "unit", unit: "meter" }).format(Math.round(m / 10) * 10)
     : new Intl.NumberFormat(language, { style: "unit", unit: "kilometer", maximumFractionDigits: 1 }).format(m / 1000);

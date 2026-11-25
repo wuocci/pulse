@@ -114,10 +114,23 @@ describe("home's sections", () => {
 });
 
 describe("the summary line", () => {
-  it("counts what's in your way and names the major ones", () => {
-    const sections = sectionsOf([event({ id: "1", severity: "consider" }), event({ id: "2", severity: "major" })], [], here);
+  it("counts what's in your way that changes plans, and names the major ones", () => {
+    const sections = sectionsOf(
+      [
+        event({ id: "1", severity: "consider", decision: "change_plans" }),
+        event({ id: "2", severity: "major", decision: "change_plans" }),
+        event({ id: "3", severity: "major", decision: "worth_knowing" }),
+        event({ id: "4", severity: "consider" }),
+      ],
+      [],
+      here,
+    );
 
     expect(summaryOf(sections)).toEqual({ key: "summaryInWay", count: 2, major: 1 });
+  });
+
+  it("says nothing out of the ordinary when what's in your way is only worth knowing", () => {
+    expect(summaryOf(sectionsOf([event({ severity: "major", decision: "worth_knowing" })], [], here))).toEqual({ key: "summaryNothing" });
   });
 
   it("says nothing out of the ordinary, never all clear, when nothing is in your way", () => {
