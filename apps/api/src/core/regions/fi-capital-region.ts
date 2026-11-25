@@ -148,5 +148,12 @@ export const fiCapitalRegion: Region = {
       publisher: "HSL",
       license: "CC BY 4.0",
     },
+    {
+      id: "hsl-park-and-ride",
+      adapter: "digitransit-parking",
+      url: "https://api.digitransit.fi/routing/v2/hsl/gtfs/v1",
+      publisher: "HSL",
+      license: "CC BY 4.0",
+    },
   ],
 };

@@ -106,7 +106,13 @@ export interface HfpSource extends BaseSource {
   topic: string;
 }
 
-export type ConditionSourceConfig = HfpSource;
+// Live free spaces at the car parks Digitransit's routing API knows (HSL's park-and-ride system reports them),
+// recorded as 5-minute occupancy Conditions. Only car parks inside the Region's bbox.
+export interface CarParkOccupancySource extends BaseSource {
+  adapter: "digitransit-parking";
+}
+
+export type ConditionSourceConfig = HfpSource | CarParkOccupancySource;
 
 export const regions: Region[] = [fiCapitalRegion];
 

@@ -1,7 +1,7 @@
 import type { CarPark } from "@pulse/schema";
+import { distanceM } from "./street-parking.ts";
 
 type FreeSpaces = NonNullable<CarPark["free"]>;
-import { distanceM } from "./street-parking.ts";
 
 // Car parks from Digitransit's routing API (`vehicleParkings`): mostly HSL park-and-ride, so plenty in the suburbs
 // and few in the centre. The list is loaded once a day. Some (HSL's park-and-ride system, `liipi:*`) also report
@@ -107,5 +107,47 @@ function cached<T>(forMs: number, clock: () => Date, load: () => Promise<T>): ()
       loaded = attempt;
     }
     return loaded.value;
+  };
+}
+
+// Free spaces at one car park, as read, for occupancy Conditions.
+export interface CarParkReading {
+  facility: string;
+  freeSpaces: number;
+  capacity: number;
+}
+
+export interface OccupancyOptions {
+  url: string;
+  apiKey: string;
+  // [minLon, minLat, maxLon, maxLat]: the router's area is wider than the Region (it has Tampere's car parks too).
+  bbox: [number, number, number, number];
+  fetchFn?: typeof fetch;
+  timeoutMs?: number;
+}
+
+const OCCUPANCY_QUERY = "{ vehicleParkings { vehicleParkingId lat lon realtime capacity { carSpaces } availability { carSpaces } } }";
+
+// Every car park in the bbox that reports its free spaces right now. One that doesn't is left out, never read as 0.
+export function digitransitOccupancy({ url, apiKey, bbox: [minLon, minLat, maxLon, maxLat], fetchFn = fetch, timeoutMs = 30_000 }: OccupancyOptions) {
+  return {
+    async read(): Promise<CarParkReading[]> {
+      const res = await fetchFn(url, {
+        method: "POST",
+        headers: { "content-type": "application/json", "digitransit-subscription-key": apiKey },
+        body: JSON.stringify({ query: OCCUPANCY_QUERY }),
+        signal: AbortSignal.timeout(timeoutMs),
+      });
+      if (!res.ok) throw new Error(`Digitransit car parks responded ${res.status}`);
+      const parks = ((await res.json()) as Answer).data?.vehicleParkings;
+      if (!parks) throw new Error("Digitransit car parks answered without data");
+      return parks.flatMap(({ vehicleParkingId: facility, lat, lon, realtime, capacity, availability }) => {
+        const free = availability?.carSpaces;
+        const total = capacity?.carSpaces;
+        if (!realtime || typeof free !== "number" || typeof total !== "number" || !(total > 0) || free < 0) return [];
+        if (lat === undefined || lon === undefined || lon < minLon || lon > maxLon || lat < minLat || lat > maxLat) return [];
+        return [{ facility, freeSpaces: free, capacity: total }];
+      });
+    },
   };
 }

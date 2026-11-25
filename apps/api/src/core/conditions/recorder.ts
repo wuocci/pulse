@@ -1,4 +1,4 @@
-import type { ConditionSourceConfig, Region } from "../regions/index.ts";
+import type { HfpSource, Region } from "../regions/index.ts";
 
 // Records transit line delays as 5-minute Conditions (CONTEXT.md). A realtime stream is aggregated in memory
 // and only the 5-minute rows are stored, never individual vehicle messages (ADR 0008).
@@ -203,15 +203,15 @@ export function startDelayRecorder({
   };
 }
 
-// Starts a recorder for every Condition Source of every Region. Returns a function that stops them all.
+// Starts a recorder for every delay stream Source of every Region. Returns a function that stops them all.
 export function startConditionIngest(
   regions: Region[],
   store: ConditionStore,
-  openStream: (source: ConditionSourceConfig) => DelayStream,
+  openStream: (source: HfpSource) => DelayStream,
 ): () => void {
   const recorders = regions.flatMap((region) =>
-    (region.conditionSources ?? []).map((source) =>
-      startDelayRecorder({ sourceId: source.id, stream: openStream(source), store }),
+    (region.conditionSources ?? []).flatMap((source) =>
+      source.adapter === "hfp" ? [startDelayRecorder({ sourceId: source.id, stream: openStream(source), store })] : [],
     ),
   );
   return () => recorders.forEach((r) => r.stop());

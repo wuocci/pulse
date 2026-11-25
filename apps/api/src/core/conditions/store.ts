@@ -2,6 +2,7 @@ import { drizzle } from "drizzle-orm/node-postgres";
 import { integer, pgTable, primaryKey, real, smallint, text, timestamp } from "drizzle-orm/pg-core";
 import type pg from "pg";
 import { runMigrations } from "../../db.ts";
+import type { CarParkOccupancy, OccupancyStore } from "./occupancy.ts";
 import type { ConditionStore, LineDelay } from "./recorder.ts";
 
 // 5-minute delay Conditions per transit line and direction. A TimescaleDB hypertable on `bucket`
@@ -20,7 +21,23 @@ export const transitLineConditions = pgTable(
   (t) => [primaryKey({ columns: [t.sourceId, t.line, t.direction, t.bucket] })],
 );
 
-export class PgConditionStore implements ConditionStore {
+// 5-minute occupancy Conditions per car park (#50): free spaces and capacity as read. A hypertable on `bucket` too.
+export const carParkConditions = pgTable(
+  "car_park_conditions",
+  {
+    bucket: timestamp("bucket", { withTimezone: true }).notNull(),
+    sourceId: text("source_id").notNull(),
+    facility: text("facility").notNull(),
+    freeSpaces: integer("free_spaces").notNull(),
+    capacity: integer("capacity").notNull(),
+  },
+  (t) => [primaryKey({ columns: [t.sourceId, t.facility, t.bucket] })],
+);
+
+// The hypertables, each with the same retention.
+const HYPERTABLES = ["transit_line_conditions", "car_park_conditions"];
+
+export class PgConditionStore implements ConditionStore, OccupancyStore {
   private db;
 
   constructor(private pool: pg.Pool) {
@@ -33,10 +50,10 @@ export class PgConditionStore implements ConditionStore {
     const client = await this.pool.connect();
     try {
       await client.query("begin");
-      await client.query("select remove_retention_policy('transit_line_conditions', if_exists => true)");
-      await client.query("select add_retention_policy('transit_line_conditions', make_interval(days => $1::int))", [
-        retentionDays,
-      ]);
+      for (const table of HYPERTABLES) {
+        await client.query("select remove_retention_policy($1::regclass, if_exists => true)", [table]);
+        await client.query("select add_retention_policy($1::regclass, make_interval(days => $2::int))", [table, retentionDays]);
+      }
       await client.query("commit");
     } catch (error) {
       await client.query("rollback");
@@ -49,6 +66,13 @@ export class PgConditionStore implements ConditionStore {
   async insertLineDelays(sourceId: string, rows: LineDelay[]) {
     await this.db
       .insert(transitLineConditions)
+      .values(rows.map((row) => ({ ...row, sourceId })))
+      .onConflictDoNothing();
+  }
+
+  async insertCarParkOccupancy(sourceId: string, rows: CarParkOccupancy[]) {
+    await this.db
+      .insert(carParkConditions)
       .values(rows.map((row) => ({ ...row, sourceId })))
       .onConflictDoNothing();
   }
