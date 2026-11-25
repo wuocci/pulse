@@ -138,7 +138,7 @@ export function toPermitItems(collection: PermitCollection, { source, timeZone, 
       id: `${source.id}:${notice.hakemustunnus}`,
       kind: type.kind,
       layers: ["area"],
-      title: titles(type.label(notice), place(notice)),
+      title: titles(type.label(notice), source.permitType === "outdoor-event" ? { en: place(notice), fi: place(notice) } : places(notice)),
       ...(text ? { originalText: { fi: text } } : {}),
       where: { geometry, precision: "area" },
       when: { start, ...(end ? { end } : {}) },
@@ -196,14 +196,43 @@ function groupByNotice(collection: PermitCollection) {
 // The first address, or else the district: "2 KLUUVI" → "Kluuvi".
 function place(notice: PermitNotice): string {
   const address = (field(notice, "osoite") ?? "").split(",")[0]!.trim();
-  if (address) return address;
+  return address || districtOf(notice);
+}
+
+function districtOf(notice: PermitNotice): string {
   const district = (field(notice, "kaupunginosa") ?? "").replace(/^\d+\s*/, "").trim().toLowerCase();
   return district.replace(/(^|[\s-])\p{L}/gu, (c) => c.toUpperCase());
 }
 
+// Streets a permit spans before its title says how many: one dig's first address understates a cable job on 30 streets.
+const MANY_STREETS = 3;
+
+// Where a dig or a traffic arrangement is: its first address, or for one across many streets the first street and how
+// many more, with the district: "Castreninkatu and 30 other streets, Kallio".
+function places(notice: PermitNotice): { en: string; fi: string } {
+  const address = field(notice, "osoite") ?? "";
+  // A part that starts with a letter names a street ("Wallininkatu 7-11"); the others are more house numbers ("10").
+  const streets = [
+    ...new Set(
+      address
+        .split(",")
+        .map((part) => part.trim().match(/^\p{L}[\p{L}.' -]*?(?=\s+\d|\s*$)/u)?.[0]?.trim().toLowerCase())
+        .filter((s): s is string => !!s),
+    ),
+  ];
+  if (streets.length < MANY_STREETS) return { en: place(notice), fi: place(notice) };
+  const first = address.split(",")[0]!.trim().match(/^\p{L}[\p{L}.' -]*?(?=\s+\d|\s*$)/u)![0].trim();
+  const district = districtOf(notice);
+  const more = streets.length - 1;
+  return {
+    en: [`${first} and ${more} other streets`, district].filter(Boolean).join(", "),
+    fi: [`${first} ja ${more} muuta katua`, district].filter(Boolean).join(", "),
+  };
+}
+
 // Moves to a shared title module that writes every Region language (Q15 in the plan).
-function titles(label: { en: string; fi: string }, place: string): Record<string, string> {
-  const join = (lang: "en" | "fi") => [label[lang], place].filter(Boolean).join(" · ");
+function titles(label: { en: string; fi: string }, place: { en: string; fi: string }): Record<string, string> {
+  const join = (lang: "en" | "fi") => [label[lang], place[lang]].filter(Boolean).join(" · ");
   return { en: join("en"), fi: join("fi") };
 }
 

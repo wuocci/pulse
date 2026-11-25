@@ -55,6 +55,18 @@ describe("excavation notices → Events", () => {
     expect(title({ osoite: null, kaupunginosa: null })).toBe("Excavation");
   });
 
+  it("says how many streets a permit spans, and in which district, when it's more than a couple", () => {
+    const [first] = collection.features;
+    const titlesOf = (properties: object) =>
+      toEvents({ features: [{ ...first!, properties: { ...first!.properties, ...properties } }] }, context)[0]!.title;
+
+    expect(titlesOf({ osoite: "Castreninkatu 1, 10, 13, Wallininkatu 7-11, Toinen Linja 19-31, Torkkelinkatu , Kolmas linja 1-3", kaupunginosa: "11 KALLIO" })).toEqual({
+      en: "Excavation · Castreninkatu and 4 other streets, Kallio",
+      fi: "Kaivutyö · Castreninkatu ja 4 muuta katua, Kallio",
+    });
+    expect(titlesOf({ osoite: "Castreninkatu 1, 10, Wallininkatu 7-11" }).en).toBe("Excavation · Castreninkatu 1");
+  });
+
   it("derives status from the dates", () => {
     const status = Object.fromEntries(events.map((e) => [e.sources[0]!.id, e.status]));
 
