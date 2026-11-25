@@ -202,6 +202,12 @@ export function pickedText(local: string): string {
   return `${d}.${m}.${y} ${Number(h)}.${min}`;
 }
 
+// The languages to read an Event's text in, in order: the app's own first, so its titles match the words around them,
+// then the Region's.
+export function readingLanguages(appLanguage: string, regionLanguages: readonly string[] = []): string[] {
+  return [...new Set([appLanguage.split("-")[0]!, ...regionLanguages])];
+}
+
 // An Event's text in the first of the reader's languages it has, else any it has.
 export function textIn(text: Record<string, string>, languages: readonly string[]): string {
   return languages.map((l) => text[l]).find(Boolean) ?? Object.values(text)[0] ?? "";
@@ -294,7 +300,7 @@ export function plainTitle(event: Event, languages: readonly string[]): PlainTit
       ? firstSentence(textIn(event.originalText ?? {}, languages))
       : undefined;
   return {
-    title: address ? head : source,
+    title: address ? head : event.kind === "disruption" ? firstClause(source) : source,
     ...(address ? { address } : {}),
     ...(label ? { label } : {}),
     ...(what ? { what } : {}),
@@ -309,6 +315,26 @@ export function headingOf({ title, label, what }: PlainTitle, t: (key: TitleKey)
 // The line under the heading: where, after the first sentence when the label took the heading's place.
 export function underOf({ address, label, what }: PlainTitle): string | undefined {
   return [label ? what : undefined, address].filter(Boolean).join(" · ") || undefined;
+}
+
+// A permit's address without its Finnish range words, so it reads in any language:
+// "Mäkelänkatu välillä Hämeentie - Radanrakentajantie" → "Mäkelänkatu, Hämeentie – Radanrakentajantie".
+export function streetOf(address: string): string {
+  return address
+    .replace(/\s*\(?\s*välillä\s+/i, ", ")
+    .replace(/\)\s*$/, "")
+    .replace(/\s+-\s+/g, " – ")
+    .trim();
+}
+
+// A transit alert's title is a whole sentence ("Buses 23 and 502 to be temporarily diverted in Kallio from 19 November,
+// buses do not serve Alppikatu and Toinen linja"): a row says its first clause, and the full text is in Details.
+const LONG_TITLE = 60;
+function firstClause(title: string): string {
+  const trimmed = title.trim().replace(/\.$/, "");
+  if (trimmed.length <= LONG_TITLE) return trimmed;
+  const clause = trimmed.split(/,\s|;\s/)[0]!;
+  return clause.length >= 20 ? clause : trimmed;
 }
 
 // A permit's opening words that only say who reserves the space: "Työstä vastaava varaa tilaa tilapäisille

@@ -1,6 +1,6 @@
 import type { Event } from "@pulse/client";
 import { describe, expect, it } from "vitest";
-import { circleAround, groupNear, headingOf, nearestFirst, outlineOf, pickedText, pinsFor, plainTitle, regionWide, sameSpot, sectionsOf, startsOf, summaryOf, textIn, toneOf, underOf, untilOf, whenOf } from "./events.ts";
+import { circleAround, groupNear, headingOf, nearestFirst, outlineOf, pickedText, pinsFor, plainTitle, readingLanguages, regionWide, streetOf, sameSpot, sectionsOf, startsOf, summaryOf, textIn, toneOf, underOf, untilOf, whenOf } from "./events.ts";
 
 const base: Event = {
   id: "src:1",
@@ -312,5 +312,35 @@ describe("what a row on Home leads with", () => {
     expect(startsOf(lasting({ start: "2026-11-10T23:00:00+02:00" }), "Europe/Helsinki", now)).toEqual({ key: "rowToday" });
     expect(startsOf(lasting({ start: "2026-11-11T00:30:00+02:00" }), "Europe/Helsinki", now)).toEqual({ key: "rowTomorrow" });
     expect(startsOf(lasting({ start: "2026-11-13T08:00:00+02:00" }), "Europe/Helsinki", now)).toEqual({ key: "rowInDays", count: 3 });
+  });
+});
+
+describe("the language an Event is read in", () => {
+  it("is the app's own first, then the Region's, each once", () => {
+    expect(readingLanguages("en", ["fi", "sv", "en"])).toEqual(["en", "fi", "sv"]);
+    expect(readingLanguages("en-GB")).toEqual(["en"]);
+  });
+});
+
+describe("a transit alert's title", () => {
+  const alert = (en: string) => event({ kind: "disruption", title: { en } });
+
+  it("is its first clause when the whole sentence is long", () => {
+    const long = "Buses 23 and 502 to be temporarily diverted in Kallio from 19 November, buses do not serve Alppikatu and Toinen linja.";
+    expect(plainTitle(alert(long), ["en"]).title).toBe("Buses 23 and 502 to be temporarily diverted in Kallio from 19 November");
+  });
+
+  it("stays whole when it's short, or its first clause would say too little", () => {
+    expect(plainTitle(alert("Tram 9 replaced by buses."), ["en"]).title).toBe("Tram 9 replaced by buses");
+    const shortStart = "Note, trams 1, 3 and 7 run on a different route in the city centre because of a demonstration";
+    expect(plainTitle(alert(shortStart), ["en"]).title).toBe(shortStart);
+  });
+});
+
+describe("a permit's street, in any language", () => {
+  it("drops the Finnish range words", () => {
+    expect(streetOf("Mäkelänkatu välillä Hämeentie - Radanrakentajantie")).toBe("Mäkelänkatu, Hämeentie – Radanrakentajantie");
+    expect(streetOf("Helsinginkatu (välillä Vauhtitie-Linnunlauluntie)")).toBe("Helsinginkatu, Vauhtitie-Linnunlauluntie");
+    expect(streetOf("Castreninkatu 1")).toBe("Castreninkatu 1");
   });
 });

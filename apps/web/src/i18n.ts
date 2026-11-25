@@ -137,7 +137,6 @@ export const en = {
   homeAllNear: "All {{count}} near {{place}}",
   homeAround: "Everything going on around you, on the map",
   homeDetails: "Details",
-  factWhat: "What",
   factMostly: "Mostly",
   factOnSite: "On site",
   factLines: "Lines",

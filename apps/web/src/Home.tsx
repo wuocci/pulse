@@ -11,7 +11,7 @@ import "@fontsource/barlow/600.css";
 import { AddressSearch } from "./AddressSearch.tsx";
 import { eventsQuery, useRegions } from "./api.ts";
 import { whenText } from "./EventCard.tsx";
-import { headingOf, inMyArea, nearestFirst, plainTitle, textIn, whenOf } from "./events.ts";
+import { headingOf, inMyArea, nearestFirst, plainTitle, readingLanguages, streetOf, textIn, whenOf } from "./events.ts";
 import "./home.css";
 import { type Means, meansOf } from "./means.ts";
 import { MAX_PLACES, type SavedPlace, usePlaces } from "./places.ts";
@@ -195,12 +195,13 @@ function PlaceLine({ place, events, open, onToggle }: { place: SavedPlace; event
   );
 }
 
-// What a row leads with: the plain title, or the street when the title says nothing specific ("Changed traffic").
+// What a row leads with: where, when the Event has a street, since on Home where matters more than what kind of work
+// it is ("Castreninkatu 1", not "Cable dig"), and a permit's first sentence is in Finnish. What it is opens the card.
+// A transit alert or an event names its own place, so it keeps its title.
 function rowTitle(event: Event, t: ReturnType<typeof useTranslation>["t"], languages: readonly string[]) {
   const plain = plainTitle(event, languages);
-  const heading = headingOf(plain, t);
-  const generic = event.arrangementType === "other" || event.workType === "other";
-  return generic && plain.address ? { title: plain.address, kind: heading } : { title: heading, kind: undefined, where: plain.address };
+  const kind = plain.label ? t(plain.label) : plain.what ? undefined : plain.title;
+  return plain.address ? { title: streetOf(plain.address), kind } : { title: headingOf(plain, t), kind: undefined };
 }
 
 function meansText({ key, lines, noisy }: Means, t: ReturnType<typeof useTranslation>["t"]): string {
@@ -208,19 +209,18 @@ function meansText({ key, lines, noisy }: Means, t: ReturnType<typeof useTransla
   return noisy ? t("meansNoisy", { means }) : means;
 }
 
-// A row: what (or where), then what it means for you. Opens to the card: how big, when, where, then Details.
+// A row: where (or what), then what it means for you. Opens to the card: how big, what it is, when, then Details.
 function EventRow({ event, open, onToggle }: { event: Event; open: boolean; onToggle: () => void }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const regions = useRegions();
   const region = regions.data?.[0];
-  const languages = region?.languages ?? ["en"];
+  const languages = readingLanguages(i18n.language, region?.languages);
   const timeZone = region?.timeZone ?? "Europe/Helsinki";
   const [details, setDetails] = useState(false);
-  const { title, kind, where } = rowTitle(event, t, languages);
+  const { title, kind } = rowTitle(event, t, languages);
   const source = event.sources[0];
   const text = event.originalText && textIn(event.originalText, languages);
   const facts: [string, string][] = [
-    ...(kind ? [[t("factWhat"), kind] as [string, string]] : []),
     ...(event.mainlyAffected !== "unknown" && event.mainlyAffected !== "nobody" ? [[t("factMostly"), t(`who_${event.mainlyAffected}`)] as [string, string]] : []),
     ...(event.noticeable.length ? [[t("factOnSite"), event.noticeable.map((n) => t(`how_${n}`)).join(", ")] as [string, string]] : []),
     ...(event.where.lineNames?.length ? [[t("factLines"), event.where.lineNames.join(", ")] as [string, string]] : []),
@@ -240,8 +240,8 @@ function EventRow({ event, open, onToggle }: { event: Event; open: boolean; onTo
     >
       <div className="home-card" data-tone={event.severity}>
         <p className="home-tone">{t(event.severity === "major" ? "severityMajor" : "severityConsider")}</p>
+        {kind && <p className="home-kind">{kind}</p>}
         <p className="home-when">{whenText(whenOf(event, timeZone, new Date()), t)}</p>
-        {where && <p className="home-meta">{where}</p>}
         <Accordion className="home-more" open={details} onToggle={() => setDetails(!details)} header={<span>{t("homeDetails")}</span>}>
           {facts.length > 0 && (
             <dl className="home-facts">
