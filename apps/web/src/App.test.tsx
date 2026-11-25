@@ -158,14 +158,14 @@ const soonQuery = () => eventQueries.filter((q) => q.get("status") === "upcoming
 
 describe("the app shell", () => {
   it("has a main region named for screen readers", async () => {
-    renderApp("/");
+    renderApp("/around");
 
     expect(await screen.findByRole("main")).toBeInTheDocument();
     expect(screen.getByRole("heading", { level: 1, name: "Pulse" })).toBeInTheDocument();
   });
 
   it("shows no coordinates: the pin on the map says where", async () => {
-    renderApp("/?at=60.17000,24.95000");
+    renderApp("/around?at=60.17000,24.95000");
     await mapPoint("60.17,24.95");
 
     expect(screen.queryByText(/60\.17/)).not.toBeInTheDocument();
@@ -174,32 +174,32 @@ describe("the app shell", () => {
 
 describe("where the app is looking", () => {
   it("starts at the Region's centre when nothing is known", async () => {
-    renderApp("/");
+    renderApp("/around");
 
     await mapPoint("60.225,24.85");
   });
 
   it("starts at the point remembered on the device", async () => {
-    renderApp("/", fakePlatform({ stored: "60.16900,24.93164" }).platform);
+    renderApp("/around", fakePlatform({ stored: "60.16900,24.93164" }).platform);
 
     await mapPoint("60.169,24.93164");
   });
 
   it("lets the point in the URL win, so a shared link shows the same place", async () => {
-    renderApp("/?at=60.17000,24.95000", fakePlatform({ stored: "60.16900,24.93164" }).platform);
+    renderApp("/around?at=60.17000,24.95000", fakePlatform({ stored: "60.16900,24.93164" }).platform);
 
     await mapPoint("60.17,24.95");
   });
 
   it("ignores a malformed point in the URL", async () => {
-    renderApp("/?at=Töölö");
+    renderApp("/around?at=Töölö");
 
     await mapPoint("60.225,24.85");
   });
 
   it("moves the point where the map is long-pressed, into the URL and onto the device", async () => {
     const { platform, storage } = fakePlatform();
-    const history = renderApp("/", platform);
+    const history = renderApp("/around", platform);
 
     await userEvent.click(await screen.findByRole("button", { name: "long-press the map" }));
 
@@ -212,7 +212,7 @@ describe("where the app is looking", () => {
 describe("the locate button", () => {
   it("goes to the device's location on the first tap, into the URL and onto the device", async () => {
     const { platform, storage, watching } = fakePlatform({ location: KAMPPI });
-    const history = renderApp("/", platform);
+    const history = renderApp("/around", platform);
 
     await userEvent.click(await locate(/^Go to my location$/));
 
@@ -224,7 +224,7 @@ describe("the locate button", () => {
 
   it("follows on the second tap, and stops on the third", async () => {
     const { platform, watching } = fakePlatform({ location: KAMPPI });
-    renderApp("/", platform);
+    renderApp("/around", platform);
 
     await userEvent.click(await locate(/^Go to my location$/));
     await userEvent.click(await locate(/^Follow my location$/));
@@ -240,7 +240,7 @@ describe("the locate button", () => {
 
   it("stops following when the map is panned or a place is chosen by hand", async () => {
     const { platform, watching } = fakePlatform({ location: KAMPPI });
-    renderApp("/", platform);
+    renderApp("/around", platform);
     const follow = async () => {
       await userEvent.click(await locate(/^Go to my location$/));
       await userEvent.click(await locate(/^Follow my location$/));
@@ -258,7 +258,7 @@ describe("the locate button", () => {
   });
 
   it("explains a refused permission and stays where it was", async () => {
-    renderApp("/?at=60.17000,24.95000", fakePlatform({ location: "denied" }).platform);
+    renderApp("/around?at=60.17000,24.95000", fakePlatform({ location: "denied" }).platform);
 
     await userEvent.click(await locate(/^Go to my location$/));
 
@@ -268,7 +268,7 @@ describe("the locate button", () => {
 
   it("stops following and explains when location is refused while following", async () => {
     const { platform, watching } = fakePlatform({ location: KAMPPI });
-    renderApp("/", platform);
+    renderApp("/around", platform);
 
     await userEvent.click(await locate(/^Go to my location$/));
     await userEvent.click(await locate(/^Follow my location$/));
@@ -303,7 +303,7 @@ const APART: Partial<Event> = { where: { geometry: { type: "Point", coordinates:
 describe("Events on the map", () => {
   it("shows what's going on right now near the point, by default", async () => {
     events = [anEvent("a")];
-    renderApp("/?at=60.17000,24.95000");
+    renderApp("/around?at=60.17000,24.95000");
 
     expect(await screen.findByRole("button", { name: "Works a, Drivers, some disruption" })).toBeInTheDocument();
     expect(nowQuery()?.get("layer")).toBe("now");
@@ -313,7 +313,7 @@ describe("Events on the map", () => {
 
   it("rings a pin you'd notice on site, and says how in its label", async () => {
     events = [anEvent("dig", { noticeable: ["noise", "blocked"] }), anEvent("quiet", APART)];
-    renderApp("/?at=60.17000,24.95000");
+    renderApp("/around?at=60.17000,24.95000");
 
     const dig = await screen.findByRole("button", { name: "Works dig, Drivers, some disruption, noise, blocked way" });
     expect(dig).toHaveClass("outline-2");
@@ -327,7 +327,7 @@ describe("Events on the map", () => {
       anEvent("strike", { where: vague, title: { en: "Strike: no buses" } }),
       anEvent("majvik", { where: { ...vague, lines: ["HSL:9841"] }, title: { en: "Majvik stop closed" } }),
     ];
-    renderApp("/?at=60.17000,24.95000");
+    renderApp("/around?at=60.17000,24.95000");
 
     const list = await screen.findByRole("list", { name: "In your way" });
     expect(await within(list).findByRole("button", { name: /^Strike: no buses/ })).toBeInTheDocument();
@@ -337,7 +337,7 @@ describe("Events on the map", () => {
   it("lists region-wide notices first in your way, unpinned, and opens their card from there", async () => {
     const vague = { geometry: { type: "Point" as const, coordinates: [24.9, 60.2] }, precision: "vague" as const };
     events = [anEvent("here"), anEvent("metro", { where: vague, title: { en: "Metro: no service" } }), anEvent("bridge", { where: vague, title: { en: "Bridge closed" } })];
-    const history = renderApp("/?at=60.17000,24.95000");
+    const history = renderApp("/around?at=60.17000,24.95000");
 
     const list = await screen.findByRole("list", { name: "In your way" });
     await waitFor(() => expect(within(list).getAllByRole("button").map((b) => b.textContent)).toEqual([
@@ -358,7 +358,7 @@ describe("Events on the map", () => {
   it("draws pins at one spot as one group, and opens a chooser from it", async () => {
     const stop = { geometry: { type: "Point" as const, coordinates: [24.95, 60.171] }, precision: "exact" as const };
     events = [anEvent("a", { where: stop }), anEvent("b", { where: stop, severity: "major" }), anEvent("elsewhere", { where: { ...stop, geometry: { type: "Point", coordinates: [24.96, 60.172] } } })];
-    const history = renderApp("/?at=60.17000,24.95000");
+    const history = renderApp("/around?at=60.17000,24.95000");
 
     const group = await screen.findByRole("button", { name: "2 things at this spot" });
     expect(group).toHaveTextContent("2");
@@ -375,7 +375,7 @@ describe("Events on the map", () => {
 
   it("opens an Event's card from a tap on its area or line, and draws that shape bold", async () => {
     events = [anEvent("dig"), anEvent("road", APART)];
-    const history = renderApp("/?at=60.17000,24.95000");
+    const history = renderApp("/around?at=60.17000,24.95000");
 
     await userEvent.click(await screen.findByRole("button", { name: "tap the shape of road" }));
 
@@ -385,7 +385,7 @@ describe("Events on the map", () => {
   });
 
   it("explains its marks behind ⓘ, and closes it on Escape", async () => {
-    renderApp("/?at=60.17000,24.95000");
+    renderApp("/around?at=60.17000,24.95000");
 
     await userEvent.click(await screen.findByRole("button", { name: "What the map shows" }));
     const legend = screen.getByRole("region", { name: "What the map shows" });
@@ -400,7 +400,7 @@ describe("Events on the map", () => {
 
   it("shows on each pin who it affects, or else what kind of Event it is", async () => {
     events = [anEvent("a"), anEvent("b", { mainlyAffected: "unknown", ...APART })];
-    renderApp("/?at=60.17000,24.95000");
+    renderApp("/around?at=60.17000,24.95000");
 
     const drivers = await screen.findByRole("button", { name: "Works a, Drivers, some disruption" });
     expect(drivers.querySelector(".lucide-car")).toBeInTheDocument();
@@ -411,7 +411,7 @@ describe("Events on the map", () => {
 
   it("doesn't pin a region-wide notice", async () => {
     events = [anEvent("here"), anEvent("everywhere", { where: { geometry: { type: "Point", coordinates: [24.9, 60.2] }, precision: "vague" } })];
-    renderApp("/?at=60.17000,24.95000");
+    renderApp("/around?at=60.17000,24.95000");
 
     expect(await screen.findByRole("button", { name: "Works here, Drivers, some disruption" })).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Works everywhere, Drivers, some disruption" })).not.toBeInTheDocument();
@@ -419,7 +419,7 @@ describe("Events on the map", () => {
 
   it("selects an Event when its pin is tapped, kept in the URL", async () => {
     events = [anEvent("a")];
-    const history = renderApp("/?at=60.17000,24.95000");
+    const history = renderApp("/around?at=60.17000,24.95000");
 
     await userEvent.click(await screen.findByRole("button", { name: "Works a, Drivers, some disruption" }));
 
@@ -431,7 +431,7 @@ describe("Events on the map", () => {
 describe("the Event card", () => {
   const open = async (event: Event) => {
     events = [event];
-    const history = renderApp("/?at=60.17000,24.95000");
+    const history = renderApp("/around?at=60.17000,24.95000");
     await userEvent.click(await screen.findByRole("button", { name: new RegExp(`^${textOf(event)},`) }));
     return { history, card: await screen.findByRole("article") };
   };
@@ -473,7 +473,7 @@ describe("the Event card", () => {
 
   it("moves to another pin when that one is tapped", async () => {
     events = [anEvent("a"), anEvent("b", APART)];
-    renderApp("/?at=60.17000,24.95000");
+    renderApp("/around?at=60.17000,24.95000");
 
     await userEvent.click(await screen.findByRole("button", { name: "Works a, Drivers, some disruption" }));
     await userEvent.click(screen.getByRole("button", { name: "Works b, Drivers, some disruption" }));
@@ -507,7 +507,7 @@ describe("the Event card", () => {
 
   it("opens from a link with the Event in it", async () => {
     events = [anEvent("a")];
-    renderApp("/?at=60.17000,24.95000&event=a");
+    renderApp("/around?at=60.17000,24.95000&event=a");
 
     expect(await screen.findByRole("article", { name: "Works a" })).toBeInTheDocument();
   });
@@ -566,7 +566,7 @@ describe("the Event card", () => {
 describe("the summary line", () => {
   it("says nothing is out of the ordinary when nothing is in your way, never that all is clear", async () => {
     events = [anEvent("small", { severity: "minor", noticeable: ["noise"] })];
-    renderApp("/?at=60.17000,24.95000");
+    renderApp("/around?at=60.17000,24.95000");
 
     await waitFor(() => expect(screen.getByRole("status")).toHaveTextContent("Nothing out of the ordinary right now"));
     expect(screen.queryByText(/all clear/i)).not.toBeInTheDocument();
@@ -574,14 +574,14 @@ describe("the summary line", () => {
 
   it("counts what's in your way, and names the major ones", async () => {
     events = [anEvent("a"), anEvent("b", { severity: "major" })];
-    renderApp("/?at=60.17000,24.95000");
+    renderApp("/around?at=60.17000,24.95000");
 
     await waitFor(() => expect(screen.getByRole("status")).toHaveTextContent(/^2 things in your way · 1 major$/));
   });
 
   it("says near which place, when the place has a name", async () => {
     events = [anEvent("a")];
-    renderApp("/", fakePlatform({ location: { lat: 60.17, lon: 24.95 } }).platform);
+    renderApp("/around", fakePlatform({ location: { lat: 60.17, lon: 24.95 } }).platform);
 
     await waitFor(() => expect(screen.getByRole("status")).toHaveTextContent("1 thing in your way near Current location"));
   });
@@ -591,14 +591,14 @@ describe("the summary line", () => {
       await delay("infinite");
       return HttpResponse.json({ events: [] });
     }));
-    renderApp("/?at=60.17000,24.95000");
+    renderApp("/around?at=60.17000,24.95000");
 
     await waitFor(() => expect(screen.getByRole("status")).toHaveTextContent("Looking around…"));
   });
 
   it("says when Pulse can't be reached", async () => {
     server.use(http.get("*/v0/events", () => new HttpResponse(null, { status: 503 })));
-    renderApp("/?at=60.17000,24.95000");
+    renderApp("/around?at=60.17000,24.95000");
 
     await waitFor(() => expect(screen.getByRole("status")).toHaveTextContent("Can't reach Pulse right now"), { timeout: 3000 });
   });
@@ -608,7 +608,7 @@ describe("the time", () => {
   const group = () => screen.findByRole("group", { name: "When" });
 
   it("starts on now", async () => {
-    renderApp("/?at=60.17000,24.95000");
+    renderApp("/around?at=60.17000,24.95000");
 
     expect(within(await group()).getByRole("button", { name: "Now" })).toHaveAttribute("aria-pressed", "true");
     expect(within(await group()).queryByRole("button", { name: "Back to now" })).not.toBeInTheDocument();
@@ -616,7 +616,7 @@ describe("the time", () => {
 
   it("shows what's going on at a picked time, kept in the URL, and goes back to now", async () => {
     events = [anEvent("a")];
-    const history = renderApp("/?at=60.17000,24.95000");
+    const history = renderApp("/around?at=60.17000,24.95000");
 
     fireEvent.change(within(await group()).getByLabelText("Pick a time"), { target: { value: "2026-12-12T18:00" } });
 
@@ -634,7 +634,7 @@ describe("the time", () => {
   });
 
   it("opens on the URL's time, and speaks of that time", async () => {
-    renderApp("/?at=60.17000,24.95000&time=2026-12-12T18:00");
+    renderApp("/around?at=60.17000,24.95000&time=2026-12-12T18:00");
 
     expect(within(await group()).getByLabelText("At 12.12.2026 18.00")).toBeInTheDocument();
     await waitFor(() => expect(screen.getByRole("status")).toHaveTextContent("Nothing out of the ordinary at that time"));
@@ -652,7 +652,7 @@ describe("Home's sections", () => {
       anEvent("stops", { where: { geometry: { type: "MultiPoint", coordinates: [[24.95, 60.18], [24.95, 60.172]] }, precision: "exact" } }),
       at("near", 60.171, { mainlyAffected: "pedestrians" }),
     ];
-    renderApp("/?at=60.17000,24.95000");
+    renderApp("/around?at=60.17000,24.95000");
     const rows = await (await list()).findAllByRole("button");
 
     expect(rows.map((r) => r.textContent)).toEqual([
@@ -665,7 +665,7 @@ describe("Home's sections", () => {
 
   it("opens an Event's card, like its pin, and marks it in the list", async () => {
     events = [at("a", 60.171), at("b", 60.172)];
-    const history = renderApp("/?at=60.17000,24.95000");
+    const history = renderApp("/around?at=60.17000,24.95000");
     const row = await (await list()).findByRole("button", { name: /^Works b/ });
 
     await userEvent.click(row);
@@ -678,7 +678,7 @@ describe("Home's sections", () => {
 
   it("points out an Event's shape on the map while it's hovered or focused in the list", async () => {
     events = [at("a", 60.171), at("b", 60.172)];
-    renderApp("/?at=60.17000,24.95000");
+    renderApp("/around?at=60.17000,24.95000");
     const row = await (await list()).findByRole("button", { name: /^Works b/ });
     const map = screen.getByTestId("map");
 
@@ -693,7 +693,7 @@ describe("Home's sections", () => {
 
   it("glances at an Event while its pin is pointed at on the map, and opens its card from there", async () => {
     events = [at("a", 60.171), at("b", 60.172)];
-    renderApp("/?at=60.17000,24.95000");
+    renderApp("/around?at=60.17000,24.95000");
     const pin = await within(await screen.findByTestId("map")).findByRole("button", { name: /^Works b,/ });
 
     await userEvent.hover(pin);
@@ -708,7 +708,7 @@ describe("Home's sections", () => {
 
   it("puts a glance away a moment after the pointer leaves, or with Escape", async () => {
     events = [at("a", 60.171), at("b", 60.172)];
-    renderApp("/?at=60.17000,24.95000");
+    renderApp("/around?at=60.17000,24.95000");
     const pin = await within(await screen.findByTestId("map")).findByRole("button", { name: /^Works b,/ });
 
     await userEvent.hover(pin);
@@ -723,7 +723,7 @@ describe("Home's sections", () => {
 
   it("glances at an Event while its area is pointed at, leaving the list's tab as it is", async () => {
     events = [at("big", 60.171), at("loud", 60.172, { severity: "minor", noticeable: ["noise"] })];
-    renderApp("/?at=60.17000,24.95000");
+    renderApp("/around?at=60.17000,24.95000");
     const shape = await screen.findByRole("button", { name: "tap the shape of loud" });
     expect(await screen.findByRole("tab", { name: "In your way 1" })).toHaveAttribute("aria-selected", "true");
 
@@ -735,7 +735,7 @@ describe("Home's sections", () => {
 
   it("asks the map to show the Event a row is pointed at, and stops when it isn't", async () => {
     events = [at("a", 60.171), at("b", 60.172)];
-    renderApp("/?at=60.17000,24.95000");
+    renderApp("/around?at=60.17000,24.95000");
     const row = await (await list()).findByRole("button", { name: /^Works b/ });
     const map = screen.getByTestId("map");
 
@@ -747,7 +747,7 @@ describe("Home's sections", () => {
 
   it("marks in the list an Event chosen on the map", async () => {
     events = [at("a", 60.171), at("b", 60.172)];
-    renderApp("/?at=60.17000,24.95000");
+    renderApp("/around?at=60.17000,24.95000");
 
     await userEvent.click(await screen.findByRole("button", { name: "tap the shape of b" }));
 
@@ -756,7 +756,7 @@ describe("Home's sections", () => {
 
   it("gives focus back to the row a card was opened from", async () => {
     events = [at("a", 60.171), at("b", 60.172)];
-    renderApp("/?at=60.17000,24.95000");
+    renderApp("/around?at=60.17000,24.95000");
     const row = await (await list()).findByRole("button", { name: /^Works b/ });
 
     await userEvent.click(row);
@@ -773,7 +773,7 @@ describe("Home's sections", () => {
       at("note", 60.173, { severity: "info" }),
       at("sea", 60.174, { mainlyAffected: "nobody" }),
     ];
-    renderApp("/?at=60.17000,24.95000");
+    renderApp("/around?at=60.17000,24.95000");
 
     expect(await (await list()).findByRole("button", { name: /^Works big/ })).toBeInTheDocument();
     await userEvent.click(screen.getByRole("tab", { name: "Around you 1" }));
@@ -789,7 +789,7 @@ describe("Home's sections", () => {
       at("later", 60.171, { status: "upcoming", when: { start: "2026-11-20T08:00:00+02:00" } }),
       at("sooner", 60.172, { status: "upcoming", when: { start: "2026-11-12T08:00:00+02:00", end: "2026-11-14T16:00:00+02:00" } }),
     ];
-    renderApp("/?at=60.17000,24.95000");
+    renderApp("/around?at=60.17000,24.95000");
 
     expect(await screen.findByRole("tab", { name: "Coming up 2" })).toHaveAttribute("aria-selected", "true");
     expect(screen.getByRole("tab", { name: "In your way 0" })).toHaveAttribute("aria-selected", "false");
@@ -805,7 +805,7 @@ describe("Home's sections", () => {
 
   it("moves between the tabs with the arrow keys", async () => {
     events = [at("a", 60.171)];
-    renderApp("/?at=60.17000,24.95000");
+    renderApp("/around?at=60.17000,24.95000");
     const first = await screen.findByRole("tab", { name: "In your way 1" });
 
     act(() => first.focus());
@@ -818,7 +818,7 @@ describe("Home's sections", () => {
 
   it("leads with what a dig is, and where, in place of the Source's \"Excavation · street\"", async () => {
     events = [at("dig", 60.171, { title: { en: "Excavation · Arkadiankatu 2" }, workType: "water_sewer" })];
-    renderApp("/?at=60.17000,24.95000");
+    renderApp("/around?at=60.17000,24.95000");
 
     const row = await (await list()).findByRole("button", { name: /^Water and sewer dig/ });
     expect(row).toHaveTextContent(/^Water and sewer digArkadiankatu 2 · Drivers · 110 m/);
@@ -831,7 +831,7 @@ describe("how Pulse looks", () => {
     document.documentElement.classList.remove("dark");
   });
   it("is like the phone until told otherwise, and keeps light or dark on the device", async () => {
-    renderApp("/?at=60.17000,24.95000");
+    renderApp("/around?at=60.17000,24.95000");
     await userEvent.click((await screen.findAllByRole("button", { name: "Appearance" }))[0]!);
     expect(screen.getByRole("radio", { name: "Like the phone" })).toBeChecked();
 
@@ -853,7 +853,7 @@ describe("list or map on a phone", () => {
   const shown = () => screen.findByRole("group", { name: "Show as" });
 
   it("starts on the list, and switches to the map and back", async () => {
-    renderApp("/?at=60.17000,24.95000");
+    renderApp("/around?at=60.17000,24.95000");
 
     await shown();
     expect(toggle().getByRole("button", { name: "List" })).toHaveAttribute("aria-pressed", "true");
@@ -866,7 +866,7 @@ describe("list or map on a phone", () => {
 
   it("goes back to the list with the card open when a pin is tapped on the map", async () => {
     events = [anEvent("a")];
-    renderApp("/?at=60.17000,24.95000");
+    renderApp("/around?at=60.17000,24.95000");
 
     await shown();
     await userEvent.click(toggle().getByRole("button", { name: "Map" }));
@@ -881,7 +881,7 @@ describe("where Home looks around", () => {
   const chip = () => screen.findByRole("button", { name: /^Near: / });
 
   it("starts at the device's location when it's allowed, and calls it so", async () => {
-    renderApp("/", fakePlatform({ location: KAMPPI }).platform);
+    renderApp("/around", fakePlatform({ location: KAMPPI }).platform);
 
     await mapPoint("60.169,24.93164");
     expect(await chip()).toHaveTextContent("Near: Current location");
@@ -890,14 +890,14 @@ describe("where Home looks around", () => {
   it("stays at a place chosen by hand last time, by its name", async () => {
     const { platform, storage } = fakePlatform({ stored: "60.17000,24.95000", location: KAMPPI });
     storage.set("place", JSON.stringify({ at: "60.17000,24.95000", name: "Kamppi" }));
-    renderApp("/", platform);
+    renderApp("/around", platform);
 
     await waitFor(async () => expect(await chip()).toHaveTextContent("Near: Kamppi"));
     await mapPoint("60.17,24.95");
   });
 
   it("goes to the device's location from the chip", async () => {
-    renderApp("/?at=60.17000,24.95000", fakePlatform({ location: KAMPPI, allowed: false }).platform);
+    renderApp("/around?at=60.17000,24.95000", fakePlatform({ location: KAMPPI, allowed: false }).platform);
 
     await userEvent.click(await chip());
     await userEvent.click(screen.getByRole("button", { name: "Use my location" }));
@@ -916,7 +916,7 @@ describe("address search", () => {
   };
 
   it("opens from the place chip", async () => {
-    renderApp("/?at=60.17000,24.95000");
+    renderApp("/around?at=60.17000,24.95000");
 
     expect(await search()).toHaveFocus();
     expect(screen.getByRole("group", { name: "Where to look around" })).toContainElement(screen.getByRole("button", { name: "Use my location" }));
@@ -925,7 +925,7 @@ describe("address search", () => {
   it("suggests places near the point as you type, in your language, and moves the map to the one you pick", async () => {
     places = [MANSKU, OOPPERA];
     const { platform, storage } = fakePlatform();
-    renderApp("/?at=60.17000,24.95000", platform);
+    renderApp("/around?at=60.17000,24.95000", platform);
 
     await userEvent.type(await search(), "manner");
     const option = await screen.findByRole("option", { name: "Mannerheimintie 10, Helsinki" });
@@ -941,7 +941,7 @@ describe("address search", () => {
 
   it("can be used with the keyboard alone", async () => {
     places = [MANSKU, OOPPERA];
-    renderApp("/?at=60.17000,24.95000");
+    renderApp("/around?at=60.17000,24.95000");
     const input = await search();
 
     await userEvent.type(input, "manner");
@@ -956,7 +956,7 @@ describe("address search", () => {
 
   it("closes the suggestions on Escape, then clears the text", async () => {
     places = [MANSKU];
-    renderApp("/?at=60.17000,24.95000");
+    renderApp("/around?at=60.17000,24.95000");
     const input = await search();
 
     await userEvent.type(input, "manner");
@@ -970,7 +970,7 @@ describe("address search", () => {
   });
 
   it("waits for a second letter before searching", async () => {
-    renderApp("/?at=60.17000,24.95000");
+    renderApp("/around?at=60.17000,24.95000");
 
     await userEvent.type(await search(), "m");
     await new Promise((r) => setTimeout(r, 400));
@@ -979,7 +979,7 @@ describe("address search", () => {
   });
 
   it("says when nothing matches, and when search isn't available", async () => {
-    renderApp("/?at=60.17000,24.95000");
+    renderApp("/around?at=60.17000,24.95000");
     const input = await search();
 
     await userEvent.type(input, "zzzz");
@@ -1017,7 +1017,7 @@ describe("Trip mode", () => {
   const modes = () => screen.findByRole("group", { name: "Travel mode" });
 
   it("opens from Where to?, from where the pin is, and closes back to home", async () => {
-    renderApp("/?at=60.17000,24.95000");
+    renderApp("/around?at=60.17000,24.95000");
 
     await userEvent.click(await screen.findByRole("button", { name: "Where to?" }));
     expect(await toField()).toHaveFocus();
@@ -1030,7 +1030,7 @@ describe("Trip mode", () => {
 
   it("leaves now unless told when, and asks for the routes leaving then", async () => {
     trip = PLANNED;
-    renderApp("/?at=60.17000,24.95000&trip=true&to=60.19000,24.94000&toName=Pasila");
+    renderApp("/around?at=60.17000,24.95000&trip=true&to=60.19000,24.94000&toName=Pasila");
 
     const when = within(await screen.findByRole("group", { name: "Leave when" }));
     expect(when.getByRole("button", { name: "Leave now" })).toHaveAttribute("aria-pressed", "true");
@@ -1045,7 +1045,7 @@ describe("Trip mode", () => {
   it("plans every mode to the place picked, and shows each one's time and how much is in the way", async () => {
     places = [PASILA];
     trip = PLANNED;
-    const history = renderApp("/?at=60.17000,24.95000&trip=true");
+    const history = renderApp("/around?at=60.17000,24.95000&trip=true");
 
     await userEvent.type(await toField(), "pasila");
     await userEvent.click(await screen.findByRole("option", { name: "Pasila, Helsinki" }));
@@ -1061,7 +1061,7 @@ describe("Trip mode", () => {
 
   it("says a car's time is without traffic", async () => {
     trip = { events: [], plans: [...PLANNED.plans, { mode: "car", itineraries: [itinerary(16, "none")] }] };
-    renderApp("/?at=60.17000,24.95000&trip=true&to=60.19860,24.93300&toName=Pasila&mode=car");
+    renderApp("/around?at=60.17000,24.95000&trip=true&to=60.19860,24.93300&toName=Pasila&mode=car");
 
     const car = await within(await modes()).findByRole("radio", { name: "Car, 16 min without traffic" });
     expect(car.closest("label")).toHaveTextContent("~16 min");
@@ -1070,7 +1070,7 @@ describe("Trip mode", () => {
 
   it("keeps the chosen mode in the URL", async () => {
     trip = PLANNED;
-    const history = renderApp("/?at=60.17000,24.95000&trip=true&to=60.19860,24.93300&toName=Pasila");
+    const history = renderApp("/around?at=60.17000,24.95000&trip=true&to=60.19860,24.93300&toName=Pasila");
 
     await userEvent.click(await within(await modes()).findByRole("radio", { name: /^Bike/ }));
 
@@ -1080,7 +1080,7 @@ describe("Trip mode", () => {
 
   it("opens the same Trip from a shared link", async () => {
     trip = PLANNED;
-    renderApp("/?at=60.17000,24.95000&trip=true&from=60.16000,24.94000&fromName=Kamppi&to=60.19860,24.93300&toName=Pasila&mode=bike");
+    renderApp("/around?at=60.17000,24.95000&trip=true&from=60.16000,24.94000&fromName=Kamppi&to=60.19860,24.93300&toName=Pasila&mode=bike");
 
     expect(await toField()).toHaveValue("Pasila");
     expect(screen.getByRole("combobox", { name: "From" })).toHaveValue("Kamppi");
@@ -1090,7 +1090,7 @@ describe("Trip mode", () => {
 
   it("plans from another place when From is changed", async () => {
     places = [PASILA];
-    renderApp("/?at=60.17000,24.95000&trip=true&to=60.20000,24.90000&toName=Somewhere");
+    renderApp("/around?at=60.17000,24.95000&trip=true&to=60.20000,24.90000&toName=Somewhere");
 
     await userEvent.type(await screen.findByRole("combobox", { name: "From" }), "pasila");
     await userEvent.click(await screen.findByRole("option", { name: "Pasila, Helsinki" }));
@@ -1099,7 +1099,7 @@ describe("Trip mode", () => {
   });
 
   it("closes with Back", async () => {
-    const history = renderApp("/?at=60.17000,24.95000");
+    const history = renderApp("/around?at=60.17000,24.95000");
     await userEvent.click(await screen.findByRole("button", { name: "Where to?" }));
     await toField();
 
@@ -1131,7 +1131,7 @@ describe("a Trip on the map", () => {
     impact: eventIds.length ? ("consider" as const) : ("none" as const),
   });
   const onTheWay = anEvent("on the way", { where: { geometry: { type: "Point", coordinates: [24.945, 60.18] }, precision: "area" } });
-  const TO = "/?at=60.17000,24.95000&trip=true&to=60.19000,24.94000&toName=Pasila";
+  const TO = "/around?at=60.17000,24.95000&trip=true&to=60.19000,24.94000&toName=Pasila";
 
   it("draws the chosen mode's best route, and pins and counts only what's on it", async () => {
     events = [anEvent("around here")];
@@ -1316,7 +1316,7 @@ describe("a Trip's itineraries", () => {
     impact,
   });
   const dig = anEvent("dig", { where: { geometry: { type: "Point", coordinates: [24.945, 60.18] }, precision: "area" } });
-  const TO = "/?at=60.17000,24.95000&trip=true&to=60.19000,24.94000&toName=Pasila";
+  const TO = "/around?at=60.17000,24.95000&trip=true&to=60.19000,24.94000&toName=Pasila";
   const TRAM = ride("2026-10-31T12:15:00+02:00", ["dig"], "consider", leg("walk"), leg("tram", "2"), leg("walk"));
   const BUS = ride("2026-10-31T12:20:00+02:00", [], "none", leg("walk"), leg("bus", "69"), leg("walk"));
   const routes = async () => within(await screen.findByRole("group", { name: "Routes" }));
@@ -1426,7 +1426,7 @@ describe("parking with a car Trip", () => {
       { reasons: ["biggest"], kind: "carPark", name: "Postintaival", lat: 60.2, lon: 24.94, distanceM: 600, spaces: 47, cost: "unknown", disc: false },
     ],
   };
-  const TO = "/?at=60.17000,24.95000&trip=true&to=60.19860,24.93300&toName=Pasila";
+  const TO = "/around?at=60.17000,24.95000&trip=true&to=60.19860,24.93300&toName=Pasila";
 
   it("lists park-and-ride ways under car, saying where to park, and every way's length", async () => {
     const long = way(14, leg("car", 14, { distanceM: 4150 }));
