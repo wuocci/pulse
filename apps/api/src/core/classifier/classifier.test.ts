@@ -61,7 +61,7 @@ describe("enriching Events per layer", () => {
     const classifier = fakeClassifier(everything);
     const event = await classify(eventOf("excavation", "KP2602791-2"), "excavation", classifier);
 
-    expect(classifier.asked).toEqual([["workType", "endDate", "loud", "mainlyAffected"]]);
+    expect(classifier.asked).toEqual([["workType", "endDate", "loud", "mainlyAffected", "decision"]]);
     expect(event).toMatchObject({ workType: "water_sewer", mainlyAffected: "drivers", severity: "minor" });
     expect(EventSchema.safeParse(event).success).toBe(true);
   });
@@ -115,7 +115,7 @@ describe("a big event from the calendar", () => {
   it("is asked only how many come, with the venue's capacity as a fact", () => {
     const subject = calendarSubject(hifk!, timeZone)!;
 
-    expect(Object.keys(subject.questions)).toEqual(["crowd"]);
+    expect(Object.keys(subject.questions)).toEqual(["crowd", "decision"]);
     expect(subject.state).toMatchObject({ title: "HIFK - Jokerit, jääkiekkoa · Helsingin jäähalli", venueCapacity: 8200, starts: "Wednesday 18:30", hours: 2 });
   });
 

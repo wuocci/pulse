@@ -1,4 +1,4 @@
-import type { ArrangementType, Event, MainlyAffected, Severity, WorkType } from "@pulse/schema";
+import type { ArrangementType, Decision, Event, MainlyAffected, Severity, WorkType } from "@pulse/schema";
 import type { PermitItem } from "../adapters/land-use-permits.ts";
 import type { LandUsePermitSource } from "../regions/index.ts";
 import { type ChoiceQuestion, type ClassifierState, type CROWD_SEVERITY, type LOUD_SEVERITY, NOT_STATED, type Questions } from "./classifier.ts";
@@ -10,7 +10,7 @@ import { type ChoiceQuestion, type ClassifierState, type CROWD_SEVERITY, type LO
 
 // Part of the cache key. Bump it whenever a question, its choices or the state sent changes,
 // which deliberately invalidates every cached answer. Never reuse one: 3 was a dropped experiment's, still cached.
-export const QUESTION_VERSION = 7;
+export const QUESTION_VERSION = 8;
 
 type PermitType = LandUsePermitSource["permitType"];
 
@@ -118,6 +118,31 @@ const arrangementType: ChoiceQuestion = {
   } satisfies Record<ArrangementType, string>,
 };
 
+// Whether it changes anyone's plans: home and Trips show only what does, so an unsure answer hides the Event there
+// (design round 2026-11-25). The choices follow the answer key: a moved stop or a parking ban changes plans even
+// for one stop or car park, since whoever relies on it must act; so does an arena event of about 8,000 or more.
+const decision: ChoiceQuestion = {
+  prompt:
+    "Would an ordinary person passing through or going to this place do anything differently because of it: take another " +
+    "route, go at another time, travel another way, or park elsewhere? Judge for them, not for the people working on the site. " +
+    "Most things are only worth knowing or have no effect; change_plans is for what closes or moves something people rely on.",
+  choices: {
+    change_plans:
+      "Yes, they must act: a street or several streets closed to traffic, a detour, a transit stop moved or closed, parking " +
+      "banned or cars asked to move, a tramline being built through the streets, a city-wide procession or race closing " +
+      "main streets, or a crowd of many thousands (a big festival, an arena event of about 8,000 or more)",
+    worth_knowing:
+      "They'd still go the same way, only slower or around: a lane narrowed, a temporary walking or cycling route or crossings, " +
+      "a street being resurfaced or rebuilt, new streets being built, arrangements between construction phases, parking " +
+      "arranged to keep a rescue route open, a market, a smaller festival in one square, a run on park paths, a local " +
+      "procession or a small event's traffic arrangements",
+    no_effect:
+      "Nothing that changes their plans: a dig or connection at one address, a building site, site signs or barriers, a single " +
+      "temporary sign, a stall or collection, a silent march or vigil, a private event, a museum or gallery evening, a small " +
+      "concert or show",
+  } satisfies Record<Decision, string>,
+};
+
 // The text's current end date, chosen among the dates code found in it.
 function endDate(dates: string[]): ChoiceQuestion {
   return {
@@ -145,7 +170,7 @@ export function subjectFor({ event, facts }: PermitItem, permitType: PermitType)
     const dates = candidateDates(text);
     return {
       state: { notice: NOTICE[permitType], ...facts, text },
-      questions: { workType, ...(dates.length ? { endDate: endDate(dates) } : {}), loud, mainlyAffected },
+      questions: { workType, ...(dates.length ? { endDate: endDate(dates) } : {}), loud, mainlyAffected, decision },
     };
   }
 
@@ -163,7 +188,9 @@ export function subjectFor({ event, facts }: PermitItem, permitType: PermitType)
     // An event's Severity is its crowd; an arrangement's, the street it takes.
     // Without its own text an arrangement's title says nothing of what it changes, so it stays "other".
     questions:
-      permitType === "outdoor-event" ? { crowd, mainlyAffected } : { ...(text ? { arrangementType } : {}), severity, mainlyAffected },
+      permitType === "outdoor-event"
+        ? { crowd, mainlyAffected, decision }
+        : { ...(text ? { arrangementType } : {}), severity, mainlyAffected, decision },
   };
 }
 
@@ -184,7 +211,7 @@ export function calendarSubject(event: Event, timeZone: string): Subject | null 
       starts: starts.format(new Date(event.when.start)),
       ...(event.when.end ? { hours: Math.round((Date.parse(event.when.end) - Date.parse(event.when.start)) / 3_600_000) } : {}),
     },
-    questions: { crowd },
+    questions: { crowd, decision },
   };
 }
 

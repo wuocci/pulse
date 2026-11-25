@@ -90,6 +90,11 @@ describe("GTFS-RT service alerts", () => {
     expect((await byAlert("318405")).severity).toBe("info"); // INFO
   });
 
+  it("says a stop out of service changes plans, and other alerts are worth knowing", async () => {
+    expect((await byAlert("322736")).decision).toBe("change_plans"); // a detour past listed stops
+    expect((await byAlert("318405")).decision).toBe("worth_knowing");
+  });
+
   describe("Right now", () => {
     it("gives a detour that lists stops the now Layer and outage", async () => {
       expect(await byAlert("322736")).toMatchObject({ layers: ["trips", "now"], noticeable: ["outage"] });

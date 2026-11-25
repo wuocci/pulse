@@ -57,6 +57,10 @@ How disruptive an Event is in general, independent of any particular person: inf
 Who an Event mostly gets in the way of: drivers, cyclists, pedestrians, transit, parking, everyone, nobody or unknown. Like Severity it is general, not per person; ranking compares it with a person's travel mode.
 _Avoid_: Audience, affected modes (it is one choice, not a set)
 
+**Decision**:
+Whether someone moving around an Event's place would do anything differently: change plans (route, time, mode or where to park), worth knowing (same way, only slower or around), or no effect. General, not per person. Home and Trips show only what changes plans; the rest is for Around and the map. The Classifier decides for permits and the event calendar, and an unsure answer leaves it unset, which hides the Event there; feeds with typed fields decide by rules.
+_Avoid_: Relevance, importance (Severity is how big; Decision is whether to act)
+
 **Precision**:
 How exactly an Event's location is known: exact, segment, area or vague.
 

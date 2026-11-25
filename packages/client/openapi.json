@@ -144,6 +144,9 @@
           "arrangementType": {
             "$ref": "#/components/schemas/ArrangementType"
           },
+          "decision": {
+            "$ref": "#/components/schemas/Decision"
+          },
           "noticeable": {
             "type": "array",
             "items": {
@@ -516,6 +519,15 @@
           "other"
         ],
         "description": "What a temporary traffic arrangement changes. `other` until the Classifier is sure"
+      },
+      "Decision": {
+        "type": "string",
+        "enum": [
+          "change_plans",
+          "worth_knowing",
+          "no_effect"
+        ],
+        "description": "Whether someone moving around here would change their plans for it (route, time, mode, parking). Absent until known: the Classifier wasn't sure, or hasn't been asked yet"
       },
       "Noticeable": {
         "type": "string",

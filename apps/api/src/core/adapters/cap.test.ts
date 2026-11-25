@@ -67,6 +67,7 @@ describe("CAP alerts → weather Events", () => {
       when: { start: "2026-01-06T15:00:00.000Z", end: "2026-01-06T22:00:00.000Z" },
       severity: "consider",
       mainlyAffected: "drivers",
+      decision: "worth_knowing",
       noticeable: [],
       status: "upcoming",
       sources: [{ name: "Finnish Meteorological Institute", id: roadAlert.identifier, license: "CC BY 4.0", attribution: "Finnish Meteorological Institute, CC BY 4.0" }],
@@ -142,6 +143,8 @@ describe("CAP alerts → weather Events", () => {
       title: { en: "Orange traffic weather warning: The southern part of the country, Thu 0.00 - Fri 0.00" },
       severity: "major",
       mainlyAffected: "drivers",
+      // An orange warning: storms and icy roads make people change their plans.
+      decision: "change_plans",
       status: "active",
     });
   });
