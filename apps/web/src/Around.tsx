@@ -8,7 +8,7 @@ import { AddressSearch } from "./AddressSearch.tsx";
 import { RADIUS_M, useComingUp, useEvents, useRegions, useTrip } from "./api.ts";
 import { EventCard, EventGlance } from "./EventCard.tsx";
 import { EventList, type ListRow } from "./EventList.tsx";
-import { nearestFirst, pickedText, type Sections, sectionsOf, summaryOf, textIn, tripPins } from "./events.ts";
+import { nearestFirst, pickedText, readingLanguages, type Sections, sectionsOf, summaryOf, textIn, tripPins } from "./events.ts";
 import { EventPin, PinGroup } from "./map/EventPin.tsx";
 import { Legend } from "./MapOverlays.tsx";
 import { PointMap, type PointMapProps } from "./map/PointMap.tsx";
@@ -40,7 +40,7 @@ function parsePlace(value: string | null): Place | undefined {
 }
 
 export function Around() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { location, storage } = usePlatform();
   const { point, setPoint } = usePoint();
   const regions = useRegions();
@@ -163,10 +163,7 @@ export function Around() {
     back?.focus();
   }, [selectedId]);
 
-  const languages = useMemo(
-    () => [...navigator.languages.map((l) => l.split("-")[0]!), ...(regions.data?.[0]?.languages ?? [])],
-    [regions.data],
-  );
+  const languages = useMemo(() => readingLanguages(i18n.language, regions.data?.[0]?.languages), [i18n.language, regions.data]);
   const recommended = trip.data?.recommended;
   const shownIndex = (m: TravelMode) => (m === mode && search.route !== undefined ? search.route : recommended?.mode === m ? recommended.index : 0);
   const plan = search.trip ? trip.data?.plans.find((p) => p.mode === mode) : undefined;

@@ -129,14 +129,14 @@ describe("Home", () => {
     renderHome(fakePlatform({ places: PLACES }).platform);
 
     await user.click(await screen.findByRole("button", { name: /Home.*1 thing changes plans/ }));
-    const row = await screen.findByRole("button", { name: /Detour.*Detour: expect slower driving/ });
+    const row = await screen.findByRole("button", { name: /^Hämeentie 5\s*Detour: expect slower driving/ });
     expect(row).toHaveAttribute("aria-expanded", "false");
 
     await user.click(row);
     expect(row).toHaveAttribute("aria-expanded", "true");
     const card = document.getElementById(row.getAttribute("aria-controls")!)!;
     expect(within(card).getByText("Some disruption")).toBeInTheDocument();
-    expect(within(card).getByText("Hämeentie 5")).toBeInTheDocument();
+    expect(within(card).getByText("Detour")).toBeInTheDocument();
 
     await user.click(within(card).getByRole("button", { name: "Details" }));
     expect(within(card).getByText("Kiertotie Hämeentiellä.")).toBeInTheDocument();

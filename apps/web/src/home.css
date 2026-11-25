@@ -288,13 +288,13 @@
   text-transform: uppercase;
   color: var(--s-mute);
 }
-.home-when {
-  margin-top: 0.45rem;
-  font-weight: 600;
+.home-kind {
+  margin-top: 0.4rem;
+  font: 600 1.15rem/1.25 var(--s-font);
 }
-.home-meta {
-  margin-top: 0.15rem;
-  color: var(--s-mute);
+.home-when {
+  margin-top: 0.3rem;
+  font-weight: 500;
 }
 .home-more {
   margin-top: 0.35rem;
