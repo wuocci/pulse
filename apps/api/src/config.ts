@@ -1,7 +1,7 @@
 import pg from "pg";
 import { DEFAULT_THRESHOLD } from "./core/classifier/classifier.ts";
 
-// Process config for the server entrypoint. Node-only: never imported by the HTTP layer.
+// Process config shared by the server and ingest entrypoints. Node-only: never imported by the HTTP layer.
 
 type Env = Record<string, string | undefined>;
 
@@ -39,4 +39,14 @@ export function createPool(env: Env = process.env): pg.Pool {
   });
   pool.on("error", (error) => console.error("Postgres client error:", error.message));
   return pool;
+}
+
+// How long raw 5-minute Conditions are kept. Throws on anything but a positive whole number of days.
+export function conditionRetentionDays(env: Env = process.env): number {
+  const value = env.CONDITION_RETENTION_DAYS;
+  if (value === undefined) return 90;
+  if (!/^[1-9]\d*$/.test(value)) {
+    throw new Error(`CONDITION_RETENTION_DAYS must be a positive whole number of days, got ${JSON.stringify(value)}`);
+  }
+  return Number(value);
 }

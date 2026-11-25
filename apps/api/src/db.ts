@@ -8,6 +8,16 @@ import type pg from "pg";
 
 const migrationsFolder = fileURLToPath(new URL("../drizzle", import.meta.url));
 
+// Any fixed number: the API and the ingest process both migrate at startup, and this lock makes them take turns.
+const MIGRATION_LOCK = 7_204_001;
+
 export async function runMigrations(pool: pg.Pool): Promise<void> {
-  await migrate(drizzle({ client: pool }), { migrationsFolder });
+  const client = await pool.connect();
+  try {
+    await client.query("select pg_advisory_lock($1)", [MIGRATION_LOCK]);
+    await migrate(drizzle({ client }), { migrationsFolder });
+  } finally {
+    await client.query("select pg_advisory_unlock($1)", [MIGRATION_LOCK]).catch(() => {});
+    client.release();
+  }
 }

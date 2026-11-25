@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { classifierConfig, createPool, digitransitApiKey } from "./config.ts";
+import { classifierConfig, conditionRetentionDays, createPool, digitransitApiKey } from "./config.ts";
 
 describe("classifierConfig", () => {
   it("is off without an API key, so Events publish unclassified", () => {
@@ -29,6 +29,17 @@ describe("digitransitApiKey", () => {
     expect(digitransitApiKey({ DIGITRANSIT_API_KEY: " k " })).toBe("k");
     expect(digitransitApiKey({})).toBeNull();
     expect(digitransitApiKey({ DIGITRANSIT_API_KEY: "" })).toBeNull();
+  });
+});
+
+describe("conditionRetentionDays", () => {
+  it("defaults to 90 days and reads a whole number of days", () => {
+    expect(conditionRetentionDays({})).toBe(90);
+    expect(conditionRetentionDays({ CONDITION_RETENTION_DAYS: "30" })).toBe(30);
+  });
+
+  it.each(["abc", "", "0", "-5", "1.5", "30 days"])("rejects %j with a config error", (value) => {
+    expect(() => conditionRetentionDays({ CONDITION_RETENTION_DAYS: value })).toThrow(/CONDITION_RETENTION_DAYS/);
   });
 });
 

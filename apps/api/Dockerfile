@@ -1,4 +1,4 @@
-# The API and ingest, as one process. Build from the repo root: docker build -f apps/api/Dockerfile .
+# The API, and the ingest process with another command (docker-compose.production.yml). Build from the repo root: docker build -f apps/api/Dockerfile .
 FROM node:24-slim
 
 # pnpm 12 switches itself to the exact version in package.json "packageManager".
