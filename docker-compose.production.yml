@@ -24,7 +24,7 @@ services:
     <<: *service
     # The same image as in development: PostGIS and TimescaleDB (ADR 0004).
     image: timescale/timescaledb-ha:pg17
-    # Small settings for a shared 4 GB server; today the database only holds the Classifier's answers.
+    # Small settings for a shared 4 GB server: it holds the Classifier's answers and the recorded HSL delays (#9).
     command: postgres -c shared_buffers=64MB -c max_connections=20
     environment:
       POSTGRES_USER: pulse
@@ -54,6 +54,19 @@ services:
       interval: 30s
       start_period: 20s
     mem_limit: 512m
+
+  # The ingest process (ADR 0010): records HSL delays as 5-minute Conditions (#9, #21). The API's image, another entrypoint.
+  # No port: it only reads HSL's stream and writes to the database.
+  ingest:
+    <<: *service
+    image: ghcr.io/wuocci/pulse-api:${PULSE_TAG:-latest}
+    command: ["node", "--import", "tsx", "--env-file-if-exists=../../.env.production", "src/ingest.ts"]
+    environment:
+      DATABASE_URL: postgres://pulse:${POSTGRES_PASSWORD}@db:5432/pulse
+    depends_on:
+      db:
+        condition: service_healthy
+    mem_limit: 256m
 
   web:
     <<: *service

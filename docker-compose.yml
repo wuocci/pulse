@@ -52,6 +52,23 @@ services:
       - web-app-node-modules:/repo/apps/web/node_modules
       - web-client-node-modules:/repo/packages/client/node_modules
       - web-schema-node-modules:/repo/packages/schema/node_modules
+  # The ingest process (ADR 0010): records HSL delays as Conditions. Own node_modules volumes, so its
+  # `pnpm install` doesn't race the api container's.
+  ingest:
+    image: node:24-slim
+    working_dir: /repo
+    command: sh -c "npm install -g pnpm@12 && pnpm install --frozen-lockfile && pnpm --filter @pulse/api ingest"
+    environment:
+      DATABASE_URL: postgres://pulse:pulse@db:5432/pulse
+    volumes:
+      - .:/repo
+      - ingest-node-modules:/repo/node_modules
+      - ingest-app-node-modules:/repo/apps/api/node_modules
+      - ingest-schema-node-modules:/repo/packages/schema/node_modules
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
 
 volumes:
   db-data:
@@ -62,3 +79,6 @@ volumes:
   web-app-node-modules:
   web-client-node-modules:
   web-schema-node-modules:
+  ingest-node-modules:
+  ingest-app-node-modules:
+  ingest-schema-node-modules:

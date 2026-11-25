@@ -23,6 +23,8 @@ export interface Region extends PublicRegion {
   osmStreetParking?: { kind: "overpass"; url: string };
   // What there's no Source for here, said in Coverage so that nothing listed isn't read as nothing going on.
   unavailable?: { id: string; name: LocalizedText; reason: LocalizedText }[];
+  // Realtime streams recorded as Conditions rather than Events.
+  conditionSources?: ConditionSourceConfig[];
 }
 
 // One entry per feed a Source publishes. `adapter` picks the code that reads its format (ADR 0002).
@@ -33,6 +35,10 @@ interface BaseSource {
   url: string;
   publisher: string;
   license: string;
+}
+
+// A Source fetched on an interval.
+interface PolledSource extends BaseSource {
   refreshMinutes: number;
   // For feeds that drop what's over: a vanished Event stays this long as resolved. Without it, it just goes.
   keepVanishedHours?: number;
@@ -40,7 +46,7 @@ interface BaseSource {
   covers?: number[][][][];
 }
 
-export interface LandUsePermitSource extends BaseSource {
+export interface LandUsePermitSource extends PolledSource {
   adapter: "land-use-permits";
   layer: string;
   // Each layer of the permit system has its own fields.
@@ -50,13 +56,13 @@ export interface LandUsePermitSource extends BaseSource {
 }
 
 // Fintraffic's road traffic messages: a national feed, kept to the Region's bbox.
-export interface DigitrafficSource extends BaseSource {
+export interface DigitrafficSource extends PolledSource {
   adapter: "digitraffic";
 }
 
 // Long-running disruptions no feed carries (a bridge repair, a metro outage), kept by hand from the publishers' own
 // pages. Each entry says where it was read and when it was last checked: it goes stale unless someone keeps it.
-export interface CapSource extends BaseSource {
+export interface CapSource extends PolledSource {
   adapter: "cap";
   attribution?: string;
   // Mainly affected per CAP eventCode value; codes not listed affect everyone.
@@ -64,11 +70,11 @@ export interface CapSource extends BaseSource {
 }
 
 // An event calendar on the Linked Events API: big events, at venues that hold a crowd.
-export interface LinkedEventsSource extends BaseSource {
+export interface LinkedEventsSource extends PolledSource {
   adapter: "linked-events";
 }
 
-export interface HandKeptSource extends Omit<BaseSource, "url"> {
+export interface HandKeptSource extends Omit<PolledSource, "url"> {
   adapter: "hand-kept";
   entries: HandKeptEntry[];
 }
@@ -85,13 +91,22 @@ export interface HandKeptEntry extends Pick<Event, "kind" | "title" | "where" | 
 export const isPermitSource = (source: SourceConfig): source is LandUsePermitSource => source.adapter === "land-use-permits";
 
 // A GTFS-RT service alerts feed.
-export interface GtfsRtSource extends BaseSource {
+export interface GtfsRtSource extends PolledSource {
   adapter: "gtfs-rt";
   // Prefixes the feed's own stop and route ids into the ids its stop directory knows ("HSL" + "1234" → "HSL:1234").
   feedId: string;
   // Where stop locations and route names come from: the feed only gives ids.
   directory: { kind: "digitransit"; url: string };
 }
+
+// A realtime stream of transit vehicle positions in HSL's HFP format over MQTT, recorded as 5-minute delay Conditions.
+export interface HfpSource extends BaseSource {
+  adapter: "hfp";
+  // MQTT topic filter to subscribe to
+  topic: string;
+}
+
+export type ConditionSourceConfig = HfpSource;
 
 export const regions: Region[] = [fiCapitalRegion];
 

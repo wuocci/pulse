@@ -8,6 +8,20 @@
       "when": 1793218961442,
       "tag": "0000_classifier_answers",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1795597243039,
+      "tag": "0001_transit_line_conditions",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1795597243280,
+      "tag": "0002_transit_line_conditions_hypertable",
+      "breakpoints": true
     }
   ]
 }
