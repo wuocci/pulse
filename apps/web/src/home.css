@@ -1,0 +1,338 @@
+/* Signage (design round 2026-11-25): station boards and road signs. Condensed capitals for labels only, signal colours,
+   square corners. A clear hierarchy: 1 the action (Where to?) is the only loud thing; 2 the place lines; 3 details,
+   quiet, opened in place. Spacing groups things, not rules. Home only for now; Around and Trips follow. */
+
+.signage {
+  --s-font: "Barlow", system-ui, sans-serif;
+  --s-display: "Barlow Condensed", "Arial Narrow", sans-serif;
+  --s-bg: #f2f1ec;
+  --s-fg: #111214;
+  --s-mute: #55585e;
+  --s-hair: #d9d8d2;
+  --s-panel: #ffffff;
+  --s-blue: #0a4da2;
+  --s-on-blue: #ffffff;
+  --s-amber: #ffc20e;
+  --s-on-amber: #111214;
+  --s-red: #c8102e;
+  --s-on-red: #ffffff;
+  min-height: 100dvh;
+  background: var(--s-bg);
+  color: var(--s-fg);
+  font: 400 1rem/1.4 var(--s-font);
+  -webkit-font-smoothing: antialiased;
+}
+.dark .signage {
+  --s-bg: #0d0f12;
+  --s-fg: #f2f1ec;
+  --s-mute: #a3a7ae;
+  --s-hair: #2a2d33;
+  --s-panel: #181b20;
+  --s-blue: #2f7ae0;
+}
+.signage a,
+.signage button {
+  color: inherit;
+  text-decoration: none;
+  text-align: left;
+}
+.signage :focus-visible {
+  outline: 3px solid var(--s-blue);
+  outline-offset: 2px;
+}
+
+.home {
+  max-width: 34rem;
+  margin: 0 auto;
+  padding: max(1rem, env(safe-area-inset-top)) 1rem max(3rem, env(safe-area-inset-bottom));
+}
+
+/* Chrome: small and quiet. */
+.home-head {
+  height: 2rem;
+  display: flex;
+  align-items: center;
+}
+.home-mark {
+  font: 700 1.05rem/1 var(--s-display);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* 1 The action. */
+.home-go {
+  margin-top: 1.5rem;
+}
+.home-where {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.25rem 1.1rem;
+  background: var(--s-blue);
+  color: var(--s-on-blue) !important;
+  font: 700 2.4rem/1 var(--s-display);
+  text-transform: uppercase;
+}
+.home-places {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.6rem;
+}
+.home-place {
+  padding: 0.6rem 0.9rem;
+  background: var(--s-panel);
+  font: 600 1rem/1 var(--s-font);
+}
+.home-place-quiet {
+  background: transparent;
+  color: var(--s-mute) !important;
+}
+.home-place-remove {
+  outline: 2px dashed var(--s-red);
+  outline-offset: -2px;
+}
+.home-prompt {
+  margin-top: 0.9rem;
+  color: var(--s-mute);
+}
+
+/* Adding a place. */
+.home-add {
+  margin-top: 0.75rem;
+  padding: 0.9rem;
+  background: var(--s-panel);
+  display: grid;
+  gap: 0.5rem;
+}
+.home-add-label {
+  font: 700 0.8rem/1 var(--s-display);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--s-mute);
+}
+.home-add-name {
+  padding: 0.55rem 0.7rem;
+  border: 2px solid var(--s-hair);
+  background: transparent;
+  font: 500 1rem/1.2 var(--s-font);
+}
+.home-add-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 0.25rem;
+}
+.home-add-save {
+  padding: 0.6rem 1.1rem;
+  background: var(--s-blue);
+  color: var(--s-on-blue) !important;
+  font-weight: 600;
+}
+.home-add-save:disabled {
+  opacity: 0.45;
+}
+.home-add-cancel {
+  padding: 0.6rem 0.5rem;
+  color: var(--s-mute) !important;
+  font-weight: 600;
+}
+
+/* 2 The answer. */
+.home-status {
+  margin-top: 2.5rem;
+}
+.home-label {
+  font: 700 0.85rem/1 var(--s-display);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--s-mute);
+  padding-bottom: 0.6rem;
+  border-bottom: 3px solid var(--s-fg);
+}
+.home-quiet {
+  margin-top: 2.5rem;
+  color: var(--s-mute);
+}
+.home-around {
+  display: block;
+  margin-top: 2.5rem;
+  padding: 0.5rem 0;
+  font-weight: 600;
+  color: var(--s-blue) !important;
+}
+
+/* Accordions: the panel's height animates from 0 to its content's. */
+.acc-head {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  width: 100%;
+}
+.acc-panel {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.22s ease;
+}
+.acc[data-open="true"] > .acc-panel {
+  grid-template-rows: 1fr;
+}
+.acc-inner {
+  overflow: hidden;
+  min-height: 0;
+}
+.acc-chevron {
+  flex: none;
+  margin-left: auto;
+  font-size: 1.6rem;
+  line-height: 1;
+  color: var(--s-mute);
+  transition: transform 0.22s ease;
+}
+.acc[data-open="true"] > .acc-head > .acc-chevron {
+  transform: rotate(90deg);
+}
+@media (prefers-reduced-motion: reduce) {
+  .acc-panel,
+  .acc-chevron {
+    transition: none;
+  }
+}
+
+.home-line {
+  border-bottom: 1px solid var(--s-hair);
+}
+.home-line > .acc-head {
+  padding: 0.8rem 0;
+}
+.home-count {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 3rem;
+  height: 3rem;
+  background: var(--s-amber);
+  color: var(--s-on-amber);
+  font: 700 1.9rem/1 var(--s-display);
+  font-variant-numeric: tabular-nums;
+}
+.home-count[data-tone="major"] {
+  background: var(--s-red);
+  color: var(--s-on-red);
+}
+.home-line-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+.home-line-place {
+  font: 600 1.2rem/1.2 var(--s-font);
+}
+.home-line-text {
+  color: var(--s-mute);
+}
+.home-rows {
+  margin: 0 0 0.75rem 3.9rem;
+}
+.home-all {
+  display: block;
+  margin: -0.25rem 0 0.9rem 3.9rem;
+  padding: 0.4rem 0;
+  font-weight: 600;
+  color: var(--s-blue) !important;
+}
+
+/* 3 The details. */
+.home-row {
+  border-bottom: 1px solid var(--s-hair);
+}
+.home-row:last-child {
+  border-bottom: 0;
+}
+.home-row > .acc-head {
+  padding: 0.7rem 0;
+}
+.home-row-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding-left: 0.75rem;
+  border-left: 4px solid var(--s-amber);
+}
+.home-row-body[data-tone="major"] {
+  border-left-color: var(--s-red);
+}
+.home-row-title {
+  font: 600 1.08rem/1.25 var(--s-font);
+}
+.home-row-sub {
+  margin-top: 0.1rem;
+  font-size: 0.95rem;
+  color: var(--s-mute);
+}
+.home-row[data-open="true"] .home-row-sub {
+  color: var(--s-fg);
+  font-weight: 600;
+}
+.home-card {
+  margin: 0 0 0.8rem;
+  padding: 0.7rem 0.9rem 0.2rem;
+  background: var(--s-panel);
+  border-left: 4px solid var(--s-amber);
+}
+.home-card[data-tone="major"] {
+  border-left-color: var(--s-red);
+}
+.home-tone {
+  font: 700 0.8rem/1 var(--s-display);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--s-mute);
+}
+.home-when {
+  margin-top: 0.45rem;
+  font-weight: 600;
+}
+.home-meta {
+  margin-top: 0.15rem;
+  color: var(--s-mute);
+}
+.home-more {
+  margin-top: 0.35rem;
+  border-top: 1px solid var(--s-hair);
+}
+.home-more > .acc-head {
+  padding: 0.6rem 0;
+  font-weight: 600;
+  color: var(--s-blue);
+}
+.home-more .acc-chevron {
+  color: var(--s-blue);
+  font-size: 1.3rem;
+}
+.home-facts div {
+  display: grid;
+  grid-template-columns: 4.5rem 1fr;
+  padding: 0.25rem 0;
+  font-size: 0.95rem;
+}
+.home-facts dt {
+  color: var(--s-mute);
+}
+.home-text {
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+  color: var(--s-mute);
+  white-space: pre-line;
+  display: -webkit-box;
+  -webkit-line-clamp: 6;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.home-source {
+  margin: 0.5rem 0 0.7rem;
+  font-size: 0.9rem;
+}
+.home-source a {
+  color: var(--s-blue) !important;
+  font-weight: 600;
+}

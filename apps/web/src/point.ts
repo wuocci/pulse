@@ -23,7 +23,7 @@ export function formatAt({ lat, lon }: LatLon): string {
 }
 
 // openapi-fetch's response types widen the bbox tuple to number[], so it's checked here.
-function centreOf({ bbox }: { bbox: number[] }): LatLon | undefined {
+export function centreOf({ bbox }: { bbox: number[] }): LatLon | undefined {
   const [minLon, minLat, maxLon, maxLat] = bbox;
   if (minLon === undefined || minLat === undefined || maxLon === undefined || maxLat === undefined) return undefined;
   return { lat: (minLat + maxLat) / 2, lon: (minLon + maxLon) / 2 };
@@ -32,8 +32,8 @@ function centreOf({ bbox }: { bbox: number[] }): LatLon | undefined {
 export function usePoint(): { point: LatLon | undefined; setPoint: (point: LatLon) => void } {
   const { storage } = usePlatform();
   const queryClient = useQueryClient();
-  const { at } = useSearch({ from: "/" });
-  const navigate = useNavigate({ from: "/" });
+  const { at } = useSearch({ from: "/around" });
+  const navigate = useNavigate({ from: "/around" });
   const regions = useRegions();
   const stored = useQuery({ queryKey: ["stored-point"], queryFn: () => storage.get(STORAGE_KEY), staleTime: Infinity });
 

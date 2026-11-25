@@ -1,5 +1,6 @@
 import { createRootRoute, createRoute, createRouter, Outlet, type RouterHistory } from "@tanstack/react-router";
 import { z } from "zod";
+import { Around } from "./Around.tsx";
 import { Home } from "./Home.tsx";
 
 // The view lives in the URL, so a reload, a shared link or a push deep link lands on the same thing.
@@ -24,10 +25,13 @@ const SearchSchema = z.object({
 });
 
 const rootRoute = createRootRoute({ component: Outlet });
-const homeRoute = createRoute({ getParentRoute: () => rootRoute, path: "/", validateSearch: SearchSchema, component: Home });
+// Home: where to, your places, and only what changes plans near them (design round 2026-11-25).
+const homeRoute = createRoute({ getParentRoute: () => rootRoute, path: "/", component: Home });
+// Around: the map and everything going on around a point, and Trips for now.
+const aroundRoute = createRoute({ getParentRoute: () => rootRoute, path: "/around", validateSearch: SearchSchema, component: Around });
 
 export function createAppRouter(history?: RouterHistory) {
-  return createRouter({ routeTree: rootRoute.addChildren([homeRoute]), ...(history ? { history } : {}) });
+  return createRouter({ routeTree: rootRoute.addChildren([homeRoute, aroundRoute]), ...(history ? { history } : {}) });
 }
 
 declare module "@tanstack/react-router" {

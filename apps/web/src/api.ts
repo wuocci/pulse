@@ -1,5 +1,5 @@
 import { createClient } from "@pulse/client";
-import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { keepPreviousData, queryOptions, useQuery } from "@tanstack/react-query";
 import type { LatLon } from "./platform.tsx";
 
 // The API's origin. In development it's the Vite dev server, which proxies /v0; a wrapped native app sets
@@ -35,7 +35,12 @@ export const RADIUS_M = 1000;
 // What's going on near the point at one moment: right now (the Right now Layer, kept fresh), or at `at`, a picked
 // time on the device's clock ("2026-12-12T18:00").
 export function useEvents(point: LatLon | undefined, at?: string) {
-  return useQuery({
+  return useQuery(eventsQuery(point, at));
+}
+
+// The query behind useEvents, for asking about several points at once (Home's places).
+export function eventsQuery(point: LatLon | undefined, at?: string) {
+  return queryOptions({
     queryKey: ["events", point?.lat, point?.lon, at ?? "now"],
     enabled: point !== undefined,
     queryFn: async () => {
