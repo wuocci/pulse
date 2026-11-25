@@ -1,0 +1,300 @@
+/* THROWAWAY: the Signage style of the 2026-11-25 design round, second pass: a clear hierarchy.
+   1 the action (Where to?) is the only loud thing; 2 the answer (a line per place) is next; 3 details are quiet.
+   Capitals only for labels; titles and text in normal case. Spacing groups things, not rules. */
+
+.proto {
+  --font: "Barlow", system-ui, sans-serif;
+  --display: "Barlow Condensed", "Arial Narrow", sans-serif;
+  --bg: #f2f1ec;
+  --fg: #111214;
+  --mute: #5a5d63;
+  --hair: #d9d8d2;
+  --panel: #ffffff;
+  --blue: #0a4da2;
+  --on-blue: #ffffff;
+  --amber: #ffc20e;
+  --on-amber: #111214;
+  --red: #c8102e;
+  --on-red: #ffffff;
+  min-height: 100dvh;
+  background: var(--bg);
+  color: var(--fg);
+  font: 400 1rem/1.4 var(--font);
+  -webkit-font-smoothing: antialiased;
+}
+.dark .proto {
+  --bg: #0d0f12;
+  --fg: #f2f1ec;
+  --mute: #a3a7ae;
+  --hair: #2a2d33;
+  --panel: #181b20;
+  --blue: #2f7ae0;
+}
+.proto a,
+.proto button {
+  color: inherit;
+  text-decoration: none;
+  text-align: left;
+}
+.proto ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.proto-main {
+  max-width: 34rem;
+  margin: 0 auto;
+  padding: 1rem 1rem 3rem;
+}
+
+/* Chrome: small and quiet. */
+.proto-head {
+  height: 2rem;
+  display: flex;
+  align-items: center;
+}
+.proto-mark {
+  font: 700 1.05rem/1 var(--display);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.proto-back {
+  font: 600 1rem/1 var(--font);
+  color: var(--blue);
+}
+
+/* Level 1: the action. */
+.proto-go {
+  margin-top: 1.5rem;
+}
+.proto-where {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.25rem 1.1rem;
+  background: var(--blue);
+  color: var(--on-blue) !important;
+  font: 700 2.4rem/1 var(--display);
+  text-transform: uppercase;
+}
+.proto-places {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.6rem;
+}
+.proto-place {
+  padding: 0.6rem 0.9rem;
+  background: var(--panel);
+  font: 600 1rem/1 var(--font);
+}
+.proto-place-add {
+  background: transparent;
+  color: var(--mute) !important;
+}
+
+/* Level 2: the answer. */
+.proto-status {
+  margin-top: 2.5rem;
+}
+.proto-label {
+  font: 700 0.85rem/1 var(--display);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--mute);
+  padding-bottom: 0.6rem;
+  border-bottom: 3px solid var(--fg);
+}
+.proto-quiet {
+  padding: 1rem 0;
+  color: var(--mute);
+}
+/* Accordions: the panel's height animates from 0 to its content's. */
+.proto-acc-head {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  width: 100%;
+}
+.proto-acc-panel {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.22s ease;
+}
+.proto-acc[data-open="true"] > .proto-acc-panel {
+  grid-template-rows: 1fr;
+}
+.proto-acc-inner {
+  overflow: hidden;
+  min-height: 0;
+}
+.proto-chevron {
+  flex: none;
+  margin-left: auto;
+  font-size: 1.6rem;
+  line-height: 1;
+  color: var(--mute);
+  transition: transform 0.22s ease;
+}
+.proto-acc[data-open="true"] > .proto-acc-head > .proto-chevron {
+  transform: rotate(90deg);
+}
+@media (prefers-reduced-motion: reduce) {
+  .proto-acc-panel,
+  .proto-chevron {
+    transition: none;
+  }
+}
+
+/* Level 2: a place's line. */
+.proto-line {
+  border-bottom: 1px solid var(--hair);
+}
+.proto-line > .proto-acc-head {
+  padding: 0.8rem 0;
+}
+.proto-count {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 3rem;
+  height: 3rem;
+  background: var(--amber);
+  color: var(--on-amber);
+  font: 700 1.9rem/1 var(--display);
+  font-variant-numeric: tabular-nums;
+}
+.proto-count[data-tone="major"] {
+  background: var(--red);
+  color: var(--on-red);
+}
+.proto-line-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+.proto-line-place {
+  font: 600 1.2rem/1.2 var(--font);
+}
+.proto-line-text {
+  color: var(--mute);
+}
+.proto-line .proto-rows {
+  margin: 0 0 0.75rem 3.9rem;
+}
+.proto-all {
+  display: block;
+  margin: -0.25rem 0 0.9rem 3.9rem;
+  padding: 0.4rem 0;
+  font-weight: 600;
+  color: var(--blue) !important;
+}
+
+/* Level 3: a place's page, its rows and the card. */
+.proto-title {
+  margin-top: 1rem;
+  font: 700 2rem/1.05 var(--display);
+  text-transform: uppercase;
+}
+.proto-sub {
+  margin-top: 0.35rem;
+  padding-bottom: 0.25rem;
+  color: var(--mute);
+}
+.proto-rows-top {
+  margin-top: 1rem;
+  border-top: 3px solid var(--fg);
+}
+.proto-row {
+  border-bottom: 1px solid var(--hair);
+}
+.proto-row:last-child {
+  border-bottom: 0;
+}
+.proto-row > .proto-acc-head {
+  padding: 0.7rem 0;
+}
+.proto-row-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding-left: 0.75rem;
+  border-left: 4px solid var(--amber);
+}
+.proto-row-body[data-tone="major"] {
+  border-left-color: var(--red);
+}
+.proto-row-title {
+  font: 600 1.08rem/1.25 var(--font);
+}
+.proto-row-sub {
+  margin-top: 0.1rem;
+  font-size: 0.95rem;
+  color: var(--mute);
+}
+.proto-row[data-open="true"] .proto-row-sub {
+  color: var(--fg);
+  font-weight: 600;
+}
+.proto-card {
+  margin: 0 0 0.8rem;
+  padding: 0.7rem 0.9rem 0.2rem;
+  background: var(--panel);
+  border-left: 4px solid var(--amber);
+}
+.proto-card[data-tone="major"] {
+  border-left-color: var(--red);
+}
+.proto-tone {
+  font: 700 0.8rem/1 var(--display);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--mute);
+}
+.proto-meta-strong {
+  margin-top: 0.45rem;
+  font-weight: 600;
+}
+.proto-meta {
+  margin-top: 0.15rem;
+  color: var(--mute);
+}
+.proto-more {
+  margin-top: 0.35rem;
+  border-top: 1px solid var(--hair);
+}
+.proto-more > .proto-acc-head {
+  padding: 0.6rem 0;
+  font-weight: 600;
+  color: var(--blue);
+}
+.proto-more .proto-chevron {
+  color: var(--blue);
+  font-size: 1.3rem;
+}
+.proto-facts div {
+  display: grid;
+  grid-template-columns: 4.5rem 1fr;
+  padding: 0.25rem 0;
+  font-size: 0.95rem;
+}
+.proto-facts dt {
+  color: var(--mute);
+}
+.proto-text {
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+  color: var(--mute);
+  white-space: pre-line;
+  display: -webkit-box;
+  -webkit-line-clamp: 6;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.proto-source {
+  margin: 0.5rem 0 0.7rem;
+  font-size: 0.9rem;
+}
+.proto-source a {
+  color: var(--blue) !important;
+  font-weight: 600;
+}

@@ -1,6 +1,7 @@
 import { createRootRoute, createRoute, createRouter, Outlet, type RouterHistory } from "@tanstack/react-router";
 import { z } from "zod";
 import { Home } from "./Home.tsx";
+import { Proto } from "./proto/Proto.tsx";
 
 // The view lives in the URL, so a reload, a shared link or a push deep link lands on the same thing.
 // A malformed value is dropped rather than failing the page.
@@ -26,8 +27,16 @@ const SearchSchema = z.object({
 const rootRoute = createRootRoute({ component: Outlet });
 const homeRoute = createRoute({ getParentRoute: () => rootRoute, path: "/", validateSearch: SearchSchema, component: Home });
 
+// THROWAWAY: the style prototype of the 2026-11-25 design round.
+const protoRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/proto",
+  validateSearch: z.object({ place: z.string().optional().catch(undefined) }),
+  component: Proto,
+});
+
 export function createAppRouter(history?: RouterHistory) {
-  return createRouter({ routeTree: rootRoute.addChildren([homeRoute]), ...(history ? { history } : {}) });
+  return createRouter({ routeTree: rootRoute.addChildren([homeRoute, protoRoute]), ...(history ? { history } : {}) });
 }
 
 declare module "@tanstack/react-router" {
