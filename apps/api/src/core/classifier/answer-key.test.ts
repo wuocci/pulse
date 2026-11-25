@@ -34,7 +34,7 @@ describe("Jev against the answer key", () => {
   });
 
   // The rule the threshold rests on: answers that reach it, and so land on the Event, are nearly always right.
-  it.each(["workType", "arrangementType", "endDate", "severity", "crowd", "loud", "mainlyAffected"] as const)(
+  it.each(["workType", "arrangementType", "endDate", "severity", "crowd", "loud", "mainlyAffected", "decision"] as const)(
     "%s: at least 85%% of the answers reaching the threshold are right",
     (question) => {
       const s = score(graded, DEFAULT_THRESHOLD)[question]!;
@@ -43,6 +43,17 @@ describe("Jev against the answer key", () => {
       expect(s.acceptedCorrect / s.accepted).toBeGreaterThanOrEqual(0.85);
     },
   );
+
+  // Home and Trips show only what changes plans (design round 2026-11-25): what Jev is sure changes plans must
+  // nearly always do so, or home fills with noise; and most of what does must get there, or home hides it.
+  it("decision: what reaches home as changing plans is right, and most of what changes plans reaches it", () => {
+    const decisions = graded.filter((g) => g.question === "decision" && g.label !== null);
+    const shown = decisions.filter((g) => g.answer?.choice === "change_plans" && g.answer.confidence >= DEFAULT_THRESHOLD);
+    const real = decisions.filter((g) => g.label === "change_plans");
+
+    expect(shown.filter((g) => g.label === "change_plans").length / shown.length).toBeGreaterThanOrEqual(0.9);
+    expect(shown.filter((g) => g.label === "change_plans").length / real.length).toBeGreaterThanOrEqual(0.8);
+  });
 
   // Right but unsure counts for nothing: an answer under the threshold leaves the Event "not sure yet who this affects".
   // Was 11 of 31 at question version 5, with digs at a building's address answered "nobody".

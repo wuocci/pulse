@@ -25,6 +25,10 @@ export const ArrangementTypeSchema = z
   .enum(["detour", "walk_cycle_route", "traffic_signs", "parking", "stop_moved", "site_access", "event", "other"])
   .openapi("ArrangementType");
 
+// Whether someone moving around the place would do anything differently: change their route, time, mode or where they
+// park. What home and Trips show is only what changes plans; the rest is for Around and the map.
+export const DecisionSchema = z.enum(["change_plans", "worth_knowing", "no_effect"]).openapi("Decision");
+
 // Calendar date, YYYY-MM-DD.
 const DateSchema = z.iso.date();
 
@@ -123,6 +127,11 @@ export const EventSchema = z
     workType: WorkTypeSchema.optional().openapi({ description: "Kind of work, for works Events" }),
     arrangementType: ArrangementTypeSchema.optional().openapi({
       description: "What a temporary traffic arrangement changes. `other` until the Classifier is sure",
+    }),
+    decision: DecisionSchema.optional().openapi({
+      description:
+        "Whether someone moving around here would change their plans for it (route, time, mode, parking). " +
+        "Absent until known: the Classifier wasn't sure, or hasn't been asked yet",
     }),
     noticeable: z.array(NoticeableSchema).openapi({ description: "May be empty: nothing to sense on site" }),
     crowdSize: z.number().int().positive().optional().openapi({

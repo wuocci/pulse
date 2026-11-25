@@ -127,6 +127,9 @@ export function toEvents(alerts: ServiceAlert[], directory: Directory, { source,
       when: { start, ...(end ? { end } : {}) },
       severity: SEVERITY[alert.severity] ?? "minor",
       mainlyAffected: "transit",
+      // A stop out of service, or a disruption HSL rates severe, makes riders change plans. Most alerts are warnings
+      // (a diversion, delays): worth knowing, and a Trip on that line weighs them itself.
+      decision: atTheStop || alert.severity === SeverityLevel.SEVERE ? "change_plans" : "worth_knowing",
       noticeable: atTheStop ? ["outage"] : [],
       status: statusAt(now, start, end),
       sources: [

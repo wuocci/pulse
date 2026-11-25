@@ -107,6 +107,8 @@ export function toEvents(collection: MessageCollection, { source, region, now }:
         when: { start, ...(end ? { end } : {}), ...(dailyHours ? { dailyHours } : {}) },
         severity,
         mainlyAffected,
+        // A closed road changes plans; closed lanes or a closed path slow you down; the rest you drive past.
+        decision: roadClosed ? "change_plans" : lanesClosed || pathClosed || type === "TRAFFIC_ANNOUNCEMENT" ? "worth_knowing" : "no_effect",
         noticeable: roadClosed || lanesClosed || pathClosed ? ["blocked"] : [],
         status: statusAt(now, start, end),
         sources: [{ name: source.publisher, id: properties.situationId, updatedAt: now.toISOString(), license: source.license }],

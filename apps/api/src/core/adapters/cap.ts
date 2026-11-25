@@ -1,4 +1,4 @@
-import type { Event, Geometry, LocalizedText, MainlyAffected, Severity } from "@pulse/schema";
+import type { Decision, Event, Geometry, LocalizedText, MainlyAffected, Severity } from "@pulse/schema";
 import { XMLParser } from "fast-xml-parser";
 import type { CapSource, Region } from "../regions/index.ts";
 import { statusAt } from "./land-use-permits.ts";
@@ -125,6 +125,7 @@ function toRing(polygon: string): Ring {
 }
 
 const SEVERITY: Record<string, Severity> = { Extreme: "major", Severe: "major", Moderate: "consider", Minor: "minor" };
+const DECISION: Record<string, Decision> = { Extreme: "change_plans", Severe: "change_plans", Moderate: "worth_knowing" };
 
 export function toEvents(alerts: CapAlert[], { source, region, now, previous = [] }: CapContext): Event[] {
   // An Update or Cancel is a new alert that references the ones it supersedes. The Event keeps the id it already
@@ -192,6 +193,8 @@ function toEvent(alert: CapAlert, id: string, { source, region, now }: Omit<CapC
     when: { start, ...(end ? { end } : {}) },
     severity: SEVERITY[info.severity] ?? "info",
     mainlyAffected,
+    // A severe warning (a storm, a flood) changes plans; a moderate one is worth knowing.
+    decision: DECISION[info.severity] ?? "no_effect",
     noticeable: [],
     status: cancelled ? "resolved" : statusAt(now, start, end),
     sources: [

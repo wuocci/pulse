@@ -10,6 +10,7 @@
     "arrangementType (traffic arrangements): detour | walk_cycle_route | traffic_signs | parking | stop_moved | site_access | event | other, what the arrangement changes",
     "endDate (digs): one of candidateDates, or \"not_stated\". tyoPaattyy is the city's field value, shown for reference only.",
     "candidateDates are the dates the Classifier offers Jev (from candidateDates() in questions.ts): d.m.yyyy, 'd.m. yyyy' and ISO dates; a date without a year takes the year of the next full date.",
+    "decision (every layer): change_plans | worth_knowing | no_effect, whether an ordinary person passing through or going there would change their route, time, mode or parking. A moved stop or a parking ban changes plans even for one stop or car park; so does an arena event of about 8,000 or more.",
     "Leave null when you think the Classifier shouldn't be confident (below the threshold); only filled answers are checked."
   ],
   "notices": [
@@ -18,14 +19,16 @@
       "layer": "outdoor-event",
       "text": "Helsingin joulunavaus 2026 | category: Ulkoilmatapahtuma | address: Kansalaistori, Makasiinipuisto, Kolmensepänaukio, Keskuskatu ja kulkue: Kansalaistori (Baana)-Töölönlahdenkatu-Mannerheimintie–Pohjoisesplanadi–Unioninkatu–Aleksanterinkatu–Mannerheimintie–Salomonkatu–Narinkkatori | event days: 1 | entry: Avoin (open/free)",
       "crowd": "1000_or_more",
-      "mainlyAffected": "everyone"
+      "mainlyAffected": "everyone",
+      "decision": "change_plans"
     },
     {
       "id": "TP2600811",
       "layer": "outdoor-event",
       "text": "Lucia-neidon kruunajaiset | category: Ulkoilmatapahtuma | address: Senaatintori ja kulkue: Hallituskatu, Unionikatu 34 ja sen puoleinen torin laita, Lucia-kulkue: Hallituskatu - Unioninkatu - Aleksanterinkatu - Mannerheimintie - Pohjoisesplanadi - Unioninkatu - Senaatintori | event days: 1 | entry: Avoin (open/free)",
       "crowd": "1000_or_more",
-      "mainlyAffected": "transit"
+      "mainlyAffected": "transit",
+      "decision": "change_plans"
     },
     {
       "id": "TP2500373",
@@ -37,7 +40,8 @@
         "transit",
         "cyclists",
         "parking"
-      ]
+      ],
+      "decision": "worth_knowing"
     },
     {
       "id": "TP2601063",
@@ -47,7 +51,8 @@
       "mainlyAffected": [
         "pedestrians",
         "cyclists"
-      ]
+      ],
+      "decision": "worth_knowing"
     },
     {
       "id": "TP2600203",
@@ -57,49 +62,56 @@
       "mainlyAffected": [
         "pedestrians",
         "cyclists"
-      ]
+      ],
+      "decision": "no_effect"
     },
     {
       "id": "TP2601071",
       "layer": "outdoor-event",
       "text": "Hengellinen tapahtuma | category: Ulkoilmatapahtuma | address: Myllyaukio (tori tai aukio) | event days: 151 | entry: Avoin (open/free)",
       "crowd": "under_1000",
-      "mainlyAffected": null
+      "mainlyAffected": null,
+      "decision": "no_effect"
     },
     {
       "id": "TP2600921",
       "layer": "outdoor-event",
       "text": "Songkran Festival 2027 | category: Ulkoilmatapahtuma | address: (no address) | event days: 2 | build-up days: 1 | entry: Avoin (open/free)",
       "crowd": "1000_or_more",
-      "mainlyAffected": "everyone"
+      "mainlyAffected": "everyone",
+      "decision": "worth_knowing"
     },
     {
       "id": "TP2600853",
       "layer": "outdoor-event",
       "text": "Promootio | category: Promootio | address: (no address) | event days: 4",
       "crowd": null,
-      "mainlyAffected": null
+      "mainlyAffected": null,
+      "decision": "no_effect"
     },
     {
       "id": "TP2600996",
       "layer": "outdoor-event",
       "text": "Yksityistilaisuus | category: Ulkoilmatapahtuma | address: Katajanokanlaituri 7 | event days: 4 | build-up days: 1 | teardown days: 1 | entry: Suljettu (closed)",
       "crowd": "under_1000",
-      "mainlyAffected": "nobody"
+      "mainlyAffected": "nobody",
+      "decision": "no_effect"
     },
     {
       "id": "TP2300454",
       "layer": "outdoor-event",
       "text": "Jukola 2027 | category: Ulkoilmatapahtuma | address: Kauhala, Laitamaa Haapapuro | event days: 2 | build-up days: 12 | teardown days: 10 | entry: Avoin (open/free)",
       "crowd": "1000_or_more",
-      "mainlyAffected": "drivers"
+      "mainlyAffected": "drivers",
+      "decision": "change_plans"
     },
     {
       "id": "TP2600887",
       "layer": "outdoor-event",
       "text": "Perinteinen Joulupatakeräys | category: Ulkoilmatapahtuma | address: Aleksanterinkatu 52 edusta | event days: 10 | entry: Avoin (open/free)",
       "crowd": "under_1000",
-      "mainlyAffected": "pedestrians"
+      "mainlyAffected": "pedestrians",
+      "decision": "no_effect"
     },
     {
       "id": "LJ2600097-2",
@@ -107,7 +119,8 @@
       "text": "Flow Festival 2026 liikennejärjestelyt. / LISÄYS 28.7.2026: liikennejärjestelysuunnitelma päivitetty. | category: Yleisötilaisuus | address: Hanasaari, Suvilahdenpuisto, Kaasutehtaankenttä, Sörnäisten rantatie, Parrulaituri, Koksikatu | duration days: 26",
       "severity": "major",
       "mainlyAffected": "everyone",
-      "arrangementType": "event"
+      "arrangementType": "event",
+      "decision": "change_plans"
     },
     {
       "id": "LJ2600148",
@@ -119,7 +132,8 @@
         "pedestrians",
         "cyclists"
       ],
-      "arrangementType": "event"
+      "arrangementType": "event",
+      "decision": "change_plans"
     },
     {
       "id": "LJ2600093",
@@ -127,7 +141,8 @@
       "text": "Tilapäiset liikennejärjestelyt; yleisötilaisuus (Lucia-kulkue) | category: Yleisötilaisuus | address: Kirkkokatu | duration days: 1",
       "severity": "minor",
       "mainlyAffected": "drivers",
-      "arrangementType": "event"
+      "arrangementType": "event",
+      "decision": "worth_knowing"
     },
     {
       "id": "LJ2200014",
@@ -135,7 +150,8 @@
       "text": "Päätöksensaaja varaa pysäköintitilaa terassin rakentamiselle. | category: Muu | address: Vaasankatu 12 | duration days: 1675",
       "severity": "minor",
       "mainlyAffected": "parking",
-      "arrangementType": "parking"
+      "arrangementType": "parking",
+      "decision": "no_effect"
     },
     {
       "id": "LJ2400138",
@@ -143,15 +159,17 @@
       "text": "Väliaikainen aluepysäköintikielto, väliaikainen pysäköintialue | category: Muu | address: Kyläsaarenkatu, Hermanninranta | duration days: 1463",
       "severity": "minor",
       "mainlyAffected": "parking",
-      "arrangementType": "parking"
+      "arrangementType": "parking",
+      "decision": "change_plans"
     },
     {
       "id": "LJ2600150",
       "layer": "traffic-arrangement",
       "text": "Tuomaan Markkinat –tapahtuman liikennejärjestelyt. | category: Yleisötilaisuus | address: Hallituskatu 7, Aleksanterinkatu 20-28 vastapäätä, Unioninkatu 34 vastapäätä, Snellmaninkatu 9-11 vastapäätä | duration days: 52",
-      "severity": "minor",
+      "severity": "consider",
       "mainlyAffected": "parking",
-      "arrangementType": "event"
+      "arrangementType": "event",
+      "decision": "worth_knowing"
     },
     {
       "id": "LJ2600028",
@@ -162,7 +180,8 @@
         "drivers",
         "cyclists"
       ],
-      "arrangementType": "detour"
+      "arrangementType": "detour",
+      "decision": "change_plans"
     },
     {
       "id": "LJ2400057-2",
@@ -173,7 +192,8 @@
         "pedestrians",
         "cyclists"
       ],
-      "arrangementType": "walk_cycle_route"
+      "arrangementType": "walk_cycle_route",
+      "decision": "worth_knowing"
     },
     {
       "id": "LJ2600106-2",
@@ -181,7 +201,8 @@
       "text": "Työnaikainen opastus raitiovaunupysäkkien siirron vuoksi. / LISÄYS 28.8.2026: lisäopasteet Leonkatu, Kalasatamankatu | category: Muu | address: Hermannin rantatie 1-11 ja vastapäätä, Leonkatu 8, Kalasatamankatu 3, 4, 7, 8 | duration days: 151",
       "severity": "consider",
       "mainlyAffected": "transit",
-      "arrangementType": "stop_moved"
+      "arrangementType": "stop_moved",
+      "decision": "change_plans"
     },
     {
       "id": "LJ2500128",
@@ -192,7 +213,8 @@
         "drivers",
         "cyclists"
       ],
-      "arrangementType": "other"
+      "arrangementType": "other",
+      "decision": null
     },
     {
       "id": "LJ2600038-2",
@@ -200,7 +222,8 @@
       "text": "Tilapäisen linja-autopäätepysäkin tilapäiset liikennejärjestelyt liittyen Junatien metrosillan hankkeeseen. / LISÄYS 9.6.2026: lisäaikaa 1.6.2026 - 31.8.2028 | category: Muu | address: Leonkatu 3-5, Kaasutehtaankatu 2 | duration days: 865",
       "severity": "consider",
       "mainlyAffected": "transit",
-      "arrangementType": "stop_moved"
+      "arrangementType": "stop_moved",
+      "decision": "change_plans"
     },
     {
       "id": "KP2601081-2",
@@ -217,7 +240,8 @@
       "workType": "street_construction",
       "endDate": "2027-08-29",
       "mainlyAffected": "parking",
-      "loud": null
+      "loud": null,
+      "decision": "change_plans"
     },
     {
       "id": "KP2601881-3",
@@ -238,7 +262,8 @@
         "drivers",
         "cyclists"
       ],
-      "loud": "loud"
+      "loud": "loud",
+      "decision": "worth_knowing"
     },
     {
       "id": "KP2601442-2",
@@ -253,7 +278,8 @@
       "workType": "water_sewer",
       "endDate": "2026-10-09",
       "mainlyAffected": "drivers",
-      "loud": "ordinary"
+      "loud": "ordinary",
+      "decision": "no_effect"
     },
     {
       "id": "KP2602519-4",
@@ -270,7 +296,8 @@
       "workType": "electricity_telecom",
       "endDate": "2026-10-26",
       "mainlyAffected": "drivers",
-      "loud": "ordinary"
+      "loud": "ordinary",
+      "decision": "no_effect"
     },
     {
       "id": "KP2602273",
@@ -283,7 +310,8 @@
       "workType": "district_heating",
       "endDate": "not_stated",
       "mainlyAffected": "drivers",
-      "loud": "ordinary"
+      "loud": "ordinary",
+      "decision": "no_effect"
     },
     {
       "id": "KP2402551-3",
@@ -299,7 +327,8 @@
       "workType": "building_site",
       "endDate": "2025-07-31",
       "mainlyAffected": "pedestrians",
-      "loud": "ordinary"
+      "loud": "ordinary",
+      "decision": "no_effect"
     },
     {
       "id": "KP2601020-2",
@@ -313,7 +342,8 @@
       "workType": "water_sewer",
       "endDate": "2027-05-14",
       "mainlyAffected": "drivers",
-      "loud": "ordinary"
+      "loud": "ordinary",
+      "decision": "no_effect"
     },
     {
       "id": "KP2602791-2",
@@ -330,7 +360,8 @@
       "workType": "water_sewer",
       "endDate": "2026-11-13",
       "mainlyAffected": "drivers",
-      "loud": "ordinary"
+      "loud": "ordinary",
+      "decision": "no_effect"
     },
     {
       "id": "KP2602400-3",
@@ -347,7 +378,8 @@
       "workType": "paving",
       "endDate": "not_stated",
       "mainlyAffected": "drivers",
-      "loud": "ordinary"
+      "loud": "ordinary",
+      "decision": "worth_knowing"
     },
     {
       "id": "KP2603026",
@@ -358,7 +390,8 @@
       "workType": "water_sewer",
       "endDate": "not_stated",
       "mainlyAffected": null,
-      "loud": "ordinary"
+      "loud": "ordinary",
+      "decision": "no_effect"
     },
     {
       "id": "KP2602979",
@@ -369,7 +402,8 @@
       "workType": "district_heating",
       "endDate": "not_stated",
       "mainlyAffected": null,
-      "loud": "ordinary"
+      "loud": "ordinary",
+      "decision": "no_effect"
     },
     {
       "id": "KP2602904",
@@ -380,7 +414,8 @@
       "workType": "paving",
       "endDate": "not_stated",
       "mainlyAffected": "drivers",
-      "loud": "ordinary"
+      "loud": "ordinary",
+      "decision": "no_effect"
     },
     {
       "id": "KP2601407-2",
@@ -393,61 +428,71 @@
       "workType": "building_site",
       "endDate": "not_stated",
       "mainlyAffected": "pedestrians",
-      "loud": null
+      "loud": null,
+      "decision": "no_effect"
     },
     {
       "id": "helsinki:agpe43lrvm",
       "layer": "calendar",
       "text": "NHL Global Series · Veikkaus Arena, capacity 13,000",
-      "crowd": "1000_or_more"
+      "crowd": "1000_or_more",
+      "decision": "change_plans"
     },
     {
       "id": "helsinki:agqkv5ygra",
       "layer": "calendar",
       "text": "UEFA Nations League: Suomi–San Marino · Bolt Arena, capacity 10,700",
-      "crowd": "1000_or_more"
+      "crowd": "1000_or_more",
+      "decision": "change_plans"
     },
     {
       "id": "helsinki:agprytxiiy",
       "layer": "calendar",
       "text": "HIFK - Jokerit, jääkiekkoa · Helsingin jäähalli, capacity 8,200",
-      "crowd": "1000_or_more"
+      "crowd": "1000_or_more",
+      "decision": "change_plans"
     },
     {
       "id": "helsinki:agpr2ctpee",
       "layer": "calendar",
       "text": "Raskasta Joulua · Veikkaus Arena, capacity 8,000",
-      "crowd": "1000_or_more"
+      "crowd": "1000_or_more",
+      "decision": "change_plans"
     },
     {
       "id": "helsinki:agp5v7666i",
       "layer": "calendar",
       "text": "Treffiperjantai · Nykytaiteen museo Kiasma, capacity 5,000",
-      "crowd": "under_1000"
+      "crowd": "under_1000",
+      "decision": "no_effect"
     },
     {
       "id": "helsinki:agnntmcsby",
       "layer": "calendar",
       "text": "Kiasman ilmaispäivä · Nykytaiteen museo Kiasma, capacity 3,000",
-      "crowd": "under_1000"
+      "crowd": "under_1000",
+      "decision": "no_effect"
     },
     {
       "id": "helsinki:agqvzyxumu",
       "layer": "calendar",
       "text": "Nanna Susi: piano piano - maalauksia 2026 · nanna susi studio, capacity 2,000",
-      "crowd": "under_1000"
+      "crowd": "under_1000",
+      "decision": "no_effect"
     },
     {
       "id": "helsinki:agq2clfzfm",
       "layer": "calendar",
       "text": "Play it again -retropelitapahtuma · Museo Leikki, capacity 1,000",
-      "crowd": "under_1000"
+      "crowd": "under_1000",
+      "decision": "no_effect"
     },
     {
       "id": "helsinki:agpafcxbx4",
       "layer": "calendar",
       "text": "Urkusatu BUU: Kertun ja Hukkasen seikkailut · Musiikkitalo, capacity 1,000",
-      "crowd": "under_1000"
+      "crowd": "under_1000",
+      "decision": "no_effect"
     },
     {
       "id": "KP2302652-6",
@@ -456,7 +501,8 @@
       "workType": "street_construction",
       "endDate": null,
       "mainlyAffected": null,
-      "loud": "loud"
+      "loud": "loud",
+      "decision": "worth_knowing"
     },
     {
       "id": "KP2102753-23",
@@ -465,7 +511,8 @@
       "workType": "street_construction",
       "endDate": null,
       "mainlyAffected": null,
-      "loud": "loud"
+      "loud": "loud",
+      "decision": "change_plans"
     },
     {
       "id": "KP2602098-5",
@@ -474,7 +521,8 @@
       "workType": "electricity_telecom",
       "endDate": null,
       "mainlyAffected": null,
-      "loud": "ordinary"
+      "loud": "ordinary",
+      "decision": "no_effect"
     },
     {
       "id": "LJ2300141-3",
@@ -482,7 +530,8 @@
       "text": "Päätöksensaaja varaa tilaa väliaikaiselle opastukselle autojuna-asemalle. LISÄYS 6.11.2025: lisäaikaa 1.10.2025 - 30.9.2026 LISÄYS 1.10.2026: lisäaikaa 1.10.2026 - 1.10.2028. | category: Muu | address: Tulistimenkatu 1vp 4, , Höyrykatu 1, Lastumäki | duration days: 1834",
       "arrangementType": "traffic_signs",
       "severity": null,
-      "mainlyAffected": null
+      "mainlyAffected": null,
+      "decision": "no_effect"
     },
     {
       "id": "LJ2300179-3",
@@ -490,7 +539,8 @@
       "text": "Päätöksensaaja varaa tilaa raskassuojille. LISÄYS 27.6.2024: uusia alueita Konepajanraitille sekä Konepajankujalle. LISÄYS 17.12.2025: lisäaika 11.10.2025–31.12.2027. | category: Muu | address: Konepajankuja 7 -8, Bruno Granholmin kuja 2, Konepajanraitti X Konepajankuja, Konepajanraitti X Konepajanpasaasi, Konepajanraitti X Bruno Granholmin kuja, Konepajankuja 3  | duration days: 1543",
       "arrangementType": "site_access",
       "severity": null,
-      "mainlyAffected": null
+      "mainlyAffected": null,
+      "decision": "no_effect"
     },
     {
       "id": "LJ2400073-3",
@@ -498,7 +548,8 @@
       "text": "Tilapäinen reitti kävelijöille. LISÄYS 8.7.2025: lisäaikaa 2.6.2025 - 1.2.2026. LISÄYS 10.2.2026: lisäaikaa 2.2.2026 - 1.2.2029. Työstä vastaavan yhteyshenkilön muutos. | category: Muu | address: Samoankuja, välillä Atlantinkatu ja Tahitinkatu | duration days: 1709",
       "arrangementType": "walk_cycle_route",
       "severity": null,
-      "mainlyAffected": null
+      "mainlyAffected": null,
+      "decision": "worth_knowing"
     },
     {
       "id": "LJ2400076-3",
@@ -506,7 +557,8 @@
       "text": "Kuninkaantammentien katu-urakan takia joudutaan avaamaan tilapäinen kiertotie Paletinkierrolle ja Vedenkierrolle. Samaa reitistöä käytetään myös avattavalle Palettilammelle. LISÄYS 06.07.2025: lisäaikaa 06.06.2025 - 30.06.2026. LISÄYS 11.09.2026: lisäaikaa 01.07.2026 - 08.09.2028. MUUTOS 28.09.2026: Pinta-ala muutos, 19805m2 -> 442m2. Uusi liikennejärjestelysuunnitelma. | category: Muu | address: Kuninkaantammi, välillä Kuninkaantammentie Kuninkaantammenkierto. | duration days: 1556",
       "arrangementType": "detour",
       "severity": null,
-      "mainlyAffected": null
+      "mainlyAffected": null,
+      "decision": "change_plans"
     },
     {
       "id": "LJ2400124",
@@ -514,7 +566,8 @@
       "text": "Siirtokehotukset p-alueen tyhjentämistä varten uuden vuokrasopimuksen astuessa voimaan. | category: Muu | address: Oksakoskenpolku 6 | duration days: 1795",
       "arrangementType": "parking",
       "severity": null,
-      "mainlyAffected": null
+      "mainlyAffected": null,
+      "decision": "change_plans"
     },
     {
       "id": "LJ2400146",
@@ -522,7 +575,8 @@
       "text": "Tilapäiset liikennejärjestelyt aluerakennuskohteessa | category: Muu | address: Hernesaarenranta | duration days: 1463",
       "arrangementType": "other",
       "severity": null,
-      "mainlyAffected": null
+      "mainlyAffected": null,
+      "decision": null
     },
     {
       "id": "LJ2500004",
@@ -530,7 +584,8 @@
       "text": "Työmaatieliittymän liikennejärjestelyt. | category: Muu | address: Seulastentie 11 | duration days: 825",
       "arrangementType": "site_access",
       "severity": null,
-      "mainlyAffected": null
+      "mainlyAffected": null,
+      "decision": "no_effect"
     },
     {
       "id": "LJ2500010-6",
@@ -538,7 +593,8 @@
       "text": "Työstä vastaava varaa tilaa Tulistimenkadun tilapäisille suojateille ja ajoesteille Radioportin sillan alla. LISÄYS 29.4.2025: liikennejärjestelysuunnitelmat päivitetty: liikennejärjestelyiden laajennus Tulistimenkatu, Veturitien lännenpuoleinen jkpp-väylä, Tenderinlenkki, Höyrykatu LISÄYS 13.10.2025: liikennejärjestelysuunnitelma päivitetty LISÄYS 22.10.2025: liikennejärjestelysuunnitelma päivitetty LISÄYS 21.11.2025: liikennejärjestelysuunnitelma päivitetty LISÄYS 11.5.2026: päivitetty liikennejärjestelysuunnitelma; lisätty tilapäiset bussipysäkit Veturitie ajalle 1.6.–9.8.2026. | category: Muu | address: Tulistimenkatu  | duration days: 1096",
       "arrangementType": "walk_cycle_route",
       "severity": null,
-      "mainlyAffected": null
+      "mainlyAffected": null,
+      "decision": "worth_knowing"
     },
     {
       "id": "LJ2500046",
@@ -546,7 +602,8 @@
       "text": "Työstä vastaava varaa tilaa tilapäisille liikennejärjestelyille kahden rakentamisvaiheen välissä. | category: Muu | address:  Mechelininkatu, Lapinlahdenkatu, Itämerenkatu ja Porkkalankatu | duration days: 1249",
       "arrangementType": "other",
       "severity": null,
-      "mainlyAffected": null
+      "mainlyAffected": null,
+      "decision": "worth_knowing"
     },
     {
       "id": "LJ2500108",
@@ -554,7 +611,8 @@
       "text": "Työstä vastaava varaa tilaa työmaatien opastukselle. | category: Muu | address: Saukonlaituri, Saukonkanava | duration days: 732",
       "arrangementType": "traffic_signs",
       "severity": null,
-      "mainlyAffected": null
+      "mainlyAffected": null,
+      "decision": "no_effect"
     },
     {
       "id": "LJ2500144",
@@ -562,7 +620,8 @@
       "text": "Työstä vastaava varaa tilaa esteettömän asunnon sisäänkäynnin vapaana pitämiselle. | category: Muu | address: Välitalontie 71 | duration days: 1131",
       "arrangementType": null,
       "severity": null,
-      "mainlyAffected": null
+      "mainlyAffected": null,
+      "decision": "no_effect"
     },
     {
       "id": "LJ2600004",
@@ -570,7 +629,8 @@
       "text": "Pysäköintijärjestelyt pelastustien avoinna pitämiseksi | category: Muu | address: Lampuotilantie 32-38 | duration days: 1009",
       "arrangementType": "parking",
       "severity": null,
-      "mainlyAffected": null
+      "mainlyAffected": null,
+      "decision": "worth_knowing"
     },
     {
       "id": "LJ2600058-2",
@@ -578,7 +638,8 @@
       "text": "Väliaikaiset sähköpotkulautojen parkit LISÄYS 16.7.2026: lisäaikaa 1.9.2026 - 31.8.2028. | category: Muu | address: Panimokatu 2 ja Hermannin rantatie 7 | duration days: 841",
       "arrangementType": "parking",
       "severity": null,
-      "mainlyAffected": null
+      "mainlyAffected": null,
+      "decision": "no_effect"
     },
     {
       "id": "LJ2600103",
@@ -586,7 +647,8 @@
       "text": "Tilapäinen kirjastoautopysäkki. | category: Muu | address: Konalantie 10 | duration days: 1111",
       "arrangementType": "stop_moved",
       "severity": null,
-      "mainlyAffected": null
+      "mainlyAffected": null,
+      "decision": "no_effect"
     },
     {
       "id": "LJ2600122",
@@ -594,7 +656,8 @@
       "text": "Tilapäinen liikennemerkki. | category: Muu | address: Naantalintie 2 vp | duration days: 397",
       "arrangementType": "traffic_signs",
       "severity": null,
-      "mainlyAffected": null
+      "mainlyAffected": null,
+      "decision": "no_effect"
     },
     {
       "id": "LJ2600132-2",
@@ -602,7 +665,8 @@
       "text": "Työstä vastaava varaa tilaa tilapäisille liikennemerkeille. LISÄYS 11.11.2026: poistettu toinen työnsuorittajan yhteyshenkilö | category: Muu | address: Mechelininkatu X Ruoholahdenranta  | duration days: 491",
       "arrangementType": "traffic_signs",
       "severity": null,
-      "mainlyAffected": null
+      "mainlyAffected": null,
+      "decision": "no_effect"
     },
     {
       "id": "LJ2600153",
@@ -610,7 +674,8 @@
       "text": "Haltialan tilan joulupihan tarvitsemat liikennejärjestelyt. | category: Muu | address: Torpparinmäenpolku  x Laamannintie | duration days: 26",
       "arrangementType": "event",
       "severity": null,
-      "mainlyAffected": null
+      "mainlyAffected": null,
+      "decision": "worth_knowing"
     },
     {
       "id": "LJ2600165",
@@ -618,7 +683,8 @@
       "text": "Tilapäiset liikennejärjestelyt: lasten itsenäisyyspäivän juhla Säätytalon puistossa. | category: Yleisötilaisuus | address: Rauhankatu 14 | duration days: 1",
       "arrangementType": "event",
       "severity": null,
-      "mainlyAffected": null
+      "mainlyAffected": null,
+      "decision": "worth_knowing"
     }
   ]
 }

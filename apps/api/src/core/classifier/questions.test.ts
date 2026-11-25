@@ -74,7 +74,7 @@ describe("subjectFor", () => {
   it("asks digs the kind of work, the current end date, whether it's loud and who is mainly affected, never Severity", () => {
     const subject = subjectFor(dig("KP2602791-2"), "excavation")!;
 
-    expect(Object.keys(subject.questions).sort()).toEqual(["endDate", "loud", "mainlyAffected", "workType"]);
+    expect(Object.keys(subject.questions).sort()).toEqual(["decision", "endDate", "loud", "mainlyAffected", "workType"]);
     expect(subject.state.text).toMatch(/^Sadevesiviemärin korjaus/);
   });
 
@@ -95,7 +95,7 @@ describe("subjectFor", () => {
     const subject = subjectFor(dig("KP2602966"), "excavation")!;
 
     expect(subject.questions).not.toHaveProperty("endDate");
-    expect(Object.keys(subject.questions).sort()).toEqual(["loud", "mainlyAffected", "workType"]);
+    expect(Object.keys(subject.questions).sort()).toEqual(["decision", "loud", "mainlyAffected", "workType"]);
   });
 
   it("has nothing to ask about a dig without text", () => {
@@ -105,13 +105,13 @@ describe("subjectFor", () => {
     expect(subjectFor({ ...item, event: withoutText }, "excavation")).toBeNull();
   });
 
-  it("asks traffic arrangements what they change and Severity, outdoor events how many come, and both who is mainly affected", () => {
+  it("asks traffic arrangements what they change and Severity, outdoor events how many come, and all who is mainly affected and whether it changes plans", () => {
     const arrangement = itemsOf(trafficArrangements, "traffic-arrangement")[0]!;
     const outdoorEvent = itemsOf(outdoorEvents, "outdoor-event")[0]!;
 
     for (const [item, permitType, asked] of [
-      [arrangement, "traffic-arrangement", ["arrangementType", "mainlyAffected", "severity"]],
-      [outdoorEvent, "outdoor-event", ["crowd", "mainlyAffected"]],
+      [arrangement, "traffic-arrangement", ["arrangementType", "decision", "mainlyAffected", "severity"]],
+      [outdoorEvent, "outdoor-event", ["crowd", "decision", "mainlyAffected"]],
     ] as const) {
       const subject = subjectFor(item, permitType)!;
       expect(Object.keys(subject.questions).sort()).toEqual(asked);
@@ -123,7 +123,7 @@ describe("subjectFor", () => {
     const item = itemsOf(trafficArrangements, "traffic-arrangement")[0]!;
     const { originalText: _, ...withoutText } = item.event;
 
-    expect(Object.keys(subjectFor({ ...item, event: withoutText }, "traffic-arrangement")!.questions).sort()).toEqual(["mainlyAffected", "severity"]);
+    expect(Object.keys(subjectFor({ ...item, event: withoutText }, "traffic-arrangement")!.questions).sort()).toEqual(["decision", "mainlyAffected", "severity"]);
   });
 
   it("tells the Classifier how many days the notice lasts", () => {

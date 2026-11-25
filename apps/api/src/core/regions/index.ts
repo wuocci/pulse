@@ -79,7 +79,7 @@ export interface HandKeptSource extends Omit<PolledSource, "url"> {
   entries: HandKeptEntry[];
 }
 
-export interface HandKeptEntry extends Pick<Event, "kind" | "title" | "where" | "when" | "severity" | "mainlyAffected" | "noticeable"> {
+export interface HandKeptEntry extends Pick<Event, "kind" | "title" | "where" | "when" | "severity" | "mainlyAffected" | "noticeable" | "decision"> {
   id: string;
   // What it closes, for whom, in the publisher's terms.
   originalText: Record<string, string>;

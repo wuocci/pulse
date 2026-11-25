@@ -1,6 +1,7 @@
 import type { z } from "@hono/zod-openapi";
 import type {
   ArrangementTypeSchema,
+  DecisionSchema,
   DailyHoursSchema,
   DeviationSchema,
   EndConflictSchema,
@@ -30,5 +31,6 @@ export type Deviation = z.infer<typeof DeviationSchema>;
 export type MainlyAffected = z.infer<typeof MainlyAffectedSchema>;
 export type WorkType = z.infer<typeof WorkTypeSchema>;
 export type ArrangementType = z.infer<typeof ArrangementTypeSchema>;
+export type Decision = z.infer<typeof DecisionSchema>;
 export type EndConflict = z.infer<typeof EndConflictSchema>;
 export type Event = z.infer<typeof EventSchema>;

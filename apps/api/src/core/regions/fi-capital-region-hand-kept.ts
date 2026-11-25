@@ -22,6 +22,8 @@ export const handKept: HandKeptEntry[] = [
     // under. On foot or by bike it's in the way either way.
     severity: "consider",
     mainlyAffected: "everyone",
+    // Closed to everyone, with buses on a detour.
+    decision: "change_plans",
     noticeable: ["blocked"],
     originalText: {
       en: "The bridge is closed to all traffic while it's repaired. On foot or by bike, use the Adjutantinpolku underpass. Buses 16 and 86N take a detour. Lanes on Itäväylä under the bridge are closed at times.",

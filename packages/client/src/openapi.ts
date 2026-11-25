@@ -386,6 +386,7 @@ export interface components {
             mainlyAffected: components["schemas"]["MainlyAffected"];
             workType?: components["schemas"]["WorkType"];
             arrangementType?: components["schemas"]["ArrangementType"];
+            decision?: components["schemas"]["Decision"];
             /** @description May be empty: nothing to sense on site */
             noticeable: components["schemas"]["Noticeable"][];
             /**
@@ -483,6 +484,11 @@ export interface components {
          * @enum {string}
          */
         ArrangementType: "detour" | "walk_cycle_route" | "traffic_signs" | "parking" | "stop_moved" | "site_access" | "event" | "other";
+        /**
+         * @description Whether someone moving around here would change their plans for it (route, time, mode, parking). Absent until known: the Classifier wasn't sure, or hasn't been asked yet
+         * @enum {string}
+         */
+        Decision: "change_plans" | "worth_knowing" | "no_effect";
         /** @enum {string} */
         Noticeable: "noise" | "crowd" | "sirens" | "blocked" | "aircraft" | "outage";
         Deviation: {

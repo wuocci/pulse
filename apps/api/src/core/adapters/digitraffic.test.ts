@@ -43,6 +43,8 @@ describe("Digitraffic road messages → Events", () => {
     expect(byId[TEOLLISUUSKATU]).toMatchObject({ severity: "major", noticeable: ["blocked"], where: { precision: "exact" } });
     expect(byId[KEHA_I]).toMatchObject({ severity: "consider", noticeable: ["blocked"] });
     expect(byId[LAHDENVAYLA]).toMatchObject({ severity: "minor", noticeable: [], when: { dailyHours: { from: "07:00", to: "18:00", days: ["mon", "tue", "wed", "thu"] } } });
+    // A closed road changes plans; closed lanes slow you down; roadworks beside the road you drive past.
+    expect([byId[TEOLLISUUSKATU]!.decision, byId[KEHA_I]!.decision, byId[LAHDENVAYLA]!.decision]).toEqual(["change_plans", "worth_knowing", "no_effect"]);
   });
 
   it("doesn't call it a closed road when one carriageway is closed and traffic goes on the other, or the road closes now and then", () => {
