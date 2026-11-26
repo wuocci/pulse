@@ -85,10 +85,12 @@ export interface EventRowProps {
   aside?: ReactNode;
   // The row pointed at (hovered or focused), so a map can show which shape is its; undefined when none.
   onHighlight?: (id: string | undefined) => void;
+  // On a phone, where the list and the map take turns: the map, at this Event.
+  onShowOnMap?: () => void;
 }
 
 // A row: where (or what), then what it means for you. Opens to the card: how big, what it is, when, then Details.
-export function EventRow({ event, open, onToggle, aside, onHighlight }: EventRowProps) {
+export function EventRow({ event, open, onToggle, aside, onHighlight, onShowOnMap }: EventRowProps) {
   const { t, i18n } = useTranslation();
   const regions = useRegions();
   const region = regions.data?.[0];
@@ -145,6 +147,11 @@ export function EventRow({ event, open, onToggle, aside, onHighlight }: EventRow
         <p className="sg-tone">{t(toneLabel)}</p>
         {kind && <p className="sg-kind">{kind}</p>}
         <p className="sg-when">{whenText(whenOf(event, timeZone, new Date()), t)}</p>
+        {onShowOnMap && (
+          <button type="button" className="sg-on-map lg:hidden" onClick={onShowOnMap}>
+            {t("showOnMap")} ›
+          </button>
+        )}
         <Accordion className="sg-more" open={details} onToggle={() => setDetails(!details)} header={<span>{t("homeDetails")}</span>}>
           {facts.length > 0 && (
             <dl className="sg-facts">

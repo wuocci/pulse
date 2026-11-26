@@ -32,6 +32,7 @@ export function usePlaces(): {
   places: SavedPlace[] | undefined;
   add: (place: SavedPlace) => void;
   remove: (name: string) => void;
+  rename: (from: string, to: string) => void;
 } {
   const { storage } = usePlatform();
   const queryClient = useQueryClient();
@@ -48,5 +49,16 @@ export function usePlaces(): {
     // A place with the same name is replaced: saving Home again moves it.
     add: (place) => save([...current().filter((p) => p.name !== place.name), place].slice(0, MAX_PLACES)),
     remove: (name) => save(current().filter((p) => p.name !== name)),
+    // In its place in the list; a place already called that gives way, so renaming to Home makes it Home.
+    rename: (from, to) => save(current().flatMap((p) => (p.name === from ? [{ ...p, name: to }] : p.name === to ? [] : [p]))),
   };
 }
+
+// The saved place at a point, if any: the same spot to about 10 m.
+export function savedAt(places: SavedPlace[] | undefined, at: LatLon | undefined): SavedPlace | undefined {
+  if (!at) return undefined;
+  return places?.find((p) => Math.abs(p.lat - at.lat) < 1e-4 && Math.abs(p.lon - at.lon) < 2e-4);
+}
+
+// The names offered first, in order, until they're used.
+export const USUAL_NAMES = ["Home", "Work"] as const;

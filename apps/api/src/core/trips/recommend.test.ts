@@ -30,4 +30,20 @@ describe("Better today", () => {
     expect(recommend([plan("transit", at(20, "consider"), at(31, "none"))])).toBeUndefined();
     expect(recommend([plan("transit", at(20, "consider")), plan("bike", at(22, "consider"))])).toBeUndefined();
   });
+
+  it("arriving by a time, ranks by when you leave: the latest departure first, and costs an earlier one", () => {
+    // Leaves `minutes` after 12:00 and arrives at 13:00 less `early` minutes.
+    const leaves = (minutes: number, early: number, impact: Impact) => ({
+      start: new Date(Date.parse("2026-10-31T12:00:00+02:00") + minutes * 60_000).toISOString(),
+      end: new Date(Date.parse("2026-10-31T13:00:00+02:00") - early * 60_000).toISOString(),
+      impact,
+    });
+    const early = leaves(5, 17, "none");
+    const late = leaves(14, 6, "consider");
+
+    // Leaving at 12:05 arrives first, but leaving at 12:14 is the better way: it's the plain best, and has something in it.
+    expect(recommend([plan("transit", late, early)], { arriveBy: true })).toEqual({ mode: "transit", index: 1 });
+    expect(recommend([plan("transit", late, leaves(3, 20, "none"))], { arriveBy: true })).toBeUndefined();
+    expect(recommend([plan("transit", early, late)])).toBeUndefined();
+  });
 });

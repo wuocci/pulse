@@ -55,7 +55,7 @@ async function driveAndWalk(router: Router, parking: ParkingFinder | undefined, 
 async function driveThenWalk(router: Router, trip: TripRequest, spot: { lat: number; lon: number }): Promise<RoutedItinerary | undefined> {
   const drive = (await router.plan({ ...trip, to: spot, probe: true })).find(drivesAllTheWay);
   if (!drive) return undefined;
-  const [walk] = await router.plan({ from: spot, to: trip.to, mode: "walk", departAt: drive.end });
+  const [walk] = await router.plan({ from: spot, to: trip.to, mode: "walk", departAt: drive.end, ...(trip.speeds ? { speeds: trip.speeds } : {}) });
   if (!walk) return undefined;
   return { start: drive.start, end: walk.end, durationS: Math.round((Date.parse(walk.end) - Date.parse(drive.start)) / 1000), legs: [...drive.legs, ...walk.legs] };
 }

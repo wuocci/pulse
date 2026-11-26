@@ -75,6 +75,9 @@ function distanceM(from: LatLon, [lon, lat]: Position): number {
   return Math.sqrt(x * x + y * y) * EARTH_RADIUS_M;
 }
 
+// How far apart two points are, in metres: near enough for a city.
+export const metresBetween = (a: LatLon, b: LatLon): number => distanceM(a, [b.lon, b.lat]);
+
 // Every pin, nearest first: the order keyboard and screen-reader users tab through them.
 export function nearestFirst(events: Event[], here: LatLon): Pin[] {
   return events

@@ -87,6 +87,14 @@ type Slot =
 const reducedMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 const ROUTE_ROOM_PX = 48;
+// On a phone, the way's bar sits over the map's top.
+const WAY_BAR_PX = 130;
+
+function fitRoute(m: maplibregl.Map, bounds: maplibregl.LngLatBounds, duration: number) {
+  const phone = m.getContainer().clientWidth < 1024;
+  const padding = phone ? { top: ROUTE_ROOM_PX + WAY_BAR_PX, bottom: ROUTE_ROOM_PX + 110, left: ROUTE_ROOM_PX, right: ROUTE_ROOM_PX } : ROUTE_ROOM_PX;
+  m.fitBounds(bounds, { padding, maxZoom: 16, duration });
+}
 // How long a row is pointed at before the map moves to show its Event.
 const REVEAL_DELAY_MS = 300;
 
@@ -115,6 +123,28 @@ export function PointMap({
   const styleRef = useRef(style);
   const container = useRef<HTMLDivElement>(null);
   const map = useRef<maplibregl.Map | null>(null);
+  // The route's bounds, to fit again when a hidden map is shown: drawn while hidden, it was fitted to nothing.
+  const routeBounds = useRef<maplibregl.LngLatBounds | null>(null);
+  // A place asked for just as the map is shown (a step tapped in the list): shown over the route's fit.
+  const lastFocus = useRef<{ lat: number; lon: number; at: number } | null>(null);
+  useEffect(() => {
+    const el = container.current;
+    if (!el || typeof ResizeObserver === "undefined") return;
+    let shown = el.clientWidth > 0;
+    const observer = new ResizeObserver(() => {
+      const m = map.current;
+      const nowShown = el.clientWidth > 0;
+      if (m && nowShown) {
+        m.resize();
+        const asked = lastFocus.current && Date.now() - lastFocus.current.at < 1500 ? lastFocus.current : null;
+        if (!shown && asked) m.jumpTo({ center: [asked.lon, asked.lat], zoom: Math.max(m.getZoom(), 17) });
+        else if (!shown && routeBounds.current) fitRoute(m, routeBounds.current, 0);
+      }
+      shown = nowShown;
+    });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
   const marker = useRef<maplibregl.Marker | null>(null);
   // One MapLibre marker per pin, by key; React renders each pin into its marker's element.
   const pinMarkers = useRef(new Map<string, maplibregl.Marker>());
@@ -265,9 +295,11 @@ export function PointMap({
       const { picks = [], places = [] } = parkingRef.current ?? {};
       const parkingAt = [...picks, ...places].map(({ lat, lon }): [number, number] => [lon, lat]);
       const coordinates = [...(legs.flatMap((leg) => leg.geometry.coordinates) as [number, number][]), ...parkingAt];
+      routeBounds.current = null;
       if (!coordinates.length) return;
       const bounds = coordinates.reduce((b, c) => b.extend(c), new maplibregl.LngLatBounds(coordinates[0], coordinates[0]));
-      m.fitBounds(bounds, { padding: ROUTE_ROOM_PX, maxZoom: 16, duration: reducedMotion() ? 0 : 600 });
+      routeBounds.current = bounds;
+      fitRoute(m, bounds, reducedMotion() ? 0 : 600);
     };
     if (m.isStyleLoaded()) draw();
     // Not "load": that fires once, and the style also reads as not loaded while a source updates after it.
@@ -388,6 +420,7 @@ export function PointMap({
       viewBefore.current = null;
       return;
     }
+    lastFocus.current = { lat: at.lat, lon: at.lon, at: Date.now() };
     if (!at.remember) viewBefore.current = null;
     else viewBefore.current ??= { center: m.getCenter(), zoom: m.getZoom() };
     m.easeTo({ center: [at.lon, at.lat], zoom: Math.max(m.getZoom(), 17), duration });

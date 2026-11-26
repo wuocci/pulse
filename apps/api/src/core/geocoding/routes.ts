@@ -28,9 +28,47 @@ const route = createRoute({
   },
 });
 
+const reverseRoute = createRoute({
+  method: "get",
+  path: "/geocode/reverse",
+  request: {
+    query: z.object({
+      at: z
+        .string()
+        .regex(/^-?\d+(\.\d+)?,-?\d+(\.\d+)?$/, "Expected lat,lon")
+        .openapi({ example: "60.169,24.9316", description: "lat,lon: the point to name" }),
+      lang: z.string().optional().openapi({ example: "fi", description: "The reader's language; the Region's main language when it doesn't speak it" }),
+    }),
+  },
+  responses: {
+    200: {
+      description: "The address at `at`, named with its district (`label`); none outside every Region, or with no address near it.",
+      content: { "application/json": { schema: z.object({ result: GeocodeResultSchema.optional() }) } },
+    },
+    502: { description: "The geocoder failed", content: { "application/json": { schema: MessageSchema } } },
+    503: { description: "The Region has no address search", content: { "application/json": { schema: MessageSchema } } },
+  },
+});
+
 // `geocoderFor` is absent, or gives nothing, when a Region has no address search (e.g. no key for its geocoder).
 export function geocodingRoutes(regions: Region[], geocoderFor: (region: Region) => Geocoder | undefined = () => undefined) {
-  return new OpenAPIHono().openapi(route, async (c) => {
+  return new OpenAPIHono()
+    .openapi(reverseRoute, async (c) => {
+      const { at, lang } = c.req.valid("query");
+      const [lat, lon] = at.split(",").map(Number) as [number, number];
+      const region = regionAt(regions, lat, lon);
+      if (!region) return c.json({}, 200);
+      const geocoder = geocoderFor(region);
+      if (!geocoder) return c.json({ message: "Address search is off" }, 503);
+      try {
+        const result = await geocoder.reverse({ lat, lon }, lang && region.languages.includes(lang) ? lang : region.languages[0]!);
+        return c.json(result ? { result } : {}, 200);
+      } catch (error) {
+        console.error("Reverse geocoding failed:", error instanceof Error ? error.message : error);
+        return c.json({ message: "Address search failed" }, 502);
+      }
+    })
+    .openapi(route, async (c) => {
     const { text, near, lang } = c.req.valid("query");
     const [lat, lon] = near.split(",").map(Number) as [number, number];
     const region = regionAt(regions, lat, lon);

@@ -34,6 +34,7 @@ const works: Event = {
   when: { start: "2026-10-01T00:00:00+03:00" },
   severity: "minor",
   mainlyAffected: "unknown",
+  decision: "change_plans",
   noticeable: ["noise", "blocked"],
   status: "active",
   sources: [{ name: "City", id: "works", updatedAt: "2026-10-01T00:00:00+03:00", license: "CC BY 4.0" }],
@@ -267,6 +268,43 @@ describe("GET /v0/trips", () => {
     await get(await appWith(() => router), `${AB}&modes=bike&departAt=2026-11-02T08:00:00%2B02:00`);
 
     expect(asked.map((a) => [a.mode, a.departAt])).toEqual([["bike", "2026-11-02T08:00:00+02:00"]]);
+  });
+
+  it("plans to arrive by a time when asked, from when the earliest way leaves", async () => {
+    const { router, asked } = fakeRouter();
+
+    await get(await appWith(() => router), `${AB}&modes=bike&arriveBy=2026-11-02T08:00:00%2B02:00`);
+
+    expect(asked.map((a) => [a.mode, a.departAt, a.arriveBy])).toEqual([["bike", "2026-11-02T08:00:00+02:00", "2026-11-02T08:00:00+02:00"]]);
+  });
+
+  it("plans at your walking and cycling speeds, asked in km/h", async () => {
+    const { router, asked } = fakeRouter();
+
+    await get(await appWith(() => router), `${AB}&modes=bike&walkSpeed=3.6&bikeSpeed=27`);
+
+    expect(asked[0]!.speeds).toEqual({ walk: 1, bike: 7.5 });
+  });
+
+  it("refuses a speed nobody walks at", async () => {
+    const { router } = fakeRouter();
+
+    expect((await get(await appWith(() => router), `${AB}&walkSpeed=30`)).status).toBe(400);
+  });
+
+  it("leaves out of the way what's only worth knowing, or not known to change plans", async () => {
+    const events = new InMemoryEventStore();
+    await events.replaceSource("src", [
+      { ...works, id: "src:aside", decision: "worth_knowing" },
+      (({ decision: _, ...unsure }) => ({ ...unsure, id: "src:unsure" }))(works),
+    ]);
+    const { router } = fakeRouter();
+    const app = createApp({ db: { ping: async () => true }, events, regions, clock: () => NOW, routerFor: () => router });
+
+    const trip = (await (await get(app, AB)).json()) as Trip;
+
+    expect(trip.events).toEqual([]);
+    expect(trip.plans.every((p) => p.itineraries.every((i) => i.impact === "none"))).toBe(true);
   });
 
   it("needs A and B in the same Region", async () => {

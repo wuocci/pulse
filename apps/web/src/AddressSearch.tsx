@@ -23,9 +23,11 @@ export interface AddressSearchProps {
   autoFocus?: boolean;
   // In place of the search glass, e.g. a trip's From and To marks.
   leading?: ReactNode;
+  // The field's own look, in place of the default (a Trip's From and To in the Signage style).
+  inputClassName?: string;
 }
 
-export function AddressSearch({ point, lang, onPick, label, placeholder, initialText = "", autoFocus = false, leading }: AddressSearchProps) {
+export function AddressSearch({ point, lang, onPick, label, placeholder, initialText = "", autoFocus = false, leading, inputClassName }: AddressSearchProps) {
   const { t } = useTranslation();
   const listId = useId();
   const [text, setText] = useState(initialText);
@@ -81,7 +83,7 @@ export function AddressSearch({ point, lang, onPick, label, placeholder, initial
   return (
     <div className="relative min-w-0 flex-1">
       {showList && (
-        <div className="absolute inset-x-0 bottom-full z-20 mb-2 lg:top-full lg:bottom-auto lg:mt-2 lg:mb-0 overflow-hidden rounded-xl border bg-popover shadow-xl">
+        <div className="absolute inset-x-0 top-full z-30 mt-2 max-h-[60dvh] overflow-y-auto rounded-none border bg-popover text-popover-foreground shadow-xl">
           {results.length > 0 && (
             <ul id={listId} role="listbox" aria-label={label ?? t("searchLabel")}>
               {results.map((place, i) => (
@@ -135,13 +137,13 @@ export function AddressSearch({ point, lang, onPick, label, placeholder, initial
         onFocus={() => setOpen(true)}
         onBlur={() => setOpen(false)}
         onKeyDown={onKeyDown}
-        className="h-11 w-full rounded-lg bg-muted pr-10 pl-9 text-base outline-none select-text placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring [&::-webkit-search-cancel-button]:hidden"
+        className={`w-full pr-10 pl-9 outline-none select-text [&::-webkit-search-cancel-button]:hidden ${inputClassName ?? "h-11 rounded-lg bg-muted text-base placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring"}`}
       />
       {text && (
         <button
           type="button"
           aria-label={t("clearSearch")}
-          className="absolute top-1/2 right-0 grid size-11 -translate-y-1/2 place-items-center text-muted-foreground"
+          className="search-clear absolute top-1/2 right-0 grid size-11 -translate-y-1/2 place-items-center text-muted-foreground"
           onClick={() => {
             setText("");
             setActive(-1);

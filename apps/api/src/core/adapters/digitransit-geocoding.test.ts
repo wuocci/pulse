@@ -65,4 +65,28 @@ describe("the Digitransit geocoder", () => {
 
     await expect(digitransitGeocoder({ url: URL_, apiKey: "k", fetchFn }).search("kampp", search)).rejects.toThrow("503");
   });
+
+  it("names a point by the address there, with its district", async () => {
+    const asked: URL[] = [];
+    const fetchFn = vi.fn(async (url: string | URL | Request) => {
+      asked.push(new URL(String(url)));
+      return Response.json({
+        features: [{ geometry: { type: "Point", coordinates: [24.9317, 60.169] }, properties: { name: "Kampinkuja 1", label: "Kampinkuja 1, Helsinki", distance: 0.005, neighbourhood: "Kamppi" } }],
+      });
+    });
+
+    const found = await digitransitGeocoder({ url: URL_, apiKey: "k", fetchFn }).reverse({ lat: 60.169, lon: 24.93164 }, "fi");
+
+    expect(found).toEqual({ name: "Kampinkuja 1", label: "Kampinkuja 1, Kamppi", lat: 60.169, lon: 24.9317 });
+    expect(`${asked[0]!.origin}${asked[0]!.pathname}`).toBe(`${URL_}/reverse`);
+    expect(Object.fromEntries(asked[0]!.searchParams)).toEqual({ "point.lat": "60.169", "point.lon": "24.93164", size: "1", layers: "address,street", lang: "fi" });
+  });
+
+  it("names no point that's far from any address", async () => {
+    const fetchFn = vi.fn(async () =>
+      Response.json({ features: [{ geometry: { type: "Point", coordinates: [24.9, 60.1] }, properties: { name: "Far 1", label: "Far 1", distance: 0.8 } }] }),
+    );
+
+    expect(await digitransitGeocoder({ url: URL_, apiKey: "k", fetchFn }).reverse({ lat: 60.1, lon: 24.95 }, "fi")).toBeUndefined();
+  });
 });

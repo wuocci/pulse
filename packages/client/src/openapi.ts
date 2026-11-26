@@ -122,6 +122,70 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/geocode/reverse": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query: {
+                    /** @description lat,lon: the point to name */
+                    at: string;
+                    /** @description The reader's language; the Region's main language when it doesn't speak it */
+                    lang?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The address at `at`, named with its district (`label`); none outside every Region, or with no address near it. */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            result?: components["schemas"]["GeocodeResult"];
+                        };
+                    };
+                };
+                /** @description The geocoder failed */
+                502: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            message: string;
+                        };
+                    };
+                };
+                /** @description The Region has no address search */
+                503: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            message: string;
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/geocode": {
         parameters: {
             query?: never;
@@ -204,6 +268,12 @@ export interface paths {
                     modes?: string;
                     /** @description Default: now */
                     departAt?: string;
+                    /** @description Plan to arrive by this time instead; wins over departAt */
+                    arriveBy?: string;
+                    /** @description How fast you walk, km/h; also on public transport's walks. Default: Digitransit's (about 4.8) */
+                    walkSpeed?: number;
+                    /** @description How fast you cycle, km/h. Default: Digitransit's (about 18) */
+                    bikeSpeed?: number;
                 };
                 header?: never;
                 path?: never;

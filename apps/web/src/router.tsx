@@ -1,7 +1,6 @@
-import { createRootRoute, createRoute, createRouter, Outlet, type RouterHistory } from "@tanstack/react-router";
+import { createRootRoute, createRoute, createRouter, Outlet, redirect, type RouterHistory } from "@tanstack/react-router";
 import { z } from "zod";
 import { Around } from "./Around.tsx";
-import { Home } from "./Home.tsx";
 
 // The view lives in the URL, so a reload, a shared link or a push deep link lands on the same thing.
 // A malformed value is dropped rather than failing the page.
@@ -10,6 +9,8 @@ const SearchSchema = z.object({
   // The time switch; Now when absent.
   // "now", or a picked time on the device's clock, as a datetime-local input gives it.
   time: z.union([z.literal("now"), z.string().regex(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/)]).optional().catch(undefined),
+  // On a Trip: the time is when to arrive by, not when to leave.
+  arrive: z.boolean().optional().catch(undefined),
   // The selected Event's id.
   event: z.string().optional().catch(undefined),
   // Trip mode, and the Trip: To (and From, else the point) as lat,lon with the name the search gave.
@@ -25,10 +26,18 @@ const SearchSchema = z.object({
 });
 
 const rootRoute = createRootRoute({ component: Outlet });
-// Home: where to, your places, and only what changes plans near them (design round 2026-11-25).
-const homeRoute = createRoute({ getParentRoute: () => rootRoute, path: "/", component: Home });
-// Around: the map and everything going on around a point, and Trips for now.
-const aroundRoute = createRoute({ getParentRoute: () => rootRoute, path: "/around", validateSearch: SearchSchema, component: Around });
+// One screen (2026-11-26, Home folded into Around): where to, your places and only what changes plans near them,
+// then what's going on around a point, on the list and the map; Trips open in place.
+const homeRoute = createRoute({ getParentRoute: () => rootRoute, path: "/", validateSearch: SearchSchema, component: Around });
+// Where Around was: old links and bookmarks land on the same view.
+const aroundRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/around",
+  validateSearch: SearchSchema,
+  beforeLoad: ({ search }) => {
+    throw redirect({ to: "/", search, replace: true });
+  },
+});
 
 export function createAppRouter(history?: RouterHistory) {
   return createRouter({ routeTree: rootRoute.addChildren([homeRoute, aroundRoute]), ...(history ? { history } : {}) });
