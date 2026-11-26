@@ -1,4 +1,4 @@
-import { createClient } from "@pulse/client";
+import { createClient, type TravelMode, type Trip } from "@pulse/client";
 import { keepPreviousData, queryOptions, useQuery } from "@tanstack/react-query";
 import type { LatLon } from "./platform.tsx";
 
@@ -107,17 +107,44 @@ export function useGeocode(text: string, point: LatLon | undefined, lang: string
   });
 }
 
-// Every mode's itineraries from A to B, departing now or at `at` (a time on the device's clock), with the Events on each.
-export function useTrip(from: LatLon | undefined, to: LatLon | undefined, at?: string) {
+// The address at a point, with its district ("Kampinkuja 1, Kamppi"), to name a spot picked on the map or where you
+// are; undefined when there's none near it, or no address search.
+export function useAddressAt(point: LatLon | undefined, lang: string) {
   return useQuery({
-    queryKey: ["trip", from?.lat, from?.lon, to?.lat, to?.lon, at ?? "now"],
+    queryKey: ["address-at", point?.lat, point?.lon, lang],
+    enabled: point !== undefined,
+    queryFn: async () => {
+      const { data } = await client.GET("/geocode/reverse", { params: { query: { at: `${point!.lat},${point!.lon}`, lang } } });
+      return data?.result ?? null;
+    },
+    retry: false,
+    staleTime: Infinity,
+  });
+}
+
+// Every mode's itineraries from A to B, departing now or at `at` (a time on the device's clock), with the Events on each.
+// A Trip leaving now, at `at`, or arriving by `at`; in the modes you travel by, all when absent.
+export function useTrip(
+  from: LatLon | undefined,
+  to: LatLon | undefined,
+  at?: string,
+  { arrive = false, modes, speeds }: { arrive?: boolean; modes?: TravelMode[]; speeds?: { walk?: number; bike?: number } } = {},
+) {
+  return useQuery({
+    queryKey: ["trip", from?.lat, from?.lon, to?.lat, to?.lon, at ?? "now", arrive, modes?.join(",") ?? "all", speeds?.walk ?? "-", speeds?.bike ?? "-"],
     enabled: from !== undefined && to !== undefined,
     queryFn: async () => {
+      const time = at ? { [arrive ? "arriveBy" : "departAt"]: new Date(at).toISOString() } : {};
       const { data, response } = await client.GET("/trips", {
-        params: { query: { from: `${from!.lat},${from!.lon}`, to: `${to!.lat},${to!.lon}`, ...(at ? { departAt: new Date(at).toISOString() } : {}) } },
+        params: { query: { from: `${from!.lat},${from!.lon}`, to: `${to!.lat},${to!.lon}`, ...time, ...(modes ? { modes: modes.join(",") } : {}),
+            ...(speeds?.walk ? { walkSpeed: speeds.walk } : {}),
+            ...(speeds?.bike ? { bikeSpeed: speeds.bike } : {}),
+          },
+        },
       });
       if (!data) throw new Error(`GET /trips responded ${response.status}`);
-      return data;
+      // openapi-fetch's response type widens a leg's [lon, lat] pairs to number[][]; the schema says pairs.
+      return data as Trip;
     },
     // The API already asks Digitransit again once.
     retry: false,

@@ -39,11 +39,30 @@ describe("the Digitransit router", () => {
       variables: {
         o: { location: { coordinate: { latitude: 60.169, longitude: 24.9316 } } },
         d: { location: { coordinate: { latitude: 60.1986, longitude: 24.933 } } },
-        t: departAt,
+        when: { earliestDeparture: departAt },
         first: 3,
         modes: { transit: { transit: expect.arrayContaining([{ mode: "BUS" }, { mode: "TRAM" }, { mode: "SUBWAY" }]) } },
       },
     });
+  });
+
+  it("plans to arrive by a time when asked", async () => {
+    const { fetchFn, asked } = fakeDigitransit(transit);
+
+    await digitransitRouter({ url: URL_, apiKey: "secret", fetchFn }).plan({ from: KAMPPI, to: PASILA, mode: "transit", departAt, arriveBy: "2026-11-02T09:00:00+02:00" });
+
+    expect(asked[0]!.variables.when).toEqual({ latestArrival: "2026-11-02T09:00:00+02:00" });
+  });
+
+  it("walks and cycles at your speeds when given, and at Digitransit's own otherwise", async () => {
+    const { fetchFn, asked } = fakeDigitransit(transit);
+    const router = digitransitRouter({ url: URL_, apiKey: "secret", fetchFn });
+
+    await router.plan({ from: KAMPPI, to: PASILA, mode: "transit", departAt, speeds: { walk: 1.5, bike: 6 } });
+    await router.plan({ from: KAMPPI, to: PASILA, mode: "transit", departAt });
+
+    expect(asked[0]!.variables.prefs).toEqual({ street: { walk: { speed: 1.5 }, bicycle: { speed: 6 } } });
+    expect(asked[1]!.variables).not.toHaveProperty("prefs");
   });
 
   it("asks for one direct route when walking, cycling or driving", async () => {

@@ -21,11 +21,21 @@ export interface TripRequest {
   to: { lat: number; lon: number };
   mode: TravelMode;
   departAt: string;
+  // Plans to arrive by this time instead of leaving at `departAt`.
+  arriveBy?: string;
+  // How fast you walk and cycle, in metres a second; Digitransit's own when absent. Walking counts on every way
+  // that walks, public transport's too.
+  speeds?: Speeds;
   // Driving only: no park-and-ride ways.
   directOnly?: boolean;
   // One try among several (a detour's waypoint, a spot to walk in from): asked once, and "no route" is believed.
   // Such a point is often off the roads, so "no route" is the usual answer, and asking again only doubles the wait.
   probe?: boolean;
+}
+
+export interface Speeds {
+  walk?: number;
+  bike?: number;
 }
 
 // An itinerary as planned, before Events are matched to it.
@@ -41,8 +51,8 @@ const TRANSIT_MODES = ["BUS", "TRAM", "RAIL", "SUBWAY", "FERRY"].map((mode) => (
 const DIRECT = { walk: "WALK", bike: "BICYCLE", car: "CAR" } as const;
 const PARK_AND_RIDE_ITINERARIES = 2;
 
-const QUERY = `query($o: PlanLabeledLocationInput!, $d: PlanLabeledLocationInput!, $t: OffsetDateTime, $modes: PlanModesInput, $first: Int) {
-  planConnection(origin: $o, destination: $d, dateTime: { earliestDeparture: $t }, modes: $modes, first: $first) {
+const QUERY = `query($o: PlanLabeledLocationInput!, $d: PlanLabeledLocationInput!, $when: PlanDateTimeInput, $modes: PlanModesInput, $first: Int, $prefs: PlanPreferencesInput) {
+  planConnection(origin: $o, destination: $d, dateTime: $when, modes: $modes, first: $first, preferences: $prefs) {
     routingErrors { code }
     edges { node { start end duration
       legs { mode
@@ -98,9 +108,14 @@ interface Answer {
 
 export function digitransitRouter({ url, apiKey, fetchFn = fetch, timeoutMs = TIMEOUT_MS, clock = () => new Date() }: RouterOptions): Router {
   type Ways = { modes: object; first: number };
-  async function ask({ from, to, departAt }: TripRequest, ways: Ways): Promise<Answer> {
+  async function ask({ from, to, departAt, arriveBy, speeds }: TripRequest, ways: Ways): Promise<Answer> {
     const location = ({ lat, lon }: TripRequest["from"]) => ({ location: { coordinate: { latitude: lat, longitude: lon } } });
-    const variables = { o: location(from), d: location(to), t: departAt, ...ways };
+    const when = arriveBy ? { latestArrival: arriveBy } : { earliestDeparture: departAt };
+    const street = {
+      ...(speeds?.walk ? { walk: { speed: speeds.walk } } : {}),
+      ...(speeds?.bike ? { bicycle: { speed: speeds.bike } } : {}),
+    };
+    const variables = { o: location(from), d: location(to), when, ...ways, ...(Object.keys(street).length ? { prefs: { street } } : {}) };
     const res = await fetchFn(url, {
       method: "POST",
       headers: { "content-type": "application/json", "digitransit-subscription-key": apiKey },

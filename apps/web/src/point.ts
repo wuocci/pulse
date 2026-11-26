@@ -32,8 +32,8 @@ export function centreOf({ bbox }: { bbox: number[] }): LatLon | undefined {
 export function usePoint(): { point: LatLon | undefined; setPoint: (point: LatLon) => void } {
   const { storage } = usePlatform();
   const queryClient = useQueryClient();
-  const { at } = useSearch({ from: "/around" });
-  const navigate = useNavigate({ from: "/around" });
+  const { at } = useSearch({ from: "/" });
+  const navigate = useNavigate({ from: "/" });
   const regions = useRegions();
   const stored = useQuery({ queryKey: ["stored-point"], queryFn: () => storage.get(STORAGE_KEY), staleTime: Infinity });
 

@@ -15,6 +15,11 @@ function fakeGeocoder({ fail = false } = {}) {
       if (fail) throw new Error("Digitransit geocoding responded 503");
       return [KAMPPI];
     },
+    async reverse(at, lang) {
+      asked.push({ text: `reverse ${at.lat},${at.lon}`, search: { focus: at, bbox: [0, 0, 0, 0], lang } });
+      if (fail) throw new Error("Digitransit geocoding responded 503");
+      return KAMPPI;
+    },
   };
   return { geocoder, asked };
 }
@@ -73,5 +78,27 @@ describe("GET /v0/geocode", () => {
 
     expect((await get(app, "text=k&near=60.17,24.93")).status).toBe(400);
     expect((await get(app, "text=kampp")).status).toBe(400);
+  });
+});
+
+describe("GET /v0/geocode/reverse", () => {
+  it("names the point, in the reader's language when the Region speaks it", async () => {
+    const { geocoder, asked } = fakeGeocoder();
+    const app = appWith(() => geocoder);
+
+    const res = await app.request("/v0/geocode/reverse?at=60.169,24.9316&lang=sv");
+
+    expect(res.status).toBe(200);
+    expect(await res.json()).toEqual({ result: KAMPPI });
+    expect(asked.map((a) => [a.text, a.search.lang])).toEqual([["reverse 60.169,24.9316", "sv"]]);
+  });
+
+  it("names nothing outside every Region, and says when search is off or failed", async () => {
+    const { geocoder } = fakeGeocoder({ fail: true });
+
+    expect(await (await appWith(() => geocoder).request("/v0/geocode/reverse?at=48.85,2.35")).json()).toEqual({});
+    expect((await appWith().request("/v0/geocode/reverse?at=60.169,24.9316")).status).toBe(503);
+    expect((await appWith(() => geocoder).request("/v0/geocode/reverse?at=60.169,24.9316")).status).toBe(502);
+    expect((await appWith(() => geocoder).request("/v0/geocode/reverse?at=kamppi")).status).toBe(400);
   });
 });

@@ -1,25 +1,33 @@
 import type { Event, GeocodeResult, TravelMode } from "@pulse/client";
-import { CalendarClock, ChevronDown, LoaderCircle, LocateFixed, List, LocateIcon, Map as MapIcon, Navigation, X } from "lucide-react";
-import { Link, useNavigate, useSearch } from "@tanstack/react-router";
+import { CalendarClock, ChevronDown, LoaderCircle, LocateFixed, List, LocateIcon, Map as MapIcon, MapPin, Navigation, Search, Star, X } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { useNavigate, useSearch } from "@tanstack/react-router";
 import { type ReactNode, useEffect, useId, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { AddressSearch } from "./AddressSearch.tsx";
-import { RADIUS_M, useComingUp, useEvents, useRegions, useTrip } from "./api.ts";
-import { EventCard, EventGlance } from "./EventCard.tsx";
-import { distance } from "./EventList.tsx";
+import { RADIUS_M, useAddressAt, useComingUp, useEvents, useRegions, useTrip } from "./api.ts";
+import { EventGlance } from "./EventCard.tsx";
+import { distance } from "./rowWords.ts";
 import { Accordion, EventRow } from "./EventRows.tsx";
-import { nearestFirst, pickedText, readingLanguages, type RowValue, type Sections, sectionsOf, startsOf, summaryOf, textIn, tripPins, untilOf } from "./events.ts";
+import { metresBetween, nearestFirst, pickedText, readingLanguages, type RowValue, type Sections, sectionsOf, startsOf, summaryOf, textIn, tripPins, untilOf } from "./events.ts";
 import { EventPin, PinGroup } from "./map/EventPin.tsx";
 import { Legend } from "./MapOverlays.tsx";
 import { PointMap, type PointMapProps } from "./map/PointMap.tsx";
 import { type LatLon, LocationError, usePlatform } from "./platform.tsx";
 import { formatAt, parseAt, usePoint } from "./point.ts";
-import { ThemeSetting } from "./ThemeSetting.tsx";
-import { HeadsUp, Itineraries, OnTheWay, ParkingNear, parkingDetails, TravelModes, TripForm } from "./TripPanel.tsx";
+import { Settings } from "./Settings.tsx";
+import { PlaceForm, PlacesRow, YourPlaces } from "./Places.tsx";
+import { type SavedPlace, savedAt, usePlaces } from "./places.ts";
+import { parkingDetails, TripForm, TripRoute } from "./TripPanel.tsx";
+import { TripResult } from "./TripResult.tsx";
+import { ALL_MODES, useSpeeds, useTravelModes } from "./travelModes.ts";
+import { arrivalOf, avoidedBy, bestOf, itineraryOf, type Step, stepsOf, type Way } from "./trips.ts";
+import { WaySteps } from "./WaySteps.tsx";
 
 // Around, summary first: where it looks around and the gist on top, a strip of map (tap it for the whole map), then
-// what's in your way, around you and coming up. A card opens in place of the sections. On a wide screen the same
+// what's in your way, around you and coming up, each card opening in place. A Trip shows its one recommendation
+// instead (TripResult). On a wide screen the same
 // content sits in a panel beside a big map.
 
 type Locate = "off" | "centred" | "following";
@@ -45,22 +53,43 @@ export function Around() {
   const { location, storage } = usePlatform();
   const { point, setPoint } = usePoint();
   const regions = useRegions();
-  const search = useSearch({ from: "/around" });
-  const { event: selectedId, mode = "transit" } = search;
+  const search = useSearch({ from: "/" });
+  const { event: selectedId } = search;
   const at = search.time && search.time !== "now" ? search.time : undefined;
-  const navigate = useNavigate({ from: "/around" });
+  const navigate = useNavigate({ from: "/" });
   const events = useEvents(point, at);
   const soon = useComingUp(point);
   const sections = useMemo(() => (point && events.data ? sectionsOf(events.data, soon.data ?? [], point) : undefined), [point, events.data, soon.data]);
   const tripFrom = parseAt(search.from) ?? point;
   const tripTo = parseAt(search.to);
-  const trip = useTrip(search.trip ? tripFrom : undefined, search.trip ? tripTo : undefined, at);
+  const { modes: usualModes } = useTravelModes();
+  const { speeds } = useSpeeds();
+  // Every mode is the API's default: asked by name only when some are left out.
+  const tripModes = usualModes && usualModes.length < ALL_MODES.length ? usualModes : undefined;
+  const trip = useTrip(search.trip && usualModes && speeds ? tripFrom : undefined, search.trip ? tripTo : undefined, at, {
+    arrive: search.arrive === true,
+    ...(tripModes ? { modes: tripModes } : {}),
+    ...(speeds ? { speeds } : {}),
+  });
+  // The Trip as planned, with how fast you walk: a drive's walk from parking is timed at it.
+  // Arriving by a time, the best way is the one that lets you leave latest.
+  const arriveBy = search.arrive && at ? new Date(at).getTime() : undefined;
+  const planned = useMemo(() => trip.data && { ...trip.data, walkKmh: speeds?.walk, arriveBy }, [trip.data, speeds?.walk, arriveBy]);
   const [locate, setLocate] = useState<Locate>("off");
   const [locating, setLocating] = useState(false);
   const [failure, setFailure] = useState<LocationError["reason"] | null>(null);
-  // On a phone, Around shows either the list or the map; a desktop shows both.
-  const [mapView, setMapView] = useState(false);
+  // On a phone, Around shows either the list or the map; a desktop shows both. The list comes first: the map is
+  // for a way to show (switched to with List/Map), or for one Event (Show on map, with the way back to the list).
+  const [mapChosen, setMapView] = useState(false);
+  // A Trip with nowhere to go yet has nothing to list: its fields are over the map, which can pick the place too.
+  const choosingTo = !!search.trip && !tripTo;
+  const mapView = mapChosen || choosingTo;
   const [place, setPlace] = useState<Place>();
+  // On a phone's map, a Trip's From and To fold to one line once there's a way to show; tapping it opens them.
+  const [editing, setEditing] = useState(false);
+  // Where the map was long-pressed: it asks what to do there.
+  const [pressed, setPressed] = useState<LatLon>();
+  const { places } = usePlaces();
 
   const setPointRef = useRef(setPoint);
   useEffect(() => {
@@ -141,9 +170,16 @@ export function Around() {
       search: (prev) => ({ ...prev, trip: undefined, to: undefined, toName: undefined, from: undefined, fromName: undefined, mode: undefined }),
       replace: true,
     });
-  const setTripEnd = (end: "from" | "to") => (picked: GeocodeResult) =>
+  const setTripEnd = (end: "from" | "to") => (picked: GeocodeResult) => {
+    setEditing(false);
+    // Picked over the map: the way is shown there.
+    if (choosingTo) setMapView(true);
     void navigate({ search: (prev) => ({ ...prev, [end]: formatAt(picked), [`${end}Name`]: picked.name }), replace: true });
-  const setTime = (next: string | undefined) => void navigate({ search: (prev) => ({ ...prev, time: next }), replace: true });
+  };
+  const setTime = (next: string | undefined, arrive = false) =>
+    void navigate({ search: (prev) => ({ ...prev, time: next, arrive: next && arrive ? true : undefined }), replace: true });
+  // The way shown: one chosen among the other ways, else the best.
+  const setWay = (way: Partial<Way> | undefined) => void navigate({ search: (prev) => ({ ...prev, mode: way?.mode, route: way?.index }), replace: true });
 
   // Focus goes back where the card was opened from: its pin, or its row in a list.
   const returnTo = useRef<HTMLElement | null>(null);
@@ -167,28 +203,16 @@ export function Around() {
   }, [selectedId]);
 
   const languages = useMemo(() => readingLanguages(i18n.language, regions.data?.[0]?.languages), [i18n.language, regions.data]);
-  const recommended = trip.data?.recommended;
-  const shownIndex = (m: TravelMode) => (m === mode && search.route !== undefined ? search.route : recommended?.mode === m ? recommended.index : 0);
-  const plan = search.trip ? trip.data?.plans.find((p) => p.mode === mode) : undefined;
-  const itinerary = plan ? (plan.itineraries[shownIndex(mode)] ?? plan.itineraries[0]) : undefined;
-  const avoids = (() => {
-    if (!trip.data || !recommended) return undefined;
-    const ways = trip.data.plans.flatMap((p) => p.itineraries);
-    const fastest = ways.reduce<(typeof ways)[number] | undefined>((a, b) => (!a || Date.parse(b.end) < Date.parse(a.end) ? b : a), undefined);
-    const better = trip.data.plans.find((p) => p.mode === recommended.mode)?.itineraries[recommended.index];
-    const inWay = (way: typeof fastest) => new Set(way?.onTheWay.filter((m) => m.impact === "consider" || m.impact === "major").map((m) => m.eventId));
-    const [onFastest, onBetter] = [inWay(fastest), inWay(better)];
-    const avoided = trip.data.events.filter((e) => onFastest.has(e.id) && !onBetter.has(e.id));
-    const rank = { info: 0, minor: 1, consider: 2, major: 3 };
-    const worst = avoided.sort((a, b) => rank[b.severity] - rank[a.severity])[0];
-    return worst && textIn(worst.title, languages);
-  })();
+  const best = search.trip && planned ? bestOf(planned) : undefined;
+  const shown: Way | undefined = search.mode ? { mode: search.mode, index: search.route ?? (best?.mode === search.mode ? best.index : 0) } : best;
+  const mode: TravelMode = shown?.mode ?? "transit";
+  const itinerary = search.trip && planned ? itineraryOf(planned, shown) : undefined;
+  const avoided = planned ? avoidedBy(planned, best) : undefined;
+  const avoids = avoided && textIn(avoided.title, languages);
   const onTrip = useMemo(
-    () => (search.trip ? tripPins(itinerary?.onTheWay ?? [], trip.data?.events ?? []) : undefined),
-    [search.trip, itinerary, trip.data],
+    () => (search.trip ? tripPins(itinerary?.onTheWay ?? [], planned?.events ?? []) : undefined),
+    [search.trip, itinerary, planned],
   );
-  const listed = useMemo(() => (sections ? [...sections.inYourWay, ...sections.aroundYou, ...sections.comingUp] : []), [sections]);
-  const selected = search.trip ? onTrip?.find((p) => p.event.id === selectedId)?.event : listed.find((e) => e.id === selectedId);
   // On the map: what's going on at the time, and a coming-up Event while its card is open.
   const around = useMemo(() => {
     if (search.trip || !point || !sections) return [];
@@ -197,10 +221,10 @@ export function Around() {
   }, [search.trip, point, sections, selectedId]);
   const pins = onTrip ?? around;
   const titleOf = (id: string) => {
-    const event = trip.data?.events.find((e) => e.id === id);
+    const event = planned?.events.find((e) => e.id === id);
     return event && textIn(event.title, languages);
   };
-  const parking = mode === "car" && itinerary?.legs.every((leg) => leg.mode === "car" || leg.mode === "walk") ? trip.data?.parking : undefined;
+  const parking = mode === "car" && itinerary?.legs.every((leg) => leg.mode === "car" || leg.mode === "walk") ? planned?.parking : undefined;
   const parkingOnMap = useMemo(
     () => parking && { picks: parking.picks, places: (parking.street?.places ?? []).map((spot) => ({ ...spot, label: parkingDetails(spot, t) })) },
     [parking, t],
@@ -239,7 +263,7 @@ export function Around() {
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
   }, [glance]);
-  const listCardOpen = !search.trip && !!selectedId;
+  const listCardOpen = !!selectedId;
   useEffect(() => {
     if (!listCardOpen) return;
     const onKey = (e: globalThis.KeyboardEvent) => e.key === "Escape" && closeCardRef.current();
@@ -255,6 +279,10 @@ export function Around() {
     if (!place || !point || place.at !== formatAt(point)) return undefined;
     return place.name === HERE ? t("currentLocation") : place.name || undefined;
   })();
+  const fromLabel = search.fromName ?? placeName ?? t("fromHere");
+  const steps = planned && shown && itinerary ? stepsOf(itinerary, { from: fromLabel, to: search.toName ?? t("to"), parking: t("tripParkHere") }, arrivalOf(planned, shown.mode, itinerary), parking?.picks[0]) : undefined;
+  // A phone's map with a way to show: From and To as one line, the way under it.
+  const folded = mapView && !!search.trip && !!itinerary && !editing;
 
   // The summary line; null while it's still looking around.
   const status = (() => {
@@ -272,67 +300,143 @@ export function Around() {
     return summary.major ? t("summaryMajor", { summary: text, count: summary.major }) : text;
   })();
 
+  const failureLine = failure && (
+    <p role="alert" className="text-sm">
+      {t(failure === "denied" ? "locationDenied" : "locationUnavailable")}
+    </p>
+  );
+  const statusLine = (
+    <p role="status" className={`around-status ${mapView ? "max-lg:sr-only" : ""}`}>
+      {status === null ? (
+        <>
+          <LoaderCircle aria-hidden className="size-4 animate-spin motion-reduce:animate-none" />
+          {t("lookingAround")}
+        </>
+      ) : (
+        status
+      )}
+    </p>
+  );
+  // The point's address, and where you are when the point isn't: to name the place and say how far it is.
+  const address = useAddressAt(search.trip ? undefined : point, languages[0] ?? "en");
+  const you = useQuery({
+    queryKey: ["you"],
+    queryFn: async () => ((await location.allowed()) ? await location.current().catch(() => null) : null),
+    retry: false,
+    staleTime: 60_000,
+  });
+  const here = savedAt(places, point);
+  // Whose the place is, so the heading can say: your location, one of your places, an address searched, or a spot
+  // (picked on the map, or from a link).
+  const placeHere = !!place && !!point && place.at === formatAt(point);
+  const kind: HereKind = locate !== "off" || (placeHere && place.name === HERE) ? "you" : here ? "saved" : placeHere && place.name ? "searched" : "spot";
+  const hereName = here?.name ?? (kind === "searched" ? place?.name : address.data?.name);
+  const metres = kind !== "you" && point && you.data ? metresBetween(you.data, point) : undefined;
+  const hereDetail = [
+    t(`hereKind_${kind}`),
+    kind === "saved" || kind === "searched" ? address.data?.label : undefined,
+    metres !== undefined ? t("hereAway", { distance: distance(metres, i18n.language) }) : undefined,
+  ]
+    .filter(Boolean)
+    .join(" · ");
+
+  // A phone switches between the list and the map once a Trip has its answer (a way, or why there's none). Before
+  // that there's one screen: the list, or the Trip's fields over the map.
+  const canSwitch = !!search.trip && !!tripTo && (!!planned || trip.isError);
+  const showOnMap = (id: string) => {
+    const pin = pins.find((p) => p.event.id === id);
+    if (pin) zoomTo({ lat: pin.lngLat[1], lon: pin.lngLat[0] });
+    setMapView(true);
+  };
+  const goTo = (to: LatLon, name: string) => {
+    setPressed(undefined);
+    setEditing(false);
+    setMapView(true);
+    void navigate({ search: (prev) => ({ ...prev, trip: true, to: formatAt(to), toName: name, mode: undefined, route: undefined }) });
+  };
+  const lookAt = (to: LatLon, name: string) => {
+    setPressed(undefined);
+    if (search.trip) closeTrip();
+    choosePlace(to, name);
+  };
+
   const locateLabel = { off: t("goToMyLocation"), centred: t("followMyLocation"), following: t("followingYourLocation") }[locate];
   const LocateGlyph = { off: LocateIcon, centred: LocateFixed, following: Navigation }[locate];
   const lang = languages[0] ?? "en";
-  const card = search.trip && selected ? <EventCard event={selected} languages={languages} timeZone={timeZone} onClose={closeCard} /> : null;
 
   return (
     <main className="signage around relative grid h-dvh w-full grid-rows-[auto_minmax(0,1fr)] overflow-hidden [grid-template-areas:'head'_'main'] lg:grid-cols-[26rem_minmax(0,1fr)] lg:grid-rows-[auto_minmax(0,1fr)] lg:[grid-template-areas:'head_map'_'body_map']">
       <h1 className="sr-only">{t("appName")}</h1>
-      <div className={`around-head space-y-3 p-4 pt-[max(1rem,env(safe-area-inset-top))] [grid-area:head] ${mapView ? "pointer-events-none absolute inset-x-0 top-0 z-10 *:pointer-events-auto lg:pointer-events-auto lg:static" : ""}`}>
+      {/* An Event shown on a phone's map has the map to itself, with the way back to the list. */}
+      <div
+        className={`around-head space-y-3 p-4 pt-[max(1rem,env(safe-area-inset-top))] [grid-area:head] ${mapView ? "pointer-events-none absolute inset-x-0 top-0 z-20 *:pointer-events-auto lg:pointer-events-auto lg:static" : "relative z-20"} ${mapView && !search.trip ? "max-lg:hidden" : ""}`}
+      >
         {search.trip ? (
-          <div className={mapView ? "max-lg:hidden" : undefined}>
-            <TripForm point={point} lang={lang} fromName={search.fromName} toName={search.toName} onFrom={setTripEnd("from")} onTo={setTripEnd("to")} onClose={closeTrip} />
-          </div>
+          <>
+            {folded && <TripRoute fromName={fromLabel} toName={search.toName ?? t("to")} onEdit={() => setEditing(true)} onClose={closeTrip} />}
+            <div className={folded ? "max-lg:hidden" : undefined}>
+              <TripForm point={point} lang={lang} fromName={search.fromName} toName={search.toName} to={tripTo} onFrom={setTripEnd("from")} onTo={setTripEnd("to")} onClose={closeTrip} />
+            </div>
+          </>
         ) : (
           <>
-            <div className={`around-top ${mapView ? "max-lg:hidden" : ""}`}>
-              <Link to="/" className="around-back" aria-label={t("aroundBackLabel")}>
-                ‹ {t("aroundBack")}
-              </Link>
+            <div className="around-top">
+              <span className="home-mark">{t("appName")}</span>
             </div>
-            <PlaceChip name={placeName ?? t("chosenPlace")} point={point} lang={lang} locating={locating} onHere={() => void goHere().then((ok) => ok && setLocate("off"))} onPick={(p) => choosePlace(p, p.name)} />
           </>
         )}
-        <p role="status" className={`around-status ${mapView ? "max-lg:sr-only" : ""}`}>
-          {status === null ? (
-            <>
-              <LoaderCircle aria-hidden className="size-4 animate-spin motion-reduce:animate-none" />
-              {t("lookingAround")}
-            </>
-          ) : (
-            status
-          )}
-        </p>
+        {search.trip && statusLine}
         {!search.trip && (
-          <button type="button" onClick={openTrip} className={`around-where ${mapView ? "max-lg:hidden" : ""}`}>
+          <button type="button" onClick={openTrip} className="around-where">
             <span>{t("whereTo")}</span>
             <span aria-hidden>→</span>
           </button>
         )}
-        <TimeControl at={at} leave={search.trip === true} onChange={setTime} />
+        {!search.trip && <PlacesRow />}
+        {/* On a Trip, when to go is asked with where: the suggestions open over it. */}
+        {search.trip && (
+          <div className={folded ? "max-lg:hidden" : undefined}>
+            <TimeControl at={at} arrive={search.arrive === true} trip onChange={setTime} />
+          </div>
+        )}
+        {folded && planned && shown && itinerary && (
+          <WayOnMap
+            isBest={!!best && best.mode === shown.mode && best.index === shown.index}
+            mode={shown.mode}
+            leave={itinerary.start}
+            arrive={arrivalOf(planned, shown.mode, itinerary)}
+            steps={steps ?? []}
+            timeZone={timeZone}
+            onBest={() => setWay(undefined)}
+            onStep={zoomTo}
+          />
+        )}
         {regions.isError && (
           <p role="alert" className="text-sm">
             {t("regionsFailed")}
           </p>
         )}
-        {failure && (
-          <p role="alert" className="text-sm">
-            {t(failure === "denied" ? "locationDenied" : "locationUnavailable")}
-          </p>
-        )}
+        {/* Your location failing is said where it was asked for: on the start screen, under the place's heading. */}
+        {failure && (search.trip || mapView) && failureLine}
       </div>
       <div className={`[grid-area:main] max-lg:[&_.maplibregl-ctrl-bottom-right]:mb-24! lg:relative lg:block! lg:[grid-area:map] [&_.maplibregl-ctrl-bottom-right]:mb-0! ${mapView ? "absolute inset-0 block" : "hidden"}`}>
         <PointMap
           point={point}
-          onLongPress={(to) => choosePlace(to)}
+          // A long press asks: go there, look around there, or save it.
+          onLongPress={setPressed}
           onPan={() => setLocate("off")}
-          onMapClick={closeCard}
+          onMapClick={() => {
+            setPressed(undefined);
+            closeCard();
+          }}
           pins={pins}
           {...(itinerary ? { route: itinerary.legs } : {})}
           {...(parkingOnMap ? { parking: parkingOnMap } : {})}
-          {...(search.trip && tripTo ? { destination: { ...tripTo, name: search.toName ?? t("to") } } : {})}
+          {...(pressed
+            ? { destination: { ...pressed, name: t("pointOnMap") } }
+            : search.trip && tripTo
+              ? { destination: { ...tripTo, name: search.toName ?? t("to") } }
+              : {})}
           {...(focus ? { focus } : {})}
           renderPin={(pin) => (
             <EventPin
@@ -375,7 +479,7 @@ export function Around() {
           <Legend radiusM={search.trip ? undefined : RADIUS_M} />
         </div>
         <div className="absolute right-0 bottom-36 flex flex-col items-center gap-2 p-4 lg:bottom-8">
-          <ThemeSetting align="right" className="max-lg:hidden" />
+          <Settings align="right" className="max-lg:hidden" />
           <Button
             variant={locate === "following" ? "default" : "secondary"}
             size="icon"
@@ -390,57 +494,142 @@ export function Around() {
         </div>
       </div>
       <div className={`around-body overflow-y-auto p-4 pb-28 [grid-area:main] lg:pb-[max(1rem,env(safe-area-inset-bottom))] lg:block! lg:[grid-area:body] ${mapView ? "hidden" : "block"}`}>
-        {card && <div className="rounded-3xl border bg-card">{card}</div>}
-        <div hidden={card !== null} className="space-y-5">
-          {search.trip ? (
-            tripTo && (
-              <div className="space-y-4">
-                {trip.isError ? (
-                  <p role="alert" className="text-sm">
-                    {t("tripFailed")}
-                  </p>
-                ) : (
-                  <TravelModes
-                    trip={trip.data}
-                    mode={mode}
-                    shownIndex={shownIndex}
-                    onMode={(next) => void navigate({ search: (prev) => ({ ...prev, mode: next, route: undefined }), replace: true })}
-                  />
-                )}
-                {trip.isPending ? (
-                  <p aria-hidden className="flex items-center gap-2 py-2 text-sm text-muted-foreground">
-                    <LoaderCircle className="size-4 animate-spin motion-reduce:animate-none" />
-                    {t("findingRoutes")}
-                  </p>
-                ) : (
-                  plan && (
-                    <>
-                      <Itineraries
-                        itineraries={plan.itineraries}
-                        titleOf={titleOf}
-                        chosen={shownIndex(mode)}
-                        {...(recommended?.mode === mode ? { better: { index: recommended.index, ...(avoids ? { avoids } : {}) } } : {})}
-                        timeZone={timeZone}
-                        onChoose={(index) => void navigate({ search: (prev) => ({ ...prev, route: index }), replace: true })}
-                      />
-                      {itinerary && <HeadsUp comingUp={itinerary.comingUp} titleOf={titleOf} legs={itinerary.legs} timeZone={timeZone} />}
-                      {parking && <ParkingNear parking={parking} place={search.toName ?? t("to")} onPick={zoomTo} />}
-                      {itinerary && onTrip && (
-                        <OnTheWay legs={itinerary.legs} pins={onTrip} selectedId={selectedId} languages={languages} timeZone={timeZone} onSelect={select} onHighlight={setHighlighted} />
-                      )}
-                    </>
-                  )
-                )}
-              </div>
-            )
+        {search.trip ? (
+          tripTo &&
+          (trip.isError ? (
+            <p role="alert" className="trip-none">
+              {t("tripFailed")}
+            </p>
+          ) : !planned || !usualModes ? (
+            <p aria-hidden className="trip-none">
+              <LoaderCircle className="size-4 animate-spin motion-reduce:animate-none" />
+              {t("findingRoutes")}
+            </p>
           ) : (
-            sections && <SectionList sections={sections} point={point} selectedId={selectedId} timeZone={timeZone} onSelect={select} onClose={closeCard} onHighlight={setHighlighted} />
-          )}
-        </div>
+            <TripResult
+              trip={planned}
+              best={best}
+              shown={shown}
+              avoids={avoids}
+              from={tripFrom ?? tripTo}
+              to={tripTo}
+              toName={search.toName ?? t("to")}
+              steps={steps ?? []}
+              onStep={(to) => {
+                zoomTo(to);
+                setMapView(true);
+              }}
+              onTrip={onTrip ?? []}
+              selectedId={selectedId}
+              timeZone={timeZone}
+              titleOf={titleOf}
+              parking={parking}
+              onSelect={select}
+              onClose={closeCard}
+              onHighlight={setHighlighted}
+              onWay={(way) => {
+                setWay(way);
+                // Another way is seen on the map: a phone switches to it, with the way back on top.
+                if (way) setMapView(true);
+              }}
+              onPick={zoomTo}
+            />
+          ))
+        ) : (
+          <>
+            <YourPlaces />
+            <section className="here" aria-labelledby="here-heading">
+              <HereHeading
+                name={hereName}
+                kind={kind}
+                saved={!!here}
+                detail={hereDetail}
+                places={places ?? []}
+                point={point}
+                lang={lang}
+                locating={locating}
+                onHere={() => void goHere().then((ok) => ok && setLocate("off"))}
+                onPick={(p, name) => choosePlace(p, name)}
+              />
+              {!mapView && failureLine}
+              <TimeControl at={at} arrive={false} trip={false} onChange={setTime} />
+              {statusLine}
+              {sections && (
+                <SectionList
+                  sections={sections}
+                  point={point}
+                  selectedId={selectedId}
+                  timeZone={timeZone}
+                  onSelect={select}
+                  onClose={closeCard}
+                  onHighlight={setHighlighted}
+                  onShowOnMap={showOnMap}
+                />
+              )}
+            </section>
+          </>
+        )}
       </div>
-      <ThemeSetting align="left" className="fixed! bottom-[max(1.25rem,env(safe-area-inset-bottom))] left-4 z-30 lg:hidden" />
-      <ListOrMap map={mapView} onChange={setMapView} />
+      <Settings align="left" className="fixed! bottom-[max(1.25rem,env(safe-area-inset-bottom))] left-4 z-30 lg:hidden" />
+      {canSwitch && <ListOrMap map={mapView} onChange={setMapView} />}
+      {!search.trip && mapView && (
+        <button type="button" className="around-switch around-back-list" onClick={() => setMapView(false)}>
+          ‹ {t("backToList")}
+        </button>
+      )}
+      {pressed && (
+        <MapPress
+          at={pressed}
+          onGo={() => goTo(pressed, t("pointOnMap"))}
+          onLook={() => lookAt(pressed, "")}
+          onClose={() => setPressed(undefined)}
+        />
+      )}
     </main>
+  );
+}
+
+// On a phone's map, the way shown: which, when to leave and arrive, and one tap back to the best way.
+interface WayOnMapProps {
+  isBest: boolean;
+  mode: TravelMode;
+  leave: string;
+  arrive: number;
+  steps: Step[];
+  timeZone: string;
+  onBest: () => void;
+  onStep: (at: LatLon) => void;
+}
+
+function WayOnMap({ isBest, mode, leave, arrive, steps, timeZone, onBest, onStep }: WayOnMapProps) {
+  const { t } = useTranslation();
+  const [open, setOpen] = useState(false);
+  const clock = new Intl.DateTimeFormat("en-GB", { hour: "2-digit", minute: "2-digit", hourCycle: "h23", timeZone });
+  return (
+    <section aria-label={t("tripOnMap")} className="way-on-map lg:hidden">
+      <p className="trip-label">
+        {t(isBest ? "tripBest" : "tripChosen")} · {t(`mode_${mode}`)}
+      </p>
+      <p className="way-on-map-times">
+        {t("tripLeave", { time: clock.format(new Date(leave)) })} · {t("tripArrive", { time: clock.format(new Date(arrive)) })}
+      </p>
+      {!isBest && (
+        <button type="button" className="way-on-map-best" onClick={onBest}>
+          ‹ {t("tripBackToBest")}
+        </button>
+      )}
+      <Accordion className="way-on-map-steps" open={open} onToggle={() => setOpen(!open)} header={<span>{t("tripSteps")}</span>}>
+        {/* A step tapped folds the steps away, so the place it's at is in sight. */}
+        <WaySteps
+          steps={steps}
+          timeZone={timeZone}
+          onStep={(at) => {
+            setOpen(false);
+            onStep(at);
+          }}
+        />
+      </Accordion>
+    </section>
   );
 }
 
@@ -461,27 +650,69 @@ function ListOrMap({ map, onChange }: { map: boolean; onChange: (map: boolean) =
   );
 }
 
-interface PlaceChipProps {
-  name: string;
+type HereKind = "you" | "saved" | "searched" | "spot";
+
+interface HereHeadingProps {
+  name: string | undefined;
+  kind: HereKind;
+  saved: boolean;
+  // Whose the place is, its address, and how far it is from you.
+  detail: string;
+  places: SavedPlace[];
   point: LatLon | undefined;
   lang: string;
   locating: boolean;
   onHere: () => void;
-  onPick: (place: GeocodeResult) => void;
+  onPick: (at: LatLon, name: string) => void;
 }
 
-// "Near: Current location ▾": where Around looks around. Opens to the device's location or an address.
-function PlaceChip({ name, point, lang, locating, onHere, onPick }: PlaceChipProps) {
+// "Around Kampinkuja 1 · Change", then whose it is: the place the list is about, named, and changed in place: your
+// location, one of your places, or an address. Your location is one tap back when it's elsewhere; a place not saved
+// yet can be, from here.
+function HereHeading({ name, kind, saved, detail, places, point, lang, locating, onHere, onPick }: HereHeadingProps) {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
+  const [saving, setSaving] = useState(false);
   const id = useId();
+  // The place by name, else what it is; then whose it is, unless that's what named it.
+  const title = name ?? t(kind === "you" ? "hereKind_you" : "hereSpot");
+  const sub = name || kind !== "you" ? detail : detail.split(" · ").slice(1).join(" · ");
+  const KindIcon = { you: LocateFixed, saved: Star, searched: Search, spot: MapPin }[kind];
 
   return (
-    <div>
-      <button type="button" aria-expanded={open} aria-controls={id} onClick={() => setOpen(!open)} className="around-place">
-        <span className="truncate">{t("placeChip", { place: name })}</span>
-        <ChevronDown aria-hidden className={`size-5 shrink-0 motion-safe:transition-transform ${open ? "rotate-180" : ""}`} />
+    <div className="here-head">
+      <h2 id="here-heading" className="here-label">
+        {t("hereLabel")}
+      </h2>
+      {/* One row says where; tapping it changes it. */}
+      <button type="button" aria-expanded={open} aria-controls={id} aria-label={t("hereChangeLabel", { place: title })} onClick={() => setOpen(!open)} className="here-place" data-kind={kind}>
+        <KindIcon aria-hidden className="here-place-icon" />
+        <span className="here-place-body">
+          <span className="here-place-name">{title}</span>
+          {sub && <span className="here-place-sub">{sub}</span>}
+        </span>
+        <span className="here-place-change">
+          {t("hereChange")}
+          <ChevronDown aria-hidden className={`size-4 shrink-0 motion-safe:transition-transform ${open ? "rotate-180" : ""}`} />
+        </span>
       </button>
+      {(kind !== "you" || (!saved && point)) && (
+        <div className="here-actions">
+          {kind !== "you" && (
+            <button type="button" className="here-action" disabled={locating} onClick={onHere}>
+              <LocateFixed aria-hidden className="size-4" />
+              {locating ? t("locating") : t("useMyLocation")}
+            </button>
+          )}
+          {!saved && point && (
+            <button type="button" className="here-action" aria-expanded={saving} onClick={() => setSaving(!saving)}>
+              <Star aria-hidden className="size-4" />
+              {t("hereSave")}
+            </button>
+          )}
+        </div>
+      )}
+      {saving && point && <PlaceForm at={point} name={kind === "searched" || kind === "spot" ? (name ?? "") : ""} onDone={() => setSaving(false)} />}
       {open && (
         <div id={id} role="group" aria-label={t("placeTitle")} className="around-place-panel">
           <button
@@ -496,12 +727,29 @@ function PlaceChip({ name, point, lang, locating, onHere, onPick }: PlaceChipPro
             <LocateFixed aria-hidden className="size-5" />
             {locating ? t("locating") : t("useMyLocation")}
           </button>
+          {places.length > 0 && (
+            <div className="home-places" role="group" aria-label={t("yourPlaces")}>
+              {places.map((p) => (
+                <button
+                  key={p.name}
+                  type="button"
+                  className="home-place"
+                  onClick={() => {
+                    onPick(p, p.name);
+                    setOpen(false);
+                  }}
+                >
+                  {p.name}
+                </button>
+              ))}
+            </div>
+          )}
           <AddressSearch
             point={point}
             lang={lang}
             autoFocus
             onPick={(place) => {
-              onPick(place);
+              onPick(place, place.name);
               setOpen(false);
             }}
           />
@@ -511,40 +759,97 @@ function PlaceChip({ name, point, lang, locating, onHere, onPick }: PlaceChipPro
   );
 }
 
-// Now, or a picked date and time from the phone's own picker. A picked time shows what's going on at that moment; on
-// a Trip (`leave`) it's when to leave.
-function TimeControl({ at, leave, onChange }: { at: string | undefined; leave: boolean; onChange: (at: string | undefined) => void }) {
+// A long press on the map: go there, look around there, or save it as one of your places.
+function MapPress({ at, onGo, onLook, onClose }: { at: LatLon; onGo: () => void; onLook: () => void; onClose: () => void }) {
   const { t } = useTranslation();
+  const [saving, setSaving] = useState(false);
+  return (
+    <section aria-label={t("pointOnMap")} className="map-press">
+      <div className="map-press-head">
+        <p className="trip-label">{t("pointOnMap")}</p>
+        <button type="button" className="map-press-close" aria-label={t("close")} onClick={onClose}>
+          <X aria-hidden className="size-5" />
+        </button>
+      </div>
+      {saving ? (
+        <PlaceForm at={at} onDone={onClose} />
+      ) : (
+        <div className="map-press-actions">
+          <button type="button" className="map-press-go" onClick={onGo}>
+            {t("pressGo")}
+          </button>
+          <button type="button" onClick={onLook}>
+            {t("pressLook")}
+          </button>
+          <button type="button" onClick={() => setSaving(true)}>
+            <Star aria-hidden className="size-4" />
+            {t("pressSave")}
+          </button>
+        </div>
+      )}
+    </section>
+  );
+}
+
+// Now, or a picked date and time from the phone's own picker. A picked time shows what's going on at that moment; on
+// a Trip it's when to leave, or when to arrive by.
+function TimeControl({ at, arrive, trip, onChange }: { at: string | undefined; arrive: boolean; trip: boolean; onChange: (at: string | undefined, arrive?: boolean) => void }) {
+  const { t } = useTranslation();
+  const leaving = at && !arrive ? at : undefined;
+  const arriving = at && arrive ? at : undefined;
 
   return (
-    <div role="group" aria-label={t(leave ? "leaveWhen" : "time")} className="around-time">
+    <div role="group" aria-label={t(trip ? "leaveWhen" : "time")} className="around-time">
       <button type="button" aria-pressed={!at} onClick={() => onChange(undefined)} className="around-chip">
-        {t(leave ? "leaveNow" : "timeNow")}
+        {t(trip ? "leaveNow" : "timeNow")}
       </button>
-      <span className="around-chip relative has-focus-visible:outline-3" data-on={at !== undefined}>
-        <CalendarClock aria-hidden className="size-4" />
-        {at ? (leave ? t("leavingAt", { time: pickedText(at) }) : pickedText(at)) : t(leave ? "leaveAt" : "pickTime")}
-        <input
-          type="datetime-local"
-          aria-label={at ? t(leave ? "leavingAt" : "pickedTime", { time: pickedText(at) }) : t(leave ? "leaveAt" : "pickTime")}
-          value={at ?? ""}
-          onChange={(e) => e.target.value && onChange(e.target.value)}
-          onClick={(e) => {
-            try {
-              e.currentTarget.showPicker?.();
-            } catch {
-              // Already open, or the browser won't: the field still takes typing.
-            }
-          }}
-          className={`absolute inset-y-0 left-0 cursor-pointer opacity-0 ${at ? "right-10" : "right-0"}`}
+      <TimeChip
+        value={leaving}
+        text={leaving ? (trip ? t("leavingAt", { time: pickedText(leaving) }) : pickedText(leaving)) : t(trip ? "leaveAt" : "pickTime")}
+        label={leaving ? t(trip ? "leavingAt" : "pickedTime", { time: pickedText(leaving) }) : t(trip ? "leaveAt" : "pickTime")}
+        onPick={(value) => onChange(value)}
+        onClear={() => onChange(undefined)}
+      />
+      {trip && (
+        <TimeChip
+          value={arriving}
+          text={arriving ? t("arrivingBy", { time: pickedText(arriving) }) : t("arriveBy")}
+          label={arriving ? t("arrivingBy", { time: pickedText(arriving) }) : t("arriveBy")}
+          onPick={(value) => onChange(value, true)}
+          onClear={() => onChange(undefined)}
         />
-        {at && (
-          <button type="button" aria-label={t("backToNow")} onClick={() => onChange(undefined)} className="around-chip-clear">
-            <X aria-hidden className="size-4" />
-          </button>
-        )}
-      </span>
+      )}
     </div>
+  );
+}
+
+// A chip that opens the phone's own date and time picker, and says the time picked.
+function TimeChip({ value, text, label, onPick, onClear }: { value: string | undefined; text: string; label: string; onPick: (value: string) => void; onClear: () => void }) {
+  const { t } = useTranslation();
+  return (
+    <span className="around-chip relative has-focus-visible:outline-3" data-on={value !== undefined}>
+      <CalendarClock aria-hidden className="size-4" />
+      {text}
+      <input
+        type="datetime-local"
+        aria-label={label}
+        value={value ?? ""}
+        onChange={(e) => e.target.value && onPick(e.target.value)}
+        onClick={(e) => {
+          try {
+            e.currentTarget.showPicker?.();
+          } catch {
+            // Already open, or the browser won't: the field still takes typing.
+          }
+        }}
+        className={`absolute inset-y-0 left-0 cursor-pointer opacity-0 ${value ? "right-10" : "right-0"}`}
+      />
+      {value && (
+        <button type="button" aria-label={t("backToNow")} onClick={onClear} className="around-chip-clear">
+          <X aria-hidden className="size-4" />
+        </button>
+      )}
+    </span>
   );
 }
 
@@ -567,12 +872,13 @@ interface SectionListProps {
   onSelect: (id: string) => void;
   onClose: () => void;
   onHighlight: (id: string | undefined) => void;
+  onShowOnMap: (id: string) => void;
 }
 
 // Around's sections, each a heading with its count that opens to its rows: In your way, Around you, Coming up. The
 // first with anything is open; the one holding an Event chosen on the map opens, with that Event's card. Within a
 // section, what changes plans comes first; the rest is quiet, there for anyone who looks.
-function SectionList({ sections, point, selectedId, timeZone, onSelect, onClose, onHighlight }: SectionListProps) {
+function SectionList({ sections, point, selectedId, timeZone, onSelect, onClose, onHighlight, onShowOnMap }: SectionListProps) {
   const { t, i18n } = useTranslation();
   const [toggled, setToggled] = useState<Partial<Record<SectionKey, boolean>>>({});
   const first = SECTIONS.find(({ key }) => sections[key].length)?.key;
@@ -589,7 +895,7 @@ function SectionList({ sections, point, selectedId, timeZone, onSelect, onClose,
   const asideOf = (event: Event, aside: (typeof SECTIONS)[number]["aside"]): ReactNode => {
     if (aside === "distance") {
       const far = distances.get(event.id);
-      return far === undefined ? undefined : <span className="sg-aside-value">{distance(far, i18n.language)}</span>;
+      return far === undefined ? undefined : <AsideValue value={{ key: "rowUntil", value: distance(far, i18n.language) }} caption={t("rowAway")} />;
     }
     const value = aside === "until" ? untilOf(event, timeZone, now) : startsOf(event, timeZone, now);
     return <AsideValue value={value} caption={t(aside === "until" ? "rowUntil" : "rowStarts")} />;
@@ -597,7 +903,7 @@ function SectionList({ sections, point, selectedId, timeZone, onSelect, onClose,
 
   return (
     <div className="around-sections">
-      {SECTIONS.map(({ key, aside, empty }) => {
+      {SECTIONS.filter(({ key }) => sections[key].length).map(({ key, aside }) => {
         const events = [...sections[key]].sort((a, b) => Number(b.decision === "change_plans") - Number(a.decision === "change_plans"));
         const open = isOpen(key);
         return (
@@ -612,14 +918,13 @@ function SectionList({ sections, point, selectedId, timeZone, onSelect, onClose,
             header={
               <>
                 <span className="around-section-label">{t(key)}</span>{" "}
-                <span className="around-section-count" data-empty={!events.length}>
+                <span className="around-section-count">
                   {events.length}
                 </span>
               </>
             }
           >
-            {events.length ? (
-              <ul aria-label={t(key)} className="around-rows">
+            <ul aria-label={t(key)} className="around-rows">
                 {events.map((event) => (
                   <li key={event.id}>
                     <EventRow
@@ -628,16 +933,22 @@ function SectionList({ sections, point, selectedId, timeZone, onSelect, onClose,
                       onToggle={() => (event.id === selectedId ? onClose() : onSelect(event.id))}
                       aside={asideOf(event, aside)}
                       onHighlight={onHighlight}
+                      onShowOnMap={() => onShowOnMap(event.id)}
                     />
                   </li>
                 ))}
-              </ul>
-            ) : (
-              <p className="around-empty">{t(empty)}</p>
-            )}
+            </ul>
           </Accordion>
         );
       })}
+      {/* What's empty, in one quiet line rather than a heading each. */}
+      {SECTIONS.some(({ key }) => !sections[key].length) && (
+        <p className="around-empty">
+          {SECTIONS.filter(({ key }) => !sections[key].length)
+            .map(({ empty }) => t(empty))
+            .join(" · ")}
+        </p>
+      )}
     </div>
   );
 }

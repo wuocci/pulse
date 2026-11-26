@@ -76,6 +76,8 @@ let events: Event[] = [];
 const eventQueries: URLSearchParams[] = [];
 // What /v0/geocode answers, set per test, and the queries it was asked.
 let places: GeocodeResult[] | "off" = [];
+// The address /v0/geocode/reverse names any point by, set per test; none by default.
+let addressAt: GeocodeResult | undefined;
 const geocodeQueries: URLSearchParams[] = [];
 // What /v0/trips answers, set per test, and the queries it was asked.
 let trip: Trip = { events: [], plans: [] };
@@ -85,6 +87,7 @@ const server = setupServer(
     tripQueries.push(new URL(request.url).searchParams);
     return HttpResponse.json(trip);
   }),
+  http.get("*/v0/geocode/reverse", () => HttpResponse.json(addressAt ? { result: addressAt } : {})),
   http.get("*/v0/geocode", ({ request }) => {
     geocodeQueries.push(new URL(request.url).searchParams);
     return places === "off" ? HttpResponse.json({ message: "Address search is off" }, { status: 503 }) : HttpResponse.json({ results: places });
@@ -103,6 +106,7 @@ afterEach(() => {
   events = [];
   eventQueries.length = 0;
   places = [];
+  addressAt = undefined;
   geocodeQueries.length = 0;
   trip = { events: [], plans: [] };
   tripQueries.length = 0;
@@ -152,6 +156,27 @@ function renderApp(url: string, platform = fakePlatform().platform) {
 const mapPoint = async (expected: string) =>
   waitFor(() => expect(screen.getByTestId("map")).toHaveAttribute("data-point", expected));
 const locate = (name: RegExp) => screen.findByRole("button", { name });
+// Opens a part of a Trip behind its accordion (Other ways, On the way, Parking near …), when it's closed.
+const openPart = async (name: RegExp) => {
+  const head = await screen.findByRole("button", { name });
+  if (head.getAttribute("aria-expanded") === "false") await userEvent.click(head);
+};
+const tripModes = async () => {
+  await openPart(/^Other ways/);
+  return screen.findByRole("group", { name: "Travel mode" });
+};
+const tripRoutes = async () => {
+  await openPart(/^Other ways/);
+  return within(await screen.findByRole("group", { name: "Routes" }));
+};
+const onTheWayList = async () => {
+  await openPart(/^On the way/);
+  return screen.findByRole("list", { name: "On the way" });
+};
+const parkingNear = async () => {
+  await openPart(/^Parking near/);
+  return screen.findByRole("region", { name: "Parking near Pasila" });
+};
 // The last query for what's going on at the time, and for what's coming up.
 const nowQuery = () => eventQueries.filter((q) => q.get("status") !== "upcoming").at(-1);
 const soonQuery = () => eventQueries.filter((q) => q.get("status") === "upcoming").at(-1);
@@ -202,6 +227,7 @@ describe("where the app is looking", () => {
     const history = renderApp("/around", platform);
 
     await userEvent.click(await screen.findByRole("button", { name: "long-press the map" }));
+    await userEvent.click(within(screen.getByRole("region", { name: "Point on the map" })).getByRole("button", { name: "Look around here" }));
 
     await mapPoint("60.2,24.9");
     expect(history.location.search).toContain("at=60.20000%2C24.90000");
@@ -253,6 +279,7 @@ describe("the locate button", () => {
 
     await follow();
     await userEvent.click(screen.getByRole("button", { name: "long-press the map" }));
+    await userEvent.click(screen.getByRole("button", { name: "Look around here" }));
     expect(watching.active).toBe(false);
     await mapPoint("60.2,24.9");
   });
@@ -535,13 +562,13 @@ describe("an Event's card", () => {
   it("opens the section it's in, and the map centres on it", async () => {
     events = [anEvent("big"), anEvent("loud", { ...APART, severity: "minor", noticeable: ["noise"] })];
     renderApp("/around?at=60.17000,24.95000");
-    const section = await screen.findByRole("button", { name: "Around you 1" });
+    const section = await screen.findByRole("button", { name: "Nearby 1" });
     expect(section).toHaveAttribute("aria-expanded", "false");
 
     await userEvent.click(screen.getByRole("button", { name: /^Works loud,/ }));
 
     expect(section).toHaveAttribute("aria-expanded", "true");
-    expect(await within(screen.getByRole("list", { name: "Around you" })).findByRole("article", { name: "Works loud" })).toBeInTheDocument();
+    expect(await within(screen.getByRole("list", { name: "Nearby" })).findByRole("article", { name: "Works loud" })).toBeInTheDocument();
     await waitFor(() => expect(screen.getByTestId("map")).toHaveAttribute("data-focus", "60.172,24.96"));
   });
 
@@ -758,7 +785,7 @@ describe("Around's sections", () => {
     events = [at("big", 60.171), at("loud", 60.172, { severity: "minor", noticeable: ["noise"] })];
     renderApp("/around?at=60.17000,24.95000");
     const shape = await screen.findByRole("button", { name: "tap the shape of loud" });
-    const around = await screen.findByRole("button", { name: "Around you 1" });
+    const around = await screen.findByRole("button", { name: "Nearby 1" });
     expect(around).toHaveAttribute("aria-expanded", "false");
 
     await userEvent.hover(shape);
@@ -810,8 +837,8 @@ describe("Around's sections", () => {
     renderApp("/around?at=60.17000,24.95000");
 
     expect(await (await list()).findByRole("button", { name: /^Works big/ })).toBeInTheDocument();
-    await userEvent.click(screen.getByRole("button", { name: "Around you 1" }));
-    const around = within(screen.getByRole("list", { name: "Around you" }));
+    await userEvent.click(screen.getByRole("button", { name: "Nearby 1" }));
+    const around = within(screen.getByRole("list", { name: "Nearby" }));
     expect(around.getAllByRole("button").map((b) => b.textContent)).toEqual([expect.stringMatching(/^Works loud/)]);
     expect(screen.queryByText("Works note")).not.toBeInTheDocument();
     expect(screen.queryByText("Works sea")).not.toBeInTheDocument();
@@ -826,15 +853,14 @@ describe("Around's sections", () => {
     renderApp("/around?at=60.17000,24.95000");
 
     expect(await screen.findByRole("button", { name: "Coming up 2" })).toHaveAttribute("aria-expanded", "true");
-    expect(screen.getByRole("button", { name: "In your way 0" })).toHaveAttribute("aria-expanded", "false");
+    // What's empty is one quiet line, not a heading of its own.
+    expect(screen.queryByRole("button", { name: /^In your way/ })).not.toBeInTheDocument();
+    expect(screen.getByText("Nothing in your way · Nothing else nearby")).toBeInTheDocument();
     const comingUp = within(screen.getByRole("list", { name: "Coming up" }));
     expect(comingUp.getAllByRole("button").map((b) => b.textContent)).toEqual([expect.stringMatching(/^Works sooner.*starts/), expect.stringMatching(/^Works later.*starts/)]);
     const query = soonQuery()!;
     expect(query.get("near")).toBe("60.17,24.95,1000");
     expect(new Date(query.get("to")!).getTime() - new Date(query.get("from")!).getTime()).toBe(14 * 86_400_000);
-
-    await userEvent.click(screen.getByRole("button", { name: "In your way 0" }));
-    expect(screen.getByText("Nothing in your way")).toBeInTheDocument();
   });
 
   it("leads a dig's row with where, and what it means for you, in place of the Source's \"Excavation · street\"", async () => {
@@ -849,8 +875,8 @@ describe("Around's sections", () => {
     events = [at("loud", 60.172, { severity: "minor", noticeable: ["noise"] })];
     renderApp("/around?at=60.17000,24.95000");
 
-    const row = await within(await screen.findByRole("list", { name: "Around you" })).findByRole("button", { name: /^Works loud/ });
-    expect(row).toHaveTextContent(/220 m›$/);
+    const row = await within(await screen.findByRole("list", { name: "Nearby" })).findByRole("button", { name: /^Works loud/ });
+    expect(row).toHaveTextContent(/away220 m›$/);
   });
 });
 
@@ -861,7 +887,7 @@ describe("how Pulse looks", () => {
   });
   it("is like the phone until told otherwise, and keeps light or dark on the device", async () => {
     renderApp("/around?at=60.17000,24.95000");
-    await userEvent.click((await screen.findAllByRole("button", { name: "Appearance" }))[0]!);
+    await userEvent.click((await screen.findAllByRole("button", { name: "Settings" }))[0]!);
     expect(screen.getByRole("radio", { name: "Like the phone" })).toBeChecked();
 
     await userEvent.click(screen.getByRole("radio", { name: "Dark" }));
@@ -878,42 +904,35 @@ describe("how Pulse looks", () => {
 });
 
 describe("list or map on a phone", () => {
-  const toggle = () => within(screen.getByRole("group", { name: "Show as" }));
-  const shown = () => screen.findByRole("group", { name: "Show as" });
-
-  it("starts on the list, and switches to the map and back", async () => {
-    renderApp("/around?at=60.17000,24.95000");
-
-    await shown();
-    expect(toggle().getByRole("button", { name: "List" })).toHaveAttribute("aria-pressed", "true");
-    await userEvent.click(toggle().getByRole("button", { name: "Map" }));
-    expect(toggle().getByRole("button", { name: "Map" })).toHaveAttribute("aria-pressed", "true");
-
-    await userEvent.click(toggle().getByRole("button", { name: "List" }));
-    expect(toggle().getByRole("button", { name: "List" })).toHaveAttribute("aria-pressed", "true");
-  });
-
-  it("goes back to the list with the card open when a pin is tapped on the map", async () => {
+  it("is one list until a Trip has a way to show: no switch before", async () => {
     events = [anEvent("a")];
     renderApp("/around?at=60.17000,24.95000");
 
-    await shown();
-    await userEvent.click(toggle().getByRole("button", { name: "Map" }));
-    await userEvent.click(await within(screen.getByTestId("map")).findByRole("button", { name: "Works a, Drivers, some disruption" }));
+    expect(await within(await screen.findByRole("list", { name: "In your way" })).findByRole("button", { name: /^Works a/ })).toBeInTheDocument();
+    expect(screen.queryByRole("group", { name: "Show as" })).not.toBeInTheDocument();
+  });
 
-    expect(await screen.findByRole("article", { name: "Works a" })).toBeInTheDocument();
-    expect(toggle().getByRole("button", { name: "List" })).toHaveAttribute("aria-pressed", "true");
+  it("shows an Event on the map from its card, and goes back to the list", async () => {
+    events = [anEvent("a")];
+    renderApp("/around?at=60.17000,24.95000");
+
+    await userEvent.click(await within(await screen.findByRole("list", { name: "In your way" })).findByRole("button", { name: /^Works a/ }));
+    await userEvent.click(within(await screen.findByRole("article", { name: "Works a" })).getByRole("button", { name: /Show on map/ }));
+
+    await waitFor(() => expect(screen.getByTestId("map")).toHaveAttribute("data-focus", "60.171,24.95"));
+    await userEvent.click(screen.getByRole("button", { name: /Back to the list/ }));
+    expect(screen.queryByRole("button", { name: /Back to the list/ })).not.toBeInTheDocument();
   });
 });
 
 describe("where Home looks around", () => {
-  const chip = () => screen.findByRole("button", { name: /^Near: / });
+  const chip = () => screen.findByRole("button", { name: /^Around / });
 
   it("starts at the device's location when it's allowed, and calls it so", async () => {
     renderApp("/around", fakePlatform({ location: KAMPPI }).platform);
 
     await mapPoint("60.169,24.93164");
-    expect(await chip()).toHaveTextContent("Near: Current location");
+    expect(await chip()).toHaveAccessibleName("Around Your location: change");
   });
 
   it("stays at a place chosen by hand last time, by its name", async () => {
@@ -921,18 +940,27 @@ describe("where Home looks around", () => {
     storage.set("place", JSON.stringify({ at: "60.17000,24.95000", name: "Kamppi" }));
     renderApp("/around", platform);
 
-    await waitFor(async () => expect(await chip()).toHaveTextContent("Near: Kamppi"));
+    await waitFor(async () => expect(await chip()).toHaveAccessibleName("Around Kamppi: change"));
     await mapPoint("60.17,24.95");
   });
 
-  it("goes to the device's location from the chip", async () => {
+  it("goes to your location in one tap, when it looks around somewhere else", async () => {
     renderApp("/around?at=60.17000,24.95000", fakePlatform({ location: KAMPPI, allowed: false }).platform);
 
-    await userEvent.click(await chip());
-    await userEvent.click(screen.getByRole("button", { name: "Use my location" }));
+    await userEvent.click(await within(await screen.findByRole("region", { name: "Looking around" })).findByRole("button", { name: "Use my location" }));
 
     await mapPoint("60.169,24.93164");
-    expect(await chip()).toHaveTextContent("Near: Current location");
+    expect(await chip()).toHaveAccessibleName("Around Your location: change");
+    expect(screen.getByText("Your location")).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Use my location" })).not.toBeInTheDocument();
+  });
+
+  it("names a spot by the address there, says it's a chosen spot, and how far it is from you", async () => {
+    addressAt = { name: "Kampinkuja 1", label: "Kampinkuja 1, Kamppi", lat: 60.17, lon: 24.95 };
+    renderApp("/around?at=60.17000,24.95000", fakePlatform({ location: KAMPPI }).platform);
+
+    expect(await screen.findByRole("button", { name: /^Around Kampinkuja 1/ })).toBeInTheDocument();
+    expect(await screen.findByText(/^Chosen spot · .+ km from you$/)).toBeInTheDocument();
   });
 });
 
@@ -940,7 +968,7 @@ describe("address search", () => {
   const MANSKU: GeocodeResult = { name: "Mannerheimintie 10", label: "Mannerheimintie 10, Helsinki", lat: 60.167679, lon: 24.94127 };
   const OOPPERA: GeocodeResult = { name: "Kansallisooppera", label: "Kansallisooppera, Helsinki", lat: 60.1826, lon: 24.9266 };
   const search = async () => {
-    await userEvent.click(await screen.findByRole("button", { name: /^Near: / }));
+    await userEvent.click(await screen.findByRole("button", { name: /^Around / }));
     return screen.findByRole("combobox", { name: "Search for an address or place" });
   };
 
@@ -948,7 +976,7 @@ describe("address search", () => {
     renderApp("/around?at=60.17000,24.95000");
 
     expect(await search()).toHaveFocus();
-    expect(screen.getByRole("group", { name: "Where to look around" })).toContainElement(screen.getByRole("button", { name: "Use my location" }));
+    expect(within(screen.getByRole("group", { name: "Where to look around" })).getByRole("button", { name: "Use my location" })).toBeInTheDocument();
   });
 
   it("suggests places near the point as you type, in your language, and moves the map to the one you pick", async () => {
@@ -964,7 +992,7 @@ describe("address search", () => {
     await userEvent.click(option);
     await mapPoint("60.16768,24.94127");
     expect(screen.queryByRole("option")).not.toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /^Near: / })).toHaveTextContent("Near: Mannerheimintie 10");
+    expect(screen.getByRole("button", { name: /^Around / })).toHaveAccessibleName("Around Mannerheimintie 10: change");
     expect(JSON.parse(storage.get("place")!)).toEqual({ at: "60.16768,24.94127", name: "Mannerheimintie 10" });
   });
 
@@ -1043,7 +1071,23 @@ describe("Trip mode", () => {
     ],
   };
   const toField = () => screen.findByRole("combobox", { name: "To" });
-  const modes = () => screen.findByRole("group", { name: "Travel mode" });
+  const modes = tripModes;
+
+  it("asks where to over the map, with no list to switch to, and goes where the map is long-pressed", async () => {
+    trip = { events: [], plans: [] };
+    const history = renderApp("/around?at=60.17000,24.95000&trip=true");
+
+    await toField();
+    expect(screen.queryByRole("group", { name: "Show as" })).not.toBeInTheDocument();
+    await userEvent.click(screen.getByRole("button", { name: "long-press the map" }));
+    await userEvent.click(screen.getByRole("button", { name: "Go here" }));
+
+    await waitFor(() => expect(history.location.search).toContain("to=60.20000%2C24.90000"));
+    expect(screen.getByTestId("map")).toHaveAttribute("data-point", "60.17,24.95");
+    expect(await toField()).toHaveValue("Point on the map");
+    // Still on the map, the way shown there; the list is a switch away.
+    expect(within(screen.getByRole("group", { name: "Show as" })).getByRole("button", { name: "Map" })).toHaveAttribute("aria-pressed", "true");
+  });
 
   it("opens from Where to?, from where the pin is, and closes back to home", async () => {
     renderApp("/around?at=60.17000,24.95000");
@@ -1051,7 +1095,9 @@ describe("Trip mode", () => {
     await userEvent.click(await screen.findByRole("button", { name: "Where to?" }));
     expect(await toField()).toHaveFocus();
     expect(screen.getByRole("combobox", { name: "From" })).toHaveAttribute("placeholder", "Where the pin is");
-    expect(screen.queryByRole("button", { name: /^Near: / })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /^Around / })).not.toBeInTheDocument();
+    // When to go is asked with where.
+    expect(screen.getByRole("group", { name: "Leave when" })).toHaveTextContent(/Leave now.*Leave at.*Arrive by/);
 
     await userEvent.click(screen.getByRole("button", { name: "Back" }));
     expect(await screen.findByRole("button", { name: "Where to?" })).toBeInTheDocument();
@@ -1177,7 +1223,7 @@ describe("a Trip on the map", () => {
     expect(await screen.findByRole("button", { name: "Works on the way, Drivers, some disruption" })).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: /^Works around here,/ })).not.toBeInTheDocument();
     expect(screen.getByRole("status")).toHaveTextContent("1 thing on your way");
-    expect(within(await screen.findByRole("region", { name: "On the way" })).getAllByRole("button")).toHaveLength(1);
+    expect(within(await onTheWayList()).getAllByRole("button")).toHaveLength(1);
   });
 
   it("lists and pins only what's in the way, where the trip meets it: what's merely nearby isn't shown", async () => {
@@ -1201,8 +1247,8 @@ describe("a Trip on the map", () => {
     };
     renderApp(TO);
 
-    const list = within(await screen.findByRole("region", { name: "On the way" }));
-    expect(within(list.getByRole("list", { name: "Tram 9" })).getByRole("button", { name: /^Works on the way/ })).toHaveTextContent("at 6 min");
+    const list = within(await onTheWayList());
+    expect(list.getByRole("button", { name: /^Works on the way/ })).toHaveTextContent(/at 6 min›$/);
     expect(screen.getByRole("status")).toHaveTextContent("1 thing on your way");
     expect(screen.queryByRole("button", { name: /^Works beside the way/ })).not.toBeInTheDocument();
   });
@@ -1241,14 +1287,14 @@ describe("a Trip on the map", () => {
     };
     renderApp(TO);
 
-    const list = within(await screen.findByRole("region", { name: "On the way" }));
-    expect(within(list.getByRole("list", { name: "Tram 9" })).getByRole("button", { name: /^Concert at the arena/ })).toHaveTextContent("Everyone · Ends about 12:00");
-    expect((await within(await screen.findByRole("group", { name: "Routes" })).findAllByRole("radio"))[0]).toHaveAccessibleName(
+    const list = within(await onTheWayList());
+    expect(list.getByRole("button", { name: /^Concert at the arena/ })).toHaveTextContent(/ends about 12:00›$/);
+    expect((await (await tripRoutes()).findAllByRole("radio"))[0]).toHaveAccessibleName(
       /1 in the way: Concert at the arena, ends about 12:00$/,
     );
   });
 
-  it("lists what's on the whole way once, above the parts of the trip; a warning the trip runs into stays with its part", async () => {
+  it("lists what's on the whole way first, once; a warning the trip runs into stays where it meets it", async () => {
     const slippery = anEvent("slippery", { kind: "weather", title: { en: "Orange slippery pavements" }, severity: "major", mainlyAffected: "pedestrians" });
     const storm = anEvent("storm", { kind: "weather", title: { en: "Yellow wind warning" }, severity: "consider", mainlyAffected: "everyone" });
     trip = {
@@ -1271,11 +1317,12 @@ describe("a Trip on the map", () => {
     };
     renderApp(TO);
 
-    const list = within(await screen.findByRole("region", { name: "On the way" }));
-    expect(list.getAllByRole("heading").map((h) => h.textContent)).toEqual(["The whole way", "Tram 9", "Walking"]);
-    expect(within(list.getByRole("list", { name: "The whole way" })).getByRole("button", { name: /^Orange slippery pavements/ })).toBeInTheDocument();
-    expect(list.getAllByRole("button", { name: /^Orange slippery pavements/ })).toHaveLength(1);
-    expect(within(list.getByRole("list", { name: "Walking" })).getByRole("button", { name: /^Yellow wind warning/ })).toBeInTheDocument();
+    const list = within(await onTheWayList());
+    expect(list.getAllByRole("button").map((b) => b.textContent)).toEqual([
+      expect.stringMatching(/^Orange slippery pavements.*The whole way›$/),
+      expect.stringMatching(/^Works on the way.*at 6 min›$/),
+      expect.stringMatching(/^Yellow wind warning.*at 12 min›$/),
+    ]);
   });
 
   it("redraws for another mode, and says when nothing is in the way", async () => {
@@ -1288,7 +1335,7 @@ describe("a Trip on the map", () => {
     };
     renderApp(TO);
 
-    await userEvent.click(await within(await screen.findByRole("group", { name: "Travel mode" })).findByRole("radio", { name: /^Bike/ }));
+    await userEvent.click(await within(await tripModes()).findByRole("radio", { name: /^Bike/ }));
 
     await waitFor(() => expect(screen.getByTestId("map")).toHaveAttribute("data-route", "bike"));
     expect(screen.queryByRole("button", { name: /^Works on the way,/ })).not.toBeInTheDocument();
@@ -1317,7 +1364,7 @@ describe("a Trip on the map", () => {
     it("draws nothing until there is a route", async () => {
     trip = { events: [], plans: [{ mode: "transit", itineraries: [] }] };
     renderApp(TO);
-    await screen.findByRole("group", { name: "Travel mode" });
+    await tripModes();
 
     expect(screen.getByTestId("map")).toHaveAttribute("data-route", "");
   });
@@ -1348,7 +1395,7 @@ describe("a Trip's itineraries", () => {
   const TO = "/around?at=60.17000,24.95000&trip=true&to=60.19000,24.94000&toName=Pasila";
   const TRAM = ride("2026-10-31T12:15:00+02:00", ["dig"], "consider", leg("walk"), leg("tram", "2"), leg("walk"));
   const BUS = ride("2026-10-31T12:20:00+02:00", [], "none", leg("walk"), leg("bus", "69"), leg("walk"));
-  const routes = async () => within(await screen.findByRole("group", { name: "Routes" }));
+  const routes = tripRoutes;
 
   it("lists the mode's itineraries with their legs, times and Impact, and draws the one picked", async () => {
     trip = { events: [dig], plans: [{ mode: "transit", itineraries: [TRAM, BUS] }] };
@@ -1376,21 +1423,134 @@ describe("a Trip's itineraries", () => {
     expect(better).toBeChecked();
     expect(better).toHaveAccessibleName(/better today, avoids Works dig$/);
     await waitFor(() => expect(screen.getByTestId("map")).toHaveAttribute("data-route", "walk,bus,walk"));
-    expect(within(await screen.findByRole("group", { name: "Travel mode" })).getByRole("radio", { name: /^Public transport, 20 min, better today/ })).toBeChecked();
+    expect(within(await tripModes()).getByRole("radio", { name: /^Public transport, 20 min, better today/ })).toBeChecked();
+  });
+
+  it("recommends one way: when to leave, when it arrives and how long, with no reason when it's the fastest", async () => {
+    trip = { events: [], plans: [{ mode: "transit", itineraries: [BUS] }] };
+    renderApp(TO);
+
+    const best = await screen.findByRole("region", { name: "Best way" });
+    expect(best).toHaveTextContent(/^Best way · Public transportLeave 12:00arrive 12:20 · 20 min/);
+    expect(best).not.toHaveTextContent("Avoids");
+    expect(screen.getByRole("button", { name: /^Other ways/ })).toHaveAttribute("aria-expanded", "false");
+  });
+
+  it("says what the best way avoids when it isn't the fastest, and goes back to it from another way", async () => {
+    trip = { events: [dig], plans: [{ mode: "transit", itineraries: [TRAM, BUS] }], recommended: { mode: "transit", index: 1 } };
+    const history = renderApp(TO);
+
+    expect(await screen.findByRole("region", { name: "Best way" })).toHaveTextContent("Avoids Works dig");
+    await userEvent.click((await (await tripRoutes()).findAllByRole("radio"))[0]!);
+
+    expect(await screen.findByRole("region", { name: "Your choice" })).toHaveTextContent("Leave 12:00arrive 12:15");
+    await userEvent.click(within(screen.getByRole("region", { name: "Your choice" })).getByRole("button", { name: /Back to the best way/ }));
+    expect(await screen.findByRole("region", { name: "Best way" })).toBeInTheDocument();
+    expect(history.location.search).not.toContain("route=");
+  });
+
+  it("shows another way picked on the map, on a phone, with one tap back to the best way", async () => {
+    trip = { events: [dig], plans: [{ mode: "transit", itineraries: [TRAM, BUS] }], recommended: { mode: "transit", index: 1 } };
+    renderApp(TO);
+
+    await userEvent.click((await (await tripRoutes()).findAllByRole("radio"))[0]!);
+
+    expect(within(screen.getByRole("group", { name: "Show as" })).getByRole("button", { name: "Map" })).toHaveAttribute("aria-pressed", "true");
+    await waitFor(() => expect(screen.getByTestId("map")).toHaveAttribute("data-route", "walk,tram,walk"));
+    const bar = screen.getByRole("region", { name: "The way on the map" });
+    expect(bar).toHaveTextContent("Your choice · Public transportLeave 12:00 · arrive 12:15");
+
+    await userEvent.click(within(bar).getByRole("button", { name: /Back to the best way/ }));
+
+    await waitFor(() => expect(screen.getByTestId("map")).toHaveAttribute("data-route", "walk,bus,walk"));
+    expect(screen.getByRole("region", { name: "The way on the map" })).toHaveTextContent(/^Best way/);
+  });
+
+  it("folds From and To to one line over the map's way, and takes you to each step of it", async () => {
+    trip = { events: [], plans: [{ mode: "transit", itineraries: [BUS] }] };
+    renderApp(TO);
+    await userEvent.click(within(await screen.findByRole("group", { name: "Show as" })).getByRole("button", { name: "Map" }));
+
+    const bar = await screen.findByRole("region", { name: "The way on the map" });
+    await userEvent.click(within(bar).getByRole("button", { name: "Step by step" }));
+    const steps = within(within(bar).getByRole("list", { name: "Step by step" }));
+    expect(steps.getAllByRole("button").map((b) => b.textContent)).toEqual(["12:00Where the pin is", "12:00A69", "12:04B · get off", "12:20Pasila"]);
+    await userEvent.click(steps.getByRole("button", { name: /Pasila/ }));
+    expect(screen.getByTestId("map")).toHaveAttribute("data-focus", "60.19,24.94");
+
+    await userEvent.click(screen.getByRole("button", { name: /to Pasila: change/ }));
+    expect(screen.getByRole("combobox", { name: "To" })).toHaveValue("Pasila");
+  });
+
+  it("hands the way to Google Maps, with the mode", async () => {
+    trip = { events: [], plans: [{ mode: "transit", itineraries: [BUS] }] };
+    renderApp(TO);
+
+    const link = within(await screen.findByRole("region", { name: "Best way" })).getByRole("link", { name: /Open in Google Maps/ });
+    expect(Object.fromEntries(new URL(link.getAttribute("href")!).searchParams)).toEqual({ api: "1", origin: "60.17,24.95", destination: "60.19,24.94", travelmode: "transit" });
+  });
+
+  it("plans to arrive by a time, and says so", async () => {
+    trip = { events: [], plans: [{ mode: "transit", itineraries: [BUS] }] };
+    const history = renderApp(TO);
+    const when = within(await screen.findByRole("group", { name: "Leave when" }));
+
+    fireEvent.change(when.getByLabelText("Arrive by…"), { target: { value: "2026-12-12T18:00" } });
+
+    expect(await when.findByText("Arrive by 12.12.2026 18.00")).toBeInTheDocument();
+    await waitFor(() => expect(tripQueries.at(-1)?.get("arriveBy")).toBe(new Date("2026-12-12T18:00").toISOString()));
+    expect(tripQueries.at(-1)?.has("departAt")).toBe(false);
+    expect(history.location.search).toContain("arrive=true");
+  });
+
+  const settings = async () => {
+    await userEvent.click((await screen.findAllByRole("button", { name: "Settings" }))[0]!);
+    return within(screen.getByRole("dialog", { name: "Settings" }));
+  };
+
+  it("plans only in the ways you travel, set in the settings and saved on the phone", async () => {
+    trip = { events: [], plans: [{ mode: "transit", itineraries: [BUS] }] };
+    const { platform, storage } = fakePlatform();
+    renderApp(TO, platform);
+    await screen.findByRole("region", { name: "Best way" });
+
+    await userEvent.click((await settings()).getByRole("checkbox", { name: "Bike" }));
+
+    await waitFor(() => expect(tripQueries.at(-1)?.get("modes")).toBe("transit,walk,car"));
+    expect(JSON.parse(storage.get("modes")!)).toEqual(["transit", "walk", "car"]);
+    expect(screen.queryByRole("button", { name: /^Ways you travel/ })).not.toBeInTheDocument();
+  });
+
+  it("plans at how fast you walk and cycle, set in the settings", async () => {
+    trip = { events: [], plans: [{ mode: "transit", itineraries: [BUS] }] };
+    const { platform, storage } = fakePlatform();
+    renderApp(TO, platform);
+    await screen.findByRole("region", { name: "Best way" });
+    expect(tripQueries.at(-1)?.has("walkSpeed")).toBe(false);
+
+    const panel = await settings();
+    expect(panel.getByRole("slider", { name: "How fast you walk" })).toHaveAttribute("aria-valuetext", "5 km/h");
+    fireEvent.change(panel.getByRole("slider", { name: "How fast you walk" }), { target: { value: "6.5" } });
+    fireEvent.change(panel.getByRole("slider", { name: "How fast you cycle" }), { target: { value: "24" } });
+
+    await waitFor(() => expect(tripQueries.at(-1)?.get("bikeSpeed")).toBe("24"));
+    expect(tripQueries.at(-1)?.get("walkSpeed")).toBe("6.5");
+    expect(JSON.parse(storage.get("speeds")!)).toEqual({ walk: 6.5, bike: 24 });
+    expect(panel.queryByRole("slider", { name: /drive|transport/ })).not.toBeInTheDocument();
   });
 
   it("lists what's on the chosen way under the routes", async () => {
     trip = { events: [dig], plans: [{ mode: "transit", itineraries: [TRAM, BUS] }] };
     renderApp(TO);
 
-    const onTheWay = within(await screen.findByRole("list", { name: "Tram 2" }));
+    const onTheWay = within(await onTheWayList());
     expect(await onTheWay.findByRole("button", { name: /^Works dig/ })).toBeInTheDocument();
   });
 
   it("points out on the map what a row on the way is pointed at", async () => {
     trip = { events: [dig], plans: [{ mode: "transit", itineraries: [TRAM, BUS] }] };
     renderApp(TO);
-    const row = await within(await screen.findByRole("list", { name: "Tram 2" })).findByRole("button", { name: /^Works dig/ });
+    const row = await within(await onTheWayList()).findByRole("button", { name: /^Works dig/ });
     const map = screen.getByTestId("map");
 
     await userEvent.hover(row);
@@ -1415,7 +1575,7 @@ describe("a Trip's itineraries", () => {
     trip = { events: [dig], plans: [{ mode: "transit", itineraries: [TRAM, BUS] }, { mode: "walk", itineraries: [ride("2026-10-31T12:40:00+02:00", [], "none", leg("walk"))] }] };
     const history = renderApp(`${TO}&route=1`);
 
-    await userEvent.click(await within(await screen.findByRole("group", { name: "Travel mode" })).findByRole("radio", { name: /^Walk/ }));
+    await userEvent.click(await within(await tripModes()).findByRole("radio", { name: /^Walk/ }));
 
     expect(history.location.search).not.toContain("route=");
     await waitFor(() => expect(screen.getByTestId("map")).toHaveAttribute("data-route", "walk"));
@@ -1462,7 +1622,7 @@ describe("parking with a car Trip", () => {
     trip = { events: [], plans: [{ mode: "car", itineraries: [long, PARK_AND_RIDE] }] };
     renderApp(`${TO}&mode=car`);
 
-    const rows = await within(await screen.findByRole("group", { name: "Routes" })).findAllByRole("radio");
+    const rows = await (await tripRoutes()).findAllByRole("radio");
     expect(rows.map((r) => r.getAttribute("aria-label")?.split(". ")[0])).toEqual([
       "Drive 14 min",
       "Drive 12 min to P Niittykumpu, walk 3 min, metro M1, walk 4 min",
@@ -1479,7 +1639,7 @@ describe("parking with a car Trip", () => {
     trip = { events: [], plans: [{ mode: "car", itineraries: [DRIVE] }], parking: { ...PARKING, street: { ...PARKING.street!, places } } };
     renderApp(`${TO}&mode=car`);
 
-    const parking = await screen.findByRole("region", { name: "Parking near Pasila" });
+    const parking = await parkingNear();
     expect(within(parking).getAllByRole("listitem").map((item) => item.textContent)).toEqual([
       "1Closest · Street parking80 m · 4 spaces · €4/h until 21:00 · max 4 h",
       "2Cheapest · Street parking250 m · 6 spaces · free · max 30 min · parking disc",
@@ -1504,7 +1664,7 @@ describe("parking with a car Trip", () => {
     };
     renderApp(`${TO}&mode=car`);
 
-    const parking = await screen.findByRole("region", { name: "Parking near Pasila" });
+    const parking = await parkingNear();
     expect(within(parking).getAllByRole("listitem").map((item) => item.textContent)).toEqual([
       "1Closest · Cheapest · Street parking29 m · about 26 spaces · free · max 10 h · parking disc",
     ]);
@@ -1521,7 +1681,7 @@ describe("parking with a car Trip", () => {
     trip = { events: [], plans: [{ mode: "car", itineraries: [DRIVE] }], parking: { ...PARKING, street: { ...PARKING.street!, places } } };
     renderApp(`${TO}&mode=car`);
 
-    const parking = await screen.findByRole("region", { name: "Parking near Pasila" });
+    const parking = await parkingNear();
     const map = screen.getByTestId("map");
     expect(map).toHaveAttribute("data-destination", "Pasila 60.1986,24.933");
     expect(within(screen.getByRole("list", { name: "parking spots on the map" })).getAllByRole("listitem").map((li) => li.textContent)).toEqual([
@@ -1542,7 +1702,7 @@ describe("parking with a car Trip", () => {
     trip = { events: [], plans: [{ mode: "car", itineraries: [DRIVE, room, full] }] };
     renderApp(`${TO}&mode=car`);
 
-    const rows = await within(await screen.findByRole("group", { name: "Routes" })).findAllByRole("radio");
+    const rows = await (await tripRoutes()).findAllByRole("radio");
     expect(rows[1]).toHaveAccessibleName(/^Drive 12 min to P Tapiola Park, 541 free of 2,049, walk 3 min/);
     expect(rows[1]!.closest("label")).toHaveTextContent("541 free");
     expect(rows[2]).toHaveAccessibleName(/some disruption, P Matinkylän asema almost full: 6 free$/);
@@ -1555,14 +1715,14 @@ describe("parking with a car Trip", () => {
     trip = { events: [], plans: [{ mode: "car", itineraries: [DRIVE] }], parking: { ...PARKING, picks } };
     renderApp(`${TO}&mode=car`);
 
-    const parking = await screen.findByRole("region", { name: "Parking near Pasila" });
+    const parking = await parkingNear();
     expect(within(parking).getAllByRole("listitem")[2]).toHaveTextContent("3Most spaces · Postintaival600 m · almost full: 6 free of 47");
   });
 
   it("doesn't show parking at the destination for a park-and-ride way: you park on the way", async () => {
     trip = { events: [], plans: [{ mode: "car", itineraries: [DRIVE, PARK_AND_RIDE] }], parking: PARKING };
     renderApp(`${TO}&mode=car&route=1`);
-    await screen.findByRole("group", { name: "Routes" });
+    await tripRoutes();
 
     expect(screen.queryByRole("region", { name: "Parking near Pasila" })).not.toBeInTheDocument();
     expect(screen.getByTestId("map")).toHaveAttribute("data-parking", "");
@@ -1571,7 +1731,7 @@ describe("parking with a car Trip", () => {
   it("only shows parking with the car", async () => {
     trip = { events: [], plans: [{ mode: "transit", itineraries: [DRIVE] }, { mode: "car", itineraries: [DRIVE] }], parking: PARKING };
     renderApp(TO);
-    await screen.findByRole("group", { name: "Routes" });
+    await tripRoutes();
 
     expect(screen.queryByRole("region", { name: "Parking near Pasila" })).not.toBeInTheDocument();
   });

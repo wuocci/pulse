@@ -534,3 +534,603 @@
     display: none;
   }
 }
+
+/* Trips: one recommendation, said as when to leave; the rest behind accordions. */
+.trip {
+  max-width: 34rem;
+}
+.trip-none {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0 1rem;
+  color: var(--s-mute);
+}
+.trip-way {
+  padding: 1rem 1rem 0.9rem;
+  background: var(--s-panel);
+  border-left: 6px solid var(--s-blue);
+}
+.trip-label {
+  font: 700 0.85rem/1 var(--s-display);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--s-mute);
+}
+.trip-leave {
+  margin-top: 0.5rem;
+  font: 700 2.6rem/1 var(--s-display);
+  text-transform: uppercase;
+  font-variant-numeric: tabular-nums;
+}
+.trip-arrive {
+  margin-top: 0.35rem;
+  font-weight: 600;
+  font-size: 1.05rem;
+}
+.trip-legs {
+  margin-top: 0.6rem;
+}
+.trip-reason {
+  margin-top: 0.7rem;
+  padding: 0.45rem 0.6rem;
+  background: var(--s-amber);
+  color: var(--s-on-amber);
+  font-weight: 600;
+}
+.trip-back {
+  margin-top: 0.6rem;
+  font-weight: 600;
+  color: var(--s-blue) !important;
+}
+.trip-open {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.9rem;
+}
+.trip-open a {
+  padding: 0.7rem 1rem;
+  font-weight: 600;
+}
+.trip-open-main {
+  background: var(--s-blue);
+  color: var(--s-on-blue) !important;
+}
+.trip-open-alt {
+  border: 2px solid var(--s-hair);
+}
+.trip-note {
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+  color: var(--s-mute);
+}
+.trip-more {
+  border-bottom: 1px solid var(--s-hair);
+}
+.trip-more > .acc-head {
+  padding: 0.9rem 0 0.7rem;
+  gap: 0.6rem;
+}
+.trip-more-label {
+  font: 700 1rem/1 var(--s-display);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.trip > .trip-way + * {
+  margin-top: 0.75rem;
+}
+.trip-others {
+  display: grid;
+  gap: 0.75rem;
+  padding-bottom: 1rem;
+}
+.trip-modes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.25rem;
+  padding-bottom: 1rem;
+}
+.trip-modes legend {
+  margin: 0 0 0.5rem;
+  width: 100%;
+}
+.trip-mode {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-weight: 600;
+}
+.trip-mode input {
+  width: 1.1rem;
+  height: 1.1rem;
+  accent-color: var(--s-blue);
+}
+.way-on-map {
+  padding: 0.75rem 0.9rem 0.25rem;
+  background: var(--s-panel);
+  border-left: 6px solid var(--s-blue);
+  box-shadow: 0 6px 20px rgb(0 0 0 / 0.2);
+}
+.way-on-map-times {
+  margin-top: 0.35rem;
+  font: 700 1.35rem/1.1 var(--s-display);
+  text-transform: uppercase;
+}
+.way-on-map-best {
+  margin-top: 0.5rem;
+  padding: 0.4rem 0;
+  font-weight: 600;
+  color: var(--s-blue) !important;
+}
+.way-on-map-steps {
+  margin-top: 0.25rem;
+  border-top: 1px solid var(--s-hair);
+}
+.way-on-map-steps > .acc-head {
+  padding: 0.6rem 0;
+  font-weight: 600;
+  color: var(--s-blue);
+}
+.way-on-map-steps .acc-chevron {
+  color: var(--s-blue);
+  font-size: 1.3rem;
+}
+/* Open on the map, the steps scroll in place: the map stays in sight under them. */
+.way-on-map-steps .acc-inner {
+  max-height: 38dvh;
+  overflow-y: auto;
+}
+
+/* A Trip's From and To: Around's rows, turned into fields. To keeps the "Where to?" bar's blue. */
+.trip-field {
+  display: flex;
+  align-items: center;
+  background: var(--s-panel);
+}
+.trip-field-tag {
+  flex: none;
+  width: 3.4rem;
+  padding-left: 0.9rem;
+  font: 700 0.95rem/1 var(--s-display);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--s-mute);
+}
+.trip-field[data-end="to"] {
+  background: var(--s-blue);
+  color: var(--s-on-blue);
+}
+.trip-field[data-end="to"] .trip-field-tag,
+.trip-field[data-end="to"] .search-clear {
+  color: inherit;
+  opacity: 0.85;
+}
+.trip-input {
+  height: 3rem;
+  background: transparent;
+  color: inherit;
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+.trip-input::placeholder {
+  color: inherit;
+  opacity: 0.6;
+  font-weight: 500;
+}
+.trip-field[data-end="to"] .trip-input::placeholder {
+  font: 700 1.35rem/1 var(--s-display);
+  text-transform: uppercase;
+  opacity: 0.9;
+}
+.trip-field:focus-within {
+  outline: 3px solid var(--s-fg);
+  outline-offset: 2px;
+}
+
+/* On a phone's map: From and To in one line. */
+.trip-route {
+  display: flex;
+  gap: 0.5rem;
+}
+.trip-route-back {
+  flex: none;
+  width: 3rem;
+  background: var(--s-panel);
+  font: 700 1.6rem/1 var(--s-display);
+}
+.trip-route-edit {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 3rem;
+  padding: 0 0.9rem;
+  background: var(--s-panel);
+  font-weight: 600;
+  text-align: left;
+}
+@media (min-width: 64rem) {
+  .trip-route,
+  .way-on-map {
+    display: none;
+  }
+}
+
+/* A way step by step: time, a mark like the map's, the place, the line. */
+.way-steps {
+  padding-bottom: 0.5rem;
+}
+.way-step {
+  display: grid;
+  grid-template-columns: 3.2rem 1rem minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  min-height: 2.5rem;
+  text-align: left;
+}
+.way-step-time {
+  font: 700 1rem/1 var(--s-display);
+  font-variant-numeric: tabular-nums;
+}
+.way-step-mark {
+  justify-self: center;
+  width: 0.8rem;
+  height: 0.8rem;
+  border: 3px solid var(--s-fg);
+  background: var(--s-bg);
+}
+.way-step[data-kind="start"] .way-step-mark {
+  border-radius: 999px;
+  border-color: #0284c7;
+}
+.way-step[data-kind="park"] .way-step-mark {
+  display: grid;
+  place-items: center;
+  width: 1.1rem;
+  height: 1.1rem;
+  border: 0;
+  background: #2563eb;
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+.way-step[data-kind="end"] .way-step-mark {
+  border-radius: 999px;
+  background: var(--s-fg);
+}
+.way-step-name {
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.way-step-note {
+  font-weight: 400;
+  color: var(--s-mute);
+}
+.way-step-line {
+  padding: 0.15rem 0.45rem;
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+.way-step-move {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 1.8rem;
+  margin-left: 3.7rem;
+  padding-left: 1rem;
+  border-left: 2px dotted var(--s-mute);
+  font-size: 0.85rem;
+  color: var(--s-mute);
+}
+
+/* ⚙: set once. Signage panels, like the rest. */
+.settings {
+  width: min(18rem, calc(100vw - 2rem));
+  max-height: calc(100dvh - 7rem);
+  overflow-y: auto;
+  padding: 0.9rem 1rem;
+  background: var(--s-panel);
+  color: var(--s-fg);
+  box-shadow: 0 10px 30px rgb(0 0 0 / 0.25);
+  display: grid;
+  gap: 1rem;
+}
+.settings-head {
+  margin-bottom: 0.4rem;
+  font: 700 0.95rem/1 var(--s-display);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.settings-hint {
+  margin-bottom: 0.4rem;
+  font-size: 0.85rem;
+  color: var(--s-mute);
+}
+.settings-option {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-height: 2.5rem;
+  padding: 0 0.6rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.settings-option:has(:checked) {
+  background: var(--s-fg);
+  color: var(--s-bg);
+}
+.settings-option:has(:focus-visible) {
+  outline: 3px solid var(--s-blue);
+}
+.settings-mode {
+  padding: 0.35rem 0;
+  border-top: 1px solid var(--s-hair);
+}
+.settings-check {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 2.2rem;
+  font-weight: 600;
+}
+.settings-check input {
+  width: 1.1rem;
+  height: 1.1rem;
+  accent-color: var(--s-blue);
+}
+.settings-speed {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0 0 0.3rem 1.6rem;
+}
+.settings-speed input {
+  flex: 1;
+  min-width: 0;
+  accent-color: var(--s-blue);
+}
+.settings-speed-value {
+  flex: none;
+  width: 4.5rem;
+  text-align: right;
+  font: 700 1rem/1 var(--s-display);
+  font-variant-numeric: tabular-nums;
+}
+
+/* The start screen in two parts (2026-11-26): go (Where to?, your places) and here (the place the list is about).
+   One heavy rule between them; the here part names its place, and its time and status belong to it. */
+.here {
+  margin-top: 1.5rem;
+  padding-top: 0.9rem;
+  border-top: 3px solid var(--s-fg);
+  display: grid;
+  gap: 0.75rem;
+}
+.home-status + .here {
+  margin-top: 1.5rem;
+}
+/* Your places' lines belong to the go part: a light rule, so the heavy one marks where here starts. */
+.home-status .home-label {
+  border-bottom: 1px solid var(--s-hair);
+}
+.around-body > .here:first-child {
+  margin-top: 0.25rem;
+}
+.here-head {
+  display: grid;
+  gap: 0.5rem;
+}
+.here-label {
+  font: 700 0.85rem/1 var(--s-display);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--s-mute);
+}
+/* Where it looks around: one row, like the place lines, that opens to change it. */
+.here-place {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.75rem 0.9rem;
+  background: var(--s-panel);
+}
+.here-place-icon {
+  flex: none;
+  width: 1.4rem;
+  height: 1.4rem;
+  color: var(--s-mute);
+}
+.here-place[data-kind="you"] .here-place-icon,
+.here-place[data-kind="you"] .here-place-sub {
+  color: var(--s-blue);
+}
+.here-place-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+.here-place-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font: 600 1.2rem/1.25 var(--s-font);
+}
+.here-place-sub {
+  font-size: 0.9rem;
+  color: var(--s-mute);
+}
+.here-place-change {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.15rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--s-blue);
+}
+/* Quiet: Where to? stays the only loud thing. */
+.here-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 1.25rem;
+}
+.here-action,
+.here-save {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 2.5rem;
+  font-weight: 600;
+  color: var(--s-blue) !important;
+}
+.here-action:disabled {
+  opacity: 0.6;
+}
+.here .around-time {
+  gap: 0.25rem;
+}
+.here .around-chip {
+  min-height: 2.25rem;
+  padding: 0 0.6rem;
+  background: transparent;
+  font-size: 0.9rem;
+  color: var(--s-mute);
+}
+.here .around-chip[aria-pressed="true"],
+.here .around-chip[data-on="true"] {
+  background: transparent;
+  color: var(--s-fg) !important;
+  box-shadow: inset 0 -3px 0 var(--s-fg);
+}
+.here .around-status {
+  font-size: 1.05rem;
+}
+.around-sections > .around-section:first-child {
+  border-top: 1px solid var(--s-hair);
+}
+.around-empty {
+  padding: 0.9rem 0 0;
+  font-size: 0.95rem;
+}
+
+/* Saving and changing a place. */
+.home-add-quick {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+.home-add-chip {
+  padding: 0.4rem 0.7rem;
+  border: 2px solid var(--s-hair);
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+.home-add-note {
+  font-size: 0.9rem;
+  color: var(--s-mute);
+}
+.home-add-remove {
+  padding: 0.6rem 0.5rem;
+  color: var(--s-red) !important;
+  font-weight: 600;
+}
+.places-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.places-list > li + li {
+  border-top: 1px solid var(--s-hair);
+}
+.places-list-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  min-height: 2.5rem;
+  font-weight: 600;
+}
+.places-list .home-add {
+  margin: 0 0 0.6rem;
+  border: 2px solid var(--s-hair);
+}
+
+/* An Event's card on a phone: its place on the map; the map's way back to the list. */
+.sg-on-map {
+  display: block;
+  margin-top: 0.4rem;
+  padding: 0.3rem 0;
+  font-weight: 600;
+  color: var(--s-blue) !important;
+}
+.around-back-list {
+  height: 3.25rem;
+  padding: 0 1.3rem;
+  align-items: center;
+  color: var(--s-bg) !important;
+  font-weight: 600;
+}
+
+/* A long press on the map: what to do there. */
+.map-press {
+  position: fixed;
+  z-index: 40;
+  left: 1rem;
+  right: 1rem;
+  bottom: max(1rem, env(safe-area-inset-bottom));
+  max-width: 26rem;
+  margin: 0 auto;
+  padding: 0.75rem 0.9rem 0.9rem;
+  background: var(--s-panel);
+  color: var(--s-fg);
+  box-shadow: 0 10px 30px rgb(0 0 0 / 0.25);
+}
+@media (min-width: 64rem) {
+  .map-press {
+    left: calc(26rem + 1rem);
+  }
+}
+.map-press-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.map-press-close {
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  margin: -0.5rem -0.5rem -0.5rem 0;
+}
+.map-press-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.6rem;
+}
+.map-press-actions button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: 2.75rem;
+  padding: 0 0.9rem;
+  border: 2px solid var(--s-hair);
+  font-weight: 600;
+}
+.map-press-actions .map-press-go {
+  border-color: var(--s-blue);
+  background: var(--s-blue);
+  color: var(--s-on-blue) !important;
+}
+.map-press .home-add {
+  margin-top: 0.5rem;
+  padding: 0;
+}

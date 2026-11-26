@@ -1,10 +1,11 @@
 import type { GeocodeResult, Impact, Schema, TravelMode } from "@pulse/client";
-import { ArrowLeft, BadgeCheck, Bike, Bus, CalendarClock, Car, Footprints, type LucideIcon, OctagonAlert, TriangleAlert } from "lucide-react";
+import { BadgeCheck, Bike, Bus, CalendarClock, Car, Footprints, type LucideIcon, OctagonAlert, Star, TriangleAlert } from "lucide-react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Button } from "@/components/ui/button";
 import { AddressSearch } from "./AddressSearch.tsx";
-import { crowdText, EventList } from "./EventList.tsx";
-import type { Pin as PinT } from "./events.ts";
+import { PlaceForm } from "./Places.tsx";
+import { savedAt, usePlaces } from "./places.ts";
+import { crowdText } from "./rowWords.ts";
 import type { LatLon } from "./platform.tsx";
 import { LEG_STYLE } from "./transit.ts";
 
@@ -19,21 +20,32 @@ export interface TripFormProps {
   lang: string;
   fromName: string | undefined;
   toName: string | undefined;
+  // Where To is, once set: it can be saved as one of your places.
+  to?: LatLon | undefined;
   onFrom: (place: GeocodeResult) => void;
   onTo: (place: GeocodeResult) => void;
   onClose: () => void;
 }
 
-export function TripForm({ point, lang, fromName, toName, onFrom, onTo, onClose }: TripFormProps) {
+// Where from and where to, in the place of Around's "Near" and "Where to?" (same rows, same look), so opening a Trip
+// reads as the bar turning into the field it asked for.
+export function TripForm({ point, lang, fromName, toName, to, onFrom, onTo, onClose }: TripFormProps) {
   const { t } = useTranslation();
+  const { places } = usePlaces();
+  const [saving, setSaving] = useState(false);
+  const unsaved = to && !savedAt(places, to);
   return (
-    <div className="flex items-start gap-2">
-      <Button variant="secondary" size="icon" className="size-11 shrink-0 rounded-full" aria-label={t("closeRoute")} onClick={onClose}>
-        <ArrowLeft aria-hidden />
-      </Button>
-      {/* From and To marked as on the map — a ring where you start, a dark dot where you're going — and joined. */}
-      <div className="relative min-w-0 flex-1 space-y-2">
-        <span aria-hidden className="pointer-events-none absolute top-8 left-[1.1875rem] z-10 h-7 border-l-2 border-dotted border-muted-foreground/50" />
+    <div className="space-y-3">
+      <div className="around-top">
+        <button type="button" className="around-back" aria-label={t("closeRoute")} onClick={onClose}>
+          ‹ {t("closeRoute")}
+        </button>
+      </div>
+      {/* From and To marked as on the map: a ring where you start, a dark dot where you're going. */}
+      <div className="trip-field" data-end="from">
+        <span aria-hidden className="trip-field-tag">
+          {t("from")}
+        </span>
         <AddressSearch
           point={point}
           lang={lang}
@@ -41,9 +53,17 @@ export function TripForm({ point, lang, fromName, toName, onFrom, onTo, onClose 
           placeholder={t("fromHere")}
           initialText={fromName ?? ""}
           onPick={onFrom}
+          inputClassName="trip-input"
           leading={<span className="block size-3 rounded-full border-[3px] border-sky-600 bg-background" />}
         />
+      </div>
+      <div className="trip-field" data-end="to">
+        <span aria-hidden className="trip-field-tag">
+          {t("to")}
+        </span>
+        {/* Anew when To is set elsewhere (a long press on the map), so it shows it. */}
         <AddressSearch
+          key={toName ?? ""}
           point={point}
           lang={lang}
           label={t("to")}
@@ -51,9 +71,34 @@ export function TripForm({ point, lang, fromName, toName, onFrom, onTo, onClose 
           initialText={toName ?? ""}
           autoFocus={!toName}
           onPick={onTo}
-          leading={<span className="block size-3 rounded-full bg-slate-900 ring-2 ring-background dark:bg-slate-100" />}
+          inputClassName="trip-input"
+          leading={<span className="block size-3 rounded-full bg-slate-900 ring-2 ring-white" />}
         />
       </div>
+      {unsaved && !saving && (
+        <button type="button" className="here-save" onClick={() => setSaving(true)}>
+          <Star aria-hidden className="size-4" />
+          {!toName || toName === t("pointOnMap") ? t("pressSave") : t("tripSaveTo", { name: toName })}
+        </button>
+      )}
+      {unsaved && saving && <PlaceForm key={`${to.lat},${to.lon}`} at={to} name={toName === t("pointOnMap") ? "" : (toName ?? "")} onDone={() => setSaving(false)} />}
+    </div>
+  );
+}
+
+// On a phone's map, once there's a way to show: where from and to in one line, which opens back to the fields.
+export function TripRoute({ fromName, toName, onEdit, onClose }: { fromName: string; toName: string; onEdit: () => void; onClose: () => void }) {
+  const { t } = useTranslation();
+  return (
+    <div className="trip-route">
+      <button type="button" className="trip-route-back" aria-label={t("closeRoute")} onClick={onClose}>
+        ‹
+      </button>
+      <button type="button" className="trip-route-edit" aria-label={t("tripRouteEdit", { from: fromName, to: toName })} onClick={onEdit}>
+        <span className="truncate">{fromName}</span>
+        <span aria-hidden>→</span>
+        <span className="truncate">{toName}</span>
+      </button>
     </div>
   );
 }
@@ -70,7 +115,7 @@ export interface TravelModesProps {
 export function TravelModes({ trip, mode, shownIndex, onMode }: TravelModesProps) {
   const { t } = useTranslation();
   return (
-    <fieldset className="flex min-w-0 flex-1 gap-1 rounded-3xl border bg-card p-1.5">
+    <fieldset className="flex min-w-0 flex-1 gap-1 rounded-none border bg-card p-1.5">
       <legend className="sr-only">{t("travelMode")}</legend>
       {TRAVEL_MODES.map((option) => {
         const Icon = MODE_ICONS[option];
@@ -88,7 +133,7 @@ export function TravelModes({ trip, mode, shownIndex, onMode }: TravelModesProps
           <label
             key={option}
             // Stacked — icon, name, time — so four fit a phone's sheet and the docked panel alike; marks in the corner.
-            className="relative flex min-h-14 min-w-0 flex-1 cursor-pointer flex-col items-center justify-center rounded-2xl px-1 py-1.5 text-muted-foreground outline-none has-checked:bg-muted has-checked:text-brand has-focus-visible:ring-2 has-focus-visible:ring-ring"
+            className="relative flex min-h-14 min-w-0 flex-1 cursor-pointer flex-col items-center justify-center rounded-none px-1 py-1.5 text-muted-foreground outline-none has-checked:bg-muted has-checked:text-brand has-focus-visible:ring-2 has-focus-visible:ring-ring"
           >
             <input type="radio" name="mode" className="sr-only" aria-label={label} checked={mode === option} onChange={() => onMode(option)} />
             {(impact || better) && (
@@ -141,7 +186,6 @@ export interface ItinerariesProps {
 export function Itineraries({ itineraries, chosen, better, titleOf, timeZone, onChoose }: ItinerariesProps) {
   const { t, i18n } = useTranslation();
   const km = (m: number) => t("kilometres", { distance: new Intl.NumberFormat(i18n.language, { maximumFractionDigits: 1 }).format(m / 1000) });
-  const legSize = (leg: Itinerary["legs"][number]) => String(Math.round((Date.parse(leg.end) - Date.parse(leg.start)) / 60_000));
   const clock = new Intl.DateTimeFormat("en-GB", { hour: "2-digit", minute: "2-digit", hourCycle: "h23", timeZone });
   const minutes = (from: string, to: string) => t("minutes", { count: Math.round((Date.parse(to) - Date.parse(from)) / 60_000) });
   const count = (n: number) => new Intl.NumberFormat(i18n.language).format(n);
@@ -180,44 +224,10 @@ export function Itineraries({ itineraries, chosen, better, titleOf, timeZone, on
         return (
           <label
             key={i}
-            className="flex min-w-0 cursor-pointer flex-col gap-1.5 rounded-3xl border bg-card p-3 has-checked:border-brand has-focus-visible:ring-2 has-focus-visible:ring-ring"
+            className="flex min-w-0 cursor-pointer flex-col gap-1.5 rounded-none border bg-card p-3 has-checked:border-brand has-focus-visible:ring-2 has-focus-visible:ring-ring"
           >
             <input type="radio" name="route" className="sr-only" aria-label={label} checked={chosen === i} onChange={() => onChoose(i)} />
-            <span aria-hidden className="flex flex-wrap items-center gap-1">
-              {itinerary.legs.map((leg, j) => {
-                const { icon: Icon, colour } = LEG_STYLE[leg.mode];
-                const parkAt = leg.to?.parking && (
-                  <span key={`${j}-p`} className="flex items-center gap-1 rounded bg-blue-600 px-1.5 py-0.5 text-xs font-semibold text-white">
-                    P<span className="font-normal">{leg.to.parking}</span>
-                    {leg.to.parkingFree && (
-                      <span className={`font-normal ${leg.to.parkingFree.almostFull ? "rounded bg-amber-300 px-1 text-amber-950" : "opacity-80"}`}>
-                        · {t("freeShort", { free: count(leg.to.parkingFree.spaces) })}
-                      </span>
-                    )}
-                  </span>
-                );
-                if (parkAt) {
-                  return [
-                    <span key={j} className="flex items-center gap-0.5 text-xs text-muted-foreground">
-                      <Icon className="size-3.5" />
-                      {legSize(leg)}
-                    </span>,
-                    parkAt,
-                  ];
-                }
-                return leg.line ? (
-                  <span key={j} className="flex items-center gap-1 rounded px-1.5 py-0.5 text-xs font-semibold text-white" style={{ backgroundColor: colour }}>
-                    <Icon className="size-3.5" />
-                    {leg.line.name}
-                  </span>
-                ) : (
-                  <span key={j} className="flex items-center gap-0.5 text-xs text-muted-foreground">
-                    <Icon className="size-3.5" />
-                    {legSize(leg)}
-                  </span>
-                );
-              })}
-            </span>
+            <LegChips legs={itinerary.legs} />
             <span aria-hidden className="flex items-center gap-2 text-sm">
               <span className="tabular-nums">{times}</span>
               <span className="text-muted-foreground">{minutes(itinerary.start, itinerary.end)}</span>
@@ -248,11 +258,57 @@ export function Itineraries({ itineraries, chosen, better, titleOf, timeZone, on
   );
 }
 
+// A way's legs as chips: "walk 4", "tram 2", "P Niittykumpu · 40 free".
+export function LegChips({ legs }: { legs: Itinerary["legs"] }) {
+  const { t, i18n } = useTranslation();
+  const legSize = (leg: Itinerary["legs"][number]) => String(Math.round((Date.parse(leg.end) - Date.parse(leg.start)) / 60_000));
+  const count = (n: number) => new Intl.NumberFormat(i18n.language).format(n);
+  return (
+    <span aria-hidden className="flex flex-wrap items-center gap-1">
+      {legs.map((leg, j) => {
+        const { icon: Icon, colour } = LEG_STYLE[leg.mode];
+        const parkAt = leg.to?.parking && (
+          <span key={`${j}-p`} className="flex items-center gap-1 rounded bg-blue-600 px-1.5 py-0.5 text-xs font-semibold text-white">
+            P<span className="font-normal">{leg.to.parking}</span>
+            {leg.to.parkingFree && (
+              <span className={`font-normal ${leg.to.parkingFree.almostFull ? "rounded bg-amber-300 px-1 text-amber-950" : "opacity-80"}`}>
+                · {t("freeShort", { free: count(leg.to.parkingFree.spaces) })}
+              </span>
+            )}
+          </span>
+        );
+        if (parkAt) {
+          return [
+            <span key={j} className="flex items-center gap-0.5 text-xs text-muted-foreground">
+              <Icon className="size-3.5" />
+              {legSize(leg)}
+            </span>,
+            parkAt,
+          ];
+        }
+        return leg.line ? (
+          <span key={j} className="flex items-center gap-1 rounded px-1.5 py-0.5 text-xs font-semibold text-white" style={{ backgroundColor: colour }}>
+            <Icon className="size-3.5" />
+            {leg.line.name}
+          </span>
+        ) : (
+          <span key={j} className="flex items-center gap-0.5 text-xs text-muted-foreground">
+            <Icon className="size-3.5" />
+            {legSize(leg)}
+          </span>
+        );
+      })}
+    </span>
+  );
+}
+
 export interface ParkingNearProps {
   parking: NonNullable<Schema<"Trip">["parking"]>;
   place: string;
   // Show that pick on the map.
   onPick: (pick: ParkingPick) => void;
+  // Without its own heading, under one that already says it.
+  untitled?: boolean;
 }
 
 export type ParkingPick = NonNullable<Schema<"Trip">["parking"]>["picks"][number];
@@ -260,7 +316,7 @@ export type ParkingPick = NonNullable<Schema<"Trip">["parking"]>["picks"][number
 // Where to leave the car at B: the closest spot, the cheapest and the car park with the most spaces, numbered as on
 // the map; then what street parking there is around. Street parking is static data: not whether any space is free
 // now. A car park that reports its free spaces says how many. Credited.
-export function ParkingNear({ parking: { street, picks, sources }, place, onPick }: ParkingNearProps) {
+export function ParkingNear({ parking: { street, picks, sources }, place, onPick, untitled = false }: ParkingNearProps) {
   const { t, i18n } = useTranslation();
   const count = (n: number) => new Intl.NumberFormat(i18n.language).format(n);
   const kinds = street
@@ -272,13 +328,15 @@ export function ParkingNear({ parking: { street, picks, sources }, place, onPick
       ].filter(Boolean)
     : [];
   return (
-    <section aria-label={t("parkingNear", { place })} className="space-y-2 rounded-lg border p-3 text-sm">
+    <section aria-label={t("parkingNear", { place })} className="space-y-2 rounded-none border p-3 text-sm">
+{!untitled && (
       <h3 className="flex items-center gap-2 font-medium">
         <span aria-hidden className="grid size-5 place-items-center rounded bg-blue-600 text-xs font-bold text-white">
           P
         </span>
         {t("parkingNear", { place })}
       </h3>
+      )}
       {picks.length > 0 && (
         <ol className="space-y-1.5">
           {picks.map((pick, i) => (
@@ -286,7 +344,7 @@ export function ParkingNear({ parking: { street, picks, sources }, place, onPick
               <button
                 type="button"
                 onClick={() => onPick(pick)}
-                className="-m-1 flex w-[calc(100%+0.5rem)] gap-2 rounded-md p-1 text-left outline-none hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring"
+                className="-m-1 flex w-[calc(100%+0.5rem)] gap-2 rounded-none p-1 text-left outline-none hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring"
               >
                 <span aria-hidden className="mt-0.5 grid size-5 shrink-0 place-items-center rounded-full bg-blue-600 text-xs font-bold text-white">
                   {i + 1}
@@ -360,7 +418,7 @@ export function HeadsUp({ comingUp, titleOf, legs, timeZone }: HeadsUpProps) {
   const day = new Intl.DateTimeFormat("fi-FI", { day: "numeric", month: "numeric", year: "numeric", timeZone });
   if (!comingUp.length) return null;
   return (
-    <section aria-label={t("headsUp")} className="space-y-1.5 rounded-lg bg-amber-50 p-3 text-sm dark:bg-amber-950/40">
+    <section aria-label={t("headsUp")} className="space-y-1.5 rounded-none bg-amber-50 p-3 text-sm dark:bg-amber-950/40">
       <h3 className="flex items-center gap-1.5 font-medium">
         <CalendarClock aria-hidden className="size-4 shrink-0 text-amber-700 dark:text-amber-400" />
         {t("headsUp")}
@@ -377,53 +435,6 @@ export function HeadsUp({ comingUp, titleOf, legs, timeZone }: HeadsUpProps) {
           );
         })}
       </ul>
-    </section>
-  );
-}
-
-export interface OnTheWayProps {
-  legs: { mode: Schema<"LegMode">; line?: { name: string } }[];
-  pins: PinT[];
-  selectedId: string | undefined;
-  languages: readonly string[];
-  timeZone: string;
-  onSelect: (id: string) => void;
-  // The Event pointed at in the list, so the map can show it; undefined when none.
-  onHighlight?: (id: string | undefined) => void;
-}
-
-// What's in the chosen way, in the order the trip meets it, under the part of the trip it's on: "Driving",
-// "Tram 9"… What's on the whole way (a weather warning over the area) comes first, once: it's not one part's.
-type Group = { part: "wholeWay"; pins: PinT[] } | { part: "leg"; leg: number; pins: PinT[] };
-
-export function OnTheWay({ legs, pins: inTheWay, selectedId, languages, timeZone, onSelect, onHighlight }: OnTheWayProps) {
-  const { t } = useTranslation();
-  const wholeWay = inTheWay.filter((pin) => pin.trip?.wholeWay);
-  const byPart = inTheWay
-    .filter((pin) => !pin.trip?.wholeWay)
-    .reduce<Group[]>((all, pin) => {
-      const last = all.at(-1);
-      if (last?.part === "leg" && last.leg === pin.trip?.leg) last.pins.push(pin);
-      else all.push({ part: "leg", leg: pin.trip?.leg ?? 0, pins: [pin] });
-      return all;
-    }, []);
-  const groups: Group[] = wholeWay.length ? [{ part: "wholeWay", pins: wholeWay }, ...byPart] : byPart;
-  const heading = (group: Group) => {
-    if (group.part === "wholeWay") return t("wholeWay");
-    const leg = legs[group.leg];
-    if (!leg) return t("onTheWay");
-    if (leg.line) return `${t(`leg_${leg.mode}`).replace(/^./, (c) => c.toUpperCase())} ${leg.line.name}`;
-    return leg.mode === "walk" || leg.mode === "bike" || leg.mode === "car" ? t(`group_${leg.mode}`) : t(`leg_${leg.mode}`);
-  };
-  if (!inTheWay.length) return null;
-  return (
-    <section aria-label={t("onTheWay")} className="space-y-3">
-      {groups.map((group, i) => (
-        <div key={i}>
-          <h3 className="mb-1 text-xs font-semibold text-muted-foreground uppercase">{heading(group)}</h3>
-          <EventList label={heading(group)} pins={group.pins} selectedId={selectedId} languages={languages} timeZone={timeZone} onSelect={onSelect} {...(onHighlight ? { onHighlight } : {})} />
-        </div>
-      ))}
     </section>
   );
 }

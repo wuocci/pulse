@@ -1662,6 +1662,88 @@
         }
       }
     },
+    "/geocode/reverse": {
+      "get": {
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^-?\\d+(\\.\\d+)?,-?\\d+(\\.\\d+)?$",
+              "example": "60.169,24.9316",
+              "description": "lat,lon: the point to name"
+            },
+            "required": true,
+            "description": "lat,lon: the point to name",
+            "name": "at",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "example": "fi",
+              "description": "The reader's language; the Region's main language when it doesn't speak it"
+            },
+            "required": false,
+            "description": "The reader's language; the Region's main language when it doesn't speak it",
+            "name": "lang",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The address at `at`, named with its district (`label`); none outside every Region, or with no address near it.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "result": {
+                      "$ref": "#/components/schemas/GeocodeResult"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "The geocoder failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ]
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "The Region has no address search",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/geocode": {
       "get": {
         "parameters": [
@@ -1806,6 +1888,43 @@
             "required": false,
             "description": "Default: now",
             "name": "departAt",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "format": "date-time",
+              "description": "Plan to arrive by this time instead; wins over departAt"
+            },
+            "required": false,
+            "description": "Plan to arrive by this time instead; wins over departAt",
+            "name": "arriveBy",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "number",
+              "minimum": 2,
+              "maximum": 8,
+              "example": 5,
+              "description": "How fast you walk, km/h; also on public transport's walks. Default: Digitransit's (about 4.8)"
+            },
+            "required": false,
+            "description": "How fast you walk, km/h; also on public transport's walks. Default: Digitransit's (about 4.8)",
+            "name": "walkSpeed",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "number",
+              "minimum": 8,
+              "maximum": 40,
+              "example": 18,
+              "description": "How fast you cycle, km/h. Default: Digitransit's (about 18)"
+            },
+            "required": false,
+            "description": "How fast you cycle, km/h. Default: Digitransit's (about 18)",
+            "name": "bikeSpeed",
             "in": "query"
           }
         ],

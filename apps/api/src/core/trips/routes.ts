@@ -41,6 +41,9 @@ const route = createRoute({
         .optional()
         .openapi({ example: "transit,bike", description: `Comma-separated; default ${MODES.join(",")}` }),
       departAt: z.iso.datetime({ offset: true }).optional().openapi({ description: "Default: now" }),
+      arriveBy: z.iso.datetime({ offset: true }).optional().openapi({ description: "Plan to arrive by this time instead; wins over departAt" }),
+      walkSpeed: z.coerce.number().min(2).max(8).optional().openapi({ example: 5, description: "How fast you walk, km/h; also on public transport's walks. Default: Digitransit's (about 4.8)" }),
+      bikeSpeed: z.coerce.number().min(8).max(40).optional().openapi({ example: 18, description: "How fast you cycle, km/h. Default: Digitransit's (about 18)" }),
     }),
   },
   responses: {
@@ -59,6 +62,8 @@ export interface ParkingFinder {
   // Around `point`, for a car arriving at `arriveAt`.
   near(point: { lat: number; lon: number }, arriveAt: string): Promise<Trip["parking"]>;
 }
+
+const changesPlans = (events: Event[]) => events.filter((e) => e.decision === "change_plans");
 
 const point = (value: string) => {
   const [lat, lon] = value.split(",").map(Number) as [number, number];
@@ -83,13 +88,17 @@ export function tripRoutes(
     if (!router) return c.json({ message: "Trips are off" }, 503);
 
     const modes: TravelMode[] = query.modes ?? [...MODES];
-    const departAt = query.departAt ?? clock().toISOString();
+    const { arriveBy } = query;
+    // km/h asked, metres a second for the router.
+    const mps = (kmh: number | undefined) => (kmh === undefined ? undefined : kmh / 3.6);
+    const speeds = query.walkSpeed || query.bikeSpeed ? { ...(query.walkSpeed ? { walk: mps(query.walkSpeed)! } : {}), ...(query.bikeSpeed ? { bike: mps(query.bikeSpeed)! } : {}) } : undefined;
+    const asked = arriveBy ?? query.departAt ?? clock().toISOString();
     const parkingFinder = parkingFor(region);
     let planned;
     try {
       planned = await Promise.all(
         modes.map(async (mode) => {
-          const request = { from, to, mode, departAt };
+          const request = { from, to, mode, departAt: asked, ...(arriveBy ? { arriveBy } : {}), ...(speeds ? { speeds } : {}) };
           return { mode, itineraries: await (mode === "car" ? planCar(router, parkingFinder, request) : router.plan(request)) };
         }),
       );
@@ -98,6 +107,11 @@ export function tripRoutes(
       return c.json({ message: "Trip planning failed" }, 502);
     }
 
+    // Arriving by a time, the trip leaves when its earliest way does.
+    const starts = planned.flatMap((p) => p.itineraries.map((i) => Date.parse(i.start)));
+    const departAt = arriveBy && starts.length ? new Date(Math.min(...starts)).toISOString() : asked;
+
+    // Only what changes plans is matched (an Event's Decision): what's only worth knowing isn't in a Trip's way.
     // What's going on from departure until the last itinerary arrives (and a detour's few minutes more), and the big
     // events whose crowd is arriving or leaving then: one over is resolved, and its crowd is still there. The matcher
     // keeps what's on each one.
@@ -107,12 +121,12 @@ export function tripRoutes(
           from: new Date(Date.parse(departAt) - CROWD_LEAVING_MS.after),
           to: new Date(Math.max(...ends) + Math.max(DETOUR_ROOM_MS, CROWD_ARRIVING_MS.before)),
           statuses: ["active", "upcoming", "resolved"],
-        })
+        }).then(changesPlans)
       : [];
     const matchesOf = (itinerary: RoutedItinerary) => matchItinerary(itinerary, candidates, { timeZone: region.timeZone, crowdAtLeast: region.crowd.trips });
     // What starts on the way later, for a heads-up.
     const aheadUntil = Date.parse(departAt) + COMING_UP_MS;
-    const ahead = await store.query({ from: new Date(departAt), to: new Date(aheadUntil), statuses: ["upcoming"] });
+    const ahead = changesPlans(await store.query({ from: new Date(departAt), to: new Date(aheadUntil), statuses: ["upcoming"] }));
     const events = new Map<string, Event>();
     const placed = (match: ReturnType<typeof matchesOf>[number]) => ({
       eventId: match.event.id,
@@ -167,7 +181,7 @@ export function tripRoutes(
     );
     const around = tried.find((way): way is RoutedItinerary => way !== undefined);
     if (car && around) car.itineraries.splice(1, 0, withEvents(around));
-    const recommended = recommend(plans) ?? (around ? { mode: "car" as const, index: 1 } : undefined);
+    const recommended = recommend(plans, { arriveBy: arriveBy !== undefined }) ?? (around ? { mode: "car" as const, index: 1 } : undefined);
     const parking = await parkingLookup;
     return c.json({ events: [...events.values()], plans, ...(parking ? { parking } : {}), ...(recommended ? { recommended } : {}) }, 200);
   });
