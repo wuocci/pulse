@@ -15,6 +15,7 @@ import { Legend } from "./MapOverlays.tsx";
 import { PointMap, type PointMapProps } from "./map/PointMap.tsx";
 import { type LatLon, LocationError, usePlatform } from "./platform.tsx";
 import { formatAt, parseAt, usePoint } from "./point.ts";
+import { UsualTrip } from "./RoutineForm.tsx";
 import { useRenewRoutines } from "./routines.ts";
 import { SettingsButton } from "./Settings.tsx";
 import { PlaceForm, PlacesRow, YourPlaces } from "./Places.tsx";
@@ -283,6 +284,21 @@ export function Around() {
   })();
   const fromLabel = search.fromName ?? placeName ?? t("fromHere");
   const steps = planned && shown && itinerary ? stepsOf(itinerary, { from: fromLabel, to: search.toName ?? t("to"), parking: t("tripParkHere") }, arrivalOf(planned, shown.mode, itinerary), parking?.picks[0]) : undefined;
+  // The Trip as a Routine's ends: your place's name where it's one of them, else as the fields say it.
+  const routineEnds =
+    tripFrom && tripTo
+      ? {
+          from: { ...tripFrom, name: (savedAt(places, tripFrom)?.name ?? fromLabel).slice(0, 80) },
+          to: { ...tripTo, name: (savedAt(places, tripTo)?.name ?? search.toName ?? t("pointOnMap")).slice(0, 80) },
+        }
+      : undefined;
+  // A Routine made from it starts at the Trip's time: the one asked for, else when the way shown leaves.
+  const routineTime = (() => {
+    // The time asked for is already on the clock ("2026-11-30T09:00"); a way's start is an instant.
+    if (at) return { kind: search.arrive ? ("arriveBy" as const) : ("leaveAt" as const), time: at.slice(11, 16) };
+    if (!itinerary) return undefined;
+    return { kind: "leaveAt" as const, time: new Intl.DateTimeFormat("en-GB", { hour: "2-digit", minute: "2-digit", hourCycle: "h23", timeZone }).format(new Date(itinerary.start)) };
+  })();
   // A phone's map with a way to show: From and To as one line, the way under it.
   const folded = mapView && !!search.trip && !!itinerary && !editing;
 
@@ -507,34 +523,37 @@ export function Around() {
               {t("findingRoutes")}
             </p>
           ) : (
-            <TripResult
-              trip={planned}
-              best={best}
-              shown={shown}
-              avoids={avoids}
-              from={tripFrom ?? tripTo}
-              to={tripTo}
-              toName={search.toName ?? t("to")}
-              steps={steps ?? []}
-              onStep={(to) => {
-                zoomTo(to);
-                setMapView(true);
-              }}
-              onTrip={onTrip ?? []}
-              selectedId={selectedId}
-              timeZone={timeZone}
-              titleOf={titleOf}
-              parking={parking}
-              onSelect={select}
-              onClose={closeCard}
-              onHighlight={setHighlighted}
-              onWay={(way) => {
-                setWay(way);
-                // Another way is seen on the map: a phone switches to it, with the way back on top.
-                if (way) setMapView(true);
-              }}
-              onPick={zoomTo}
-            />
+            <>
+              <TripResult
+                trip={planned}
+                best={best}
+                shown={shown}
+                avoids={avoids}
+                from={tripFrom ?? tripTo}
+                to={tripTo}
+                toName={search.toName ?? t("to")}
+                steps={steps ?? []}
+                onStep={(to) => {
+                  zoomTo(to);
+                  setMapView(true);
+                }}
+                onTrip={onTrip ?? []}
+                selectedId={selectedId}
+                timeZone={timeZone}
+                titleOf={titleOf}
+                parking={parking}
+                onSelect={select}
+                onClose={closeCard}
+                onHighlight={setHighlighted}
+                onWay={(way) => {
+                  setWay(way);
+                  // Another way is seen on the map: a phone switches to it, with the way back on top.
+                  if (way) setMapView(true);
+                }}
+                onPick={zoomTo}
+              />
+              {routineEnds && <UsualTrip ends={routineEnds} modes={usualModes} timeZone={timeZone} {...(routineTime ? { initial: routineTime } : {})} />}
+            </>
           ))
         ) : (
           <>

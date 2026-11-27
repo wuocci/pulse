@@ -36,10 +36,13 @@ let devices: Set<string>;
 let renewed: string[];
 let tripAsked: URLSearchParams[];
 let tripAnswer: Trip;
+// The bodies /app was sent to save, and how.
+let saved: { method: string; body: RoutineInput }[];
 
 const server = setupServer(
   http.get("*/v0/regions", () => HttpResponse.json({ regions: [region] })),
   http.get("*/v0/events", () => HttpResponse.json({ events: [] })),
+  http.get("*/v0/geocode", () => HttpResponse.json({ results: [] })),
   http.get("*/v0/trips", ({ request }) => {
     tripAsked.push(new URL(request.url).searchParams);
     return HttpResponse.json(tripAnswer);
@@ -57,6 +60,20 @@ const server = setupServer(
   http.get("*/app/routines", ({ request }) =>
     devices.has(request.headers.get("X-Pulse-Device") ?? "") ? HttpResponse.json({ routines: [...routines.values()] }) : HttpResponse.json({ message: "unknown" }, { status: 401 }),
   ),
+  http.post("*/app/routines", async ({ request }) => {
+    const body = (await request.json()) as RoutineInput;
+    saved.push({ method: "POST", body });
+    const made = { ...body, id: `r${routines.size + 1}`, createdAt: "2026-11-27T10:00:00.000Z", renewedAt: "2026-11-27T10:00:00.000Z" };
+    routines.set(made.id, made);
+    return HttpResponse.json(made, { status: 201 });
+  }),
+  http.put("*/app/routines/:id", async ({ request, params }) => {
+    const body = (await request.json()) as RoutineInput;
+    saved.push({ method: "PUT", body });
+    const changed = { ...routines.get(String(params.id))!, ...body };
+    routines.set(changed.id, changed);
+    return HttpResponse.json(changed);
+  }),
   http.delete("*/app/routines/:id", ({ params }) => {
     routines.delete(String(params.id));
     return new HttpResponse(null, { status: 204 });
@@ -71,6 +88,7 @@ beforeEach(() => {
   renewed = [];
   tripAsked = [];
   tripAnswer = { events: [], plans: [] };
+  saved = [];
 });
 
 function fakePlatform(stored: Record<string, string> = {}) {
@@ -193,5 +211,78 @@ describe("opening the app", () => {
     await screen.findByRole("button", { name: /Where to\?/ });
     expect(renewed).toEqual([]);
     expect(devices.size).toBe(0);
+  });
+});
+
+describe("making a Trip a usual trip", () => {
+  const places = JSON.stringify([HOME, WORK]);
+  const tripTo = (extra = "") =>
+    createMemoryHistory({ initialEntries: [`/?at=${HOME.lat.toFixed(5)},${HOME.lon.toFixed(5)}&trip=true&to=${WORK.lat.toFixed(5)},${WORK.lon.toFixed(5)}&toName=Work${extra}`] });
+  const tram = itinerary("2026-11-30T08:30:00+02:00", "2026-11-30T08:52:00+02:00");
+
+  it("runs on workdays at the Trip's time, the days and times yours to change", async () => {
+    tripAnswer = { events: [], plans: [{ mode: "transit", itineraries: [tram] }] };
+    const { platform, storage } = fakePlatform({ places });
+    render(<App platform={platform} history={tripTo("&time=2026-11-30T09:00&arrive=true")} />);
+    const user = userEvent.setup();
+
+    await user.click(await screen.findByRole("button", { name: "Make this a usual trip" }));
+    const form = within(screen.getByRole("form", { name: "Make Home → Work a usual trip" }));
+    expect(form.getByRole("checkbox", { name: "Monday" })).toBeChecked();
+    expect(form.getByRole("checkbox", { name: "Saturday" })).not.toBeChecked();
+    expect(form.getByRole("combobox", { name: "Friday: leave at or arrive by" })).toHaveValue("arriveBy");
+    expect(form.getByLabelText("Friday: time")).toHaveValue("09:00");
+
+    await user.click(form.getByRole("checkbox", { name: "Wednesday" }));
+    await user.selectOptions(form.getByRole("combobox", { name: "Friday: leave at or arrive by" }), "leaveAt");
+    await user.click(form.getByRole("button", { name: "Save" }));
+
+    expect(await screen.findByText("Saved to your trips.")).toBeInTheDocument();
+    expect(saved).toHaveLength(1);
+    const body = saved[0]!.body;
+    expect(body.from).toEqual(HOME);
+    expect(body.to).toEqual(WORK);
+    expect(body.days).toEqual({
+      mon: { kind: "arriveBy", time: "09:00" },
+      tue: { kind: "arriveBy", time: "09:00" },
+      thu: { kind: "arriveBy", time: "09:00" },
+      fri: { kind: "leaveAt", time: "09:00" },
+    });
+    expect(body.usual).toEqual({ mode: "transit", itinerary: tram });
+    // The Device was made for it, and kept.
+    expect(storage.get("device")).toBe("device-1");
+    expect(await screen.findByRole("button", { name: "Change this usual trip" })).toBeInTheDocument();
+  });
+
+  it("says so when there's no way at that time, and saves nothing", async () => {
+    const { platform } = fakePlatform({ places });
+    tripAnswer = { events: [], plans: [{ mode: "transit", itineraries: [tram] }] };
+    render(<App platform={platform} history={tripTo()} />);
+    const user = userEvent.setup();
+
+    await user.click(await screen.findByRole("button", { name: "Make this a usual trip" }));
+    tripAnswer = { events: [], plans: [] };
+    await user.click(screen.getByRole("button", { name: "Save" }));
+
+    expect(await screen.findByRole("alert")).toHaveTextContent("No way found at that time");
+    expect(saved).toEqual([]);
+  });
+
+  it("changes a usual trip's days from Settings", async () => {
+    devices.add("device-1");
+    routines.set("r1", routine());
+    tripAnswer = { events: [], plans: [{ mode: "transit", itineraries: [tram] }] };
+    render(<App platform={fakePlatform({ device: "device-1" }).platform} history={createMemoryHistory({ initialEntries: ["/settings"] })} />);
+    const user = userEvent.setup();
+
+    await user.click(await screen.findByRole("button", { name: "Change Home → Work" }));
+    const form = within(screen.getByRole("form", { name: "Change Home → Work" }));
+    await user.click(form.getByRole("checkbox", { name: "Saturday" }));
+    await user.click(form.getByRole("button", { name: "Save" }));
+
+    await waitFor(() => expect(saved.map((s) => s.method)).toEqual(["PUT"]));
+    // A day ticked takes the last time set.
+    expect(saved[0]!.body.days.sat).toEqual({ kind: "leaveAt", time: "09:30" });
+    expect(await screen.findByText(/Sat leave 09:30/)).toBeInTheDocument();
   });
 });

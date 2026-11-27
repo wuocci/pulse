@@ -53,6 +53,7 @@ export function TripForm({ point, lang, fromName, toName, to, onFrom, onTo, onCl
           placeholder={t("fromHere")}
           initialText={fromName ?? ""}
           onPick={onFrom}
+          withPlaces
           inputClassName="trip-input"
           leading={<span className="end-mark" data-end="from" />}
         />
@@ -71,6 +72,7 @@ export function TripForm({ point, lang, fromName, toName, to, onFrom, onTo, onCl
           initialText={toName ?? ""}
           autoFocus={!toName}
           onPick={onTo}
+          withPlaces
           inputClassName="trip-input"
           leading={<span className="end-mark" data-end="to" />}
         />

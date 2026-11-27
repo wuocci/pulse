@@ -105,6 +105,28 @@ describe("Home: your places", () => {
     expect(history.location.search).toContain("trip=true");
   });
 
+  it("offers your places in a Trip's fields, and finds one by its first letters", async () => {
+    const user = userEvent.setup();
+    const history = renderHome(fakePlatform({ places: PLACES }).platform);
+    await user.click(await screen.findByRole("button", { name: /Where to\?/ }));
+
+    // An empty To: your places, before anything is typed.
+    const to = await screen.findByRole("combobox", { name: "To" });
+    const offered = await screen.findByRole("listbox", { name: "To" });
+    expect(within(offered).getAllByRole("option").map((o) => o.textContent)).toEqual(["Home", "Work"]);
+
+    // "wo" in From: Work first, above whatever the address search finds.
+    geocoded = [{ name: "Woodpecker Street", label: "Woodpecker Street, Helsinki", lat: 60.2, lon: 24.9 }];
+    await user.click(to);
+    await user.type(screen.getByRole("combobox", { name: "From" }), "wo");
+    const found = await screen.findByRole("listbox", { name: "From" });
+    await waitFor(() => expect(within(found).getAllByRole("option").map((o) => o.textContent)).toEqual(["Work", "Woodpecker Street, Helsinki"]));
+
+    await user.keyboard("{Enter}");
+    expect(screen.getByRole("combobox", { name: "From" })).toHaveValue("Work");
+    await waitFor(() => expect(history.location.search).toContain("fromName=Work"));
+  });
+
   it("is Around, where Around was: an old link lands on the same view", async () => {
     const history = createMemoryHistory({ initialEntries: ["/around?at=60.18410,24.94970&trip=true"] });
     render(<App platform={fakePlatform({ places: PLACES }).platform} history={history} />);

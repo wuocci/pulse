@@ -127,6 +127,12 @@ export class NoUsualRoute extends Error {
   }
 }
 
+// Whether a Routine goes between these two places, each the same spot to about 10 m.
+export function sameEnds(routine: Pick<Routine, "from" | "to">, ends: { from: LatLon; to: LatLon }): boolean {
+  const near = (a: LatLon, b: LatLon) => Math.abs(a.lat - b.lat) < 1e-4 && Math.abs(a.lon - b.lon) < 2e-4;
+  return near(routine.from, ends.from) && near(routine.to, ends.to);
+}
+
 // A Routine's days in a few words: runs of days with the same time joined, "Mon–Thu", then the time.
 export function dayRuns(days: Partial<Record<Weekday, RoutineTime>>): { from: Weekday; to: Weekday; time: RoutineTime }[] {
   const runs: { from: Weekday; to: Weekday; time: RoutineTime }[] = [];

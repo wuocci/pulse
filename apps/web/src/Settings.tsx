@@ -1,8 +1,10 @@
 import { Link, useRouter } from "@tanstack/react-router";
 import { Monitor, Moon, Settings as SettingsIcon, Sun } from "lucide-react";
-import { useId } from "react";
+import { useId, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useRegions } from "./api.ts";
 import { PlacesList } from "./Places.tsx";
+import { RoutineForm } from "./RoutineForm.tsx";
 import { dayRuns, useRoutines } from "./routines.ts";
 import { setThemeChoice, type ThemeChoice, useTheme } from "./theme.ts";
 import { ALL_MODES, SPEED_RANGE, useSpeeds, useTravelModes } from "./travelModes.ts";
@@ -103,10 +105,13 @@ export function SettingsPage() {
   );
 }
 
-// Your Routines: what they are and when, and a way to remove one. Made from a Trip's result.
+// Your Routines: what they are and when, to change or remove. Made from a Trip's result.
 function YourTrips() {
   const { t } = useTranslation();
   const { routines, remove } = useRoutines();
+  const regions = useRegions();
+  const timeZone = regions.data?.[0]?.timeZone ?? "UTC";
+  const [editing, setEditing] = useState<string>();
   const id = useId();
   return (
     <section aria-labelledby={`${id}-trips`}>
@@ -130,14 +135,30 @@ function YourTrips() {
               })
               .join(" · ");
             return (
-              <li key={routine.id} className="routine-item">
-                <span className="routine-body">
-                  <span className="routine-name">{name}</span>
-                  <span className="routine-when">{when}</span>
-                </span>
-                <button type="button" className="home-add-remove" aria-label={t("removeRoutine", { name })} onClick={() => remove.mutate(routine.id)}>
-                  {t("remove")}
-                </button>
+              <li key={routine.id}>
+                <div className="routine-item">
+                  <span className="routine-body">
+                    <span className="routine-name">{name}</span>
+                    <span className="routine-when">{when}</span>
+                  </span>
+                  <span className="routine-actions">
+                    <button
+                      type="button"
+                      className="home-add-remove"
+                      aria-label={t("routineEditLabel", { name })}
+                      aria-expanded={editing === routine.id}
+                      onClick={() => setEditing(editing === routine.id ? undefined : routine.id)}
+                    >
+                      {t("routineEdit")}
+                    </button>
+                    <button type="button" className="home-add-remove" aria-label={t("removeRoutine", { name })} onClick={() => remove.mutate(routine.id)}>
+                      {t("remove")}
+                    </button>
+                  </span>
+                </div>
+                {editing === routine.id && (
+                  <RoutineForm ends={routine} modes={routine.modes} timeZone={timeZone} editing={routine} onDone={() => setEditing(undefined)} />
+                )}
               </li>
             );
           })}

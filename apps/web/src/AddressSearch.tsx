@@ -1,9 +1,10 @@
 import type { GeocodeResult } from "@pulse/client";
-import { Search, X } from "lucide-react";
+import { Search, Star, X } from "lucide-react";
 import { type KeyboardEvent, type ReactNode, useEffect, useId, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { GeocodeError, useGeocode } from "./api.ts";
 import type { LatLon } from "./platform.tsx";
+import { usePlaces } from "./places.ts";
 
 // Finds an address or place: to move the point there, or as a Trip's From or To. A combobox (ARIA 1.2): focus stays in the field, the arrow
 // keys move through the suggestions, Enter picks one, Escape closes them and then clears the field.
@@ -25,9 +26,11 @@ export interface AddressSearchProps {
   leading?: ReactNode;
   // The field's own look, in place of the default (a Trip's From and To in the Signage style).
   inputClassName?: string;
+  // Your places as suggestions: all of them in an empty field, those whose name starts with what's typed ("ho" → Home) above the addresses.
+  withPlaces?: boolean;
 }
 
-export function AddressSearch({ point, lang, onPick, label, placeholder, initialText = "", autoFocus = false, leading, inputClassName }: AddressSearchProps) {
+export function AddressSearch({ point, lang, onPick, label, placeholder, initialText = "", autoFocus = false, leading, inputClassName, withPlaces = false }: AddressSearchProps) {
   const { t } = useTranslation();
   const listId = useId();
   const [text, setText] = useState(initialText);
@@ -42,14 +45,19 @@ export function AddressSearch({ point, lang, onPick, label, placeholder, initial
   }, [text]);
 
   const geocode = useGeocode(typed, point, lang);
-  const results = geocode.data ?? [];
+  const { places } = usePlaces();
+  const query = text.trim().toLocaleLowerCase();
+  const own: GeocodeResult[] = withPlaces
+    ? (places ?? []).filter((p) => p.name.toLocaleLowerCase().startsWith(query) && p.name !== text).map((p) => ({ ...p, label: p.name }))
+    : [];
+  const results = [...own, ...(geocode.data ?? [])];
   const searching = typed.trim().length >= 2;
   const message = (() => {
-    if (!searching || geocode.isPending) return null;
+    if (!searching || geocode.isPending || own.length) return null;
     if (geocode.error) return t(geocode.error instanceof GeocodeError && geocode.error.reason === "off" ? "searchOff" : "searchFailed");
     return results.length ? null : t("searchNone");
   })();
-  const showList = open && searching && (results.length > 0 || message !== null);
+  const showList = open && (own.length > 0 || (searching && (results.length > 0 || message !== null)));
   const optionId = (i: number) => `${listId}-${i}`;
 
   const pick = (place: GeocodeResult) => {
@@ -88,7 +96,7 @@ export function AddressSearch({ point, lang, onPick, label, placeholder, initial
             <ul id={listId} role="listbox" aria-label={label ?? t("searchLabel")}>
               {results.map((place, i) => (
                 <li
-                  key={place.label}
+                  key={`${i < own.length ? "own" : "found"}:${place.label}`}
                   id={optionId(i)}
                   role="option"
                   aria-selected={i === active}
@@ -100,7 +108,12 @@ export function AddressSearch({ point, lang, onPick, label, placeholder, initial
                   onMouseDown={(e) => e.preventDefault()}
                   onClick={() => pick(place)}
                 >
-                  {place.label}
+                  {i < own.length ? (
+                    <span className="search-own">
+                      <Star aria-hidden className="size-3.5" />
+                      {place.label}
+                    </span>
+                  ) : place.label}
                 </li>
               ))}
             </ul>

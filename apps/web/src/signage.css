@@ -1243,6 +1243,12 @@
   background: var(--s-fg);
   color: var(--s-bg);
 }
+.search-own {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 700;
+}
 .search-note {
   padding: 0.75rem 1rem;
   color: var(--s-mute);
@@ -1442,4 +1448,44 @@
 .routine-when {
   font-size: 0.9rem;
   color: var(--s-mute);
+}
+
+/* Making a Trip a Routine: a row per weekday, its time when ticked. */
+.usual-trip {
+  margin-top: 1.25rem;
+}
+.routine-days {
+  display: grid;
+  gap: 0.25rem;
+}
+.routine-days legend {
+  margin-bottom: 0.4rem;
+}
+.routine-day {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 2.75rem;
+  border-top: 1px solid var(--s-hair);
+}
+.routine-day-name {
+  width: 4.5rem;
+  flex: none;
+}
+.routine-kind,
+.routine-time {
+  min-height: 2.5rem;
+  padding: 0.3rem 0.5rem;
+  border: 2px solid var(--s-line);
+  background: var(--s-panel);
+  color: var(--s-fg);
+  font: 500 1rem/1.2 var(--s-font);
+}
+.routine-kind {
+  min-width: 0;
+  flex: 1;
+}
+.routine-actions {
+  display: flex;
+  gap: 0.25rem;
 }
