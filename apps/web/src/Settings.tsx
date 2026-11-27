@@ -3,6 +3,7 @@ import { Monitor, Moon, Settings as SettingsIcon, Sun } from "lucide-react";
 import { useId } from "react";
 import { useTranslation } from "react-i18next";
 import { PlacesList } from "./Places.tsx";
+import { dayRuns, useRoutines } from "./routines.ts";
 import { setThemeChoice, type ThemeChoice, useTheme } from "./theme.ts";
 import { ALL_MODES, SPEED_RANGE, useSpeeds, useTravelModes } from "./travelModes.ts";
 
@@ -95,8 +96,53 @@ export function SettingsPage() {
             <p className="settings-hint">{t("placesHint")}</p>
             <PlacesList />
           </section>
+          <YourTrips />
         </div>
       </div>
     </main>
+  );
+}
+
+// Your Routines: what they are and when, and a way to remove one. Made from a Trip's result.
+function YourTrips() {
+  const { t } = useTranslation();
+  const { routines, remove } = useRoutines();
+  const id = useId();
+  return (
+    <section aria-labelledby={`${id}-trips`}>
+      <h2 id={`${id}-trips`} className="settings-head">
+        {t("yourTrips")}
+      </h2>
+      <p className="settings-hint">{t(routines?.length ? "yourTripsHint" : "yourTripsNone")}</p>
+      {remove.isError && (
+        <p role="alert" className="settings-hint">
+          {t("yourTripsFailed")}
+        </p>
+      )}
+      {!!routines?.length && (
+        <ul className="places-list">
+          {routines.map((routine) => {
+            const name = t("routineName", { from: routine.from.name, to: routine.to.name });
+            const when = dayRuns(routine.days)
+              .map(({ from, to, time }) => {
+                const days = from === to ? t(`day_${from}`) : `${t(`day_${from}`)}–${t(`day_${to}`)}`;
+                return `${days} ${t(time.kind === "arriveBy" ? "routineArriveBy" : "routineLeaveAt", { time: time.time })}`;
+              })
+              .join(" · ");
+            return (
+              <li key={routine.id} className="routine-item">
+                <span className="routine-body">
+                  <span className="routine-name">{name}</span>
+                  <span className="routine-when">{when}</span>
+                </span>
+                <button type="button" className="home-add-remove" aria-label={t("removeRoutine", { name })} onClick={() => remove.mutate(routine.id)}>
+                  {t("remove")}
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+      )}
+    </section>
   );
 }

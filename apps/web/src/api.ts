@@ -122,6 +122,29 @@ export function useAddressAt(point: LatLon | undefined, lang: string) {
   });
 }
 
+// A Trip planned once, outside a view: leaving at `at`, or arriving by it.
+export async function planTrip(
+  from: LatLon,
+  to: LatLon,
+  at: Date,
+  { arrive = false, modes, speeds }: { arrive?: boolean; modes?: TravelMode[]; speeds?: { walk?: number; bike?: number } } = {},
+): Promise<Trip> {
+  const { data, response } = await client.GET("/trips", {
+    params: {
+      query: {
+        from: `${from.lat},${from.lon}`,
+        to: `${to.lat},${to.lon}`,
+        [arrive ? "arriveBy" : "departAt"]: at.toISOString(),
+        ...(modes ? { modes: modes.join(",") } : {}),
+        ...(speeds?.walk ? { walkSpeed: speeds.walk } : {}),
+        ...(speeds?.bike ? { bikeSpeed: speeds.bike } : {}),
+      },
+    },
+  });
+  if (!data) throw new Error(`GET /trips responded ${response.status}`);
+  return data as Trip;
+}
+
 // Every mode's itineraries from A to B, departing now or at `at` (a time on the device's clock), with the Events on each.
 // A Trip leaving now, at `at`, or arriving by `at`; in the modes you travel by, all when absent.
 export function useTrip(

@@ -15,6 +15,7 @@ import { Legend } from "./MapOverlays.tsx";
 import { PointMap, type PointMapProps } from "./map/PointMap.tsx";
 import { type LatLon, LocationError, usePlatform } from "./platform.tsx";
 import { formatAt, parseAt, usePoint } from "./point.ts";
+import { useRenewRoutines } from "./routines.ts";
 import { SettingsButton } from "./Settings.tsx";
 import { PlaceForm, PlacesRow, YourPlaces } from "./Places.tsx";
 import { type SavedPlace, savedAt, usePlaces } from "./places.ts";
@@ -52,6 +53,8 @@ export function Around() {
   const { location, storage } = usePlatform();
   const { point, setPoint } = usePoint();
   const regions = useRegions();
+  // Opening the app keeps this phone's Routines (ADR 0013).
+  useRenewRoutines();
   const search = useSearch({ from: "/" });
   const { event: selectedId } = search;
   const at = search.time && search.time !== "now" ? search.time : undefined;
