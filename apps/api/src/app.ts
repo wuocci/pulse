@@ -1,4 +1,6 @@
 import { OpenAPIHono } from "@hono/zod-openapi";
+import { appRoutes } from "./app/routes.ts";
+import type { AppStore } from "./app/store.ts";
 import type { Geocoder } from "./core/adapters/digitransit-geocoding.ts";
 import type { Router } from "./core/adapters/digitransit-routing.ts";
 import { eventRoutes } from "./core/events/routes.ts";
@@ -25,6 +27,8 @@ export interface AppDeps {
   routerFor?: (region: Region) => Router | undefined;
   // Parking near a Trip's destination per Region; none when absent.
   parkingFor?: (region: Region) => ParkingFinder | undefined;
+  // The app module's Devices and Routines (ADR 0010, 0013); no /app routes when absent.
+  appStore?: AppStore;
 }
 
 // Portable HTTP layer (AGENTS.md): Web APIs only. Node-specific code is injected through deps.
@@ -43,7 +47,9 @@ export function createApp(deps: AppDeps) {
     servers: [{ url: "/v0" }],
   });
 
-  return new OpenAPIHono().route("/v0", v0);
+  // /app is the Pulse app's own group, outside the public /v0 contract and its OpenAPI document.
+  const root = new OpenAPIHono().route("/v0", v0);
+  return deps.appStore ? root.route("/app", appRoutes(deps.appStore, deps.clock ?? (() => new Date()))) : root;
 }
 
 export type App = ReturnType<typeof createApp>;

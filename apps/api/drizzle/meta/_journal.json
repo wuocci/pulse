@@ -36,6 +36,13 @@
       "when": 1795606880474,
       "tag": "0004_car_park_conditions_hypertable",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1795779845090,
+      "tag": "0005_app_devices_routines",
+      "breakpoints": true
     }
   ]
 }

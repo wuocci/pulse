@@ -1,4 +1,5 @@
 import { serve } from "@hono/node-server";
+import { PgAppStore, STALE_AFTER_MS } from "./app/store.ts";
 import { createApp } from "./app.ts";
 import { classifierConfig, createPool, digitransitApiKey } from "./config.ts";
 import { digitransitDirectory } from "./core/adapters/digitransit.ts";
@@ -118,6 +119,20 @@ const parkingFor = (region: Region): ParkingFinder | undefined => {
 const sourceHealth = new InMemorySourceHealthLog();
 const stopIngest = startIngest(regions, events, { classification, health: sourceHealth, ...(stopDirectory ? { stopDirectory } : {}) });
 
+// Devices and Routines need the database: without it there are no /app routes, and the app works without Routines.
+const appStore = migrated ? new PgAppStore(pool) : undefined;
+if (!appStore) console.log("Routines off: no database");
+// Once a day, what the app hasn't renewed for 60 days goes (ADR 0013).
+const cleanup = async () => {
+  const deleted = await appStore?.deleteStale(new Date(Date.now() - STALE_AFTER_MS)).catch((error: unknown) => {
+    console.error("Routine cleanup failed:", error instanceof Error ? error.message : error);
+    return 0;
+  });
+  if (deleted) console.log(`Deleted ${deleted} Routines not renewed for 60 days`);
+};
+void cleanup();
+const cleanupTimer = setInterval(() => void cleanup(), 86_400_000);
+
 const app = createApp({
   db: {
     async ping() {
@@ -131,6 +146,7 @@ const app = createApp({
   ...(geocoderFor ? { geocoderFor } : {}),
   ...(routerFor ? { routerFor } : {}),
   parkingFor,
+  ...(appStore ? { appStore } : {}),
 });
 
 const port = Number(process.env.PORT ?? 3002);
@@ -141,6 +157,7 @@ const server = serve({ fetch: app.fetch, port }, (info) => {
 for (const signal of ["SIGINT", "SIGTERM"]) {
   process.on(signal, () => {
     stopIngest();
+    clearInterval(cleanupTimer);
     server.close();
     void pool.end().then(() => process.exit(0));
   });
