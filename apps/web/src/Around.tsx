@@ -4,7 +4,6 @@ import { useQuery } from "@tanstack/react-query";
 import { useNavigate, useSearch } from "@tanstack/react-router";
 import { type ReactNode, useEffect, useId, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Button } from "@/components/ui/button";
 import { AddressSearch } from "./AddressSearch.tsx";
 import { RADIUS_M, useAddressAt, useComingUp, useEvents, useRegions, useTrip } from "./api.ts";
 import { EventGlance } from "./EventCard.tsx";
@@ -16,7 +15,7 @@ import { Legend } from "./MapOverlays.tsx";
 import { PointMap, type PointMapProps } from "./map/PointMap.tsx";
 import { type LatLon, LocationError, usePlatform } from "./platform.tsx";
 import { formatAt, parseAt, usePoint } from "./point.ts";
-import { Settings } from "./Settings.tsx";
+import { SettingsButton } from "./Settings.tsx";
 import { PlaceForm, PlacesRow, YourPlaces } from "./Places.tsx";
 import { type SavedPlace, savedAt, usePlaces } from "./places.ts";
 import { parkingDetails, TripForm, TripRoute } from "./TripPanel.tsx";
@@ -301,7 +300,7 @@ export function Around() {
   })();
 
   const failureLine = failure && (
-    <p role="alert" className="text-sm">
+    <p role="alert" className="trip-none">
       {t(failure === "denied" ? "locationDenied" : "locationUnavailable")}
     </p>
   );
@@ -412,7 +411,7 @@ export function Around() {
           />
         )}
         {regions.isError && (
-          <p role="alert" className="text-sm">
+          <p role="alert" className="trip-none">
             {t("regionsFailed")}
           </p>
         )}
@@ -479,18 +478,17 @@ export function Around() {
           <Legend radiusM={search.trip ? undefined : RADIUS_M} />
         </div>
         <div className="absolute right-0 bottom-36 flex flex-col items-center gap-2 p-4 lg:bottom-8">
-          <Settings align="right" className="max-lg:hidden" />
-          <Button
-            variant={locate === "following" ? "default" : "secondary"}
-            size="icon"
-            className="size-11 rounded-full shadow"
+          <SettingsButton className="max-lg:hidden" />
+          <button
+            type="button"
+            className="map-btn"
             aria-label={locating ? t("locating") : locateLabel}
             aria-pressed={locate === "following"}
             disabled={locating}
             onClick={onLocate}
           >
-            <LocateGlyph aria-hidden className={locate === "following" ? "fill-current" : undefined} />
-          </Button>
+            <LocateGlyph aria-hidden className={`size-5 ${locate === "following" ? "fill-current" : ""}`} />
+          </button>
         </div>
       </div>
       <div className={`around-body overflow-y-auto p-4 pb-28 [grid-area:main] lg:pb-[max(1rem,env(safe-area-inset-bottom))] lg:block! lg:[grid-area:body] ${mapView ? "hidden" : "block"}`}>
@@ -570,7 +568,7 @@ export function Around() {
           </>
         )}
       </div>
-      <Settings align="left" className="fixed! bottom-[max(1.25rem,env(safe-area-inset-bottom))] left-4 z-30 lg:hidden" />
+      <SettingsButton className="fixed bottom-[max(1.25rem,env(safe-area-inset-bottom))] left-4 z-30 lg:hidden" />
       {canSwitch && <ListOrMap map={mapView} onChange={setMapView} />}
       {!search.trip && mapView && (
         <button type="button" className="around-switch around-back-list" onClick={() => setMapView(false)}>

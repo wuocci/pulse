@@ -54,7 +54,7 @@ export function TripForm({ point, lang, fromName, toName, to, onFrom, onTo, onCl
           initialText={fromName ?? ""}
           onPick={onFrom}
           inputClassName="trip-input"
-          leading={<span className="block size-3 rounded-full border-[3px] border-sky-600 bg-background" />}
+          leading={<span className="end-mark" data-end="from" />}
         />
       </div>
       <div className="trip-field" data-end="to">
@@ -72,7 +72,7 @@ export function TripForm({ point, lang, fromName, toName, to, onFrom, onTo, onCl
           autoFocus={!toName}
           onPick={onTo}
           inputClassName="trip-input"
-          leading={<span className="block size-3 rounded-full bg-slate-900 ring-2 ring-white" />}
+          leading={<span className="end-mark" data-end="to" />}
         />
       </div>
       {unsaved && !saving && (
@@ -115,7 +115,7 @@ export interface TravelModesProps {
 export function TravelModes({ trip, mode, shownIndex, onMode }: TravelModesProps) {
   const { t } = useTranslation();
   return (
-    <fieldset className="flex min-w-0 flex-1 gap-1 rounded-none border bg-card p-1.5">
+    <fieldset className="modes">
       <legend className="sr-only">{t("travelMode")}</legend>
       {TRAVEL_MODES.map((option) => {
         const Icon = MODE_ICONS[option];
@@ -133,20 +133,20 @@ export function TravelModes({ trip, mode, shownIndex, onMode }: TravelModesProps
           <label
             key={option}
             // Stacked — icon, name, time — so four fit a phone's sheet and the docked panel alike; marks in the corner.
-            className="relative flex min-h-14 min-w-0 flex-1 cursor-pointer flex-col items-center justify-center rounded-none px-1 py-1.5 text-muted-foreground outline-none has-checked:bg-muted has-checked:text-brand has-focus-visible:ring-2 has-focus-visible:ring-ring"
+            className="mode-tile"
           >
             <input type="radio" name="mode" className="sr-only" aria-label={label} checked={mode === option} onChange={() => onMode(option)} />
             {(impact || better) && (
-              <span aria-hidden className="absolute top-1 right-1 flex items-center gap-0.5 [&_svg]:size-3.5">
+              <span aria-hidden className="mode-tile-marks [&_svg]:size-3.5">
                 {impact && <ImpactMark impact={impact} />}
-                {better && <BadgeCheck className="shrink-0 text-emerald-600" />}
+                {better && <BadgeCheck className="shrink-0 text-(--s-link)" />}
               </span>
             )}
             <Icon aria-hidden className="size-5 shrink-0" />
-            <span aria-hidden className="text-[0.6875rem] leading-tight">
+            <span aria-hidden className="mode-tile-name">
               {t(`modeShort_${option}`)}
             </span>
-            <span aria-hidden className={`max-w-full truncate text-sm leading-tight ${best ? "font-semibold text-foreground" : ""}`}>
+            <span aria-hidden className="mode-tile-time">
               {shownTime ?? "…"}
             </span>
           </label>
@@ -158,7 +158,7 @@ export function TravelModes({ trip, mode, shownIndex, onMode }: TravelModesProps
 
 function ImpactMark({ impact }: { impact: Extract<Impact, "consider" | "major"> }) {
   return impact === "major" ? (
-    <OctagonAlert aria-hidden className="size-4 shrink-0 text-red-600" />
+    <OctagonAlert aria-hidden className="size-4 shrink-0 text-(--s-red-text)" />
   ) : (
     <TriangleAlert aria-hidden className="size-4 shrink-0 text-amber-600" />
   );
@@ -224,21 +224,21 @@ export function Itineraries({ itineraries, chosen, better, titleOf, timeZone, on
         return (
           <label
             key={i}
-            className="flex min-w-0 cursor-pointer flex-col gap-1.5 rounded-none border bg-card p-3 has-checked:border-brand has-focus-visible:ring-2 has-focus-visible:ring-ring"
+            className="way-option"
           >
             <input type="radio" name="route" className="sr-only" aria-label={label} checked={chosen === i} onChange={() => onChoose(i)} />
             <LegChips legs={itinerary.legs} />
-            <span aria-hidden className="flex items-center gap-2 text-sm">
-              <span className="tabular-nums">{times}</span>
-              <span className="text-muted-foreground">{minutes(itinerary.start, itinerary.end)}</span>
-              {length && <span className="text-muted-foreground">· {length}</span>}
+            <span aria-hidden className="flex items-center gap-2">
+              <span className="font-semibold tabular-nums">{times}</span>
+              <span className="text-(--s-mute)">{minutes(itinerary.start, itinerary.end)}</span>
+              {length && <span className="text-(--s-mute)">· {length}</span>}
             </span>
             {impact && (
-              <span aria-hidden className="flex min-w-0 items-start gap-1 text-xs text-muted-foreground">
+              <span aria-hidden className="flex min-w-0 items-start gap-1 text-xs text-(--s-mute)">
                 <ImpactMark impact={impact} />
                 {worstTitle ? (
                   <span className="line-clamp-2">
-                    <span className="font-medium text-foreground tabular-nums">{inWay.length}</span> · {worstTitle}
+                    <span className="font-semibold text-(--s-fg) tabular-nums">{inWay.length}</span> · {worstTitle}
                   </span>
                 ) : (
                   fullText && <span className="line-clamp-2">{fullText}</span>
@@ -246,7 +246,7 @@ export function Itineraries({ itineraries, chosen, better, titleOf, timeZone, on
               </span>
             )}
             {why && (
-              <span aria-hidden className="flex items-center gap-1 text-xs font-medium text-emerald-700 dark:text-emerald-400">
+              <span aria-hidden className="flex items-center gap-1 text-xs font-semibold text-(--s-link)">
                 <BadgeCheck className="size-3.5 shrink-0" />
                 {why}
               </span>
@@ -268,10 +268,10 @@ export function LegChips({ legs }: { legs: Itinerary["legs"] }) {
       {legs.map((leg, j) => {
         const { icon: Icon, colour } = LEG_STYLE[leg.mode];
         const parkAt = leg.to?.parking && (
-          <span key={`${j}-p`} className="flex items-center gap-1 rounded bg-blue-600 px-1.5 py-0.5 text-xs font-semibold text-white">
+          <span key={`${j}-p`} className="flex items-center gap-1 bg-(--s-blue) px-1.5 py-0.5 text-xs font-semibold text-(--s-on-blue)">
             P<span className="font-normal">{leg.to.parking}</span>
             {leg.to.parkingFree && (
-              <span className={`font-normal ${leg.to.parkingFree.almostFull ? "rounded bg-amber-300 px-1 text-amber-950" : "opacity-80"}`}>
+              <span className={`font-normal ${leg.to.parkingFree.almostFull ? "bg-(--s-amber) px-1 text-(--s-on-amber)" : "opacity-80"}`}>
                 · {t("freeShort", { free: count(leg.to.parkingFree.spaces) })}
               </span>
             )}
@@ -279,7 +279,7 @@ export function LegChips({ legs }: { legs: Itinerary["legs"] }) {
         );
         if (parkAt) {
           return [
-            <span key={j} className="flex items-center gap-0.5 text-xs text-muted-foreground">
+            <span key={j} className="flex items-center gap-0.5 text-xs text-(--s-mute)">
               <Icon className="size-3.5" />
               {legSize(leg)}
             </span>,
@@ -287,12 +287,12 @@ export function LegChips({ legs }: { legs: Itinerary["legs"] }) {
           ];
         }
         return leg.line ? (
-          <span key={j} className="flex items-center gap-1 rounded px-1.5 py-0.5 text-xs font-semibold text-white" style={{ backgroundColor: colour }}>
+          <span key={j} className="flex items-center gap-1 px-1.5 py-0.5 text-xs font-semibold text-white" style={{ backgroundColor: colour }}>
             <Icon className="size-3.5" />
             {leg.line.name}
           </span>
         ) : (
-          <span key={j} className="flex items-center gap-0.5 text-xs text-muted-foreground">
+          <span key={j} className="flex items-center gap-0.5 text-xs text-(--s-mute)">
             <Icon className="size-3.5" />
             {legSize(leg)}
           </span>
@@ -328,32 +328,32 @@ export function ParkingNear({ parking: { street, picks, sources }, place, onPick
       ].filter(Boolean)
     : [];
   return (
-    <section aria-label={t("parkingNear", { place })} className="space-y-2 rounded-none border p-3 text-sm">
+    <section aria-label={t("parkingNear", { place })} className="trip-panel">
 {!untitled && (
-      <h3 className="flex items-center gap-2 font-medium">
-        <span aria-hidden className="grid size-5 place-items-center rounded bg-blue-600 text-xs font-bold text-white">
+      <h3 className="trip-panel-head">
+        <span aria-hidden className="p-mark">
           P
         </span>
         {t("parkingNear", { place })}
       </h3>
       )}
       {picks.length > 0 && (
-        <ol className="space-y-1.5">
+        <ol>
           {picks.map((pick, i) => (
             <li key={i}>
               <button
                 type="button"
                 onClick={() => onPick(pick)}
-                className="-m-1 flex w-[calc(100%+0.5rem)] gap-2 rounded-none p-1 text-left outline-none hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring"
+                className="park-pick"
               >
-                <span aria-hidden className="mt-0.5 grid size-5 shrink-0 place-items-center rounded-full bg-blue-600 text-xs font-bold text-white">
+                <span aria-hidden className="p-mark mt-0.5">
                   {i + 1}
                 </span>
                 <span className="min-w-0">
-                  <span className="block font-medium">
+                  <span className="park-pick-name">
                     {[...pick.reasons.map((r) => t(`pick_${r}`)), pick.name ?? t("streetParking")].join(" · ")}
                   </span>
-                  <span className="block text-muted-foreground">
+                  <span className="park-pick-sub">
                     {[t("metres", { count: pick.distanceM }), pick.free ? freeText({ free: pick.free, spaces: pick.spaces }, count, t) : parkingDetails(pick, t)].join(" · ")}
                   </span>
                 </span>
@@ -363,11 +363,11 @@ export function ParkingNear({ parking: { street, picks, sources }, place, onPick
         </ol>
       )}
       {street && (
-        <p className="text-xs text-muted-foreground">
+        <p className="trip-panel-note">
           {[t(street.estimated ? "parkingSpacesAbout" : "parkingSpaces", { count: street.spaces, radius: street.radiusM }), ...kinds].join(" · ")}
         </p>
       )}
-      <p className="text-xs text-muted-foreground">{t("parkingSources", { sources: sources.join(", ") })}</p>
+      <p className="trip-panel-note">{t("parkingSources", { sources: sources.join(", ") })}</p>
     </section>
   );
 }
@@ -418,9 +418,9 @@ export function HeadsUp({ comingUp, titleOf, legs, timeZone }: HeadsUpProps) {
   const day = new Intl.DateTimeFormat("fi-FI", { day: "numeric", month: "numeric", year: "numeric", timeZone });
   if (!comingUp.length) return null;
   return (
-    <section aria-label={t("headsUp")} className="space-y-1.5 rounded-none bg-amber-50 p-3 text-sm dark:bg-amber-950/40">
-      <h3 className="flex items-center gap-1.5 font-medium">
-        <CalendarClock aria-hidden className="size-4 shrink-0 text-amber-700 dark:text-amber-400" />
+    <section aria-label={t("headsUp")} className="trip-panel">
+      <h3 className="trip-panel-head">
+        <CalendarClock aria-hidden className="size-4 shrink-0" />
         {t("headsUp")}
       </h3>
       <ul className="space-y-1">
@@ -429,8 +429,8 @@ export function HeadsUp({ comingUp, titleOf, legs, timeZone }: HeadsUpProps) {
           const on = part && (part.line ? `${t(`leg_${part.mode}`)} ${part.line.name}` : t(`leg_${part.mode}`));
           return (
             <li key={eventId}>
-              <span className="font-medium">{t("fromDay", { day: day.format(new Date(startsAt)) })}</span> · {titleOf(eventId)}
-              {on && <span className="text-muted-foreground"> ({t("onLeg", { leg: on })})</span>}
+              <span className="font-semibold">{t("fromDay", { day: day.format(new Date(startsAt)) })}</span> · {titleOf(eventId)}
+              {on && <span className="text-(--s-mute)"> ({t("onLeg", { leg: on })})</span>}
             </li>
           );
         })}

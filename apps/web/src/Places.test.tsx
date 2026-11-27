@@ -276,8 +276,8 @@ describe("Home: your places", () => {
     const { platform, storage } = fakePlatform({ places: PLACES });
     renderHome(platform);
 
-    await user.click((await screen.findAllByRole("button", { name: "Settings" }))[0]!);
-    const list = within(screen.getByRole("region", { name: "Your places" }));
+    await user.click((await screen.findAllByRole("link", { name: "Settings" }))[0]!);
+    const list = within(await screen.findByRole("region", { name: "Your places" }));
     await user.click(list.getByRole("button", { name: /^Home/ }));
     await user.click(list.getByRole("button", { name: "Remove Home" }));
 

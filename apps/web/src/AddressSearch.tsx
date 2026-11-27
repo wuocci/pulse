@@ -83,7 +83,7 @@ export function AddressSearch({ point, lang, onPick, label, placeholder, initial
   return (
     <div className="relative min-w-0 flex-1">
       {showList && (
-        <div className="absolute inset-x-0 top-full z-30 mt-2 max-h-[60dvh] overflow-y-auto rounded-none border bg-popover text-popover-foreground shadow-xl">
+        <div className="search-list">
           {results.length > 0 && (
             <ul id={listId} role="listbox" aria-label={label ?? t("searchLabel")}>
               {results.map((place, i) => (
@@ -92,7 +92,7 @@ export function AddressSearch({ point, lang, onPick, label, placeholder, initial
                   id={optionId(i)}
                   role="option"
                   aria-selected={i === active}
-                  className="cursor-pointer px-4 py-3 text-sm aria-selected:bg-muted"
+                  className="search-option"
                   // Picks before the field loses focus.
                   // Keep the input's focus, or its blur closes the list before the tap lands: the pointer press for most
                   // browsers, the mouse press a phone sends after the touch for others (iOS Safari).
@@ -107,13 +107,13 @@ export function AddressSearch({ point, lang, onPick, label, placeholder, initial
           )}
           {/* Read out by the live region below, so not twice. */}
           {message && (
-            <p aria-hidden className="px-4 py-3 text-sm text-muted-foreground">
+            <p aria-hidden className="search-note">
               {message}
             </p>
           )}
         </div>
       )}
-      <span aria-hidden className="pointer-events-none absolute top-1/2 left-3 grid size-4 -translate-y-1/2 place-items-center text-muted-foreground">
+      <span aria-hidden className="pointer-events-none absolute top-1/2 left-3 grid size-4 -translate-y-1/2 place-items-center text-(--s-mute)">
         {leading ?? <Search className="size-4" />}
       </span>
       <input
@@ -137,13 +137,13 @@ export function AddressSearch({ point, lang, onPick, label, placeholder, initial
         onFocus={() => setOpen(true)}
         onBlur={() => setOpen(false)}
         onKeyDown={onKeyDown}
-        className={`w-full pr-10 pl-9 outline-none select-text [&::-webkit-search-cancel-button]:hidden ${inputClassName ?? "h-11 rounded-lg bg-muted text-base placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring"}`}
+        className={`w-full pr-10 pl-9 outline-none select-text [&::-webkit-search-cancel-button]:hidden ${inputClassName ?? "search-input"}`}
       />
       {text && (
         <button
           type="button"
           aria-label={t("clearSearch")}
-          className="search-clear absolute top-1/2 right-0 grid size-11 -translate-y-1/2 place-items-center text-muted-foreground"
+          className="search-clear absolute top-1/2 right-0 grid size-11 -translate-y-1/2 place-items-center text-(--s-mute)"
           onClick={() => {
             setText("");
             setActive(-1);

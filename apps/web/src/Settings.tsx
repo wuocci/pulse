@@ -1,5 +1,6 @@
+import { Link, useRouter } from "@tanstack/react-router";
 import { Monitor, Moon, Settings as SettingsIcon, Sun } from "lucide-react";
-import { useEffect, useId, useRef, useState } from "react";
+import { useId } from "react";
 import { useTranslation } from "react-i18next";
 import { PlacesList } from "./Places.tsx";
 import { setThemeChoice, type ThemeChoice, useTheme } from "./theme.ts";
@@ -11,45 +12,38 @@ const CHOICES: { choice: ThemeChoice; key: "themeAuto" | "themeLight" | "themeDa
   { choice: "dark", key: "themeDark", Icon: Moon },
 ];
 
-// ⚙: set once, for every Trip and screen (design round 2026-11-25): how Pulse looks, the ways you travel, how
-// fast you walk and cycle, and your places (public transport and driving keep their timetables and roads). Opens above itself, from
-// its left or right edge.
-export function Settings({ align, className = "" }: { align: "left" | "right"; className?: string }) {
+// ⚙ over the map: opens Settings, a view of its own (2026-11-27; it was a pop-up, too small once Routines join it).
+export function SettingsButton({ className = "" }: { className?: string }) {
   const { t } = useTranslation();
+  return (
+    <Link to="/settings" aria-label={t("settings")} className={`map-btn ${className}`}>
+      <SettingsIcon aria-hidden className="size-5" />
+    </Link>
+  );
+}
+
+// Set once, for every Trip and screen (design round 2026-11-25): how Pulse looks, the ways you travel, how fast you
+// walk and cycle, and your places (public transport and driving keep their timetables and roads).
+export function SettingsPage() {
+  const { t } = useTranslation();
+  const router = useRouter();
   const { choice } = useTheme();
   const { modes, toggle } = useTravelModes();
   const { speeds, set } = useSpeeds();
-  const [open, setOpen] = useState(false);
   const id = useId();
-  const root = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!open) return;
-    const close = (e: Event) => {
-      if (e instanceof KeyboardEvent ? e.key === "Escape" : !root.current?.contains(e.target as Node)) setOpen(false);
-    };
-    document.addEventListener("keydown", close);
-    document.addEventListener("pointerdown", close);
-    return () => {
-      document.removeEventListener("keydown", close);
-      document.removeEventListener("pointerdown", close);
-    };
-  }, [open]);
+  // Back to where ⚙ was pressed; a Settings link opened on its own goes to the start screen.
+  const back = () => (router.history.canGoBack() ? router.history.back() : void router.navigate({ to: "/" }));
 
   return (
-    <div ref={root} className={`relative ${className}`}>
-      <button
-        type="button"
-        aria-label={t("settings")}
-        aria-expanded={open}
-        aria-controls={id}
-        onClick={() => setOpen(!open)}
-        className="grid size-12 place-items-center rounded-full border bg-card/90 shadow-lg backdrop-blur outline-none focus-visible:ring-2 focus-visible:ring-ring lg:size-11"
-      >
-        <SettingsIcon aria-hidden className="size-5" />
-      </button>
-      {open && (
-        <div id={id} role="dialog" aria-label={t("settings")} className={`settings absolute bottom-full mb-2 ${align === "left" ? "left-0" : "right-0"}`}>
+    <main className="signage">
+      <div className="home">
+        <div className="around-top">
+          <button type="button" className="around-back" onClick={back}>
+            ‹ {t("back")}
+          </button>
+        </div>
+        <h1 className="settings-title">{t("settings")}</h1>
+        <div className="settings">
           <fieldset>
             <legend className="settings-head">{t("appearance")}</legend>
             {CHOICES.map(({ choice: option, key, Icon }) => (
@@ -102,7 +96,7 @@ export function Settings({ align, className = "" }: { align: "left" | "right"; c
             <PlacesList />
           </section>
         </div>
-      )}
-    </div>
+      </div>
+    </main>
   );
 }

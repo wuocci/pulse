@@ -1,6 +1,7 @@
 import { createRootRoute, createRoute, createRouter, Outlet, redirect, type RouterHistory } from "@tanstack/react-router";
 import { z } from "zod";
 import { Around } from "./Around.tsx";
+import { SettingsPage } from "./Settings.tsx";
 
 // The view lives in the URL, so a reload, a shared link or a push deep link lands on the same thing.
 // A malformed value is dropped rather than failing the page.
@@ -39,8 +40,11 @@ const aroundRoute = createRoute({
   },
 });
 
+// Settings: a view of its own, with the way back to where it was opened.
+const settingsRoute = createRoute({ getParentRoute: () => rootRoute, path: "/settings", component: SettingsPage });
+
 export function createAppRouter(history?: RouterHistory) {
-  return createRouter({ routeTree: rootRoute.addChildren([homeRoute, aroundRoute]), ...(history ? { history } : {}) });
+  return createRouter({ routeTree: rootRoute.addChildren([homeRoute, aroundRoute, settingsRoute]), ...(history ? { history } : {}) });
 }
 
 declare module "@tanstack/react-router" {

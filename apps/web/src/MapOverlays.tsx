@@ -1,13 +1,9 @@
-import type { Event } from "@pulse/client";
-import { Info, PartyPopper, TriangleAlert, X } from "lucide-react";
-import { type ReactNode, useEffect, useId, useState } from "react";
+import { Info, PartyPopper, X } from "lucide-react";
+import { useEffect, useId, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Button } from "@/components/ui/button";
-import { whenText } from "./EventCard.tsx";
-import { textIn, toneOf, whenOf } from "./events.ts";
-import { EventIcon, NOTICEABLE_RING, TONE_CLASSES } from "./map/EventPin.tsx";
+import { NOTICEABLE_RING, TONE_CLASSES } from "./map/EventPin.tsx";
 
-// What sits over the map besides its pins: the chip for what's region-wide, and the legend.
+// What sits over the map besides its pins: the legend.
 
 // Open until Escape, the close button or the toggle again.
 function useToggle() {
@@ -19,67 +15,6 @@ function useToggle() {
     return () => document.removeEventListener("keydown", onKey);
   }, [open]);
   return [open, setOpen] as const;
-}
-
-export interface RegionWideProps {
-  events: Event[];
-  selectedId: string | undefined;
-  languages: readonly string[];
-  timeZone: string;
-  onSelect: (id: string) => void;
-  // The chosen notice's card, shown here: it has no pin to pop up from.
-  card: ReactNode;
-}
-
-// "⚠ 2 region-wide notices": vague Events get no pin, so they're counted here and listed on a tap.
-export function RegionWide({ events, selectedId, languages, timeZone, onSelect, card }: RegionWideProps) {
-  const { t } = useTranslation();
-  const [open, setOpen] = useToggle();
-  const listId = useId();
-  if (!events.length) return null;
-  const now = new Date();
-
-  return (
-    <div className="pointer-events-auto flex max-w-sm flex-col items-start gap-2">
-      <button
-        type="button"
-        aria-expanded={open || card !== null}
-        aria-controls={listId}
-        onClick={() => setOpen(!open)}
-        className="flex items-center gap-1.5 rounded-full bg-background/95 px-3 py-1.5 text-sm font-medium shadow outline-none focus-visible:ring-2 focus-visible:ring-ring"
-      >
-        <TriangleAlert aria-hidden className="size-4 text-amber-600" />
-        {t("regionWide", { count: events.length })}
-      </button>
-      {(open || card) && (
-        <div id={listId} className="w-full rounded-xl bg-background shadow-xl">
-          {card ?? (
-            <ul aria-label={t("regionWideTitle")} className="space-y-1 p-2">
-              {events.map((event) => (
-                <li key={event.id}>
-                  <button
-                    type="button"
-                    data-event-id={event.id}
-                    aria-current={event.id === selectedId ? true : undefined}
-                    onClick={() => onSelect(event.id)}
-                    className="flex w-full items-center gap-3 rounded-lg p-2 text-left outline-none hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring"
-                  >
-                    <span className={`grid size-8 shrink-0 place-items-center rounded-full border-2 ${TONE_CLASSES[toneOf(event)]}`}>
-                      <EventIcon event={event} className="size-4" />
-                    </span>
-                    <span className="min-w-0 flex-1">
-                      <span className="line-clamp-2 block text-sm leading-snug font-medium">{textIn(event.title, languages)}</span>
-                      <span className="block truncate text-xs text-muted-foreground">{whenText(whenOf(event, timeZone, now), t)}</span>
-                    </span>
-                  </button>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-      )}
-    </div>
-  );
 }
 
 // The legend's shape samples, in the map's own colours (PointMap's TONE_COLOURS and radius line).
@@ -96,24 +31,23 @@ export function Legend({ radiusM }: { radiusM?: number | undefined }) {
   const titleId = useId();
   const swatch = "grid size-7 shrink-0 place-items-center rounded-full border-2";
   const row = "flex items-center gap-2.5";
-  const heading = "pt-1 text-xs font-semibold text-muted-foreground uppercase";
 
   return (
     <div className="pointer-events-auto flex flex-col items-end gap-2">
-      <Button variant="secondary" size="icon" className="size-11 rounded-full shadow" aria-label={t("legend")} aria-expanded={open} onClick={() => setOpen(!open)}>
-        <Info aria-hidden />
-      </Button>
+      <button type="button" className="map-btn" aria-label={t("legend")} aria-expanded={open} onClick={() => setOpen(!open)}>
+        <Info aria-hidden className="size-5" />
+      </button>
       {open && (
-        <section aria-labelledby={titleId} className="max-h-[70dvh] w-72 space-y-2 overflow-y-auto rounded-xl bg-background p-3 text-sm shadow-xl">
-          <div className="flex items-center justify-between">
-            <h2 id={titleId} className="font-semibold">
+        <section aria-labelledby={titleId} className="map-panel">
+          <div className="map-panel-head">
+            <h2 id={titleId} className="settings-head">
               {t("legend")}
             </h2>
-            <Button variant="ghost" size="icon" className="-mr-2 size-9" aria-label={t("close")} onClick={() => setOpen(false)}>
-              <X aria-hidden />
-            </Button>
+            <button type="button" className="map-press-close" aria-label={t("close")} onClick={() => setOpen(false)}>
+              <X aria-hidden className="size-5" />
+            </button>
           </div>
-          <h3 className={heading}>{t("legendColours")}</h3>
+          <h3 className="map-panel-label">{t("legendColours")}</h3>
           <ul className="space-y-2">
             {(["quiet", "consider", "major"] as const).map((tone) => (
               <li key={tone} className={row}>
@@ -122,7 +56,7 @@ export function Legend({ radiusM }: { radiusM?: number | undefined }) {
               </li>
             ))}
           </ul>
-          <h3 className={heading}>{t("legendPins")}</h3>
+          <h3 className="map-panel-label">{t("legendPins")}</h3>
           <ul className="space-y-2">
             <li className={row}>
               <span aria-hidden className={`${swatch} ${TONE_CLASSES.quiet} ${NOTICEABLE_RING}`} />
@@ -144,9 +78,9 @@ export function Legend({ radiusM }: { radiusM?: number | undefined }) {
               </span>
               <span>{t("legendPublicEvent")}</span>
             </li>
-            <li className="text-muted-foreground">{t("legendIcon")}</li>
+            <li className="map-panel-note">{t("legendIcon")}</li>
           </ul>
-          <h3 className={heading}>{t("legendShapes")}</h3>
+          <h3 className="map-panel-label">{t("legendShapes")}</h3>
           <ul className="space-y-2">
             <li className={row}>
               <span aria-hidden className={AREA_SWATCH} />
@@ -167,7 +101,7 @@ export function Legend({ radiusM }: { radiusM?: number | undefined }) {
               <span>{t("legendPoint")}</span>
             </li>
           </ul>
-          <p className="text-xs text-muted-foreground">{t("legendRegionWide")}</p>
+          <p className="map-panel-note">{t("legendRegionWide")}</p>
         </section>
       )}
     </div>

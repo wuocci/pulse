@@ -167,7 +167,7 @@ const tripModes = async () => {
 };
 const tripRoutes = async () => {
   await openPart(/^Other ways/);
-  return within(await screen.findByRole("group", { name: "Routes" }));
+  return within(await screen.findByRole("group", { name: "Other ways" }));
 };
 const onTheWayList = async () => {
   await openPart(/^On the way/);
@@ -885,10 +885,27 @@ describe("how Pulse looks", () => {
     localStorage.clear();
     document.documentElement.classList.remove("dark");
   });
+  it("opens Settings as a view of its own, and goes back to where it was opened", async () => {
+    const history = renderApp("/?at=60.17000,24.95000");
+    await userEvent.click((await screen.findAllByRole("link", { name: "Settings" }))[0]!);
+    expect(await screen.findByRole("heading", { level: 1, name: "Settings" })).toBeInTheDocument();
+    expect(history.location.pathname).toBe("/settings");
+
+    await userEvent.click(screen.getByRole("button", { name: /Back/ }));
+    await waitFor(() => expect(history.location.search).toContain("at=60.17000"));
+    expect(history.location.pathname).toBe("/");
+  });
+
+  it("goes to the start screen from a Settings link opened on its own", async () => {
+    const history = renderApp("/settings");
+    await userEvent.click(await screen.findByRole("button", { name: /Back/ }));
+    await waitFor(() => expect(history.location.pathname).toBe("/"));
+  });
+
   it("is like the phone until told otherwise, and keeps light or dark on the device", async () => {
     renderApp("/around?at=60.17000,24.95000");
-    await userEvent.click((await screen.findAllByRole("button", { name: "Settings" }))[0]!);
-    expect(screen.getByRole("radio", { name: "Like the phone" })).toBeChecked();
+    await userEvent.click((await screen.findAllByRole("link", { name: "Settings" }))[0]!);
+    expect(await screen.findByRole("radio", { name: "Like the phone" })).toBeChecked();
 
     await userEvent.click(screen.getByRole("radio", { name: "Dark" }));
     expect(document.documentElement).toHaveClass("dark");
@@ -1097,7 +1114,7 @@ describe("Trip mode", () => {
     expect(screen.getByRole("combobox", { name: "From" })).toHaveAttribute("placeholder", "Where the pin is");
     expect(screen.queryByRole("button", { name: /^Around / })).not.toBeInTheDocument();
     // When to go is asked with where.
-    expect(screen.getByRole("group", { name: "Leave when" })).toHaveTextContent(/Leave now.*Leave at.*Arrive by/);
+    expect(screen.getByRole("group", { name: "When" })).toHaveTextContent(/Leave now.*Leave at.*Arrive by/);
 
     await userEvent.click(screen.getByRole("button", { name: "Back" }));
     expect(await screen.findByRole("button", { name: "Where to?" })).toBeInTheDocument();
@@ -1107,7 +1124,7 @@ describe("Trip mode", () => {
     trip = PLANNED;
     renderApp("/around?at=60.17000,24.95000&trip=true&to=60.19000,24.94000&toName=Pasila");
 
-    const when = within(await screen.findByRole("group", { name: "Leave when" }));
+    const when = within(await screen.findByRole("group", { name: "When" }));
     expect(when.getByRole("button", { name: "Leave now" })).toHaveAttribute("aria-pressed", "true");
     await waitFor(() => expect(tripQueries.at(-1)?.has("departAt")).toBe(false));
 
@@ -1127,7 +1144,7 @@ describe("Trip mode", () => {
 
     const group = within(await modes());
     expect(await group.findByRole("radio", { name: "Public transport, 15 min, some disruption" })).toBeChecked();
-    expect(group.getByRole("radio", { name: "Walk, no route" })).toBeInTheDocument();
+    expect(group.getByRole("radio", { name: "Walk, no way" })).toBeInTheDocument();
     expect(group.getByRole("radio", { name: "Bike, 22 min" })).toBeInTheDocument();
     expect(Object.fromEntries(tripQueries.at(-1)!)).toEqual({ from: "60.17,24.95", to: "60.1986,24.933" });
     expect(history.location.search).toContain("to=60.19860%2C24.93300");
@@ -1358,7 +1375,7 @@ describe("a Trip on the map", () => {
     }));
     renderApp(TO);
 
-    await waitFor(() => expect(screen.getByRole("status")).toHaveTextContent("Finding routes…"));
+    await waitFor(() => expect(screen.getByRole("status")).toHaveTextContent("Finding ways…"));
   });
 
     it("draws nothing until there is a route", async () => {
@@ -1493,7 +1510,7 @@ describe("a Trip's itineraries", () => {
   it("plans to arrive by a time, and says so", async () => {
     trip = { events: [], plans: [{ mode: "transit", itineraries: [BUS] }] };
     const history = renderApp(TO);
-    const when = within(await screen.findByRole("group", { name: "Leave when" }));
+    const when = within(await screen.findByRole("group", { name: "When" }));
 
     fireEvent.change(when.getByLabelText("Arrive by…"), { target: { value: "2026-12-12T18:00" } });
 
@@ -1503,9 +1520,14 @@ describe("a Trip's itineraries", () => {
     expect(history.location.search).toContain("arrive=true");
   });
 
+  // Settings is a view of its own: ⚙ opens it, Back returns to the Trip.
   const settings = async () => {
-    await userEvent.click((await screen.findAllByRole("button", { name: "Settings" }))[0]!);
-    return within(screen.getByRole("dialog", { name: "Settings" }));
+    await userEvent.click((await screen.findAllByRole("link", { name: "Settings" }))[0]!);
+    return within(await screen.findByRole("main"));
+  };
+  const backFromSettings = async () => {
+    await userEvent.click(screen.getByRole("button", { name: /Back/ }));
+    await screen.findByRole("region", { name: "Best way" });
   };
 
   it("plans only in the ways you travel, set in the settings and saved on the phone", async () => {
@@ -1515,6 +1537,7 @@ describe("a Trip's itineraries", () => {
     await screen.findByRole("region", { name: "Best way" });
 
     await userEvent.click((await settings()).getByRole("checkbox", { name: "Bike" }));
+    await backFromSettings();
 
     await waitFor(() => expect(tripQueries.at(-1)?.get("modes")).toBe("transit,walk,car"));
     expect(JSON.parse(storage.get("modes")!)).toEqual(["transit", "walk", "car"]);
@@ -1532,11 +1555,12 @@ describe("a Trip's itineraries", () => {
     expect(panel.getByRole("slider", { name: "How fast you walk" })).toHaveAttribute("aria-valuetext", "5 km/h");
     fireEvent.change(panel.getByRole("slider", { name: "How fast you walk" }), { target: { value: "6.5" } });
     fireEvent.change(panel.getByRole("slider", { name: "How fast you cycle" }), { target: { value: "24" } });
+    expect(panel.queryByRole("slider", { name: /drive|transport/ })).not.toBeInTheDocument();
+    await backFromSettings();
 
     await waitFor(() => expect(tripQueries.at(-1)?.get("bikeSpeed")).toBe("24"));
     expect(tripQueries.at(-1)?.get("walkSpeed")).toBe("6.5");
     expect(JSON.parse(storage.get("speeds")!)).toEqual({ walk: 6.5, bike: 24 });
-    expect(panel.queryByRole("slider", { name: /drive|transport/ })).not.toBeInTheDocument();
   });
 
   it("lists what's on the chosen way under the routes", async () => {

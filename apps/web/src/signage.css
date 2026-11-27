@@ -12,10 +12,15 @@
   --s-hair: #d9d8d2;
   --s-panel: #ffffff;
   --s-blue: #0a4da2;
+  /* Blue as text or an icon on the background: in dark mode lighter than the fill, so both reach AA. */
+  --s-link: #0a4da2;
   --s-on-blue: #ffffff;
   --s-amber: #ffc20e;
   --s-on-amber: #111214;
   --s-red: #c8102e;
+  --s-red-text: #c8102e;
+  /* Edges of fields and outlined buttons: 3:1 against the background (WCAG 1.4.11). --s-hair is for dividers. */
+  --s-line: #868990;
   --s-on-red: #ffffff;
   min-height: 100dvh;
   background: var(--s-bg);
@@ -29,7 +34,10 @@
   --s-mute: #a3a7ae;
   --s-hair: #2a2d33;
   --s-panel: #181b20;
-  --s-blue: #2f7ae0;
+  --s-blue: #1f63c4;
+  --s-link: #6aa5f5;
+  --s-red-text: #ff6b6b;
+  --s-line: #6b7079;
 }
 .signage a,
 .signage button {
@@ -114,7 +122,7 @@
 }
 .home-add-name {
   padding: 0.55rem 0.7rem;
-  border: 2px solid var(--s-hair);
+  border: 2px solid var(--s-line);
   background: transparent;
   font: 500 1rem/1.2 var(--s-font);
 }
@@ -130,7 +138,8 @@
   font-weight: 600;
 }
 .home-add-save:disabled {
-  opacity: 0.45;
+  background: var(--s-hair);
+  color: var(--s-mute) !important;
 }
 .home-add-cancel {
   padding: 0.6rem 0.5rem;
@@ -159,7 +168,7 @@
   margin-top: 2.5rem;
   padding: 0.5rem 0;
   font-weight: 600;
-  color: var(--s-blue) !important;
+  color: var(--s-link) !important;
 }
 
 /* Accordions: the panel's height animates from 0 to its content's. */
@@ -239,7 +248,7 @@
   margin: -0.25rem 0 0.9rem 3.9rem;
   padding: 0.4rem 0;
   font-weight: 600;
-  color: var(--s-blue) !important;
+  color: var(--s-link) !important;
 }
 
 /* 3 The details. */
@@ -325,10 +334,10 @@
 .sg-more > .acc-head {
   padding: 0.6rem 0;
   font-weight: 600;
-  color: var(--s-blue);
+  color: var(--s-link);
 }
 .sg-more .acc-chevron {
-  color: var(--s-blue);
+  color: var(--s-link);
   font-size: 1.3rem;
 }
 .sg-facts div {
@@ -345,22 +354,16 @@
   font-size: 0.9rem;
   color: var(--s-mute);
   white-space: pre-line;
-  display: -webkit-box;
-  -webkit-line-clamp: 6;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
 }
 .sg-source {
   margin: 0.5rem 0 0.7rem;
+  padding: 0;
+  list-style: none;
   font-size: 0.9rem;
 }
 .sg-source a {
-  color: var(--s-blue) !important;
+  color: var(--s-link) !important;
   font-weight: 600;
-}
-.sg-source {
-  list-style: none;
-  padding: 0;
 }
 .sg-source li + li {
   margin-top: 0.4rem;
@@ -417,7 +420,7 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.6rem 0.75rem;
-  border: 2px solid var(--s-hair);
+  border: 2px solid var(--s-line);
   font-weight: 600;
 }
 .around-status {
@@ -502,7 +505,8 @@
   margin-left: 0.5rem;
 }
 .around-empty {
-  padding: 0.25rem 0 1rem;
+  padding: 0.9rem 0 0;
+  font-size: 0.95rem;
   color: var(--s-mute);
 }
 .around-switch {
@@ -560,7 +564,6 @@
 .trip-leave {
   margin-top: 0.5rem;
   font: 700 2.6rem/1 var(--s-display);
-  text-transform: uppercase;
   font-variant-numeric: tabular-nums;
 }
 .trip-arrive {
@@ -581,7 +584,7 @@
 .trip-back {
   margin-top: 0.6rem;
   font-weight: 600;
-  color: var(--s-blue) !important;
+  color: var(--s-link) !important;
 }
 .trip-open {
   display: flex;
@@ -598,7 +601,7 @@
   color: var(--s-on-blue) !important;
 }
 .trip-open-alt {
-  border: 2px solid var(--s-hair);
+  border: 2px solid var(--s-line);
 }
 .trip-note {
   margin-top: 0.5rem;
@@ -644,7 +647,7 @@
 .trip-mode input {
   width: 1.1rem;
   height: 1.1rem;
-  accent-color: var(--s-blue);
+  accent-color: var(--s-link);
 }
 .way-on-map {
   padding: 0.75rem 0.9rem 0.25rem;
@@ -655,13 +658,12 @@
 .way-on-map-times {
   margin-top: 0.35rem;
   font: 700 1.35rem/1.1 var(--s-display);
-  text-transform: uppercase;
 }
 .way-on-map-best {
   margin-top: 0.5rem;
   padding: 0.4rem 0;
   font-weight: 600;
-  color: var(--s-blue) !important;
+  color: var(--s-link) !important;
 }
 .way-on-map-steps {
   margin-top: 0.25rem;
@@ -670,10 +672,10 @@
 .way-on-map-steps > .acc-head {
   padding: 0.6rem 0;
   font-weight: 600;
-  color: var(--s-blue);
+  color: var(--s-link);
 }
 .way-on-map-steps .acc-chevron {
-  color: var(--s-blue);
+  color: var(--s-link);
   font-size: 1.3rem;
 }
 /* Open on the map, the steps scroll in place: the map stays in sight under them. */
@@ -698,13 +700,7 @@
   color: var(--s-mute);
 }
 .trip-field[data-end="to"] {
-  background: var(--s-blue);
-  color: var(--s-on-blue);
-}
-.trip-field[data-end="to"] .trip-field-tag,
-.trip-field[data-end="to"] .search-clear {
-  color: inherit;
-  opacity: 0.85;
+  box-shadow: inset 6px 0 0 var(--s-blue);
 }
 .trip-input {
   height: 3rem;
@@ -721,7 +717,8 @@
 .trip-field[data-end="to"] .trip-input::placeholder {
   font: 700 1.35rem/1 var(--s-display);
   text-transform: uppercase;
-  opacity: 0.9;
+  color: var(--s-mute);
+  opacity: 1;
 }
 .trip-field:focus-within {
   outline: 3px solid var(--s-fg);
@@ -784,7 +781,7 @@
 }
 .way-step[data-kind="start"] .way-step-mark {
   border-radius: 999px;
-  border-color: #0284c7;
+  border-color: var(--s-link);
 }
 .way-step[data-kind="park"] .way-step-mark {
   display: grid;
@@ -792,8 +789,8 @@
   width: 1.1rem;
   height: 1.1rem;
   border: 0;
-  background: #2563eb;
-  color: #fff;
+  background: var(--s-blue);
+  color: var(--s-on-blue);
   font-size: 0.7rem;
   font-weight: 700;
 }
@@ -830,16 +827,21 @@
 }
 
 /* ⚙: set once. Signage panels, like the rest. */
+.settings-title {
+  margin-top: 1.5rem;
+  padding-bottom: 0.6rem;
+  border-bottom: 3px solid var(--s-fg);
+  font: 700 2rem/1 var(--s-display);
+  text-transform: uppercase;
+}
 .settings {
-  width: min(18rem, calc(100vw - 2rem));
-  max-height: calc(100dvh - 7rem);
-  overflow-y: auto;
-  padding: 0.9rem 1rem;
-  background: var(--s-panel);
-  color: var(--s-fg);
-  box-shadow: 0 10px 30px rgb(0 0 0 / 0.25);
+  margin-top: 1.5rem;
   display: grid;
-  gap: 1rem;
+  gap: 2rem;
+}
+.settings fieldset,
+.settings section {
+  min-width: 0;
 }
 .settings-head {
   margin-bottom: 0.4rem;
@@ -882,7 +884,7 @@
 .settings-check input {
   width: 1.1rem;
   height: 1.1rem;
-  accent-color: var(--s-blue);
+  accent-color: var(--s-link);
 }
 .settings-speed {
   display: flex;
@@ -893,7 +895,7 @@
 .settings-speed input {
   flex: 1;
   min-width: 0;
-  accent-color: var(--s-blue);
+  accent-color: var(--s-link);
 }
 .settings-speed-value {
   flex: none;
@@ -949,7 +951,7 @@
 }
 .here-place[data-kind="you"] .here-place-icon,
 .here-place[data-kind="you"] .here-place-sub {
-  color: var(--s-blue);
+  color: var(--s-link);
 }
 .here-place-body {
   flex: 1;
@@ -974,7 +976,7 @@
   gap: 0.15rem;
   font-weight: 600;
   font-size: 0.9rem;
-  color: var(--s-blue);
+  color: var(--s-link);
 }
 /* Quiet: Where to? stays the only loud thing. */
 .here-actions {
@@ -989,10 +991,10 @@
   gap: 0.4rem;
   min-height: 2.5rem;
   font-weight: 600;
-  color: var(--s-blue) !important;
+  color: var(--s-link) !important;
 }
 .here-action:disabled {
-  opacity: 0.6;
+  color: var(--s-mute) !important;
 }
 .here .around-time {
   gap: 0.25rem;
@@ -1016,10 +1018,6 @@
 .around-sections > .around-section:first-child {
   border-top: 1px solid var(--s-hair);
 }
-.around-empty {
-  padding: 0.9rem 0 0;
-  font-size: 0.95rem;
-}
 
 /* Saving and changing a place. */
 .home-add-quick {
@@ -1029,7 +1027,7 @@
 }
 .home-add-chip {
   padding: 0.4rem 0.7rem;
-  border: 2px solid var(--s-hair);
+  border: 2px solid var(--s-line);
   font-weight: 600;
   font-size: 0.9rem;
 }
@@ -1039,7 +1037,7 @@
 }
 .home-add-remove {
   padding: 0.6rem 0.5rem;
-  color: var(--s-red) !important;
+  color: var(--s-red-text) !important;
   font-weight: 600;
 }
 .places-list {
@@ -1069,7 +1067,7 @@
   margin-top: 0.4rem;
   padding: 0.3rem 0;
   font-weight: 600;
-  color: var(--s-blue) !important;
+  color: var(--s-link) !important;
 }
 .around-back-list {
   height: 3.25rem;
@@ -1122,15 +1120,305 @@
   gap: 0.35rem;
   min-height: 2.75rem;
   padding: 0 0.9rem;
-  border: 2px solid var(--s-hair);
+  border: 2px solid var(--s-line);
   font-weight: 600;
 }
 .map-press-actions .map-press-go {
-  border-color: var(--s-blue);
+  border-color: var(--s-link);
   background: var(--s-blue);
   color: var(--s-on-blue) !important;
 }
 .map-press .home-add {
   margin-top: 0.5rem;
   padding: 0;
+}
+
+/* Over the map: square buttons and panels, like the rest. Only what floats over the map gets a shadow. */
+.map-btn {
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  background: var(--s-panel);
+  color: var(--s-fg) !important;
+  border: 2px solid var(--s-line);
+  box-shadow: 0 4px 14px rgb(0 0 0 / 0.18);
+}
+.map-btn[aria-pressed="true"],
+.map-btn[aria-expanded="true"] {
+  background: var(--s-fg);
+  color: var(--s-bg) !important;
+  border-color: var(--s-fg);
+}
+.map-btn:disabled {
+  color: var(--s-mute) !important;
+}
+.map-panel {
+  width: 18rem;
+  max-height: 70dvh;
+  overflow-y: auto;
+  padding: 0.9rem 1rem;
+  background: var(--s-panel);
+  color: var(--s-fg);
+  box-shadow: 0 10px 30px rgb(0 0 0 / 0.25);
+  display: grid;
+  gap: 0.5rem;
+  font-size: 0.95rem;
+}
+.map-panel-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.map-panel-label {
+  padding-top: 0.4rem;
+  font: 700 0.85rem/1 var(--s-display);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--s-mute);
+}
+.map-panel-note {
+  font-size: 0.85rem;
+  color: var(--s-mute);
+}
+
+/* A glance at an Event from the map: the card's top in a popup. */
+.glance {
+  display: block;
+  width: min(17rem, calc(100vw - 2rem));
+  padding: 0.6rem 0.75rem;
+  border-left: 4px solid var(--s-amber);
+  text-align: left;
+}
+.glance[data-tone="major"] {
+  border-left-color: var(--s-red);
+}
+.glance[data-tone="quiet"] {
+  border-left-color: var(--s-hair);
+}
+.glance-title {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  font: 600 1.02rem/1.25 var(--s-font);
+}
+.glance-under {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.9rem;
+  color: var(--s-mute);
+}
+.glance-when {
+  display: block;
+  margin-top: 0.3rem;
+  font-size: 0.85rem;
+  color: var(--s-mute);
+}
+
+/* Search results under a field. */
+.search-list {
+  position: absolute;
+  inset-inline: 0;
+  top: 100%;
+  z-index: 30;
+  margin-top: 0.25rem;
+  max-height: 60dvh;
+  overflow-y: auto;
+  background: var(--s-panel);
+  color: var(--s-fg);
+  border: 2px solid var(--s-fg);
+  box-shadow: 0 10px 30px rgb(0 0 0 / 0.2);
+}
+.search-option {
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+}
+.search-option + .search-option {
+  border-top: 1px solid var(--s-hair);
+}
+.search-option[aria-selected="true"] {
+  background: var(--s-fg);
+  color: var(--s-bg);
+}
+.search-note {
+  padding: 0.75rem 1rem;
+  color: var(--s-mute);
+}
+.search-input {
+  height: 2.75rem;
+  background: var(--s-panel);
+  border: 2px solid var(--s-line);
+  color: var(--s-fg);
+  font-size: 1rem;
+}
+.search-input::placeholder {
+  color: var(--s-mute);
+}
+.search-input:focus-visible {
+  border-color: var(--s-fg);
+}
+/* A Trip's From and To marks, as on the map and in the steps. */
+.end-mark {
+  display: block;
+  width: 0.8rem;
+  height: 0.8rem;
+  border-radius: 999px;
+}
+.end-mark[data-end="from"] {
+  border: 3px solid var(--s-link);
+  background: var(--s-bg);
+}
+.end-mark[data-end="to"] {
+  background: var(--s-fg);
+}
+
+/* Travel modes: four tiles in a row; the chosen one inverted. */
+.modes {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  gap: 0.25rem;
+}
+.mode-tile {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  min-height: 3.75rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0.35rem 0.25rem;
+  background: var(--s-panel);
+  color: var(--s-mute);
+  cursor: pointer;
+}
+.mode-tile:has(:checked) {
+  background: var(--s-fg);
+  color: var(--s-bg);
+}
+.mode-tile:has(:focus-visible) {
+  outline: 3px solid var(--s-blue);
+  outline-offset: 2px;
+}
+.mode-tile-name {
+  font: 700 0.75rem/1.1 var(--s-display);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.mode-tile-time {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font: 700 1.05rem/1.1 var(--s-display);
+  font-variant-numeric: tabular-nums;
+  color: var(--s-fg);
+}
+.mode-tile:has(:checked) .mode-tile-time {
+  color: var(--s-bg);
+}
+.mode-tile-marks {
+  position: absolute;
+  top: 0.2rem;
+  right: 0.25rem;
+  display: flex;
+  gap: 0.1rem;
+}
+
+/* Parking near the destination and heads-ups: quiet panels, the same rows as elsewhere. */
+.trip-panel {
+  display: grid;
+  gap: 0.5rem;
+  padding: 0.8rem 0.9rem;
+  background: var(--s-panel);
+  font-size: 0.95rem;
+}
+.trip-panel-head {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font: 700 0.85rem/1 var(--s-display);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--s-mute);
+}
+.trip-panel-note {
+  font-size: 0.85rem;
+  color: var(--s-mute);
+}
+.p-mark {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 1.25rem;
+  height: 1.25rem;
+  background: var(--s-blue);
+  color: var(--s-on-blue);
+  font: 700 0.8rem/1 var(--s-display);
+}
+.park-pick {
+  display: flex;
+  gap: 0.6rem;
+  width: 100%;
+  padding: 0.35rem 0;
+  text-align: left;
+}
+.park-pick-name {
+  display: block;
+  font-weight: 600;
+}
+.park-pick-sub {
+  display: block;
+  color: var(--s-mute);
+}
+
+/* MapLibre's popups: square, in the theme's panel colour (its own CSS is white with round corners). */
+.signage .maplibregl-popup-content {
+  padding: 0;
+  border-radius: 0;
+  background: var(--s-panel);
+  color: var(--s-fg);
+  box-shadow: 0 6px 20px rgb(0 0 0 / 0.25);
+}
+.signage .maplibregl-popup.parking-spot .maplibregl-popup-content {
+  padding: 0.4rem 0.6rem;
+}
+.signage .maplibregl-popup-anchor-top .maplibregl-popup-tip,
+.signage .maplibregl-popup-anchor-top-left .maplibregl-popup-tip,
+.signage .maplibregl-popup-anchor-top-right .maplibregl-popup-tip {
+  border-bottom-color: var(--s-panel);
+}
+.signage .maplibregl-popup-anchor-bottom .maplibregl-popup-tip,
+.signage .maplibregl-popup-anchor-bottom-left .maplibregl-popup-tip,
+.signage .maplibregl-popup-anchor-bottom-right .maplibregl-popup-tip {
+  border-top-color: var(--s-panel);
+}
+.signage .maplibregl-popup-anchor-left .maplibregl-popup-tip {
+  border-right-color: var(--s-panel);
+}
+.signage .maplibregl-popup-anchor-right .maplibregl-popup-tip {
+  border-left-color: var(--s-panel);
+}
+
+/* Another way to make the Trip: a row like the rest; the chosen one marked with the blue edge. */
+.way-option {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  min-width: 0;
+  padding: 0.7rem 0.9rem;
+  background: var(--s-panel);
+  box-shadow: inset 4px 0 0 var(--s-hair);
+  cursor: pointer;
+}
+.way-option:has(:checked) {
+  box-shadow: inset 6px 0 0 var(--s-blue);
+}
+.way-option:has(:focus-visible) {
+  outline: 3px solid var(--s-blue);
+  outline-offset: 2px;
 }
