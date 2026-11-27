@@ -99,6 +99,14 @@ How much an Event matters for one specific Watch, Place or Trip. Unlike Severity
 A scheduled webhook to a Routine's Watch shortly before departure (45 minutes by default), sent even if nothing has changed.
 _Avoid_: Digest, morning check
 
+**Device**:
+An anonymous install of the Pulse app that owns Places, Routines and a push subscription, standing in for a user until login exists. Devices live only in the app module, never in core.
+_Avoid_: User, account, installation
+
+**Push policy**:
+The app's rules for when a Briefing or a later change becomes a push: only when the advice changes plans (departure moves by 5 minutes or more, the mode or route changes, or a changes-plans Event hits the Usual route), at most one more push after the Briefing, and silence otherwise.
+_Avoid_: Notification settings, alert rules
+
 **Classifier**:
 The step that decides typed questions about a Source's free text, such as the kind of work, Severity, or which of the candidate dates or lines found in the text applies. It only chooses among options; values themselves come from the Source or from code. It runs once per Event, and only for Sources whose items lack that structure.
 _Avoid_: Jev (Jev is the current implementation, not the concept), extractor
